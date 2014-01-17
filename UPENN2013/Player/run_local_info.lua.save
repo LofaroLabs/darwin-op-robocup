@@ -1,0 +1,14 @@
+module(... or "", package.seeall)
+
+require('init')
+require('wcm')
+require('send')
+require('Config');
+while true do
+	player_id = Config.game.playerID
+	team_number = Config.game.teamNumber
+	send_data = toCSV(wcm.get_pose()) .. "," .. player_id .. "," .. team_number
+	print(send_local_data(wcm.get_pose()))
+	unix.usleep((2)*(1E6));
+end
+

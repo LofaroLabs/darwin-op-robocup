@@ -1,0 +1,64 @@
+Fan Wire                    5
+Fan PCB Wire 8-pin          18
+Fan PCB Wire 9-pin          18
+Power Switch Wire           13
+Speaker Wire                13
+Speaker Extension Wire      9
+Antenna Wire                10
+Antenna PCB Wire            5
+FitPC 3-Way Wire            5
+CM730 to FitPC-Top Wire     11
+CM730 to FitPC-Bottom Wire  13
+Head PCB Wire 10-pin        28
+Camera PCB Wire  
+
+
+          SCREWS:
+
+(NUT) nuts
+2.5mm 
+
+(PHS)  Phillips head screws (smaller threading, unknown dimension)
+2.0mm*4mm 
+2.0mm*5mm
+2.0mm*6mm 
+2.5mm*4mm 
+2.5mm*6mm
+3.0mm*6mm 
+
+(BHS)  Phillips Button head screw
+2.0mm*4mm
+
+(TAP) Phillips head screws (larger threading, unknown dimension)
+1.4mm*4mm
+2.0mm*4mm
+2.0mm*6mm
+3.0mm*8mm
+
+(FHS) Phillips flat head screws
+2.5mm*4.0mm 
+
+(WB) Hex Head
+2.0mm*3mm
+2.0mm*4mm
+2.5mm*3mm
+2.5mm*4mm
+2.5mm*6mm
+2.5mm*8mm
+2.5mm*10mm
+
+WIRES
+
+Fan Wire                    5
+Fan PCB Wire 8-pin          18
+Fan PCB Wire 9-pin          18
+Power Switch Wire           13
+Speaker Wire                13
+Speaker Extension Wire      9
+Antenna Wire                10
+Antenna PCB Wire            5
+FitPC 3-Way Wire            5
+CM730 to FitPC-Top Wire     11
+CM730 to FitPC-Bottom Wire  13
+Head PCB Wire 10-pin        28
+Camera PCB Wire             23 23

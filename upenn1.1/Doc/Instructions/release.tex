@@ -1,0 +1,177 @@
+\documentclass{article}
+
+\usepackage{hyperref}
+
+\begin{document}
+
+
+\title{UPennalizers  2011 Open Source Release\\ DARwIn-OP Edition}
+\date{July, 2011}
+\author{University of Pennsylvania}
+\maketitle
+
+
+\section{Introduction}
+  This code release has support for both Linux and MacOS.
+
+\section{Getting Started}
+  In order to get the software to work on your machine there are a few packages that you must download and install first.
+
+  \begin{itemize}
+    \item Download and install Lua 5.1
+    \begin{itemize}
+      \item You can download Lua here: \texttt{http://www.lua.org}
+    \end{itemize}
+    \item Download and install Boost C++ Libraries. This will depend on which version of the code you will use:
+    \begin{itemize}
+      \item \texttt{Nao} \\
+        If you are going to be using the Nao, download the latest SDK provided by Aldebaran through their download center. Create a link in \texttt{/usr/local/include/} to the boost folder in the SDK. This will also work with the Webots simulation if you wish to use it.
+      \item \texttt{DARwIn OP and Webots}
+        If you are going to be using the DARwIn OP or just the Webots simulation (and not the Nao), download the latest version of Boost here:\\
+        \texttt{http://www.boost.org}
+        Create a link to the Boost header files \texttt{boost\_1\_43\_0/boost} (your version may differ) in the \texttt{/usr/local/include/} directory.
+    \end{itemize}
+  \end{itemize}
+
+  \subsection{Setting Up Webots for Nao Model}
+    If you are interested in using the Webots Nao Simulator then you must also do the following.
+
+    \begin{itemize}
+      \item Download and install Webots
+      \begin{itemize}
+        \item You can download Webots for Linux or MacOS here: \\
+          \texttt{http://www.cyberbotics.com}
+        \item Install Webots in the \texttt{/usr/local/} directory. 
+        \item Create a link to the \texttt{webots} executable in \texttt{/usr/local/bin/}
+        \item NOTE: You do not need a license to run our code release. The demo version is all that is required.
+      \end{itemize}
+      \item Create a link to the \texttt{WebotsController} we provided in the \\
+        \texttt{webots/projects/contests/robotstadium/controllers/} directory:
+      \begin{itemize}
+        \item First create a backup of the original \texttt{nao\_team\_0} directory.
+        \item Create a link to the \texttt{WebotsController} directory named \texttt{nao\_team\_0}
+        \item Do the same for \texttt{nao\_team\_1} if you want the code to be used for both teams, otherwise it will run the default controller.
+      \end{itemize}
+    \end{itemize}
+    
+    \subsection{Setting Up Webots for DARwIn-OP Model}
+    If you are interested in using the Webots Simulator for DARwIn-OP with Webots 6.4.0 or later then you must also do the following.
+
+    \begin{itemize}
+      \item Download and install Webots 6.4.0 or greater
+      \begin{itemize}
+        \item You can download Webots for Linux or MacOS here: \\
+          \texttt{http://www.cyberbotics.com}
+        \item Install Webots in the \texttt{/usr/local/} directory. 
+        \item Create a link to the \texttt{webots} executable in \texttt{/usr/local/bin/}
+        \item NOTE: You do not need a license to run our code release. The demo version is all that is required.
+      \end{itemize}
+      \item Copy the WebotsProject directory to the \texttt{webots/projects/} directory, renaming it to ``upenn\_open\_source"
+      \item Create a link to the \texttt{WebotsController} we provided in the \\
+        \texttt{webots/projects/upenn\_open\_source/controllers/} directory:
+      \begin{itemize}
+        \item Create a link to the \texttt{WebotsController} directory named \texttt{dop\_lua}
+      \end{itemize}
+    \end{itemize}
+
+
+\section{Code Structure}
+  
+  The code is divided into two main components: high and low level processing. The low level code is mainly written in C/C++ and compiled into libraries that have Lua interfaces. These libraries are used mainly for device drivers and anything designed to execute quickly (e.g. image processing and forward/inverse kinematics calculations). The high level code is mainly scripted Lua. The high level code includes the robots behavioral state machines which use the low level libraries.
+  The following will contain a brief description of the code following the provided directory structure. The low level code is rooted at the Lib directory and the high level code is rooted at the Player directory.
+  
+  \subsection{Low Level (\texttt{./Lib})}
+
+    \begin{description}
+
+      \item \texttt{Platform} \\ 
+        There are three directories contained here, one corresponding to the three robot platforms supported. The code contained in these directories is everything that is platform dependent. This includes the robots forward/inverse kinematics and device drivers for controlling the robots sensors and actuators. All of the libraries have the same interface to allow you to just drop in the needed libraries/Lua files without changing the high level behavioral code. The directory trees for each platform (Webots/Nao/LC2) are the same:
+
+      \begin{description}
+        \item \texttt{Body} \\
+          Body contains the device interface for controlling the robot's sensors and actuators. This includes controlling joint angles, reading IMU data, etc. 
+        \item \texttt{Camera} \\
+          Camera contains the device interface for controlling the robots camera.
+        \item \texttt{Kinematics} \\ 
+          Kinematics contains library for computing the forward and inverse kinematics of the robot.
+      \end{description}
+      \item \texttt{ImageProc} \\
+        This directory contains all of the image processing libraries written in C/C++: Segmentation and finding connected components.
+      \item \texttt{Util} \\
+        These are all of the C/C++ utility function libraries. 
+      \begin{description}
+        \item \texttt{CArray} \\
+          CArray allows access to C arrays in Lua.
+        \item \texttt{Shm} \\
+          Shm is the Lua interface to Boost shared memory objects (only used for the Nao).
+        \item \texttt{Unix} \\
+          This library provides a Lua interface to a number of important Unix functions; including time, sleep, and chdir to name a few. 
+        \item \texttt{NaoQi} \\
+          This contains the custom NaoQi module allowing access to the Nao device communication manager in Lua.
+      \end{description}
+    \end{description}
+
+
+  \subsection{High Level (\texttt{./Player})}
+  
+    \texttt{player.m} is the main entry point for the code and contains the robots main loop.
+    
+    \begin{description}
+      \item \texttt{BodyFSM} \\
+        The state machine definition and states for the robot body are found here. These robot states include spinning to look for the ball, walking toward the ball and kicking the ball when positioned.  
+      \item \texttt{Config} \\
+        This directory contains the only high level platform depended code. They are in the form of configuration files. There is one configuration file per platform. The walk parameters, camera parameters and the names of the device interface libraries to use are all defined in the configuratoin files. 
+      \item \texttt{Dev} \\
+        This directory contains the Lua modules that to import for controlling the devices (actuators/sensors) on the robot.
+      jitem \texttt{Data} \\
+        This directory contains any logging information produced. Currently that is only in the form of saved images.
+      \item \texttt{HeadFSM} \\
+        The head state machine definition and states are located here. The head is controlled separately from the rest of the body and transitions between searching for the ball and tracking it once found.
+      \item \texttt{Lib} \\
+        Lib contains all of the compiled, low level C libraries and Lua files that were created in Lib.
+      \item \texttt{Motion} \\
+        Here is where all of the robots motions are defined. It contains the walk engine along with keyframe motions used for the get-up routine and kicks.
+      \item \texttt{Util} \\
+        Utility functions are located here. The base finite state machine description and a Lua vector class are defined here.
+      \item \texttt{Vision} \\
+        The main image processing pipeline is located here. It uses the output from the low level image processing to detect objects of intereset (mainly the ball).
+      \item \texttt{World} \\
+        This is the code relating to the robots world model.
+    \end{description}
+
+\section{Compiling}
+
+  There are three phases for getting the code running. The first is compiling all the necessary C/C++ libraries and the NaoQi module (if needed). The second is `setup', which consists of copying the necessary low level libraries and Lua files from the \texttt{./Lib} directory to the \texttt{./Player/Lib} directory so they can be used by the high level code. The final set is installing. This is only necessary for the Nao and LC2 (not currently supported but coming soon). If you are only using the Webots simulator you will not have to install anything. We provide Makefiles and scripts to complete all of these tasks assuming you have all external dependencies installed correctly.
+
+  \begin{description}
+  
+      \item \texttt{DARwIn OP Webots} \\
+      Use the following command from the \texttt{./Lib} directory to setup Webots: \\
+      \texttt{\$ make setup\_webots\_op}
+  
+    \item \texttt{DARwIn-OP} \\
+      Use the following command from the \texttt{./Lib} directory to setup Webots: \\
+      \texttt{\$ make setup\_op}
+      
+            \item \texttt{Nao Webots} \\
+      Use the following command from the \texttt{./Lib} directory to setup Webots: \\
+      \texttt{\$ make setup\_webots}
+      
+      
+    \item \texttt{Nao} \\
+      \begin{enumerate}
+        \item Download the SDK, CTC and the latest opennao OS image tool from the download center provided by Aldebaran.
+        \item Shut off the Nao and remove the headpiece. Take the USB drive from the robot and mount it on your computer.
+        \item Use the \texttt{flash-usbstick} tool provided in the Aldebaran SDK to install a clean version of the OS onto the USB drive.
+        \item Once complete, replace the USB drive in the robot. Start the robot and wait for it to completely boot. Then shut the robot down and remove the USB drive.
+        \item Remount the USB drive on your computer and note the path to the USB root partition and the user partition on the drive.
+        \item From the \texttt{./Install} directory, run the \texttt{install\_nao.sh} script: \\
+          \texttt{\$ ./install\_nao <path/to/usb/root/partition> <path/to/usb/user/partition>} \\
+          The paths should look something like \texttt{/media/<USB Name>/}
+        \item After the script completes place the USB drive back into the robot. Replace the headpiece and turn the robot on.
+        \item The robot will boot and start running the Player code. It will start in the bodyIdle state (walking in place). Press the chest button to transition into the normal body state machine (searching for the ball, kicking, etc). You can press it again to go back into idle.
+      \end{enumerate}
+  \end{description}
+
+\end{document}
+
