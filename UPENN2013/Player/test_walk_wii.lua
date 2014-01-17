@@ -49,30 +49,124 @@ button_pressed = {0,0};
 function move_head_yaw(angle) -- in degree
   local headAngles = Body.get_head_position()
   local currentYaw = headAngles[1] * 180.0/3.141592
-  local currentPitch = headAngles[2] * 180.0/3.141592
   local newYaw = currentYaw + angle
 
   print("currentYaw", currentYaw)
-  print("currentPitch", currentPitch)
   print("newYaw", newYaw)
-  if newYaw > -50.0 and newYaw < 22.0 then
-    Body.set_head_command({newYaw/180.0*3.141592, headAngles[2]})
-  end
+  
+  if newYaw <= -85.0 then newYaw = -85.0
+  elseif newYaw >= 85.0 then newYaw = 85.0 end
+
+  Body.set_head_command({newYaw/180.0*3.141592, headAngles[2]})
 end 
 
 function move_head_pitch(angleP)
   local headAngles = Body.get_head_position()
   local currentPitch = headAngles[2] * 180.0 / 3.141592
   local newPitch = currentPitch + angleP
-  if newPitch > -90 and newPitch < 90 then
-    Body.set_head_command({headAngles[1], newPitch/180.0*3.141592})
-  end
+
+  print("currentPitch", currentPitch)
+  print("newPitch", newPitch)
+
+  if newPitch <= -45.0 then newPitch = -45.0
+  elseif newPitch >= 22.0 then newPitch = 22.0 end
+
+  Body.set_head_command({headAngles[1], newPitch/180.0*3.141592})
+end
+
+function move_head(a1, a2)  --a1: delta yaw, a2: delta pitch
+  local headAngles = Body.get_head_position()
+  local currentYaw = headAngles[1] * 180.0/3.141592
+  local newYaw = currentYaw + a1
+  local currentPitch = headAngles[2] * 180.0/3.141592
+  local newPitch = currentPitch + a2
+
+  if newYaw <= -85.0 then newYaw = -85.0
+  elseif newYaw >= 85.0 then newYaw = 85.0 end
+ 
+  if newPitch <= -45.0 then newPitch = -45.0
+  elseif newPitch >= 22.0 then newPitch = 22.0 end
+
+  newPitch = newPitch/180.0*3.141592
+  newYaw = newYaw/180.0*3.141592
+
+  Body.set_head_command({newYaw, newPitch})
 end
 
 function process_keyinput()
   line = mcm.get_walk_wii_message()
 --  print(line)
 
+  -- set walk vector by using accel from the Wiimote
+  if line == "WIIMOTE NONE" then 
+    targetvel[1] = 0.0;
+    targetvel[2] = 0.0;
+    targetvel[3] = 0.0;
+    if walk.active then walk.stop();end
+    Motion.event("standup")
+  
+  elseif string.match(line, 'WIIMOTE.*') then
+    local count = 0
+    print("walk")
+    Motion.event("walk");
+    walk.start();
+
+    for i in string.gmatch(line, "%S+") do
+      if i ~= "WIIMOTE" then
+        count = count + 1
+        if count == 1 then
+          targetvel[3] = i * 4.0 / 10.0 * (-1.0)
+        elseif count == 2 then
+          if (i+0.0) < 0 then
+            targetvel[1] = i * 3.0/100.0
+          else
+            targetvel[1] = i / 10.0
+          end
+        end
+      end
+    end
+  end
+
+  -- nunchuk accel (control the side velocity)
+  if line == "NUNCHUK NONE" then
+    targetvel[2] = 0.0
+  elseif string.match(line, 'NUNCHUK.*') then 
+    for i in string.gmatch(line, "%S+") do
+      if i ~= "NUNCHUK" then
+        targetvel[2] = i * 3.0/100.0*(-1.0)
+      end
+    end
+  end
+
+  -- kick , cannot do both walk and kick
+  if line == "PLUS PRESSED" or line == "B + PLUS" then
+    kick.set_kick("kickForwardRight");
+    Motion.event("kick");
+  elseif line == "MINUS PRESSED" or line == "B + MINUS" then
+    kick.set_kick("kickForwardLeft");
+    Motion.event("kick");
+  end
+
+  -- control the head
+  if line == "MOVE HEAD UP" then
+    move_head_pitch(-10)
+  elseif line == "MOVE HEAD DOWN" then
+    move_head_pitch(10)
+  elseif line == "MOVE HEAD LEFT" then
+    move_head_yaw(10)
+  elseif line == "MOVE HEAD RIGHT" then 
+    move_head_yaw(-10)
+  elseif line == "MOVE HEAD UP AND LEFT" then 
+    move_head(10,-10)
+  elseif line == "MOVE HEAD UP AND RIGHT" then
+    move_head(-10,-10)
+  elseif line == "MOVE HEAD DOWN AND LEFT" then
+    move_head(10,10)
+  elseif line == "MOVE HEAD DOWN AND RIGHT" then
+    move_head(-10,10)
+  end  
+
+--[[
       -- set walk vector (x,y,z) x-forward, y-left, z-counter-clockwise	
   if line == "UP RELEASED" then        targetvel[1]=targetvel[1]+0.02;
   elseif line == "RIGHT RELEASED" then targetvel[2]=targetvel[2]-0.02;
@@ -105,21 +199,20 @@ function process_keyinput()
 
  -- Move head up
   elseif line == "B + UP" then 
-    move_head_pitch(-2)
+    move_head_pitch(-10)
 
  -- Move head down
   elseif line == "B + DOWN" then
-    move_head_pitch(2)
+    move_head_pitch(10)
 
  -- Move head right
   elseif line == "B + RIGHT" then
-    print("MOVE HEAD RIGHT .................... ")
-    move_head_yaw(-2)
+    move_head_yaw(-10)
 
  -- Move head left
   elseif line == "B + LEFT" then
-    move_head_yaw(2)
-  end
+    move_head_yaw(10)
+]]--  end
 
 Motion.event("standup")
 walk.set_velocity(unpack(targetvel));

@@ -14,7 +14,7 @@ require('Detection')
 
 comm_inited = false;
 enable_team = Config.vision.enable_team_broadcast or 0;
-vcm.set_camera_teambroadcast(enable_team);
+vcm.set_camera_teambroadcast(1);  -- changed from enable_team to 1
 vcm.set_camera_broadcast(0);
 --Now vcm.get_camera_teambroadcast() determines 
 --Whether we use wired monitoring comm or wireless team comm

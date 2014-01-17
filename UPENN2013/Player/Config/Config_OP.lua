@@ -21,11 +21,11 @@ dev = {};
 dev.body = 'OPBody'; 
 dev.camera = 'OPCam';
 dev.kinematics = 'OPKinematics';
-dev.ip_wired = '192.168.123.255';
-dev.ip_wired_port = 111111;
-dev.ip_wireless = '192.168.119.255'; --Our Router
+dev.ip_wired = '10.0.0.216';
+dev.ip_wired_port = 3838;
+dev.ip_wireless = '10.0.0.216'; --Our Router
 --dev.ip_wireless = '192.168..255'; --Our Router
-dev.ip_wireless_port = 54321;
+dev.ip_wireless_port = 2828;
 dev.game_control='OPGameControl';
 dev.team='TeamGeneral';
 dev.walk='AwesomeWalk'
@@ -39,11 +39,11 @@ speak.enable = false;
 
 -- Game Parameters
 game = {};
-game.teamNumber = 19;   --17 at RC12  --16 for GMU robots
+game.teamNumber = 16;   --17 at RC12  --16 for GMU robots
 
 --Default role: 0 for goalie, 1 for attacker, 2 for defender
 ball_shift={0,0};
-game.playerID = 1;
+game.playerID = 2;
 game.role = 1;  --Default role: attacker
 
 if (robotName=='lucy') then

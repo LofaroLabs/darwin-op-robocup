@@ -7,6 +7,8 @@ import time
 import cwiid
 import socket
 
+lastRecordedTime = 0
+
 def sendMessage(msg):
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     s.connect(('localhost', 8888))
@@ -78,7 +80,7 @@ def control_robot():
     button_to_check = None
     is_looking_new = True
     is_combined = False
-    thres = 0.1          # time to wait after a button was released
+    thres = 0.01          # time to wait after a button was released
     
     print "Connecting to wiimote..."
     
@@ -87,7 +89,8 @@ def control_robot():
     wd.rpt_mode  = cwiid.RPT_BTN
     
     while True:       
-        button_id = wd.state['buttons']    
+        button_id = wd.state['buttons']
+	global lastRecordedTime    
         if is_looking_new:
             if button_id != 0:
                 button_to_check = button_id
@@ -99,10 +102,14 @@ def control_robot():
                     buttonReleased(button_to_check)
                 is_looking_new = True
                 is_combined = False
+		lastRecordedTime = 0
                 time.sleep(thres)
                     
             elif button_id != button_to_check:
-                buttonCombined(button_id)
+		currentTime = int(round(time.time() * 1000))
+		if currentTime - lastRecordedTime > 200:
+		    buttonCombined(button_id)
+		    lastRecordedTime = int(round(time.time() * 1000))
                 is_combined = True
                 
         time.sleep(0.01)      

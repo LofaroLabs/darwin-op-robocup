@@ -13,7 +13,7 @@ while 1 do
 
     if not err then
 	mcm.set_walk_wii_message(line)
---	print(mcm.get_walk_wii_message())
+	print(mcm.get_walk_wii_message())
     end
     client:close()
 end

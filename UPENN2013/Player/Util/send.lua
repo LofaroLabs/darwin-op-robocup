@@ -1,7 +1,7 @@
 -- this will send a list formated as a csv to a particular ip,port
 
 local CommWired=require('MyComm');
-local IP ='10.0.0.213'
+local IP ='10.0.0.216'
 local PORT = '40002'
 CommWired.comm_connect(IP,PORT)-- connect
 print("Initiated connection")
