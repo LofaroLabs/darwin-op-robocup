@@ -1,4 +1,4 @@
-# Makefile used to build Webots files
+#  Makefile used to build Webots files
 
 TARGETS = all clean
 .PHONY: $(TARGETS)
