@@ -14,7 +14,6 @@ function toCSV(t)
 end
 local bot_id = Config.game.playerID;
 local team_id = Config.game.teamNumber;
---local id_concat = "," .. bot_id .. "," .. team_id .. "\n"; 
 local socket = require("socket")
 local server = assert(socket.bind('*', 40003))
 print("i am now listening to port 40003")
@@ -23,15 +22,13 @@ print("connection accepted")
 client:settimeout(10)
 local line, err = client:receive()
 while 1 do
-        local my_send_data = toCSV(wcm.get_pose()) .. id_concat;
+        local my_send_data = "pose," .. toCSV(wcm.get_pose());
         client:send(my_send_data);
         if (vcm.get_ball_detect() == 1) then
                 local ballx = wcm.get_ball_x();
                 local bally = wcm.get_ball_y();
-                local ball_position = "ball coordinates:" ..  ballx .. "," .. bally .. "\n";
+                local ball_position = "ball," ..  ballx .. "," .. bally .. "\n";
                 print(ball_position);
-                local strLength = string.len(ball_position)
-                client:send(strLength)
                 client:send(ball_position);
        end
        --ball not found stuff
