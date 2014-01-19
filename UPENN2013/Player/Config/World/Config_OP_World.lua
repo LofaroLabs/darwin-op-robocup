@@ -85,18 +85,18 @@ world.imuYaw = 1;
 
 -- default positions for our kickoff
 world.initPosition1={
-  {2.8,0},   --Goalie
+  {2.0,0},   --Goalie
   {0.5, 0}, --Attacker
-  {1.5,-1.25}, --Defender
+  {1.75,-1.0}, --Defender
   {0.5, 1}, --Supporter
 }
 -- default positions for opponents' kickoff
 -- Penalty mark : {1.2,0}
 world.initPosition2={
-  {2.8,0},   --Goalie
+  {2.0,0},   --Goalie
   {0.8, 0}, --Attacker
-  {1.5, -0.5}, --Defender
-  {1.75,1}, --Supporter
+  {1.75, -0.5}, --Defender
+  {1.0,1}, --Supporter
 }
 
 -- default positions for dropball
@@ -104,7 +104,7 @@ world.initPosition2={
 world.initPosition3={
   {2.0,0},   --Goalie
   {0.5,0}, --Attacker
-  {1.5,-1.5}, --Defender
+  {1.75,-1.0}, --Defender
   {0.5,1.0}, --Supporter
 }
 
