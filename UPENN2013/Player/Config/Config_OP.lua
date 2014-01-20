@@ -44,7 +44,7 @@ game.teamNumber = 16;   --17 at RC12  --16 for GMU robots
 --Default role: 0 for goalie, 1 for attacker, 2 for defender
 ball_shift={0,0};
 game.playerID = 2;
-game.role = 1;  --Default role: attacker
+game.role = 2;  --Default role: attacker
 
 if (robotName=='lucy') then
   game.playerID = 1; 

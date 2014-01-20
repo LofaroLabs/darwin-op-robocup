@@ -2,6 +2,7 @@ module(... or "", package.seeall)
 
 require('init')
 require('wcm')
+require('vcm')
 require('send')
 require('Config')
 local numParticles = 200; --let's only print 100 particles
@@ -22,7 +23,19 @@ while true do
 		--print(particle_send);
                 send_local_data(particle_send);
 	end
-        --local send_particle_data = 
+	
+	if (vcm.get_ball_detect() == 1) then 	
+		local ballx = wcm.get_ball_x();
+		local bally = wcm.get_ball_y();
+		local ball_position = "ball coordinates:" ..  ballx .. "," .. bally .. "\n";
+		print(send_local_data(ball_position));
+		send_local_data(ball_position);
+	else
+		local ball_not_found = "ball not found";
+		print(send_local_data(ball_not_found));
+		send_local_data(ball_not_found);
+	end
+ 
         unix.usleep((.5)*(1E6));
    
 end

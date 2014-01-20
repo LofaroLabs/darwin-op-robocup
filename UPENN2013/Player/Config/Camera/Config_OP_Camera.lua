@@ -52,7 +52,7 @@ camera.param[4] = {key='gain',          val={0}};
 -- 3000-9000 produce light spectrums which shift to contain more orange and blue wavelengths,respectively
 camera.param[5] = {key='white balance temperature', val={70}};
 camera.param[6] = {key='sharpness',     val={191}};
-camera.param[7] = {key='exposure (absolute)',      val={538}};
+camera.param[7] = {key='exposure (absolute)',      val={1001}};
 
 --camera.lut_file = 'lut_low_contrast_pink_n_green.raw';
 --camera.lut_file = 'grasp_low_contrast_1643_samarth.raw';
