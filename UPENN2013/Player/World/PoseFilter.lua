@@ -93,25 +93,22 @@ function initialize_manual_placement(p0, dp)
 end
 
 function initialize_unified(p0,p1,dp)
-  init_override = Config.world.init_override or 0;
-  if init_override == 1 then --High kick challenge
-    for i=1,n do
-      xp[i]=0;
-      yp[i]=0;
-      ap[i]=5*math.pi/180  * (math.random()-.5);
-    end
-    wp = vector.zeros(n);
-    return;
-  end
+  print("@@@i am reinitializing!!") 
   --Particle initialization for the same-colored goalpost
   --Half of the particles at p0
   --Half of the particles at p1
+--  xp = vector.zeros(n);
+--  yp = vector.zeros(n);
+--  ap = vector.zeros(n);
+--  wp = vector.zeros(n);
   p0 = p0 or {0, 0, 0};
   p1 = p1 or {0, 0, 0};
   --Low spread  
   dp = dp or {.15*xMax, .15*yMax, math.pi/6};
 
   for i=1,n/2 do
+    print("all the things " .. i .. " was: " .. xp[i])
+    print("i+100: " .. xp[i+n/2])   
     xp[i]=p0[1]+dp[1]*(math.random()-.5); 
     yp[i]=p0[2]+dp[2]*(math.random()-.5);
     ap[i]=p0[3]+dp[3]*(math.random()-.5);

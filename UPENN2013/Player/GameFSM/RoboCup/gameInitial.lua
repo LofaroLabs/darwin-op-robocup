@@ -11,8 +11,8 @@ require('unix')
 require('gcm')
 require('BodyFSM')
 require('HeadFSM')
-
-
+--require('PoseFilter')
+--require('World')
 t0 = 0;
 timeout = 1.0;
 
@@ -42,7 +42,8 @@ function update()
   elseif (state == 4) then
     return 'finished';
   end
-
+  --World.init_particles();
+  --PoseFilter.initialize_unified({-1.1,-1.7,0},{-1.1,1.7,0},{.5,.5,math.pi})
   -- if we have not recieved game control packets then left bumper switches team color
   if (unix.time() - gcm.get_game_last_update() > 10.0) then
     if (Body.get_change_team() == 1) then
