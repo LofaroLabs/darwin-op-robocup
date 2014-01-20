@@ -86,6 +86,7 @@ function init_particles()
   if (useSoundLocalization > 0) then
     SoundFilter.reset();
   end
+  update_shm();
 end
 
 function entry()
@@ -178,7 +179,11 @@ end
 
 
 function update_vision()
-
+  --added by David to re initialize particles in initial game state
+  local state = gcm.get_game_state();
+  if(state==0) then -- if in initial
+     init_particles();
+  end
   -- only add noise while robot is moving
   if count % cResample == 0 then
     PoseFilter.resample();
