@@ -386,7 +386,7 @@ int v4l2_read_frame() {
     switch (errno) {
       case EAGAIN:
         // Debug line
-        //fprintf(stdout, "no frame available\n");
+        fprintf(stdout, "no frame available\n");
         return -1;
       case EIO:
         // Could ignore EIO
