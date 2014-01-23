@@ -12,6 +12,9 @@ robot = shm_robot(teamNumber, playerID);
 ncamera = 1; %robot.vcmCamera.get_ncamera();
 
 for i=1:100
+  if(mod(i,10)==1)
+     fprintf('Taking picture %d...\n',i); 
+  end
   tic;
   r_mon=robot.get_monitor_struct();
   yuyv_type = r_mon.yuyv_type;

@@ -9,7 +9,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
-import java.awt.image.RenderedImage;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -22,7 +21,6 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.NoSuchElementException;
-import java.util.TreeSet;
 
 import javax.imageio.ImageIO;
 import javax.swing.AbstractButton;
@@ -128,10 +126,6 @@ public class CalibrateDisplay {
 			newY=Math.max(0,newY);
 			newY=Math.min(newY,icon.getIconHeight());
 			Image img=icon.getImage();
-			//BufferedImage subimage = new BufferedImage(img.getWidth(null), img.getHeight(null), BufferedImage.TYPE_INT_RGB);
-			//Graphics2D bGr = subimage.createGraphics();
-			//bGr.drawImage(img, 0, 0, null);
-			//bGr.dispose();
 			int width=Math.max(1,Math.abs(newX-x));
 			int height=Math.max(1,Math.abs(newY-y));
 			x=Math.min(x,newX);
@@ -160,7 +154,6 @@ public class CalibrateDisplay {
 					pixelValues.add(to16bit(subimage.getRGB(x,y)));
 				}
 			}
-			System.out.println("Pixel size:"+pixelValues.size());
 			if(adding){
 			for(int x=0;x<data.size();x++){
 				if(x==index){
@@ -204,7 +197,7 @@ public class CalibrateDisplay {
 		Graphics2D bGr = result.createGraphics();
 		bGr.drawImage(img, 0, 0, null);
 		bGr.dispose();
-		for(int i=0;i<data.size();i++){//HashSet<Integer> set:data){
+		for(int i=0;i<data.size();i++){
 			HashSet<Integer> set=data.get(i);
 			for(int x=0;x<result.getWidth();x++){
 				for(int y=0;y<result.getHeight();y++){
@@ -278,12 +271,10 @@ public class CalibrateDisplay {
 			//Orange=1
 			//Green=8
 			//Black=0
-			colorMap.put(0,16);//Integer.parseInt(txt)); 
+			colorMap.put(0,16);
 			colorMap.put(1,2);
-			colorMap.put(2,1);//Integer.parseInt(txt));//0(Black));
-			colorMap.put(3,8);//Integer.parseInt(txt));//3(Blue));
-			//ArrayList<TreeSet<Integer>> stuff = new ArrayList<TreeSet<Integer>>(4);//
-			//TreeSet<Integer> test = new TreeSet<Integer>(data.get(0));
+			colorMap.put(2,1);
+			colorMap.put(3,8);
 			try {
 				byte[] output = new byte[(int) Math.pow(2,18)];
 				for(int b=0;b<output.length;b++){
@@ -313,7 +304,6 @@ public class CalibrateDisplay {
 		}
 		public void actionPerformed(ActionEvent arg0) {
 			imageIndex+=delta;
-			System.out.println(imageIndex);
 			try {
 				makeImage();
 				frame.revalidate();
@@ -326,16 +316,13 @@ public class CalibrateDisplay {
 			imageIndex+=imageLocs.length;
 		else
 			imageIndex=imageIndex%imageLocs.length;
-		System.out.println(imageLocs[imageIndex]);
 		BufferedImage read=ImageIO.read(imageLocs[imageIndex]);
-		//ImageIO.write(read,"jpg",new File("getOutput.jpg"));
 		Image tem=read.getScaledInstance(480, 320,  java.awt.Image.SCALE_SMOOTH);
 		read=new BufferedImage(480,320,BufferedImage.TYPE_INT_RGB);
 		read.getGraphics().drawImage(tem,0,0,null);
 		YUV=read;
 		read=ycbcr2rgb(read);
 		tem=read.getScaledInstance(480, 320,  java.awt.Image.SCALE_SMOOTH);
-		//ImageIO.write(read,"jpg",new File("scaleOutput.jpg"));
 		ImageIcon temp=new ImageIcon(tem);
 		if(showing){
 			setImage(temp);
@@ -396,7 +383,7 @@ public class CalibrateDisplay {
 		
 	}
 	private void makeColors(String[] colorNames) {
-		colors= new ButtonGroup();// new JButton[colorNames.length];
+		colors= new ButtonGroup();
 		for(int i=0;i<colorNames.length;i++){
 			colors.add(new JRadioButton(colorNames[i]));
 		}
@@ -442,4 +429,27 @@ public class CalibrateDisplay {
 
 		return rgb;
 	}
+	public static void main(String[] args) throws Exception{
+		String[] colorNames=getColors();
+		File[] images = getImages();
+		new CalibrateDisplay(colorNames,images);
+	}
+
+	private static String[] getColors() {
+		return new String[]{"White","Yellow","Orange","Green"};
+	}
+
+	private static File[] getImages() throws IOException {
+	    JFileChooser chooser = new JFileChooser(System.getProperty("user.dir"));
+	    chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+	    chooser.setDialogTitle("Select calibration images directory");
+	    int returnVal = chooser.showOpenDialog(null);
+	    if(returnVal == JFileChooser.APPROVE_OPTION) {
+	    	File folder =chooser.getSelectedFile();
+	    	File[] listOfFiles = folder.listFiles();
+	    	return listOfFiles;
+	    }
+	    return null;
+	}
 }
+
