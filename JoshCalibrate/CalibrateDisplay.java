@@ -4,8 +4,11 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.Image;
+import java.awt.KeyEventDispatcher;
+import java.awt.KeyboardFocusManager;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
@@ -35,6 +38,7 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.JRadioButton;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
@@ -47,21 +51,24 @@ public class CalibrateDisplay {
 	private ButtonGroup colors,modes;
 	private JButton select,show;
 	private JButton prev,next;
-	//private enum MODE {NONE,ADD,REMOVE,SHOW}
 	private boolean adding=true;
 	private boolean showing=true;
-	//private MODE mode;
 	private ImageIcon icon;
 	private BufferedImage YUV;
 	private JLabel label;
 	private File[] imageLocs;
 	private String[] colorNames;
 	private ArrayList<HashSet<Integer>> data;
+	private ArrayList<HashSet<Integer>> undoData;
+	private ArrayList<HashSet<Integer>> redoData;
+	private boolean redoable=false;
 	private int imageIndex;
+	private int view_x,view_y,view_w,view_h;
 	private final int[] protoColors={Color.WHITE.getRGB(),Color.YELLOW.getRGB(),Color.ORANGE.getRGB(),Color.GREEN.getRGB()};// = [];
 	public CalibrateDisplay(String[] colorNames,File[] imageLocs) throws Exception {
 		this.imageLocs=imageLocs;
 		this.colorNames=colorNames;
+
 		data=new ArrayList<HashSet<Integer>>();
 		for(int i=0;i<colorNames.length;i++)
 			data.add(new HashSet<Integer>());
@@ -74,7 +81,6 @@ public class CalibrateDisplay {
 		//Build the first menu.
 		menu = new JMenu("File");
 		menuBar.add(menu);
-
 		//a group of JMenuItems
 		JMenuItem loadFile = new JMenuItem("Load file");
 		menu.add(loadFile);
@@ -103,34 +109,124 @@ public class CalibrateDisplay {
 		select.addActionListener(new selectListener());
 		label.addMouseListener(new cropMouseListener());
 		show.addActionListener(new showListener());
+        KeyboardFocusManager manager = KeyboardFocusManager.getCurrentKeyboardFocusManager();
+        manager.addKeyEventDispatcher(new undoRedoDispatcher());
+	}
+	
+	private class ZoomPopUp extends JPopupMenu {
+	    JMenuItem zoomIn;
+	    JMenuItem zoomOut;
+	    int xcoord;
+	    int ycoord;
+	    public ZoomPopUp(int xcoord,int ycoord){
+	    	this.xcoord=xcoord;
+	    	this.ycoord=ycoord;
+	        zoomIn = new JMenuItem("Zoom in");
+	        zoomIn.addActionListener(new zoomInListener());
+	        zoomOut = new JMenuItem("Zoom out");
+	        zoomOut.addActionListener(new zoomOutListener());
+	        add(zoomIn);
+	        add(zoomOut);
+	    }
+	    
+	    private class zoomInListener implements ActionListener{
+			public void actionPerformed(ActionEvent press) {
+				// FIXME Auto-generated method stub
+				int new_w=view_w/2;
+				int new_h=view_h/2;
+				int new_x=xcoord-view_w/2;
+				int new_y=ycoord-view_h/2;
+				new_x=Math.max(0,new_x);
+				new_y=Math.max(0,new_y);
+				if(new_x+new_w>480){
+					new_w-=(new_x+new_w-480);
+				}
+				if(new_y+new_h>320){
+					new_h-=(new_y+new_h-320);
+				}
+				if(new_h>0&&new_w>0){
+					view_w=new_w;
+					view_h=new_h;
+					view_x=new_x;
+					view_y=new_y;
+				}
+				System.out.println(view_w+" "+view_h+" "+view_x+" "+view_y);
+				try {
+					makeImage();
+				} catch (IOException e) {}
+			}
+		}
+	    
+	    private class zoomOutListener implements ActionListener{
+			public void actionPerformed(ActionEvent press) {
+				// FIXME Auto-generated method stub
+				int new_w=view_w*2;
+				int new_h=view_h*2;
+				int new_x=view_x-view_w/4;
+				int new_y=view_y-view_h/4;
+				new_x=Math.max(0,new_x);
+				new_y=Math.max(0,new_y);
+				if(new_x+new_w>480){
+					new_w-=(new_x+new_w-480);
+				}
+				if(new_y+new_h>320){
+					new_h-=(new_y+new_h-320);
+				}
+				if(new_h>0&&new_w>0){
+					view_w=new_w;
+					view_h=new_h;
+					view_x=new_x;
+					view_y=new_y;
+				}
+				try {
+					makeImage();
+				} catch (IOException e) {
+				}
+			}
+		}
+	    
 	}
 	
 	private class cropMouseListener implements MouseListener{
 
-		public void mouseClicked(MouseEvent arg0) {}
+		public void mouseClicked(MouseEvent click) {}
 		public void mouseEntered(MouseEvent arg0) {}
 		public void mouseExited(MouseEvent arg0) {}
 		int x,y;
 		@Override
 		public void mousePressed(MouseEvent press) {
+			if(press.getButton()==MouseEvent.BUTTON1){
 			x=press.getX();
 			y=press.getY();
+			}
+			System.out.println(press.getButton());
+			if(press.getButton()==MouseEvent.BUTTON3){
+		        ZoomPopUp menu = new ZoomPopUp(press.getX(),press.getY());
+		        menu.show(press.getComponent(), press.getX(), press.getY());
+		        menu.setVisible(true);
+			}
 		}
 
+		@SuppressWarnings("unchecked")
 		@Override
 		public void mouseReleased(MouseEvent release) {
+			if(release.getButton()==MouseEvent.BUTTON1){
+			redoable=false;
+			undoData=new ArrayList<HashSet<Integer>>();//) data.clone();
+			for(HashSet<Integer> hash:data){
+				undoData.add((HashSet<Integer>) hash.clone());
+			}
 			int newX=release.getX();
 			newX=Math.max(0,newX);
 			newX=Math.min(newX,icon.getIconWidth());
 			int newY=release.getY();
 			newY=Math.max(0,newY);
 			newY=Math.min(newY,icon.getIconHeight());
-			Image img=icon.getImage();
 			int width=Math.max(1,Math.abs(newX-x));
 			int height=Math.max(1,Math.abs(newY-y));
 			x=Math.min(x,newX);
 			y=Math.min(y,newY);
-			BufferedImage subimage=YUV.getSubimage(x,y,width,height);
+			BufferedImage subimage=toBufferedImage(YUV.getSubimage(view_x,view_y,view_w,view_h).getScaledInstance(480, 320,  java.awt.Image.SCALE_SMOOTH)).getSubimage(x,y,width,height);
 			//Get index of color currently selected.
 			Enumeration<AbstractButton> colorList=colors.getElements();
 			int index=0;
@@ -144,7 +240,9 @@ public class CalibrateDisplay {
 				try {
 					makeImage();
 				} catch (IOException e) {}
+			}
 		}
+
 		private void addpixelsToSet(BufferedImage subimage, int index) {
 			//We're given a bufferedImage and we want to take the pixels in it, get the set of unique 18-bit color codes present in the image,
 			//add them to the set specified by index and remove it from the other sets if necessary.
@@ -169,6 +267,13 @@ public class CalibrateDisplay {
 			return;
 		}
 	}
+	
+	private BufferedImage toBufferedImage(Image im) {
+		BufferedImage result=new BufferedImage(480,320,BufferedImage.TYPE_INT_RGB);
+		result.getGraphics().drawImage(im,0,0,null);
+		return result;
+	}
+	
 	private class selectListener implements ActionListener{
 		public void actionPerformed(ActionEvent e) {
 			//Change the label.
@@ -189,26 +294,6 @@ public class CalibrateDisplay {
 				makeImage();
 			} catch (IOException e1) {}
 		}
-	}
-	
-	private BufferedImage getShowListenerImage(){
-		Image img=icon.getImage();
-		BufferedImage result = new BufferedImage(img.getWidth(null), img.getHeight(null), BufferedImage.TYPE_INT_RGB);
-		Graphics2D bGr = result.createGraphics();
-		bGr.drawImage(img, 0, 0, null);
-		bGr.dispose();
-		for(int i=0;i<data.size();i++){
-			HashSet<Integer> set=data.get(i);
-			for(int x=0;x<result.getWidth();x++){
-				for(int y=0;y<result.getHeight();y++){
-					int temp=to16bit(YUV.getRGB(x,y));
-					if(set.contains(temp)){
-						result.setRGB(x,y,protoColors[i]);
-					}
-				}
-			}
-		}
-		return result;
 	}
 	
 	private class loadListener implements ActionListener{
@@ -248,6 +333,7 @@ public class CalibrateDisplay {
 		}
 		
 	}
+	
 	private class exportListener implements ActionListener{
 		//These are 8-bit numbers
 		//0=Orange
@@ -297,7 +383,6 @@ public class CalibrateDisplay {
 	}
 	
 	private class changeImageListener implements ActionListener{
-
 		int delta;
 		private changeImageListener(int delta){
 			this.delta=delta;
@@ -311,7 +396,57 @@ public class CalibrateDisplay {
 		}
 	}
 	
+    private class undoRedoDispatcher implements KeyEventDispatcher {
+        @Override
+        public boolean dispatchKeyEvent(KeyEvent key) {
+        	if(key.getID()==KeyEvent.KEY_PRESSED){
+        		if (!redoable&&(key.getKeyCode() == KeyEvent.VK_Z) && ((key.getModifiers() & KeyEvent.CTRL_MASK) != 0)) {
+        			redoData=data;
+                	data=undoData;
+                	redoable=true;
+            	}
+            
+            	if (redoable&&(key.getKeyCode() == KeyEvent.VK_Y) && ((key.getModifiers() & KeyEvent.CTRL_MASK) != 0)) {
+            		undoData=data;
+                	data=redoData;
+                	redoable=false;
+            	}
+            	try {
+					makeImage();
+				} catch (IOException e) {}
+        	}
+            return true;
+        }
+    }
+
+	private BufferedImage getShowListenerImage(){
+		Image img=icon.getImage();
+		BufferedImage result = new BufferedImage(img.getWidth(null), img.getHeight(null), BufferedImage.TYPE_INT_RGB);
+		Graphics2D bGr = result.createGraphics();
+		bGr.drawImage(img, 0, 0, null);
+		bGr.dispose();
+		BufferedImage backing=toBufferedImage(YUV.getSubimage(view_x,view_y,view_w,view_h).getScaledInstance(480, 320,  java.awt.Image.SCALE_SMOOTH));
+		for(int i=0;i<data.size();i++){
+			HashSet<Integer> set=data.get(i);
+			for(int x=0;x<result.getWidth();x++){
+				for(int y=0;y<result.getHeight();y++){
+					int temp=to16bit(backing.getRGB(x,y));
+					if(set.contains(temp)){
+						result.setRGB(x,y,protoColors[i]);
+					}
+				}
+			}
+		}
+		return result;
+	}
+	
 	public ImageIcon getImage() throws IOException{
+		if(YUV==null){
+			view_x=0;
+			view_y=0;
+			view_w=480;
+			view_h=320;
+		}
 		if(imageIndex<0)
 			imageIndex+=imageLocs.length;
 		else
@@ -322,7 +457,7 @@ public class CalibrateDisplay {
 		read.getGraphics().drawImage(tem,0,0,null);
 		YUV=read;
 		read=ycbcr2rgb(read);
-		tem=read.getScaledInstance(480, 320,  java.awt.Image.SCALE_SMOOTH);
+		tem=read.getSubimage(view_x,view_y,view_w,view_h).getScaledInstance(480, 320,  java.awt.Image.SCALE_SMOOTH);
 		ImageIcon temp=new ImageIcon(tem);
 		if(showing){
 			setImage(temp);
@@ -380,7 +515,6 @@ public class CalibrateDisplay {
 		show = new JButton("Hide labels");
 		modes.add(show);
 		modes.add(select);
-		
 	}
 	private void makeColors(String[] colorNames) {
 		colors= new ButtonGroup();
@@ -389,20 +523,12 @@ public class CalibrateDisplay {
 		}
 	}
 	private int to16bit(int rgb) {
-		//DEBUG This will almost certainly need to be changed for YUV.
 		Color c = new Color(rgb);
 		int red= c.getRed()>>2;
 		int green= c.getGreen()>>2;
 		int blue= c.getBlue()>>2;
 		int result=red<<12|green<<6|blue;
 		return result;
-	}
-	
-	private int yuyvto16bit(int yuyv){
-		int index = ((yuyv & 0xFC000000) >> 26) | // V
-			((yuyv & 0xFC00) >> 4) | // U
-	   		((yuyv & 0xFC) << 10); // Y
-		return index;
 	}
 	
 	private BufferedImage ycbcr2rgb(BufferedImage ycbcr){
@@ -452,4 +578,3 @@ public class CalibrateDisplay {
 	    return null;
 	}
 }
-
