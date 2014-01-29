@@ -12,6 +12,7 @@ robot = shm_robot(teamNumber, playerID);
 ncamera = 1; %robot.vcmCamera.get_ncamera();
 
 for i=1:100
+  pause(1);
   if(mod(i,10)==1)
      fprintf('Taking picture %d...\n',i); 
   end
