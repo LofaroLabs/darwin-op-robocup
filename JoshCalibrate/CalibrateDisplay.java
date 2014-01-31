@@ -60,6 +60,8 @@ public class CalibrateDisplay {
 	private String[] colorNames;
 	private ArrayList<HashSet<Integer>> data;
 	private ArrayList<HashSet<Integer>> undoData;
+	private ArrayList<ArrayList<HashSet<Integer>>> unredoData;
+	private int unredoIndex;
 	private ArrayList<HashSet<Integer>> redoData;
 	private boolean redoable=false;
 	private int imageIndex;
@@ -68,10 +70,12 @@ public class CalibrateDisplay {
 	public CalibrateDisplay(String[] colorNames,File[] imageLocs) throws Exception {
 		this.imageLocs=imageLocs;
 		this.colorNames=colorNames;
-
-		data=new ArrayList<HashSet<Integer>>();
+		unredoData=new ArrayList<ArrayList<HashSet<Integer>>>();
+		ArrayList<HashSet<Integer>> newdata= new ArrayList<HashSet<Integer>>();
 		for(int i=0;i<colorNames.length;i++)
-			data.add(new HashSet<Integer>());
+			newdata.add(new HashSet<Integer>());
+		setData(newdata);
+		unredoIndex=0;
 		frame = new JFrame();
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		panel =new JPanel();
@@ -114,7 +118,8 @@ public class CalibrateDisplay {
 	}
 	
 	private class ZoomPopUp extends JPopupMenu {
-	    JMenuItem zoomIn;
+		private static final long serialVersionUID = 1L;
+		JMenuItem zoomIn;
 	    JMenuItem zoomOut;
 	    int xcoord;
 	    int ycoord;
@@ -131,7 +136,6 @@ public class CalibrateDisplay {
 	    
 	    private class zoomInListener implements ActionListener{
 			public void actionPerformed(ActionEvent press) {
-				// FIXME Auto-generated method stub
 				int new_w=view_w/2;
 				int new_h=view_h/2;
 				int new_x=xcoord-view_w/2;
@@ -150,7 +154,6 @@ public class CalibrateDisplay {
 					view_x=new_x;
 					view_y=new_y;
 				}
-				System.out.println(view_w+" "+view_h+" "+view_x+" "+view_y);
 				try {
 					makeImage();
 				} catch (IOException e) {}
@@ -159,7 +162,6 @@ public class CalibrateDisplay {
 	    
 	    private class zoomOutListener implements ActionListener{
 			public void actionPerformed(ActionEvent press) {
-				// FIXME Auto-generated method stub
 				int new_w=view_w*2;
 				int new_h=view_h*2;
 				int new_x=view_x-view_w/4;
@@ -199,7 +201,6 @@ public class CalibrateDisplay {
 			x=press.getX();
 			y=press.getY();
 			}
-			System.out.println(press.getButton());
 			if(press.getButton()==MouseEvent.BUTTON3){
 		        ZoomPopUp menu = new ZoomPopUp(press.getX(),press.getY());
 		        menu.show(press.getComponent(), press.getX(), press.getY());
@@ -212,10 +213,6 @@ public class CalibrateDisplay {
 		public void mouseReleased(MouseEvent release) {
 			if(release.getButton()==MouseEvent.BUTTON1){
 			redoable=false;
-			undoData=new ArrayList<HashSet<Integer>>();//) data.clone();
-			for(HashSet<Integer> hash:data){
-				undoData.add((HashSet<Integer>) hash.clone());
-			}
 			int newX=release.getX();
 			newX=Math.max(0,newX);
 			newX=Math.min(newX,icon.getIconWidth());
@@ -252,18 +249,23 @@ public class CalibrateDisplay {
 					pixelValues.add(to16bit(subimage.getRGB(x,y)));
 				}
 			}
+			ArrayList<HashSet<Integer>> tempData=new ArrayList<HashSet<Integer>>();
+			for(HashSet<Integer> thing :data){
+				tempData.add((HashSet<Integer>) thing.clone());
+			}
 			if(adding){
-			for(int x=0;x<data.size();x++){
+			for(int x=0;x<tempData.size();x++){
 				if(x==index){
-					data.get(x).addAll(pixelValues);
+					tempData.get(x).addAll(pixelValues);
 				}
 				else{
-					data.get(x).removeAll(pixelValues);
+					tempData.get(x).removeAll(pixelValues);
 				}
 			}
 			}
 			else
-				data.get(index).removeAll(pixelValues);
+				tempData.get(index).removeAll(pixelValues);
+			setData(tempData);
 			return;
 		}
 	}
@@ -308,9 +310,9 @@ public class CalibrateDisplay {
 		    	Path path = Paths.get(fname);
 		    	try {
 		    		byte[] bytes = Files.readAllBytes(path);
-		    		data=new ArrayList<HashSet<Integer>>();
+		    		ArrayList<HashSet<Integer>> newdata=new ArrayList<HashSet<Integer>>();
 		    		for(int i=0;i<4;i++)
-		    			data.add(new HashSet<Integer>());
+		    			newdata.add(new HashSet<Integer>());
 		    		HashMap<Integer,Integer>colorMap= new HashMap<Integer, Integer>();
 		    		colorMap.put(16,0);
 		    		colorMap.put(2,1);
@@ -320,9 +322,10 @@ public class CalibrateDisplay {
 		    			int val=bytes[b];
 		    			if(val!=0){
 		    				int index=colorMap.get(val);
-		    				data.get(index).add(b);
+		    				newdata.get(index).add(b);
 		    			}
 		    		}
+		    		setData(newdata);
 		    		JOptionPane.showMessageDialog(null,"Finished loading.");
 		    		if(showing)
 		    			makeImage();
@@ -343,13 +346,12 @@ public class CalibrateDisplay {
 		//4=White
 		//5,6,8=Explicitly nothing (Default)
 		public void actionPerformed(ActionEvent e) {
-			//FIXME This is so suboptimal. 
 		    JFileChooser chooser = new JFileChooser(System.getProperty("user.dir"));
 		    FileNameExtensionFilter filter = new FileNameExtensionFilter("RAW colortables", "raw");
 		        chooser.setFileFilter(filter);
 		    int returnVal = chooser.showSaveDialog(null);
 		    if(returnVal == JFileChooser.APPROVE_OPTION) {
-		    	String fname=chooser.getSelectedFile().toString();
+		    	File fname=chooser.getSelectedFile();
 			HashMap<Integer, Integer> colorMap = new HashMap<Integer, Integer>();
 			//{"White","Yellow","Orange","Green"};
 			//White=16
@@ -361,6 +363,7 @@ public class CalibrateDisplay {
 			colorMap.put(1,2);
 			colorMap.put(2,1);
 			colorMap.put(3,8);
+			//Orange,Yellow,Green,White
 			try {
 				byte[] output = new byte[(int) Math.pow(2,18)];
 				for(int b=0;b<output.length;b++){
@@ -399,23 +402,21 @@ public class CalibrateDisplay {
     private class undoRedoDispatcher implements KeyEventDispatcher {
         @Override
         public boolean dispatchKeyEvent(KeyEvent key) {
-        	if(key.getID()==KeyEvent.KEY_PRESSED){
-        		if (!redoable&&(key.getKeyCode() == KeyEvent.VK_Z) && ((key.getModifiers() & KeyEvent.CTRL_MASK) != 0)) {
-        			redoData=data;
-                	data=undoData;
-                	redoable=true;
+        	if(key.getID()==KeyEvent.KEY_PRESSED&& ((key.getModifiers() & KeyEvent.CTRL_MASK) != 0)){
+        		if(unredoIndex!=0&&(key.getKeyCode() == KeyEvent.VK_Z) ||unredoIndex+1<unredoData.size()&&(key.getKeyCode() == KeyEvent.VK_Y) ){
+        		if (key.getKeyCode() == KeyEvent.VK_Z) {
+        			undoChanges();
             	}
-            
-            	if (redoable&&(key.getKeyCode() == KeyEvent.VK_Y) && ((key.getModifiers() & KeyEvent.CTRL_MASK) != 0)) {
-            		undoData=data;
-                	data=redoData;
-                	redoable=false;
+        		if (key.getKeyCode() == KeyEvent.VK_Y) {
+            		redoChanges();
             	}
             	try {
 					makeImage();
+					return true;
 				} catch (IOException e) {}
+        		}
         	}
-            return true;
+            return false;
         }
     }
 
@@ -529,6 +530,31 @@ public class CalibrateDisplay {
 		int blue= c.getBlue()>>2;
 		int result=red<<12|green<<6|blue;
 		return result;
+	}
+	
+	private void setData(ArrayList<HashSet<Integer>> newData){
+		while(unredoData.size()>unredoIndex+1){
+			unredoData.remove(unredoData.size() - 1);
+			System.out.println(unredoData.size()+" Thing "+unredoIndex);
+		}
+		unredoData.add(newData);
+		undoData=data;
+		data=newData;
+		unredoIndex++;
+		System.out.println("Do "+unredoIndex);
+	}
+	
+	private void undoChanges(){
+		redoable=true;
+		unredoIndex--;
+		data=unredoData.get(unredoIndex);
+		System.out.println("Undo "+unredoIndex);
+	}
+	
+	private void redoChanges(){
+		unredoIndex++;
+		data=unredoData.get(unredoIndex);
+		System.out.println("Redo "+unredoIndex);
 	}
 	
 	private BufferedImage ycbcr2rgb(BufferedImage ycbcr){
