@@ -84,7 +84,7 @@ function check_approach_type()
   end
 
 --  if role==0 then
-  if false then
+--[[  if false then
     --Goalie always approach the ball directly without turning
     position.posCalc();
     pose=wcm.get_pose();
@@ -119,7 +119,7 @@ function check_approach_type()
     wcm.set_kick_angle(kickAngle);
 
     check_angle = 1; --CHECK angle during approaching
-  end
+  end--]]
 
   print(string.format("Approach: kick dir:%d type:%d angle:%d",
 	kick_dir,kick_type,kick_angle*180/math.pi ))

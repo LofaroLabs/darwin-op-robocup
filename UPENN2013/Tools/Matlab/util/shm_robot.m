@@ -324,7 +324,10 @@ global MONITOR %for sending the webots check information
 
     %yuyv type info
       r.yuyv_type = h.vcmCamera.get_yuyvType();
- 
+      fprintf('Hello World%i\n', 5);%r.yuyv_type); 
+
+
+
     %Image FOV boundary
           
       fovC=h.vcmImage.get_fovC();
@@ -505,8 +508,12 @@ global MONITOR %for sending the webots check information
                          'hYB',horizonBy,...
                          'hXA',horizonAx,...
                          'hXB',horizonBx);
-    catch
+    catch ME
+	callerStack = {ME.stack.name};
+	disp(callerStack);
+	%print(callerStack);
     end 
+
   end
 
   function yuyv = get_yuyv()  

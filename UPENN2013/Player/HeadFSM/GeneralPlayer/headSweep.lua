@@ -35,7 +35,7 @@ function update()
 	dist*math.cos(yaw0),dist*math.sin(yaw0), height);
 
   Body.set_head_command({yaw, pitch});
-
+--  print(_NAME..' update with command (yaw,pitch) ('..yaw..', '..pitch..')');
   eta = wcm.get_team_my_eta();
   if eta<min_eta_look and eta>0 then
     return 'done';

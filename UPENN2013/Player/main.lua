@@ -104,6 +104,7 @@ function update()
       BodyFSM.entry();
       HeadFSM.entry();
       GameFSM.entry();
+      
       print("hey i did all the entry stuff (head,game,body.entry)");
       if( webots ) then
         BodyFSM.sm:add_event('button');
