@@ -83,12 +83,40 @@ myFunctions["setServoHardness"] = function (args, client)
 
 end
 
+co = coroutine.create(function (args, client)
+	-- Send the features to horde via the client
+	-- args may contain the amount of time to wait between sending
+	
+)
+myFunctions["StartSending"] = function (args, client)
+	coroutine.resume(co,args, client);
+end
+
+myFunctions["StopSending"] = function (args, client)
+	coroutine.yield(co)
+end
 
 
 myFunctions["disconnect"] = function (args, client)
 	client:close();
 	connected = false;
 end
+
+
+myFunctions["doHordeMotion"] = function(args, client)
+
+	hordeFunctions[args.action](args.args, client);
+
+end
+
+hordeFunctions = {}
+
+hordeFunctions["headMotion"] = function(args, client)
+
+end
+
+
+
 
 function update(servData, client)
   count = count + 1;
@@ -111,13 +139,13 @@ end
 --HeadFSM.sm:set_state('headStart');
 --Body.set_head_hardness(.5); -- required to at least set the hardness in order for motions to work
 leftArmMotion = math.pi/180*vector.new({60,30,-30});
-Body.set_larm_hardness({0.5,0.5,0.5});
-Body.set_larm_command(leftArmMotion);
+--Body.set_larm_hardness({0.5,0.5,0.5});
+--Body.set_larm_command(leftArmMotion);
 function inspect(key, value)
 	table.foreach(value,print)
 end
 
-table.foreach(Body.get_sensor_data(),inspect)
+--table.foreach(Body.get_sensor_data(),inspect)
 
 
 if( darwin ) then
@@ -131,6 +159,9 @@ if( darwin ) then
   local client = server:accept()
   connected = true;
   print("connected")
+  
+
+
   while connected do
     --client:settimeout(10)
     local line, err = client:receive()
