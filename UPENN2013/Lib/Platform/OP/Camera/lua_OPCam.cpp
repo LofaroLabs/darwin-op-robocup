@@ -9,6 +9,7 @@
 #include "timeScalar.h"
 #include "v4l2.h"
 #include <lua.hpp>
+#include <unistd.h>
 
 typedef struct {
   int count;
@@ -80,6 +81,70 @@ static int lua_get_image(lua_State *L) {
   return 1;
 }
 
+static int lua_take_save_images(lua_State *L) {
+
+	int imageSize = (v4l2_get_height() * v4l2_get_width())*2;
+        printf("Image width: %d height: %d",v4l2_get_width(), v4l2_get_height());
+	static int count = 0;
+	int numPics = 10;
+	uint32 * pics[numPics];
+        for (count = 0; count < numPics; count++) {
+                printf("taking image #%d\n",count);
+		int buf_num = v4l2_read_frame();
+                pics[count] = (uint32*)v4l2_get_buffer(buf_num, NULL);
+		sleep(1);
+	}
+	int i = 0;
+	printf("saving images\n");
+	for (i = 0; i < numPics; i++)
+	{
+		printf("on image %d\n", i);
+                FILE *ptr_myfile;
+		char path[100];
+		sprintf(path, "/home/darwin/%dtest.bin", i);
+		const char* cpath = path;
+                ptr_myfile=fopen(cpath, "wb");
+		printf("Opened image file %dtest.bin\n", i);
+		fwrite(pics[i], 4, imageSize, ptr_myfile);
+		printf("Wrote file");
+		fclose(ptr_myfile);
+		printf("closed file");
+        }
+
+
+        // Once our get_image returns, set the camera status
+        cameraStatus->count = count;
+        cameraStatus->time = time_scalar();
+        cameraStatus->select = 0;
+
+        // Zeros for now
+        for (int ji = 0; ji < 20; ji++) {
+                cameraStatus->joint[ji] = 0;
+        }
+
+        return 1;
+}
+
+static int lua_save_image(lua_State *L) {
+  static int count = 0;
+  //start copy
+  FILE *ptr_myfile;
+  ptr_myfile=fopen("test.bin","wb");
+  const char* my_image = lua_tostring(L,1);
+  int i = 0;
+  for(i=0; i<100; i++)
+	printf("%08x\n",my_image[i]);
+  fwrite(&my_image, sizeof(9001), 1, ptr_myfile);
+  fclose(ptr_myfile); 
+  //end copy
+  //Increment the count
+  count++;
+
+  // Once our get_image returns, set the camera status
+  cameraStatus->count = count;
+  //lua_pushlightuserdata(L, "success");
+  return 1;
+}
 // Taken from the Naos
 // TODO: this is not really working super well...
 static int lua_camera_status(lua_State *L) {
@@ -117,6 +182,15 @@ static int lua_stop(lua_State *L){
   v4l2_close();
   return 1;
 }
+
+static int lua_small_init(lua_State *L) {
+	int res = 0;
+	v4l2_init(res);
+	cameraStatus = (CAMERA_STATUS *)malloc(sizeof(CAMERA_STATUS));// Allocate our camera statu
+	return 1;
+}
+
+
 
 static int lua_stream_on(lua_State *L){
   v4l2_stream_on();
@@ -183,7 +257,10 @@ static int lua_selected_camera(lua_State *L) {
 /* Lua Wrapper Requirements */
 static const struct luaL_Reg camera_lib [] = {
   {"get_image", lua_get_image},
+  {"save_image", lua_save_image},
+  {"take_save_images", lua_take_save_images}, 
   {"init", lua_init},
+  {"small_init", lua_small_init},
   {"stop",lua_stop},
   {"stream_on", lua_stream_on},
   {"stream_off", lua_stream_off},

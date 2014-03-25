@@ -27,7 +27,7 @@ package.path = cwd .. '/Motion/Walk/?.lua;' .. package.path;
 package.path = cwd .. '/Vision/?.lua;' .. package.path;
 package.path = cwd .. '/World/?.lua;' .. package.path;
 package.path = cwd .. '/Lib/json4lua-0.9.50/?/?.lua;' .. package.path
-
+require('init')
 require('unix')
 require('Config')
 require('shm')
@@ -36,6 +36,7 @@ require('vcm')
 require('gcm')
 require('wcm')
 require('mcm')
+--require('hcm')
 require('Speak')
 require('getch')
 require('Body')
@@ -51,10 +52,6 @@ smindex = 0;
 initToggle = true;
 
 -- main loop
-count = 0;
-lcount = 0;
-tUpdate = unix.time();
-connected = false;
 myFunctions = {}
 
 
@@ -84,18 +81,27 @@ myFunctions["setServoHardness"] = function (args, client)
 end
 
 co = coroutine.create(function (args, client)
+	if(args~=nil) then 
+		unix.usleep(args *1E6);
+	end
 	
---	client:send(json.encode(thedata));
+	features[1] = wcm.get_pose();
+	features[2] = vcm.get_ball_detect();
+	features[3] = wcm.get_ball_x();
+	features[4] = wcm.get_ball_y();
+	client:send(json.encode(features));
 	-- Send the features to horde via the client
 	-- args may contain the amount of time to wait between sending
 	
-)
+end )
 myFunctions["StartSending"] = function (args, client)
-	coroutine.resume(co,args, client);
+--	coroutine.resume(co,args, client);
+	wcm.set_horde_sendStatus("StartSending");
 end
 
 myFunctions["StopSending"] = function (args, client)
-	coroutine.yield(co)
+	--coroutine.yield(co)
+	wcm.set_horde_sendStatus("StopSending");	
 end
 
 
@@ -107,79 +113,54 @@ end
 
 myFunctions["doHordeMotion"] = function(args, client)
 
+
 	hordeFunctions[args.action](args.args, client);
 
 end
 
 hordeFunctions = {}
-
 hordeFunctions["headMotion"] = function(args, client)
-
 end
 
-
-
-
-function update(servData, client)
-  count = count + 1;
-  --Update battery info
-  wcm.set_robot_battery_level(Body.get_battery_level());
-  vcm.set_camera_teambroadcast(1); --Turn on wireless team broadcast
-	print("In update")
-	req = json.decode(servData)
-
-	print("Received action "..req.action);
-	myFunctions[req.action](req.args, client)
-    
-  Motion.update();
-  Body.update();
+hordeFunctions["walkForward"] = function(args,client)
+	BodyFSM.sm:set_state('bodyWalkForward');
 end
 
---package.path = cwd..'/HeadFSM/'..Config.fsm.head[smindex+1]..'/?.lua;'..package.path;
---require('HeadFSM')
---HeadFSM.entry();
---HeadFSM.sm:set_state('headStart');
---Body.set_head_hardness(.5); -- required to at least set the hardness in order for motions to work
-leftArmMotion = math.pi/180*vector.new({60,30,-30});
---Body.set_larm_hardness({0.5,0.5,0.5});
---Body.set_larm_command(leftArmMotion);
-function inspect(key, value)
-	table.foreach(value,print)
+hordeFunctions["gotoBall"] = function(args,client)
+	BodyFSM.sm:set_state('bodyGotoBall');
+end
+hordeFunctions["approachBall"] = function(args,client)
+        BodyFSM.sm:set_state('bodyApproach');
+end
+hordeFunctions["kickBall"] = function(args,client)
+        BodyFSM.sm:set_state('bodyKickGMU');
+end
+hordeFunctions["moveX"] = function(args,client)
+	BodyFSM.sm:set_state('bodyNull');
+	walk.set_velocity(.02,0,0);
 end
 
---table.foreach(Body.get_sensor_data(),inspect)
-
-
-if( darwin ) then
-  local tDelay = 0.005 * 1E6; -- Loop every 5ms
-
-
- -- setup the server
-  local socket = require("socket")
-  local server = assert(socket.bind("*", 40009))
-
-  local client = server:accept()
-  connected = true;
-  print("connected")
-  
-
-
-  while connected do
-    --client:settimeout(10)
-    local line, err = client:receive()
-    
-    if not err then
-      print(line);
-      update(line, client);
-    elseif err == "closed" then
-	print(err)
-	connected = false;
-    else
-	print(err)
-    end
-    --client:close()
-    
-    unix.usleep(tDelay);
-  end
+hordeFunctions["moveY"] = function(args,client)
+        BodyFSM.sm:set_state('bodyNull');
+        walk.set_velocity(.02,1,0);
 end
+
+hordeFunctions["moveTheta"] = function(args,client)
+        BodyFSM.sm:set_state('bodyNull');
+        walk.set_velocity(0,0,1);
+end
+hordeFunctions["stop"] = function(args,client)
+        BodyFSM.sm:set_state('bodyStop');
+       
+end
+hordeFunctions["StartSending"] = function (args, client)
+--      coroutine.resume(co,args, client);
+        wcm.set_horde_sendStatus("StartSending");
+end
+
+package.path = cwd..'/HeadFSM/'..Config.fsm.head[smindex+1]..'/?.lua;'..package.path;
+
+package.path = cwd..'/BodyFSM/'..Config.fsm.head[smindex+1]..'/?.lua;'..package.path;
+require('BodyFSM')
+require('HeadFSM')
 

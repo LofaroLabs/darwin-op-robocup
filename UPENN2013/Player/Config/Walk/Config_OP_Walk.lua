@@ -251,17 +251,17 @@ end
 walk.motionDef={};
 
 walk.motionDef["hurray1"]={
- {1.0,{40*math.pi/180, 20*math.pi/180, -140*math.pi/180},
+ {0.1,{40*math.pi/180, 20*math.pi/180, -140*math.pi/180},
         {40*math.pi/180,-20*math.pi/180,-140*math.pi/180}},
- {0.4,{-30*math.pi/180, 30*math.pi/180, -90*math.pi/180},
+ {0.4,{40*math.pi/180, 30*math.pi/180, -90*math.pi/180},
         {-30*math.pi/180,-30*math.pi/180,-90*math.pi/180}},
  {0.4,{40*math.pi/180, 20*math.pi/180, -140*math.pi/180},
         {40*math.pi/180,-20*math.pi/180,-140*math.pi/180}},
- {0.4,{-30*math.pi/180, 30*math.pi/180, -90*math.pi/180},
+ {0.4,{40*math.pi/180, 30*math.pi/180, -90*math.pi/180},
         {-30*math.pi/180,-30*math.pi/180,-90*math.pi/180}},
  {0.4,{40*math.pi/180, 20*math.pi/180, -140*math.pi/180},
         {40*math.pi/180,-20*math.pi/180,-140*math.pi/180}},
- {0.4,{-30*math.pi/180, 30*math.pi/180, -90*math.pi/180},
+ {0.4,{40*math.pi/180, 30*math.pi/180, -90*math.pi/180},
         {-30*math.pi/180,-30*math.pi/180,-90*math.pi/180}},
  {1.0,{90*math.pi/180, 8*math.pi/180,-40*math.pi/180},
         {90*math.pi/180, -8*math.pi/180,-40*math.pi/180}}

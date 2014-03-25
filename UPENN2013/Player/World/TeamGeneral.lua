@@ -98,7 +98,10 @@ tLastMessage = 0;
 
 
 function recv_msgs()
+  print("@!@!trying to receive messages");
+  
   while (Comm.size() > 0) do 
+    print("@!@!about to get the message.....");
     msg=Comm.receive();
     --Ball GPS Info hadling
     if msg and #msg==14 then --Ball position message
@@ -110,6 +113,7 @@ function recv_msgs()
       --    t = unpack_msg(msg);
       if t and (t.teamNumber) and (t.id) then
         tLastMessage = Body.get_time();
+        
         --Messages from upenn code
         --Keep all pose data for collison avoidance 
         if t.teamNumber ~= state.teamNumber then
@@ -122,9 +126,9 @@ function recv_msgs()
           t_poses[t.id]=Body.get_time();
         end
         --Is the message from our team?
-        if (t.teamNumber == state.teamNumber) and 
-          (t.id ~= playerID) then
+        if (t.teamNumber == state.teamNumber) and (t.id ~= playerID) then
           t.tReceive = Body.get_time();
+          print("@!@!deciding if message is from my team")
           t.labelB = {}; --Kill labelB information
           states[t.id] = t;
         end
@@ -213,6 +217,7 @@ function update()
 
   if (math.mod(count, 1) == 0) then --TODO: How often can we send team message?
     msg=serialization.serialize(state);
+    print("@!@!1 trying to send message now");
     Comm.send(msg, #msg);
     state.tReceive = Body.get_time();
     states[playerID] = state;
