@@ -82,30 +82,44 @@ static int lua_get_image(lua_State *L) {
 }
 
 static int lua_take_save_images(lua_State *L) {
-
 	int imageSize = (v4l2_get_height() * v4l2_get_width())*2;
-        printf("Image width: %d height: %d",v4l2_get_width(), v4l2_get_height());
+    printf("Image width: %d height: %d\n",v4l2_get_width(), v4l2_get_height());
 	static int count = 0;
 	int numPics = 10;
 	uint32 * pics[numPics];
-        for (count = 0; count < numPics; count++) {
-                printf("taking image #%d\n",count);
+    for (count = 0; count < numPics; count++) {
+		printf("taking image #%d\n",count);
 		int buf_num = v4l2_read_frame();
-                pics[count] = (uint32*)v4l2_get_buffer(buf_num, NULL);
+		pics[count] = (uint32*)v4l2_get_buffer(buf_num, NULL);
 		sleep(1);
 	}
 	int i = 0;
 	printf("saving images\n");
+	int width=v4l2_get_width();
+	int height=v4l2_get_height();
 	for (i = 0; i < numPics; i++)
 	{
 		printf("on image %d\n", i);
-                FILE *ptr_myfile;
+        FILE *ptr_myfile;
 		char path[100];
-		sprintf(path, "/home/darwin/%dtest.bin", i);
+		sprintf(path, "/home/darwin/%dtest.ppm", i);
 		const char* cpath = path;
-                ptr_myfile=fopen(cpath, "wb");
-		printf("Opened image file %dtest.bin\n", i);
-		fwrite(pics[i], 4, imageSize, ptr_myfile);
+        ptr_myfile=fopen(cpath, "wb");
+		printf("Opened image file %dtest.ppm\n", i);
+		fprintf(ptr_myfile, "P6\n%d %d\n255\n", width, height);
+		int j,k;
+ 		for (j = 0; j < height; ++j)
+  		{
+ 		  for (k = 0; k < width; ++k)
+  		  {
+  		   static unsigned char color[3];
+		   uint32 pixel=pics[i][j*width+k];
+  		   color[2] = (unsigned char)(pixel&0xFF);  /* blue aka V */
+  		   color[0] = (unsigned char)(pixel&0xFF00>>8);  /* red aka Y */
+  		   color[1] = (unsigned char)(pixel&0xFF0000>>16);  /* green aka U */
+  		   fwrite(color, 1, 3, ptr_myfile);
+  		  }
+  		}//fwrite(pics[i], 4, imageSize, ptr_myfile);
 		printf("Wrote file");
 		fclose(ptr_myfile);
 		printf("closed file");

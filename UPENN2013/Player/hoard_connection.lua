@@ -133,7 +133,7 @@ function updateAction(servData, client)
 --  hordeFunctions["walkForward"](nil,nil);  
 end
 
-function initMotion()
+function initMotion()--should be cleaned up, gets servos hard and standing up
 	BodyFSM.entry();
 	Motion.entry();
         unix.usleep(1.00*1E6);
@@ -154,9 +154,8 @@ function initMotion()
 	
 --	BodyFSM.entry();	
 end
-if(darwin) then
---	initMotion();
---	print(hoard_functions.hordeFunctions); 
+--start "main"
+if(darwin) then 
 --        hoard_functions.hordeFunctions["murder all humans"](nil,nil);
 	print("starting connection thread\n");
 	coroutine.resume(connectionThread);

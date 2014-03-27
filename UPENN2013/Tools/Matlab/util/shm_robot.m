@@ -324,7 +324,7 @@ global MONITOR %for sending the webots check information
 
     %yuyv type info
       r.yuyv_type = h.vcmCamera.get_yuyvType();
-      fprintf('Hello World%i\n', 5);%r.yuyv_type); 
+      %fprintf('Hello World%i\n', 5);%r.yuyv_type); 
 
 
 

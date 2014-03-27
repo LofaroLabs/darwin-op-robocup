@@ -47,6 +47,124 @@ targetvel=vector.zeros(3);
 button_pressed = {0,0};
 
 
+
+--------- control head angle functions ------------
+
+function move_head_yaw(angle) -- in degree
+  local headAngles = Body.get_head_position()
+  local currentYaw = headAngles[1] * 180.0/3.141592
+  local newYaw = currentYaw + angle
+
+  print("currentYaw", currentYaw)
+  print("newYaw", newYaw)
+
+  if newYaw <= -85.0 then newYaw = -85.0
+  elseif newYaw >= 85.0 then newYaw = 85.0 end
+
+  Body.set_head_command({newYaw/180.0*3.141592, headAngles[2]})
+end
+
+function move_head_pitch(angleP)
+  local headAngles = Body.get_head_position()
+  local currentPitch = headAngles[2] * 180.0 / 3.141592
+  local newPitch = currentPitch + angleP
+
+  print("currentPitch", currentPitch)
+  print("newPitch", newPitch)
+
+  if newPitch <= -45.0 then newPitch = -45.0
+  elseif newPitch >= 22.0 then newPitch = 22.0 end
+
+  Body.set_head_command({headAngles[1], newPitch/180.0*3.141592})
+end
+
+function head_looking_for_ball()
+  local headAngles = Body.get_head_position()
+  local currentPitch = headAngles[2] * 180.0 / 3.141592
+  local newPitch = -30.0
+
+  print("currentPitch", currentPitch)
+  print("newPitch", newPitch)
+
+  if newPitch <= -45.0 then newPitch = -45.0
+  elseif newPitch >= 22.0 then newPitch = 22.0 end
+
+  Body.set_head_command({headAngles[1], newPitch/180.0*3.141592})
+end
+
+function head_looking_for_close_ball()
+  local headAngles = Body.get_head_position()
+  local currentPitch = headAngles[2] * 180.0 / 3.141592
+  local newPitch = -12.0
+
+  print("currentPitch", currentPitch)
+  print("newPitch", newPitch)
+
+  if newPitch <= -45.0 then newPitch = -45.0
+  elseif newPitch >= 22.0 then newPitch = 22.0 end
+
+  Body.set_head_command({headAngles[1], newPitch/180.0*3.141592})
+end
+
+function head_prepare_to_pickup()
+  local headAngles = Body.get_head_position()
+  local currentPitch = headAngles[2] * 180.0 / 3.141592
+  local newPitch = 7.0
+
+  print("currentPitch", currentPitch)
+  print("newPitch", newPitch)
+
+  if newPitch <= -45.0 then newPitch = -45.0
+  elseif newPitch >= 22.0 then newPitch = 22.0 end
+
+  Body.set_head_command({headAngles[1], newPitch/180.0*3.141592})
+end
+
+function head_looking_for_ball_while_holding()
+  local headAngles = Body.get_head_position()
+  local currentPitch = headAngles[2] * 180.0 / 3.141592
+  local newPitch = -20.0
+
+  print("currentPitch", currentPitch)
+  print("newPitch", newPitch)
+
+  if newPitch <= -45.0 then newPitch = -45.0
+  elseif newPitch >= 22.0 then newPitch = 22.0 end
+
+  Body.set_head_command({headAngles[1], newPitch/180.0*3.141592})
+end
+
+function head_looking_for_close_ball_while_holding()
+  local headAngles = Body.get_head_position()
+  local currentPitch = headAngles[2] * 180.0 / 3.141592
+  local newPitch = -2.0;
+
+  print("currentPitch", currentPitch)
+  print("newPitch", newPitch)
+
+  if newPitch <= -45.0 then newPitch = -45.0
+  elseif newPitch >= 22.0 then newPitch = 22.0 end
+
+  Body.set_head_command({headAngles[1], newPitch/180.0*3.141592})
+end
+
+function head_prepare_to_drop()
+  local headAngles = Body.get_head_position()
+  local currentPitch = headAngles[2] * 180.0 / 3.141592
+  local newPitch = 17.0
+
+  print("currentPitch", currentPitch)
+  print("newPitch", newPitch)
+
+  if newPitch <= -45.0 then newPitch = -45.0
+  elseif newPitch >= 22.0 then newPitch = 22.0 end
+
+  Body.set_head_command({headAngles[1], newPitch/180.0*3.141592})
+end
+
+
+
+
 function process_keyinput()
   local str=getch.get();
   if #str>0 then
@@ -82,7 +200,7 @@ function process_keyinput()
       walk.doSideKickRight();
 
 
-    elseif byte==string.byte("w") then
+--[[    elseif byte==string.byte("w") then
       Motion.event("diveready");
     elseif byte==string.byte("a") then
       dive.set_dive("diveLeft");
@@ -93,6 +211,7 @@ function process_keyinput()
     elseif byte==string.byte("d") then
       dive.set_dive("diveRight");
       Motion.event("dive");
+]]--
 
 --[[
 	elseif byte==string.byte("z") then
@@ -102,6 +221,20 @@ function process_keyinput()
 		grip.throw=1;
 		Motion.event("throw");
 --]]
+       -- Control the head         
+        elseif byte==string.byte("w") then
+            head_looking_for_ball()   
+        elseif byte==string.byte("s") then
+            head_looking_for_close_ball()
+        elseif byte==string.byte("a") then
+            head_prepare_to_pickup()
+        elseif byte==string.byte("d") then 
+            head_looking_for_ball_while_holding()
+        elseif byte==string.byte("f") then
+	    head_looking_for_close_ball_while_holding()
+	elseif byte==string.byte("g") then 
+	    head_prepare_to_drop()
+
 
 	elseif byte==string.byte("z") then
 	    walk.startMotion("hurray1");
@@ -113,27 +246,41 @@ function process_keyinput()
 	    walk.startMotion("swing");
 
 	elseif byte==string.byte("v") then
-	    walk.startMotion("2punch");
+	    walk.startMotion("prePick")
+--	    walk.startMotion("2punch");
+	    
 
 --	elseif byte==string.byte("b") then
 --	    walk.startMotion("point");
 
+        -- testing behavior
+        elseif byte==string.byte("b") then
+            Motion.event("pick");
+
+        elseif byte==string.byte("n") then
+--	    walk.startMotion("prePick");	    
+	    walk.startMotion("pickupHigh");
+            walk.keep_holding_high();
+
+	elseif byte==string.byte("m") then
+	    walk.startMotion("drop");
+	    walk.reset_stance();
+	
+	   
 
 
-	elseif byte==string.byte("f") then
-           walk.doStepKickLeft();
+--	elseif byte==string.byte("f") then
+--           walk.doStepKickLeft();
 
-	elseif byte==string.byte("g") then
-           walk.doStepKickRight();
+--	elseif byte==string.byte("g") then
+--          walk.doStepKickRight();
 
-
-
-	elseif byte==string.byte("b") then
-	    grip.throw=0;
-	    Motion.event("pickup");
-	elseif byte==string.byte("n") then
-	    grip.throw=1;
-	    Motion.event("pickup");
+--	elseif byte==string.byte("b") then
+--	    grip.throw=0;
+--	    Motion.event("pickup");
+--	elseif byte==string.byte("n") then
+--	    grip.throw=1;
+--	    Motion.event("pickup");
 
     elseif byte==string.byte("7") then	
       Motion.event("sit");
@@ -188,6 +335,23 @@ function update()
     process_keyinput();
     Motion.update();
 
+    -- testing script for UltraSound
+    Left, Right = UltraSound.check_obstacle()
+    if Left and (not Right) then
+      Body.set_actuator_ledChest({0,0,1})
+      Body.set_actuator_ledFaceLeft(vector.ones(8), 1)
+    elseif Right and (not Left) then
+      Body.set_actuator_ledChest({0,1,0})
+      Body.set_actuator_ledFaceRight(vector.ones(8), 1)
+    elseif Left and Right then
+      Body.set_actuator_ledChest({1,0,0})
+      Body.set_actuator_ledFaceLeft(vector.ones(8), 1)
+      Body.set_actuator_ledFaceRight(vector.ones(8), 1)
+    else      
+      Body.set_actuator_ledChest({0,0,0})
+      Body.set_actuator_ledFaceLeft(vector.zeros(8), 1)
+      Body.set_actuator_ledFaceRight(vector.zeros(8), 1)
+    end
     Body.update();
   end
   local dcount = 50;

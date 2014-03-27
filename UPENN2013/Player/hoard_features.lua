@@ -98,6 +98,7 @@ function initMotion()
 	
 --	BodyFSM.entry();	
 end
+--start "main"
 if(1) then 
 	wcm.set_horde_sendStatus("nil");
 	local socket = require("socket")
