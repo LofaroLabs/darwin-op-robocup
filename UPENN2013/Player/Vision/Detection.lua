@@ -93,6 +93,8 @@ function update()
   -- ball detector
   tstart = unix.time();
   ball = detectBall.detect(colorOrange);
+  --print("Ball type is");
+  --print(type(ball));
   Tball = unix.time() - tstart;
   
 

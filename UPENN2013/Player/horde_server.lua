@@ -22,7 +22,7 @@ print("connection accepted")
 client:settimeout(10)
 local line, err = client:receive()
 while 1 do
-        local my_send_data = "pose," .. toCSV(wcm.get_pose());
+        local my_send_data = "pose," .. toCSV(wcm.get_pose()) .. "\n";
         client:send(my_send_data);
         if (vcm.get_ball_detect() == 1) then
                 local ballx = wcm.get_ball_x();

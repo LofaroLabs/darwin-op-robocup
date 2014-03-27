@@ -52,7 +52,8 @@ void mexExit(void)
 static int lua_comm_init(lua_State *L) {
 	const char *ip = luaL_checkstring(L, 1);
 	int port = luaL_checkint(L,2);
-	IP = ip;
+	printf("@!@!initializing port and ip: %s %d\n",ip,port);
+        IP = ip;
 	PORT = port;
  	return 1;
 }
@@ -60,13 +61,13 @@ static int lua_comm_init(lua_State *L) {
 static int lua_comm_update(lua_State *L) {
   static sockaddr_in source_addr;
   static char data[MAX_LENGTH];
-
+  printf("@!@!2\n lua_comm_update called port and ip : %s %d\n",IP.c_str(),PORT);
 	// Check whether initiated
   assert(IP.empty()!=1);	
 
 	// Check port
 	assert(PORT!=0);
-
+ 
   static bool init = false;
   if (!init) {
     struct hostent *hostptr = gethostbyname(IP.c_str());

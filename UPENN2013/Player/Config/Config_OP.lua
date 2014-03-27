@@ -25,7 +25,7 @@ dev.ip_wired = '10.0.0.255';
 dev.ip_wired_port = 11111;
 dev.ip_wireless = '10.0.0.255'; --Our Router
 --dev.ip_wireless = '192.168..255'; --Our Router
-dev.ip_wireless_port = 2828;
+dev.ip_wireless_port = 11111;
 dev.game_control='OPGameControl';
 dev.team='TeamGeneral';
 dev.walk='AwesomeWalk'
@@ -43,8 +43,8 @@ game.teamNumber = 16;   --17 at RC12  --16 for GMU robots
 
 --Default role: 0 for goalie, 1 for attacker, 2 for defender
 ball_shift={0,0};
-game.playerID = 3;
-game.role = 2;  --Default role: attacker
+game.playerID = 2;
+game.role = 1; 
 
 if (robotName=='lucy') then
   game.playerID = 1; 

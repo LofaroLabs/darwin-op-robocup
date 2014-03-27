@@ -102,37 +102,9 @@ updateCount = 1;
 
 t_button_pressed = 0;
 
--- helper function, to be deleted
-function tprint(tbl, indent)
-  if not indent then indent = 0 end
-  for k, v in pairs(tbl) do
-    formatting = string.rep(" ", indent) .. k .. ": "
-    if type(v) == "table" then 
-      print(formatting)
-      tprint(v, indent+1)
-    elseif type(v) == 'boolean' then
-     print(formatting .. tostring(v))
-    else
-      print(formatting .. v)
-    end
-  end
-end
-
-local clock = os.clock
-function sleep(n)
-  local t0 = clock()
-  while clock() - t0 <= n  do end
-end
-
 function update()
-  print('Updating GameControl..............')  -- to be deleted
-
   -- get latest game control packet
   gamePacket = receive();
-
-  -- to be deleted
-  if gamePacket then tprint(gamePacket,1) end
-
   count = count + 1;
 
   if (gamePacket and unix.time() - gamePacket.time < 10) then
@@ -161,9 +133,6 @@ function update()
 
       -- upadate game state
       gameState = gamePacket.state;
-      -- delete
-      print("------------------------------ Game state:", gameState)
---      sleep(1) 
 
 --[[
       -- update team color
@@ -270,7 +239,6 @@ end
 
 function update_shm()
   -- update the shm values  
-  print("UPDATING SHARED MEMORY FOR GAME STATE")
   gcm.set_game_state(gameState);
   gcm.set_game_nplayers(nPlayers);
   gcm.set_game_kickoff(kickoff);

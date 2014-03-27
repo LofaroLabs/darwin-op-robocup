@@ -127,6 +127,8 @@ function check_approach_type()
 
 
   y_inv=0;
+  kick_dir=1; --forcing always front kick, this is GMU addition
+  kick_type=1; -- force stationation, gmu
   if kick_type==1 then --Stationary 
     if kick_dir==1 then --Front kick
       xTarget = Config.fsm.bodyApproach.xTarget11;

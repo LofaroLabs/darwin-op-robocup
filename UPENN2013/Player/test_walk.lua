@@ -335,23 +335,6 @@ function update()
     process_keyinput();
     Motion.update();
 
-    -- testing script for UltraSound
-    Left, Right = UltraSound.check_obstacle()
-    if Left and (not Right) then
-      Body.set_actuator_ledChest({0,0,1})
-      Body.set_actuator_ledFaceLeft(vector.ones(8), 1)
-    elseif Right and (not Left) then
-      Body.set_actuator_ledChest({0,1,0})
-      Body.set_actuator_ledFaceRight(vector.ones(8), 1)
-    elseif Left and Right then
-      Body.set_actuator_ledChest({1,0,0})
-      Body.set_actuator_ledFaceLeft(vector.ones(8), 1)
-      Body.set_actuator_ledFaceRight(vector.ones(8), 1)
-    else      
-      Body.set_actuator_ledChest({0,0,0})
-      Body.set_actuator_ledFaceLeft(vector.zeros(8), 1)
-      Body.set_actuator_ledFaceRight(vector.zeros(8), 1)
-    end
     Body.update();
   end
   local dcount = 50;
