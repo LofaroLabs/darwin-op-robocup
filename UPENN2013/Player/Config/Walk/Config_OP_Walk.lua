@@ -28,8 +28,8 @@ walk.supportY = 0.010;
 --walk.qLArm=math.pi/180*vector.new({90,8,-40});
 --walk.qRArm=math.pi/180*vector.new({90,-8,-40});
 
-walk.qLArm=math.pi/180*vector.new({90,2,-20});
-walk.qRArm=math.pi/180*vector.new({90,-2,-20});
+walk.qLArm=math.pi/180*vector.new({90,8,-20});
+walk.qRArm=math.pi/180*vector.new({90,-8,-20});
 
 walk.qLArmKick=math.pi/180*vector.new({90,30,-60});
 walk.qRArmKick=math.pi/180*vector.new({90,-30,-60});
@@ -42,7 +42,7 @@ walk.hardnessArm=.3;
 ---------------------------------------------
 walk.tStep = 0.25;
 walk.tZmp = 0.165;
-walk.stepHeight = 0.035;
+walk.stepHeight = 0.035;    -- default: 0.035
 walk.phSingle={0.1,0.9};
 
 --------------------------------------------
@@ -251,17 +251,17 @@ end
 walk.motionDef={};
 
 walk.motionDef["hurray1"]={
- {0.1,{40*math.pi/180, 20*math.pi/180, -140*math.pi/180},
+ {1.0,{40*math.pi/180, 20*math.pi/180, -140*math.pi/180},
         {40*math.pi/180,-20*math.pi/180,-140*math.pi/180}},
- {0.4,{40*math.pi/180, 30*math.pi/180, -90*math.pi/180},
+ {0.4,{-30*math.pi/180, 30*math.pi/180, -90*math.pi/180},
         {-30*math.pi/180,-30*math.pi/180,-90*math.pi/180}},
  {0.4,{40*math.pi/180, 20*math.pi/180, -140*math.pi/180},
         {40*math.pi/180,-20*math.pi/180,-140*math.pi/180}},
- {0.4,{40*math.pi/180, 30*math.pi/180, -90*math.pi/180},
+ {0.4,{-30*math.pi/180, 30*math.pi/180, -90*math.pi/180},
         {-30*math.pi/180,-30*math.pi/180,-90*math.pi/180}},
  {0.4,{40*math.pi/180, 20*math.pi/180, -140*math.pi/180},
         {40*math.pi/180,-20*math.pi/180,-140*math.pi/180}},
- {0.4,{40*math.pi/180, 30*math.pi/180, -90*math.pi/180},
+ {0.4,{-30*math.pi/180, 30*math.pi/180, -90*math.pi/180},
         {-30*math.pi/180,-30*math.pi/180,-90*math.pi/180}},
  {1.0,{90*math.pi/180, 8*math.pi/180,-40*math.pi/180},
         {90*math.pi/180, -8*math.pi/180,-40*math.pi/180}}
@@ -390,6 +390,150 @@ walk.motionDef["jableft"]={
     {90*math.pi/180,-40*math.pi/180,-160*math.pi/180},
   },
 }
+
+-- test1 behavior
+
+
+walk.motionDef["prePick"] = {
+  {1.0,
+    {90*math.pi/180, 10*math.pi/180, -20*math.pi/180},
+    {90*math.pi/180, -10*math.pi/180, -20*math.pi/180},
+    {0*math.pi/180,60*math.pi/180,0*math.pi/180}
+  },
+
+  {1.0,
+    {90*math.pi/180, 8*math.pi/180, -20*math.pi/180},
+    {90*math.pi/180, -8*math.pi/180, -20*math.pi/180},
+    {0*math.pi/180, 20*math.pi/180, 0*math.pi/180}
+  }
+}
+
+walk.motionDef["pickupLow"]={
+
+  {1.0,
+    {90*math.pi/180, 10*math.pi/180, -20*math.pi/180},
+    {90*math.pi/180, -10*math.pi/180, -20*math.pi/180},
+    {0*math.pi/180,60*math.pi/180,0*math.pi/180}
+  },
+
+  {1.0,
+    {10*math.pi/180, 10*math.pi/180, -20*math.pi/180},
+    {10*math.pi/180, -10*math.pi/180, -20*math.pi/180},
+    {0*math.pi/180, 60*math.pi/180, 0*math.pi/180}
+  },
+  
+   -- pick  
+  {1.0,
+    {10*math.pi/180, -15*math.pi/180, -20*math.pi/180},
+    {10*math.pi/180, 15*math.pi/180, -20*math.pi/180},
+    {0*math.pi/180, 60*math.pi/180, 0*math.pi/180}
+  },
+
+  -- stand up 
+  {1.0,
+    {20*math.pi/180, -15*math.pi/180, -20*math.pi/180},
+    {20*math.pi/180, 15*math.pi/180, -20*math.pi/180},
+    {0*math.pi/180, 5*math.pi/180,0*math.pi/180}
+  },
+
+--[[ 
+ -- hold for 10 s 
+  {10.0,
+    {20*math.pi/180, -15*math.pi/180, -20*math.pi/180},
+    {20*math.pi/180, 15*math.pi/180, -20*math.pi/180},
+    {0*math.pi/180, 20*math.pi/180,0*math.pi/180}
+  },
+
+  -- drop 
+  {1.0,
+    {10*math.pi/180, 8*math.pi/180, -20*math.pi/180},
+    {10*math.pi/180, -8*math.pi/180, -20*math.pi/180},
+    {0*math.pi/180, 20*math.pi/180,0*math.pi/180}
+  },
+  
+  {1.0,
+    {90*math.pi/180, 8*math.pi/180, -20*math.pi/180},
+    {90*math.pi/180, -8*math.pi/180, -20*math.pi/180},
+    {0*math.pi/180, 20*math.pi/180, 0*math.pi/180}
+  }
+]]--
+} 
+
+walk.motionDef["pickupHigh"]={
+
+  {2.0,
+    {90*math.pi/180, 10*math.pi/180, -20*math.pi/180},
+    {90*math.pi/180, -10*math.pi/180, -20*math.pi/180},
+    {0*math.pi/180,60*math.pi/180,0*math.pi/180}
+  },
+
+  {1.0,
+    {10*math.pi/180, 10*math.pi/180,-20*math.pi/180},
+    {10*math.pi/180, -10*math.pi/180, -20*math.pi/180},
+    {0*math.pi/180,60*math.pi/180,0*math.pi/180}
+  },
+
+   -- pick
+  {1.0,
+    {10*math.pi/180, -15*math.pi/180, -20*math.pi/180},
+    {10*math.pi/180, 15*math.pi/180, -20*math.pi/180},
+    {0*math.pi/180,60*math.pi/180,0*math.pi/180}
+  },
+
+-- stand up   
+  {2.0,
+    {-60*math.pi/180, -15*math.pi/180, -20*math.pi/180},
+    {-60*math.pi/180, 15*math.pi/180, -20*math.pi/180},
+    {0*math.pi/180, 10*math.pi/180,0*math.pi/180}
+  },
+
+--[[
+ -- hold for 10 s 
+  {10.0,
+    {-60*math.pi/180, -15*math.pi/180, -20*math.pi/180},
+    {-60*math.pi/180, 15*math.pi/180, -20*math.pi/180},
+    {0*math.pi/180, 20*math.pi/180,0*math.pi/180}
+  },
+
+  -- drop 
+  {1.0,
+    {10*math.pi/180, 8*math.pi/180, -20*math.pi/180},
+    {10*math.pi/180, -8*math.pi/180, -20*math.pi/180},
+    {0*math.pi/180, 20*math.pi/180,0*math.pi/180}
+  },
+
+  {1.0,
+    {90*math.pi/180, 8*math.pi/180, -20*math.pi/180},
+    {90*math.pi/180, -8*math.pi/180, -20*math.pi/180},
+    {0*math.pi/180, 20*math.pi/180, 0*math.pi/180}
+  }
+]]--
+
+}
+
+
+walk.motionDef["drop"]={
+
+  {2.0,
+    {0*math.pi/180, -15*math.pi/180, -20*math.pi/180},
+    {0*math.pi/180, 15*math.pi/180, -20*math.pi/180},
+    {0*math.pi/180, 20*math.pi/180, 0*math.pi/180}
+  },
+
+--[[  {2.0,
+    {30*math.pi/180, -10*math.pi/180, -20*math.pi/180},
+    {30*math.pi/180, 10*math.pi/180, -20*math.pi/180},
+    {0*math.pi/180, 20*math.pi/180, 0*math.pi/180}
+  },
+]]--
+
+  {2.0,
+    {90*math.pi/180, 8*math.pi/180, -20*math.pi/180},
+    {90*math.pi/180, -8*math.pi/180, -20*math.pi/180},
+    {0*math.pi/180, 20*math.pi/180, 0*math.pi/180}    
+  },
+}
+
 
 walk.walkKickSupportMod = {{0,0},{0,0}}
 

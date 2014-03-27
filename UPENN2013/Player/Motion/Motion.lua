@@ -18,6 +18,8 @@ require('standup')
 require('kick')
 require('align') -- slow, non-dynamic stepping for fine alignment before kick
 
+require('chau_behavior')
+
 -- Aux
 
 if Config.largestep_enable then
@@ -38,6 +40,7 @@ if sit_disable==0 then --For smaller robots
   sm:add_state(kick);
   sm:add_state(standstill);
   sm:add_state(align);
+  sm:add_state(chau_behavior); -- added by Chau --
 
   sm:set_transition(sit, 'done', relax);
   sm:set_transition(sit, 'standup', stance);
@@ -77,6 +80,11 @@ if sit_disable==0 then --For smaller robots
   -- kick behaviours
   sm:set_transition(walk, 'kick', kick);
   sm:set_transition(kick, 'done', walk);
+
+  -- added by Chau --
+  sm:set_transition(walk, 'pick', chau_behavior);
+  sm:set_transition(chau_behavior, 'done', walk);  
+
 else --For large robots that cannot sit down or getup
 
   fallAngle = 1E6; --NEVER check falldown
