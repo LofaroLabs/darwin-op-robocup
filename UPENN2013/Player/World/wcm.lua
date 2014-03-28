@@ -47,7 +47,8 @@ shared.horde = {};
 shared.horde.client = "nil";
 shared.horde.state = "nil";
 shared.horde.sendStatus = "nil"
---
+shared.horde.doneFrontApproach = vector.zeros(1); ---
+-- wcm.get_horde_doneFrontApproach();
 shared.team = {};
 
 

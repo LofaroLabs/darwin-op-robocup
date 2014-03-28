@@ -130,7 +130,7 @@ hordeFunctions["gotoBall"] = function(args,client)
 	BodyFSM.sm:set_state('bodyGotoBall');
 end
 hordeFunctions["approachBall"] = function(args,client)
-        BodyFSM.sm:set_state('bodyApproach');
+        BodyFSM.sm:set_state('bodyApproachGMU');
 end
 hordeFunctions["kickBall"] = function(args,client)
         BodyFSM.sm:set_state('bodyKickGMU');
@@ -161,6 +161,6 @@ end
 package.path = cwd..'/HeadFSM/'..Config.fsm.head[smindex+1]..'/?.lua;'..package.path;
 
 package.path = cwd..'/BodyFSM/'..Config.fsm.head[smindex+1]..'/?.lua;'..package.path;
-require('BodyFSM')
+require('BodyFSMGMU')
 require('HeadFSM')
 

@@ -10,7 +10,7 @@ require('bodyStart')
 require('bodyStop')
 require('bodyReady')
 require('bodySearch')
-require('bodyApproach')
+require('bodyApproachGMU')
 require('bodyDribble')
 require('bodyKick')
 require('bodyWalkKick')
@@ -44,7 +44,7 @@ sm:add_state(bodyStart);
 sm:add_state(bodyStop);
 sm:add_state(bodyReady);
 sm:add_state(bodySearch);
-sm:add_state(bodyApproach);
+sm:add_state(bodyApproachGMU);
 sm:add_state(bodyDribble);
 sm:add_state(bodyKick);
 sm:add_state(bodyWalkKick);

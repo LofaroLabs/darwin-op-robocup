@@ -351,6 +351,7 @@ function update()
   end
 
   angle_check_done = true;
+  print("angleErrL " .. angleErrL .. " angleErrR " .. angleErrR);
   if check_angle>0 and
      (angleErrL > 0 or
      angleErrR > 0 )then

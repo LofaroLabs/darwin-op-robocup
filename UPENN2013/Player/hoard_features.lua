@@ -50,7 +50,8 @@ function sendFeatures (args, client)
 	features["ballDetect"] = vcm.get_ball_detect();
 	features["ballX"] = wcm.get_ball_x();
 	features["ballY"] = wcm.get_ball_y();
-	print("sending some features, yo\n");
+        features["doneFrontApproach"] = wcm.get_horde_doneFrontApproach();	
+	print("sending some features, yo\n");-- wcm.set_horde_doneFrontApproach("true");
 	print(json.encode(features) .. "\n");
 	client:send(json.encode(features) .. "\n");
 	-- Send the features to horde via the client
