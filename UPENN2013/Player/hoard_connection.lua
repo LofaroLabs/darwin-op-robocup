@@ -75,7 +75,70 @@ end
 --table.foreach(Body.get_sensor_data(),inspect)
 
 --my stuff, ugly
+
+function initMotion()
+        gcm.set_game_state(3);
+        BodyFSM.entry();
+
+        Motion.entry();
+        unix.usleep(1.00*1E6);
+
+        Body.set_body_hardness(.50);
+        Motion.event("standup");
+        k = 0;
+        while(.005 * k < 5.27) do
+                Motion.update();
+                Body.update();
+                unix.usleep(.005*1E6);
+                k=k+1;
+        end
+        Motion.event("standup");
+        unix.usleep(3.0*1E6);
+        BodyFSM.sm:set_state('bodyStop')
+        BodyFSM.update();
+        HeadFSM.entry();
+        HeadFSM.sm:set_state('headStart');
+        Body.set_head_hardness(.5);
+--      HeadFSM.entry();
+--      HeadFSM.sm:set_state('headStart');
+--      headFSM.update();
+--      BodyFSM.entry();        
+end
+previousState = "nil";
+function updateAll(newState)
+	gcm.set_game_state(3);
+       	Motion.update();
+       	Body.update();
+        BodyFSM.update();
+        HeadFSM.update();
+end
 count = 0;
+function sendFeatures (client)
+        if(wcm.get_horde_sendStatus()~="StartSending") then
+         	return;
+        end
+	features = {};
+        features["poseX"] = wcm.get_pose().x;
+        features["poseY"] = wcm.get_pose().y;
+        features["poseA"] = wcm.get_pose().a;
+        features["ballDetect"] = vcm.get_ball_detect();
+        features["ballX"] = wcm.get_ball_x();
+        features["ballY"] = wcm.get_ball_y();
+        features["doneFrontApproach"] = wcm.get_horde_doneFrontApproach();
+        --print("sending some features, yo\n");-- wcm.set_horde_doneFrontApproach("true");
+        --print(json.encode(features) .. "\n");
+	client:settimeout(nil);
+	client:send(json.encode(features) .. "\n");
+        -- Send the features to horde via the client
+        -- args may contain the amount of time to wait between sending
+
+end
+function connectToHorde(port)
+		local socket = require("socket")
+                local server = assert(socket.bind("*", port))
+                local client = server:accept()
+              	return client;
+end
 connectionThread = coroutine.create(function ()
         print("got into con thread");
 	if( darwin ) then
@@ -83,36 +146,24 @@ connectionThread = coroutine.create(function ()
 
 
  -- setup the server
-                local socket = require("socket")
-		print("socket assert");
-                local server = assert(socket.bind("*", 4009))
-		print("socket accept")
-                local client = server:accept()
-		print("setting global client");
-	--	wcm.set_horde_client(client);
-		print("socket accepted");
-                connected = true;
-                print("connected")
+               client = connectToHorde(4009);--initialize connection, wait for it.....
+               connected = true;
+               print("connected")
   
-
-
                 while connected do
-                        --client:settimeout(10)
-                        print("waiting for message");
+                        updateAll();--move mah body, update FSM
+                	sendFeatures(client);
+                        client:settimeout(0);--non blocking read
 			local line, err = client:receive()
-                        print("got a messages");
 			if not err then
-                                print(line);
-                                updateAction(line, client);
-				print("update success\n");
+                                --print(line);
+                                if(line~=nil) then
+					updateAction(line, client);
+				end
+	--			print("update success\n");
                         elseif err == "closed" then
-                                print(err)
-                                connected = false;
-                        else
-                                print(err)
-                        end
-    --client:close()
-    
+                               connected = false;
+                        end    
                         unix.usleep(tDelay);
                 end
         end
@@ -129,7 +180,8 @@ function updateAction(servData, client)
 
 	print("Received action "..req.action);
 	hoard_functions.hordeFunctions[req.action](req.args, client)--this is wrong, only here for the send.... TODO
-	wcm.set_horde_state(req.action);
+	--updateAll
+	--wcm.set_horde_state(req.action);
 --  hordeFunctions["walkForward"](nil,nil);  
 end
 
@@ -157,6 +209,7 @@ end
 --start "main"
 if(darwin) then 
 --        hoard_functions.hordeFunctions["murder all humans"](nil,nil);
+	initMotion();
 	print("starting connection thread\n");
 	coroutine.resume(connectionThread);
 	print("connection lost")

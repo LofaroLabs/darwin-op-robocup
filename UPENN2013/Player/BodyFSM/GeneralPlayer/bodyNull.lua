@@ -6,9 +6,12 @@ require('Motion')
 function entry()
   print(_NAME..' entry');
 
-  walk.set_velocity(0,0,0);
+  --walk.set_velocity(0,0,0);
   --walk.stop();
-  started = false;
+   --Motion.sm:set_state('standstill');
+   Motion.event("walk");
+   walk.start();
+   started = false;
 end
 
 function update()

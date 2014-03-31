@@ -24,6 +24,11 @@ require('bodyWalkForward')
 require('bodyKickGMU')
 require('bodyGotoBall')
 require('bodyNull')
+require('bodyMoveTheta')
+require('bodyMoveX')
+require('bodyMoveY')
+require('bodyKickLeftGMU')
+require('bodyKickRightGMU')
 
 require('bodyPositionGoalie')
 require('bodyAnticipate')
@@ -58,6 +63,12 @@ sm:add_state(bodyWalkForward);
 sm:add_state(bodyKickGMU);
 sm:add_state(bodyGotoBall);
 sm:add_state(bodyNull);
+sm:add_state(bodyMoveTheta);
+sm:add_state(bodyMoveX);
+sm:add_state(bodyMoveY);
+sm:add_state(bodyKickLeftGMU);
+sm:add_state(bodyKickRightGMU);
+
 
 sm:add_state(bodyPositionGoalie);
 sm:add_state(bodyAnticipate);

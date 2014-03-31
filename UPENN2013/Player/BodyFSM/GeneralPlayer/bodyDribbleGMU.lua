@@ -86,8 +86,8 @@ end
 function update()
 	ballx = wcm.get_ball_x();
 	bally = wcm.get_ball_y();
-	scaleFactor = 20*(math.abs(ballx)+math.abs(bally));
-	walk.set_velocity(ballx/scaleFactor, bally/scaleFactor,0);
+	scaleFactor = 2*(ballx+bally);
+	walk.set_velocity(ballx*scaleFactor, bally*scaleFactor,0);
 end
 
 function exit()

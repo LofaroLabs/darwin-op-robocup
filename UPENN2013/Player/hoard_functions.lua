@@ -60,7 +60,7 @@ myFunctions["getServos"] = function (args, client)
 	print("You found getServos with args " .. args);
 	thedata = Body.get_sensor_data();
 	table.foreach(thedata, inspect);
-	client:send(json.encode(thedata));
+	client:send(json.encode(thedata).."\n");
 	print("Sent the sevo data!")
 	print(json.encode(thedata))
 end
@@ -89,7 +89,7 @@ co = coroutine.create(function (args, client)
 	features[2] = vcm.get_ball_detect();
 	features[3] = wcm.get_ball_x();
 	features[4] = wcm.get_ball_y();
-	client:send(json.encode(features));
+	client:send(json.encode(features).. "\n");
 	-- Send the features to horde via the client
 	-- args may contain the amount of time to wait between sending
 	
@@ -131,23 +131,24 @@ hordeFunctions["gotoBall"] = function(args,client)
 end
 hordeFunctions["approachBall"] = function(args,client)
         BodyFSM.sm:set_state('bodyApproachGMU');
+	--sm.entry();
 end
 hordeFunctions["kickBall"] = function(args,client)
         BodyFSM.sm:set_state('bodyKickGMU');
 end
 hordeFunctions["moveX"] = function(args,client)
-	BodyFSM.sm:set_state('bodyNull');
-	walk.set_velocity(.02,0,0);
+	BodyFSM.sm:set_state('bodyMoveX');
+	--walk.set_velocity(.02,0,0);
 end
 
 hordeFunctions["moveY"] = function(args,client)
-        BodyFSM.sm:set_state('bodyNull');
-        walk.set_velocity(.02,1,0);
+        BodyFSM.sm:set_state('bodyMoveY');
+        --walk.set_velocity(0.0,1,0);
 end
 
 hordeFunctions["moveTheta"] = function(args,client)
-        BodyFSM.sm:set_state('bodyNull');
-        walk.set_velocity(0,0,1);
+        BodyFSM.sm:set_state('bodyMoveTheta');
+      
 end
 hordeFunctions["stop"] = function(args,client)
         BodyFSM.sm:set_state('bodyStop');
@@ -157,7 +158,12 @@ hordeFunctions["StartSending"] = function (args, client)
 --      coroutine.resume(co,args, client);
         wcm.set_horde_sendStatus("StartSending");
 end
-
+hordeFunctions["kickLeft"] = function(args,client)
+        BodyFSM.sm:set_state('bodyKickLeftGMU');
+end
+hordeFunctions["kickRight"] = function(args,client)
+        BodyFSM.sm:set_state('bodyKickRightGMU');
+end
 package.path = cwd..'/HeadFSM/'..Config.fsm.head[smindex+1]..'/?.lua;'..package.path;
 
 package.path = cwd..'/BodyFSM/'..Config.fsm.head[smindex+1]..'/?.lua;'..package.path;

@@ -89,8 +89,8 @@ function check_approach_type()
 
 
   y_inv=0;
- -- kick_type=2;
- -- kick_dir=1;  
+  kick_type=2;
+  kick_dir=1;  
   if kick_type==1 then --Stationary 
     if kick_dir==1 then --Front kick
       xTarget = Config.fsm.bodyApproach.xTarget11;
@@ -138,6 +138,7 @@ end
 
 function entry()
   print("Body FSM:".._NAME.." entry");
+  wcm.set_horde_doneFrontApproach(0);
   t0 = Body.get_time();
   ball = wcm.get_ball();
   check_approach_type(); --walkkick if available
@@ -381,7 +382,8 @@ print("OMFGOMFGOMFOMGOMFOMFOMGOMGOMGOMG KICK");
 end
 
 function exit()
-  HeadFSM.sm:set_state('headTrack');
+     wcm.set_horde_doneFrontApproach(0);
+     HeadFSM.sm:set_state('headTrack');
 end
 
 function sign(x)

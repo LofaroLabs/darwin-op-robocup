@@ -76,6 +76,7 @@ end
 
 --my stuff, ugly
 function initMotion()
+	gcm.set_game_state(3);
 	BodyFSM.entry();
 	
 	Motion.entry();
@@ -107,12 +108,16 @@ if(darwin) then
 	wcm.set_horde_state("nil");
 	initMotion();
 	while(1) do
+		gcm.set_game_state(3);
 		Motion.update();
 		Body.update();
-		if(previousState ~= wcm.get_horde_state()) then
+		if(previousState ~= wcm.get_horde_state() and wcm.get_horde_state()~=nil) then
+			print("doing some new state \"" .. wcm.get_horde_state().."\"")
 			hoard_functions.hordeFunctions[wcm.get_horde_state()](nil,nil);
 			--TODO not nil nil plz
 			previousState = wcm.get_horde_state();	
+		elseif (wcm.get_horde_state()==nil) then
+			wcm.set_horde_state(previousState);
 		end
 		BodyFSM.update();	
 		HeadFSM.update();	
