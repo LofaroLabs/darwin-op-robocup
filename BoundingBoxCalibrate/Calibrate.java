@@ -73,7 +73,7 @@ public class Calibrate extends JFrame
 	String orange = new String("<html><body bgcolor=orange><font color=black><b>Orange</b></font></body></html>");
 	String other = new String("<html><body bgcolor=black><font color=white><b>Other</b></font></body></html>");
 
-
+        
 	
 	/** Indexes for color labels */
 	public static final int OTHER = 0;
