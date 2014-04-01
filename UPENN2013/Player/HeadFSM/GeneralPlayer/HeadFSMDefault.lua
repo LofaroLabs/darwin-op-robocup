@@ -15,6 +15,8 @@ require('headLookGoal')
 require('headSweep')
 require('headKick')
 require('headLog')
+require('headTrackGMU')
+require('headLookGoalGMU')
 
 sm = fsm.new(headIdle);
 sm:add_state(headStart);
@@ -28,7 +30,14 @@ sm:add_state(headLookGoal);
 sm:add_state(headSweep);
 sm:add_state(headKick);
 sm:add_state(headLog);
+sm:add_state(headTrackGMU);
+sm:add_state(headLookGoalGMU);
 
+-----
+-- GMU FSM for most situations
+----
+sm:set_transition(headTrackGMU, 'timeout', headLookGoalGMU);
+sm:set_transition(headLookGoalGMU, 'timeout', headTrackGMU);
 
 
 ---------------------------------------------

@@ -11,7 +11,7 @@ require('kick');
 require('HeadFSM')
 require('Config')
 require('wcm')
-
+require('unix');
 require('walk');
 
 t0 = 0;
@@ -36,25 +36,32 @@ print("KICK DIR:",kick_dir)
 print("WalkKick: Ball pos:",ball.x,ball.y);
     if (ball.y > 0) then
       if (ball.x>walkkick_th) or Config.fsm.enable_walkkick<2 then
-        walk.doWalkKickLeft();
+        print("doWalkKickLeft");
+	walk.doWalkKickLeft();
       else
 --        walk.doWalkKickLeft2();
+        print("doWalkKickLeft");
         walk.doWalkKickLeft();
       end
     else
       if (ball.x>walkkick_th) or Config.fsm.enable_walkkick<2 then
-        walk.doWalkKickRight();
+        print("doWalkKickRight");
+	walk.doWalkKickRight();
       else
+	print("doWalkKickRight");
 --        walk.doWalkKickRight2();
         walk.doWalkKickRight();
       end
     end
   elseif kick_dir==2 then --sidekick to left
-    walk.doSideKickLeft();
+   	print("doSideKickLeft");
+	walk.doSideKickLeft();
   else
-    walk.doSideKickRight(); --sidekick to right
+	print("doSideKickRight");
+	walk.doSideKickRight(); --sidekick to right
   end
-  HeadFSM.sm:set_state('headTrack');
+  print("look above me\n\n\n\n");
+  HeadFSM.sm:set_state('headTrackGMU');
 --  HeadFSM.sm:set_state('headIdle');
 end
 

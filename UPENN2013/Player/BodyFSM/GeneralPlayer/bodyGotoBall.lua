@@ -81,17 +81,27 @@ function entry()
   print("Body FSM:".._NAME.." entry");
   t0 = Body.get_time();
   ball = wcm.get_ball();
+  HeadFSM.sm:set_state('headTrackGMU');
 end
 
 function update()
 	ballx = wcm.get_ball_x();
 	bally = wcm.get_ball_y();
 	scaleFactor = 20*(math.abs(ballx)+math.abs(bally));
-	walk.set_velocity(ballx/scaleFactor, bally/scaleFactor,0);
+	rotateVel = 0;
+	if(math.abs(bally)/math.abs(ballx)>.25) then
+		if(bally>0) then
+			rotateVel = 1;
+		else
+			rotateVel = -1;
+		end
+			
+	end
+	walk.set_velocity(ballx/scaleFactor, bally/scaleFactor,rotateVel);
 end
 
 function exit()
-  HeadFSM.sm:set_state('headTrack');
+  HeadFSM.sm:set_state('headLookGoalGMU');
 end
 
 function sign(x)
