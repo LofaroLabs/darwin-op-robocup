@@ -29,6 +29,8 @@ for i=1:100
 		continue;
     end	
  siz = size(yuyv);
+ fprintf('Width %d height %d \n', r_mon.camera.width, r_mon.camera.height);
+ 
  yuyv_u8 = reshape(typecast(yuyv(:), 'uint8'), [4 siz]);
  ycbcr = yuyv_u8([1 2 4],:,:);
  yuyv = permute(ycbcr, [3 2 1]);
