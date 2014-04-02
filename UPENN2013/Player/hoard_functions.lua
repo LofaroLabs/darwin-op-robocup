@@ -130,7 +130,7 @@ hordeFunctions["gotoBall"] = function(args,client)
 	BodyFSM.sm:set_state('bodyGotoBall');
 end
 hordeFunctions["approachBall"] = function(args,client)
-        BodyFSM.sm:set_state('bodyApproachGMU');
+        BodyFSM.sm:set_state('bodyKickTo');
 	--sm.entry();
 end
 hordeFunctions["kickBall"] = function(args,client)
@@ -164,6 +164,19 @@ end
 hordeFunctions["kickRight"] = function(args,client)
         BodyFSM.sm:set_state('bodyKickRightGMU');
 end
+hordeFunctions["gotoPose"] = function(args, client)
+	-- set the wcm values to the x,y,a from the args
+	print("The args for gotoPose: " .. args .. "\n");
+	print("HI");
+	dest = json.decode(args)
+	print("Dest " .. dest.x);
+	--print("The args more specfied... X" .. args.x .. " Y " .. args.y .. " theta: " .. args.a);
+	wcm.set_horde_gotoPose(vector.new({dest.x, dest.y, dest.a}));
+	
+	-- call the state
+	BodyFSM.sm:set_state('bodyGotoPosition');
+end
+
 package.path = cwd..'/HeadFSM/'..Config.fsm.head[smindex+1]..'/?.lua;'..package.path;
 
 package.path = cwd..'/BodyFSM/'..Config.fsm.head[smindex+1]..'/?.lua;'..package.path;

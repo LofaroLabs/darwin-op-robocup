@@ -17,6 +17,7 @@ require('headKick')
 require('headLog')
 require('headTrackGMU')
 require('headLookGoalGMU')
+require('headLookGoalPose')
 
 sm = fsm.new(headIdle);
 sm:add_state(headStart);
@@ -32,13 +33,14 @@ sm:add_state(headKick);
 sm:add_state(headLog);
 sm:add_state(headTrackGMU);
 sm:add_state(headLookGoalGMU);
-
+sm:add_state(headLookGoalPose);
 -----
 -- GMU FSM for most situations
 ----
 sm:set_transition(headTrackGMU, 'timeout', headLookGoalGMU);
 sm:set_transition(headLookGoalGMU, 'timeout', headTrackGMU);
 
+sm:set_transition(headLookGoalPose, 'timeout', headLookGoalPose);
 
 ---------------------------------------------
 --Game FSM with looking at the goal
