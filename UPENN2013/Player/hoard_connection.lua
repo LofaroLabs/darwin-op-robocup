@@ -125,7 +125,10 @@ function sendFeatures (client)
         features["ballX"] = wcm.get_ball_x();
         features["ballY"] = wcm.get_ball_y();
         features["doneFrontApproach"] = wcm.get_horde_doneFrontApproach();
-        --print("sending some features, yo\n");-- wcm.set_horde_doneFrontApproach("true");
+        features["particleX"] = wcm.get_particle_x();
+        features["particleY"] = wcm.get_particle_y();
+	features["particleA"] = wcm.get_particle_a();
+	--print("sending some features, yo\n");-- wcm.set_horde_doneFrontApproach("true");
         --print(json.encode(features) .. "\n");
 	client:settimeout(nil);
 	client:send(json.encode(features) .. "\n");
@@ -152,9 +155,9 @@ connectionThread = coroutine.create(function ()
   
                 while connected do
                         updateAll();--move mah body, update FSM
-                	sendFeatures(client);
+                	sendFeatures(client);--send all the features to horde
                         client:settimeout(0);--non blocking read
-			local line, err = client:receive()
+			local line, err = client:receive() -- read in horde commands
 			if not err then
                                 --print(line);
                                 if(line~=nil) then

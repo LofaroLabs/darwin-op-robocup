@@ -48,6 +48,8 @@ shared.horde.client = "nil";
 shared.horde.state = "nil";
 shared.horde.sendStatus = "nil"
 shared.horde.doneFrontApproach = vector.zeros(1); ---
+shared.horde.gotoPose = vector.zeros(3); -- the x,y,a that horde told it to go to on the field in the world frame
+
 -- wcm.get_horde_doneFrontApproach();
 shared.team = {};
 
