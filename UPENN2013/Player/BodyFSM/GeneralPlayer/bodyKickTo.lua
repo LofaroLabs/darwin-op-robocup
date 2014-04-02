@@ -253,17 +253,20 @@ function update()
     print("calculated goal relative");
     angle_check_done = true;
     print("goal relative: " .. goalRelative[3]);
- 
- --[[   if goalRelative[3] < 0 then
-       vStep[3]=0.2;
-      elseif goalRelative[3]  > 0 then
-       vStep[3]=-0.2;
+    stepFactor = 1;
+    if(goalRelative[1]<0)then
+	stepFactor = -1;
+    end
+    if goalRelative[2] < 0 then
+       vStep[3]=0.2*stepFactor;
+      elseif goalRelative[2]  > 0 then
+       vStep[3]=-0.2*stepFactor;
       else
         vStep[3]=0;
       end
-    end]]--
+    end
     -- end override
---TEMP
+--[[TEMP
    if check_angle>0 then
       if angleErrR > 0 then
 --print("TURNLEFT")
@@ -275,7 +278,7 @@ function update()
         vStep[3]=0;
       end
    end 
---DELETE
+-DELETE]]--
   --when the ball is on the side of the ROBOT, backstep a bit
   local wAngle = math.atan2 (ball.y,ball.x);
   ballYMin = Config.fsm.bodyApproach.ballYMin or 0.20;
@@ -331,9 +334,9 @@ function update()
     angle_check_done=false;
     print("Goal stats: " .. goalRelative[1] .. ", " .. goalRelative[2] .. ", " .. goalRelative[3]);
   else
-   print("Goal stats ACCEPT: " .. goalRelative[1] .. ", " .. goalRelative[2] .. ", " .. goalRelative[3]);
+    print("Goal stats ACCEPT: " .. goalRelative[1] .. ", " .. goalRelative[2] .. ", " .. goalRelative[3]);
   end
-  if (math.abs(goalRelative[3]) >.3) then
+  if (math.abs(goalRelative[3]) <.3) then
      print("my kick would trigger");
      --angle_check_done=false;
   end
