@@ -75,35 +75,8 @@ end
 --table.foreach(Body.get_sensor_data(),inspect)
 
 --my stuff, ugly
-
-function initMotion()
-        gcm.set_game_state(3);
-        BodyFSM.entry();
-
-        Motion.entry();
-        unix.usleep(1.00*1E6);
-
-        Body.set_body_hardness(.50);
-        Motion.event("standup");
-        k = 0;
-        while(.005 * k < 5.27) do
-                Motion.update();
-                Body.update();
-                unix.usleep(.005*1E6);
-                k=k+1;
-        end
-        Motion.event("standup");
-        unix.usleep(3.0*1E6);
-        BodyFSM.sm:set_state('bodyStop')
-        BodyFSM.update();
-        HeadFSM.entry();
-        HeadFSM.sm:set_state('headStart');
-        Body.set_head_hardness(.5);
---      HeadFSM.entry();
---      HeadFSM.sm:set_state('headStart');
---      headFSM.update();
---      BodyFSM.entry();        
-end
+--        gcm.set_game_state(3);
+ 
 previousState = "nil";
 function updateAll(newState)
 	gcm.set_game_state(3);
@@ -189,12 +162,13 @@ function updateAction(servData, client)
 end
 
 function initMotion()--should be cleaned up, gets servos hard and standing up
-	BodyFSM.entry();
+	gcm.set_game_state(3);
+ 	BodyFSM.entry();
 	Motion.entry();
         unix.usleep(1.00*1E6);
 
         Body.set_body_hardness(.50);
-        Motion.event("standup");
+        Motion.event("sit");
         k = 0;
         while(.005 * k < 5.27) do
                 Motion.update();
@@ -204,7 +178,7 @@ function initMotion()--should be cleaned up, gets servos hard and standing up
         end
 	Motion.event("standup");
 	unix.usleep(3.0*1E6);
-	BodyFSM.sm:set_state('bodyStop')		
+	--BodyFSM.sm:set_state('bodyStop')		
 	BodyFSM.update();
 	
 --	BodyFSM.entry();	
@@ -212,7 +186,8 @@ end
 --start "main"
 if(darwin) then 
 --        hoard_functions.hordeFunctions["murder all humans"](nil,nil);
-	initMotion();
+	--Motion.event("standup");	
+        initMotion();
 	print("starting connection thread\n");
 	coroutine.resume(connectionThread);
 	print("connection lost")
