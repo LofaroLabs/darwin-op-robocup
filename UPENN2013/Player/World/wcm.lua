@@ -53,6 +53,7 @@ shared.horde.gotoPose = vector.zeros(3); -- the x,y,a that horde told it to go t
 shared.horde.ready = vector.zeros(1);
 shared.horde.passKick = vector.zeros(1);
 shared.horde.timeMark = vector.zeros(1);
+shared.horde.kickToPose = vector.zeros(3);
 --shared.horde.robot1 = "10.0.0.51"
 --shared.horde.poseRobot1 = vector.zeros(3);--purely horizontally passed
 -- wcm.get_horde_doneFrontApproach();

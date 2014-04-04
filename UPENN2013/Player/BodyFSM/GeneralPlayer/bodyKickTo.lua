@@ -249,22 +249,26 @@ function update()
     print("got to pose to goal calculation");
     pose = wcm.get_pose();
     print("grabbed pose from wcm");
-    goalRelative = util.pose_relative(wcm.get_goal_attack(), {pose.x, pose.y, pose.a});
-    print("calculated goal relative");
+    --receiveRelative = util.pose_relative(wcm.get_horde_kickToPose(), {pose.x, pose.y, pose.a});
+    receiveRelative = util.pose_relative(wcm.get_goal_attack(), {pose.x, pose.y, pose.a});
+     
+	print("calculated goal relative");
     angle_check_done = true;
-    print("goal relative: " .. goalRelative[3]);
+    print("goal relative: " .. receiveRelative[3]);
     stepFactor = 1;
-    if(goalRelative[1]<0)then
-	stepFactor = -1;
-    end
-    if goalRelative[2] < 0 then
-       vStep[3]=0.2*stepFactor;
-      elseif goalRelative[2]  > 0 then
-       vStep[3]=-0.2*stepFactor;
+    --if(goalRelative[1]<0)then
+--	stepFactor = -1;
+ --   end
+    if receiveRelative[2] < 0 then
+       	print("turn left");
+	vStep[3]=0.2*stepFactor;
+      elseif receiveRelative[2]  > 0 then
+        print("turn right");
+	vStep[3]=-0.2*stepFactor;
       else
         vStep[3]=0;
       end
-    end
+    end--
     -- end override
 --[[TEMP
    if check_angle>0 then
@@ -278,7 +282,7 @@ function update()
         vStep[3]=0;
       end
    end 
--DELETE]]--
+--DELETE]]--
   --when the ball is on the side of the ROBOT, backstep a bit
   local wAngle = math.atan2 (ball.y,ball.x);
   ballYMin = Config.fsm.bodyApproach.ballYMin or 0.20;
@@ -333,13 +337,13 @@ function update()
      (angleErrL > 0 or
      angleErrR > 0 )then
     angle_check_done=false;
-    print("Goal stats: " .. goalRelative[1] .. ", " .. goalRelative[2] .. ", " .. goalRelative[3]);
+    print("Goal stats: " .. receiveRelative[1] .. ", " .. receiveRelative[2] .. ", " .. receiveRelative[3]);
   else
-    print("Goal stats ACCEPT: " .. goalRelative[1] .. ", " .. goalRelative[2] .. ", " .. goalRelative[3]);
+    print("Goal stats ACCEPT: " .. receiveRelative[1] .. ", " .. receiveRelative[2] .. ", " .. receiveRelative[3]);
   end
-  if (math.abs(goalRelative[3]) <.3) then
+  if (math.abs(receiveRelative[3]) >.3) then
      print("my kick would trigger");
-     --angle_check_done=false;
+     angle_check_done=false;
   end
   
     --For front kick, check for other side too
