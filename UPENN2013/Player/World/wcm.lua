@@ -49,7 +49,12 @@ shared.horde.state = "nil";
 shared.horde.sendStatus = "nil"
 shared.horde.doneFrontApproach = vector.zeros(1); ---
 shared.horde.gotoPose = vector.zeros(3); -- the x,y,a that horde told it to go to on the field in the world frame
-
+--horizontally passed+connection
+shared.horde.ready = vector.zeros(1);
+shared.horde.passKick = vector.zeros(1);
+shared.horde.timeMark = vector.zeros(1);
+--shared.horde.robot1 = "10.0.0.51"
+--shared.horde.poseRobot1 = vector.zeros(3);--purely horizontally passed
 -- wcm.get_horde_doneFrontApproach();
 shared.team = {};
 

@@ -328,6 +328,7 @@ function update()
     print("ballfar, ",ballR,rFar)
     return "ballFar";
   end
+ angle_check_done= true;
  if check_angle>0 and
      (angleErrL > 0 or
      angleErrR > 0 )then
@@ -361,6 +362,7 @@ function update()
 	print("1OMFGOMFGOMFOMGOMFOMFOMGOMGOMGOMG KICK");
 	print("1OMFGOMFGOMFOMGOMFOMFOMGOMGOMGOMG KICK");
 	wcm.set_horde_doneFrontApproach(1);
+	wcm.set_horde_ready(1);
 	return "kick";
       else 
 	print("OMFGOMFGOMFOMGOMFOMFOMGOMGOMGOMG KICK");
@@ -369,6 +371,7 @@ print("OMFGOMFGOMFOMGOMFOMFOMGOMGOMGOMG KICK");
 	print("OMFGOMFGOMFOMGOMFOMFOMGOMGOMGOMG KICK");
 	print("OMFGOMFGOMFOMGOMFOMFOMGOMGOMGOMG KICK");
 	wcm.set_horde_doneFrontApproach(1);
+	wcm.set_horde_ready(1);
 	return "walkkick";
       end
     end
@@ -387,6 +390,7 @@ print("OMFGOMFGOMFOMGOMFOMFOMGOMGOMGOMG KICK");
 	print("OMFGOMFGOMFOMGOMFOMFOMGOMGOMGOMG KICK");
 	print("OMFGOMFGOMFOMGOMFOMFOMGOMGOMGOMG KICK");
 	wcm.set_horde_doneFrontApproach(1);
+	wcm.set_horde_ready(1);
 	return "kick";
       else 
 	print("OMFGOMFGOMFOMGOMFOMFOMGOMGOMGOMG KICK");
@@ -395,6 +399,7 @@ print("OMFGOMFGOMFOMGOMFOMFOMGOMGOMGOMG KICK");
 	print("OMFGOMFGOMFOMGOMFOMFOMGOMGOMGOMG KICK");
 	print("OMFGOMFGOMFOMGOMFOMFOMGOMGOMGOMG KICK");
 	wcm.set_horde_doneFrontApproach(1);
+	wcm.set_horde_ready(1);
 	return "walkkick";
       end
     end

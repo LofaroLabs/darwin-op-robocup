@@ -101,13 +101,35 @@ function sendFeatures (client)
         features["particleX"] = wcm.get_particle_x();
         features["particleY"] = wcm.get_particle_y();
 	features["particleA"] = wcm.get_particle_a();
-	--print("sending some features, yo\n");-- wcm.set_horde_doneFrontApproach("true");
+	features["ready"] = wcm.get_horde_ready();
+	features["passKick"] = wcm.get_horde_passKick();
+        
+	print("sending some features, yo\n");-- wcm.set_horde_doneFrontApproach("true");
         --print(json.encode(features) .. "\n");
 	client:settimeout(nil);
 	client:send(json.encode(features) .. "\n");
         -- Send the features to horde via the client
         -- args may contain the amount of time to wait between sending
 
+end
+--[[function setupUDPDarwins()
+    --local myClient = 
+   local host, port = "localhost", 4010
+   -- load namespace
+   local socket = require("socket")
+   -- convert host name to ip address
+   local ip = assert(socket.dns.toip(host))
+   -- create a new UDP object
+   local udp = assert(socket.udp())
+   return udp
+end]]--
+
+function checkTimeout()
+	--print("commparing values");
+	if(Body.get_time() - wcm.get_horde_timeMark() > 1.0) then
+		--print("setting value");
+		wcm.set_horde_passKick(0);
+	end
 end
 function connectToHorde(port)
 		local socket = require("socket")
@@ -124,15 +146,21 @@ connectionThread = coroutine.create(function ()
  -- setup the server
                client = connectToHorde(4009);--initialize connection, wait for it.....
                connected = true;
-               print("connected")
+--               darwinComm = setupUDPDarwins();
+                     
+		print("connected")
   
                 while connected do
-                        updateAll();--move mah body, update FSM
-                	sendFeatures(client);--send all the features to horde
-                        client:settimeout(0);--non blocking read
+                        print("update all")
+			updateAll();--move mah body, update FSM
+                	print("send features");
+			sendFeatures(client);--send all the features to horde
+                        print("checkTimeout");
+			checkTimeout(); -- very special case for passKick timing out the feature to 0 after a second
+			client:settimeout(0);--non blocking read
 			local line, err = client:receive() -- read in horde commands
 			if not err then
-                                --print(line);
+                                print(line);
                                 if(line~=nil) then
 					updateAction(line, client);
 				end
@@ -168,7 +196,7 @@ function initMotion()--should be cleaned up, gets servos hard and standing up
         unix.usleep(1.00*1E6);
 
         Body.set_body_hardness(.50);
-        Motion.event("sit");
+        --Motion.event("sit");
         k = 0;
         while(.005 * k < 5.27) do
                 Motion.update();
@@ -176,8 +204,15 @@ function initMotion()--should be cleaned up, gets servos hard and standing up
                 unix.usleep(.005*1E6);
                 k=k+1;
         end
-	Motion.event("standup");
+	Motion.event("sit");
 	unix.usleep(3.0*1E6);
+        k = 0;
+	while(.005 * k < 5.27) do
+                Motion.update();
+                Body.update();
+                unix.usleep(.005*1E6);
+                k=k+1;
+        end
 	--BodyFSM.sm:set_state('bodyStop')		
 	BodyFSM.update();
 	

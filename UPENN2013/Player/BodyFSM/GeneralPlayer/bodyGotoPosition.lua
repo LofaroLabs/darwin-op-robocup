@@ -13,27 +13,37 @@ maxStep = Config.fsm.bodyGotoCenter.maxStep;
 rClose = Config.fsm.bodyGotoCenter.rClose;
 timeout = Config.fsm.bodyGotoCenter.timeout;
 --TODO: Goalie handling, velocity limit 
-
+alreadyDone = false;
 function entry()
   print(_NAME.." entry");
   HeadFSM.sm:set_state('headLookGoalPose');
   t0 = Body.get_time();
+  alreadyDone = false;
 end
 
 function update()
+  if(alreadyDone) then --checking if we've already gotten there to our best tolerance
+	return;
+  end
   local t = Body.get_time();
 
    pose = wcm.get_pose();
-   centerPosition = wcm.get_horde_gotoPose();
+   endPosition = wcm.get_horde_gotoPose();-- goto an arbitrary pose
    print("I'm in update!!\n");
-   print(centerPosition);
+   print(endPosition);
    -- centerPosition = {x,y,a} in global coordinates
    -- pose_relative will convert centerPosition to coordinates relative to the robot.
-  endPoseRelative  = util.pose_relative(centerPosition, {pose.x, pose.y, pose.a});
+  endPoseRelative  = util.pose_relative(endPosition, {pose.x, pose.y, pose.a});
   print("I converted\n");
     
   endPoseX = endPoseRelative[1];
   endPoseY = endPoseRelative[2];
+  if(math.abs(endPoseX)+math.abs(endPoseY)<.5) then
+	Motion.sm:set_state('standstill');
+	alreadyDone = true;
+	wcm.set_horde_ready(1);
+	return;
+  end
   print("X " .. endPoseX .. " Y: " .. endPoseY);
   scaleFactor = 20*(math.abs(endPoseX)+math.abs(endPoseY));
   rotateVel = 0;
@@ -49,6 +59,7 @@ function update()
 end
 
 function exit()
+  wcm.set_horde_ready(0);
   --HeadFSM.sm:set_state('headLookGoalGMU');
 end
 
