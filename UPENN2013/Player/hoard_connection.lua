@@ -178,13 +178,18 @@ function updateAction(servData, client)
   --Update battery info
   wcm.set_robot_battery_level(Body.get_battery_level());
   vcm.set_camera_teambroadcast(1); --Turn on wireless team broadcast
-  
+        print("printing servData");
+	print(servData);  
 	print("In update")
 	req = json.decode(servData)
-
+        print("fuckshit\n")
+	print("unholywords\n");
+	unix.usleep(.04*1E6);
 	print("Received action "..req.action);
 	hoard_functions.hordeFunctions[req.action](req.args, client)--this is wrong, only here for the send.... TODO
-	--updateAll
+	print("after horde function");
+	--unix.usleep(1*1E6);	
+--updateAll
 	--wcm.set_horde_state(req.action);
 --  hordeFunctions["walkForward"](nil,nil);  
 end
@@ -195,8 +200,8 @@ function initMotion()--should be cleaned up, gets servos hard and standing up
 	Motion.entry();
         unix.usleep(1.00*1E6);
 
-        Body.set_body_hardness(.50);
-        --Motion.event("sit");
+        Body.set_body_hardness(.00);
+        Motion.event("sit");
         k = 0;
         while(.005 * k < 5.27) do
                 Motion.update();
@@ -205,14 +210,6 @@ function initMotion()--should be cleaned up, gets servos hard and standing up
                 k=k+1;
         end
 	Motion.event("sit");
-	unix.usleep(3.0*1E6);
-        k = 0;
-	while(.005 * k < 5.27) do
-                Motion.update();
-                Body.update();
-                unix.usleep(.005*1E6);
-                k=k+1;
-        end
 	--BodyFSM.sm:set_state('bodyStop')		
 	BodyFSM.update();
 	

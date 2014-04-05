@@ -138,7 +138,9 @@ hordeFunctions["kickTo"] = function(args,client)
 
 end
 hordeFunctions["approachBall"] = function(args,client)
-        BodyFSM.sm:set_state('bodyApproach');
+        print("Approaching Ball");
+	BodyFSM.sm:set_state('bodyApproach');
+	print("Set State to bodyApproach for the BodyFSM");
 	--sm.entry();
 end
 hordeFunctions["kickBall"] = function(args,client)

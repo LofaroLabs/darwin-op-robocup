@@ -89,8 +89,8 @@ function check_approach_type()
 
 
   y_inv=0;
- -- kick_type=2;
- -- kick_dir=1;  
+  kick_type=2;
+  kick_dir=1;  
   if kick_type==1 then --Stationary 
     if kick_dir==1 then --Front kick
       xTarget = Config.fsm.bodyApproach.xTarget11;
@@ -350,7 +350,9 @@ print("OMFGOMFGOMFOMGOMFOMFOMGOMGOMGOMG KICK");
 	wcm.set_horde_doneFrontApproach(1);
 	return "walkkick";
       end
-    end
+     else
+        wcm.set_horde_doneFrontApproach(0);
+     end
   else
     --Side kick, only check one side
     if (ball.x < xTarget[3]) and (t-ball.t < 0.5) and
@@ -376,12 +378,15 @@ print("OMFGOMFGOMFOMGOMFOMFOMGOMGOMGOMG KICK");
 	wcm.set_horde_doneFrontApproach(1);
 	return "walkkick";
       end
+    else
+	wcm.set_horde_doneFrontApproach(0);
     end
   end
 end
 
 function exit()
-  HeadFSM.sm:set_state('headTrack');
+   wcm.set_horde_doneFrontApproach(0);
+   HeadFSM.sm:set_state('headTrack');
 end
 
 function sign(x)

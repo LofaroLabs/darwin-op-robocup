@@ -60,6 +60,7 @@ end
 
 function exit()
   wcm.set_horde_ready(0);
-  --HeadFSM.sm:set_state('headLookGoalGMU');
+  Motion.sm:add_event('walk');
+  HeadFSM.sm:set_state('headLookGoalGMU');
 end
 

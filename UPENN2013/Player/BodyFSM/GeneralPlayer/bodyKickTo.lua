@@ -249,34 +249,36 @@ function update()
     print("got to pose to goal calculation");
     pose = wcm.get_pose();
     print("grabbed pose from wcm");
-    --receiveRelative = util.pose_relative(wcm.get_horde_kickToPose(), {pose.x, pose.y, pose.a});
-    receiveRelative = util.pose_relative(wcm.get_goal_attack(), {pose.x, pose.y, pose.a});
+    receiveRelative = util.pose_relative(wcm.get_horde_kickToPose(), {pose.x, pose.y, pose.a});
+    --receiveRelative = util.pose_relative(wcm.get_goal_attack(), {pose.x, pose.y, pose.a});
      
 	print("calculated goal relative");
     angle_check_done = true;
-    print("goal relative: " .. receiveRelative[3]);
-    stepFactor = 1;
-    --if(goalRelative[1]<0)then
+    print("goal relative: " .. receiveRelative);
+   stepFactor = 1;
+  --  if(receiveRelative[1]<0)then
 --	stepFactor = -1;
  --   end
-    if receiveRelative[2] < 0 then
-       	print("turn left");
-	vStep[3]=0.2*stepFactor;
-      elseif receiveRelative[2]  > 0 then
-        print("turn right");
-	vStep[3]=-0.2*stepFactor;
-      else
-        vStep[3]=0;
+    if (math.abs(receiveRelative[3]) >.3) then
+    	if receiveRelative[2] > 0 then
+      		print("turn left");
+		vStep[3]=0.2*stepFactor;
+      	elseif receiveRelative[2]  < 0 then
+        	print("turn right");
+		vStep[3]=-0.2*stepFactor;
+      	else
+      	  vStep[3]=0;
+      	end
       end
-    end--
+   --
     -- end override
 --[[TEMP
    if check_angle>0 then
       if angleErrR > 0 then
---print("TURNLEFT")
+print("would TURNLEFT")
         vStep[3]=0.2;
       elseif angleErrL > 0 then
---print("TURNRIGHT")
+print("would TURNRIGHT")
         vStep[3]=-0.2;
       else
         vStep[3]=0;
@@ -336,16 +338,17 @@ function update()
  if check_angle>0 and
      (angleErrL > 0 or
      angleErrR > 0 )then
-    angle_check_done=false;
+    --angle_check_done=false;
     print("Goal stats: " .. receiveRelative[1] .. ", " .. receiveRelative[2] .. ", " .. receiveRelative[3]);
   else
     print("Goal stats ACCEPT: " .. receiveRelative[1] .. ", " .. receiveRelative[2] .. ", " .. receiveRelative[3]);
   end
   if (math.abs(receiveRelative[3]) >.3) then
-     print("my kick would trigger");
+     print("my kick would NOT trigger");
      angle_check_done=false;
+  else
+     print("my kick would trigger");
   end
-  
     --For front kick, check for other side too
   if kick_dir==1 then --Front kick
     yTargetMin = math.min(math.abs(yTarget[1]),math.abs(yTarget[3]));
@@ -378,6 +381,9 @@ print("OMFGOMFGOMFOMGOMFOMFOMGOMGOMGOMG KICK");
 	wcm.set_horde_ready(1);
 	return "walkkick";
       end
+    else
+        print("setting front approach to zero");
+        wcm.set_horde_doneFrontApproach(0);
     end
   else
     --Side kick, only check one side
@@ -406,12 +412,18 @@ print("OMFGOMFGOMFOMGOMFOMFOMGOMGOMGOMG KICK");
 	wcm.set_horde_ready(1);
 	return "walkkick";
       end
+    else
+        print("setting front approach to zero");
+        wcm.set_horde_doneFrontApproach(0);
+    end
     end
   end
 end
 
 function exit()
-  HeadFSM.sm:set_state('headTrack');
+  print("setting front approach to zero2");
+  wcm.set_horde_doneFrontApproach(0);
+  HeadFSM.sm:set_state('headTrackGMU');
 end
 
 function sign(x)

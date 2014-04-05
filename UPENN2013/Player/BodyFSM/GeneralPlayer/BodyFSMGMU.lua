@@ -38,7 +38,7 @@ require('bodyDive')
 require('bodyGotoPosition')
 
 require('bodyUnpenalized')
-
+require('bodyApproach')
 
 
 require('bodyReadyMove')
@@ -46,6 +46,7 @@ require('bodyReadyMove')
 
 
 sm = fsm.new(bodyIdle);
+sm:add_state(bodyApproach);
 sm:add_state(bodyStart);
 sm:add_state(bodyStop);
 sm:add_state(bodyReady);
