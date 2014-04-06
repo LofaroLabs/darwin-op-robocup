@@ -42,6 +42,8 @@ function update()
 	Motion.sm:set_state('standstill');
 	alreadyDone = true;
 	wcm.set_horde_ready(1);
+	wcm.set_horde_passKick(1);
+	wcm.set_horde_timeMark(Body.get_time());
 	return;
   end
   print("X " .. endPoseX .. " Y: " .. endPoseY);
@@ -60,6 +62,8 @@ end
 
 function exit()
   wcm.set_horde_ready(0);
+  wcm.set_horde_passKick(1);
+  wcm.set_horde_timeMark(Body.get_time());
   Motion.sm:add_event('walk');
   HeadFSM.sm:set_state('headLookGoalGMU');
 end

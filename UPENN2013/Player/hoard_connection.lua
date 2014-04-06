@@ -126,7 +126,7 @@ end]]--
 
 function checkTimeout()
 	--print("commparing values");
-	if(Body.get_time() - wcm.get_horde_timeMark() > 1.0) then
+	if(Body.get_time() - wcm.get_horde_timeMark() > 5.0) then
 		--print("setting value");
 		wcm.set_horde_passKick(0);
 	end
