@@ -16,15 +16,16 @@ function entry()
 
   -- set head to default position
   local yaw = 0;
-  local pitch = 20*math.pi/180;
-
-  Body.set_head_command({yaw, pitch-pitchBias});
+  local pitch =0  --28*math.pi/180;-- 22 is MAX DONOT GO HIGH (thank you chau)
+  Body.set_head_command({yaw, pitch});
 
   -- continuously switch cameras
   vcm.set_camera_command(-1);
 end
 
 function update()
+local pitch = 0 --24*math.pi/180;-- 22 is MAX DONOT GO HIGH (thank you chau)
+  Body.set_head_command({yaw, pitch});
 end
 
 function exit()

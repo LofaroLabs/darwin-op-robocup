@@ -5,23 +5,34 @@ require('Motion')
 
 function entry()
   print(_NAME..' entry');
-
+  
+  HeadFSM.sm:set_state('headLookGoalGMU');
   walk.set_velocity(0,0,0);
   walk.stop();
   started = false;
 end
-
+tempTimer = 0.0;
 function update()
   --for webots : we have to stop with 0 bodytilt
   if not started then
     if not walk.active then
     Motion.sm:set_state('standstill');
     started = true;
+    tempTimer = Body.get_time();
     end
+  end
+  if(started and (Body.get_time() - tempTimer) == 5.0) then
+    wcm.set_horde_ready(1);
   end
   
 end
 
 function exit()
+  wcm.set_horde_ready(1);
+  --wcm.set_horde_passKick(1);
+  wcm.set_horde_timeMark(Body.get_time());
   Motion.sm:add_event('walk');
+  Motion.update();--he wasnt getting out of stop trying to tease him back into it.
+  HeadFSM.sm:set_state('headLookGoalGMU');
+
 end

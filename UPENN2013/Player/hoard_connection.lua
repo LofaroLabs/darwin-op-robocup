@@ -50,7 +50,8 @@ darwin = true;
 ready = true;
 smindex = 0;
 initToggle = true;
-
+updateAllTimer=0;
+sendFeaturesTimer =0;
 -- main loop
 count = 0;
 lcount = 0;
@@ -78,12 +79,15 @@ end
 --        gcm.set_game_state(3);
  
 previousState = "nil";
+fpsTimer = Body.get_time();
 function updateAll(newState)
 	gcm.set_game_state(3);
        	Motion.update();
        	Body.update();
         BodyFSM.update();
         HeadFSM.update();
+	
+	fpsTimer = Body.get_time(); 
 end
 count = 0;
 function sendFeatures (client)
@@ -91,9 +95,24 @@ function sendFeatures (client)
          	return;
         end
 	features = {};
-        features["poseX"] = wcm.get_pose().x;
-        features["poseY"] = wcm.get_pose().y;
-        features["poseA"] = wcm.get_pose().a;
+        features["playerID"] = Config.playerID;
+        features["role"] = Config.role;
+	
+	xPoseArr = {}
+	xPoseArr[1] = wcm.get_team_attacker_pose()[1];
+	xPoseArr[2] = wcm.get_team_defender_pose()[1];
+	yPoseArr = {}
+	yPoseArr[1] = wcm.get_team_attacker_pose()[2];
+        yPoseArr[2] = wcm.get_team_defender_pose()[2];
+	aPoseArr = {}
+	aPoseArr[1] = wcm.get_team_attacker_pose()[3];
+	aPoseArr[2] = wcm.get_team_attacker_pose()[3];
+
+	features["poseX"] = xPoseArr;
+        features["poseY"] = yPoseArr;
+        features["poseA"] = aPoseArr;
+        
+	
         features["ballDetect"] = vcm.get_ball_detect();
         features["ballX"] = wcm.get_ball_x();
         features["ballY"] = wcm.get_ball_y();
@@ -104,9 +123,9 @@ function sendFeatures (client)
 	features["ready"] = wcm.get_horde_ready();
 	features["passKick"] = wcm.get_horde_passKick();
         
-	print("sending some features, yo\n");-- wcm.set_horde_doneFrontApproach("true");
+	--print("sending some features, yo\n");-- wcm.set_horde_doneFrontApproach("true");
         --print(json.encode(features) .. "\n");
-	client:settimeout(nil);
+	client:settimeout(.002);
 	client:send(json.encode(features) .. "\n");
         -- Send the features to horde via the client
         -- args may contain the amount of time to wait between sending
@@ -126,10 +145,16 @@ end]]--
 
 function checkTimeout()
 	--print("commparing values");
+	if(wcm.get_horde_timeMark() ~= nil) then
+		print(" " .. wcm.get_horde_timeMark()); 
+	end
 	if(Body.get_time() - wcm.get_horde_timeMark() > 5.0) then
-		--print("setting value");
+		print("setting value");
 		wcm.set_horde_passKick(0);
 	end
+	if((Body.get_time() - fpsTimer) > .1) then
+                print("time since last frame: " .. (Body.get_time() - fpsTimer) .. updateAllTimer .. " " .. sendFeaturesTimer);
+        end
 end
 function connectToHorde(port)
 		local socket = require("socket")
@@ -151,11 +176,15 @@ connectionThread = coroutine.create(function ()
 		print("connected")
   
                 while connected do
-                        print("update all")
+--                        print("update all")
+			updateAllTimer = Body.get_time();
 			updateAll();--move mah body, update FSM
-                	print("send features");
+			updateAllTimer = Body.get_time()-updateAllTimer;
+  --              	print("send features");
+			sendFeaturesTimer = Body.get_time();
 			sendFeatures(client);--send all the features to horde
-                        print("checkTimeout");
+			sendFeaturesTimer = Body.get_time() - sendFeaturesTimer;
+    --                    print("checkTimeout");
 			checkTimeout(); -- very special case for passKick timing out the feature to 0 after a second
 			client:settimeout(0);--non blocking read
 			local line, err = client:receive() -- read in horde commands
@@ -178,16 +207,16 @@ function updateAction(servData, client)
   --Update battery info
   wcm.set_robot_battery_level(Body.get_battery_level());
   vcm.set_camera_teambroadcast(1); --Turn on wireless team broadcast
-        print("printing servData");
+        --print("printing servData");
 	print(servData);  
-	print("In update")
+	--print("In update")
 	req = json.decode(servData)
-        print("fuckshit\n")
-	print("unholywords\n");
+        --print("fuckshit\n")
+	--print("unholywords\n");
 	unix.usleep(.04*1E6);
 	print("Received action "..req.action);
 	hoard_functions.hordeFunctions[req.action](req.args, client)--this is wrong, only here for the send.... TODO
-	print("after horde function");
+	--print("after horde function");
 	--unix.usleep(1*1E6);	
 --updateAll
 	--wcm.set_horde_state(req.action);

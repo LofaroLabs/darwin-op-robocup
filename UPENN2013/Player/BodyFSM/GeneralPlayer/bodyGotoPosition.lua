@@ -19,6 +19,7 @@ function entry()
   HeadFSM.sm:set_state('headLookGoalPose');
   t0 = Body.get_time();
   alreadyDone = false;
+  wcm.set_horde_ready(0);-- added this need to check.
 end
 
 function update()
@@ -35,10 +36,10 @@ function update()
    -- pose_relative will convert centerPosition to coordinates relative to the robot.
   endPoseRelative  = util.pose_relative(endPosition, {pose.x, pose.y, pose.a});
   print("I converted\n");
-    
+ 
   endPoseX = endPoseRelative[1];
   endPoseY = endPoseRelative[2];
-  if(math.abs(endPoseX)+math.abs(endPoseY)<.5) then
+  if(math.abs(endPoseX)+math.abs(endPoseY)<.2 and math.abs(pose.a - endPoseRelative[3]) >.3) then
 	Motion.sm:set_state('standstill');
 	alreadyDone = true;
 	wcm.set_horde_ready(1);
@@ -49,15 +50,22 @@ function update()
   print("X " .. endPoseX .. " Y: " .. endPoseY);
   scaleFactor = 20*(math.abs(endPoseX)+math.abs(endPoseY));
   rotateVel = 0;
-  if(math.abs(endPoseY)/math.abs(endPoseX)>.25) then
+  --if we are not close enough to our goal position
+  if(math.abs(endPoseX)+math.abs(endPoseY)>.2 and math.abs(endPoseY)/math.abs(endPoseX)>.3) then
       if(endPoseY>0) then
            rotateVel = 1;
       else
            rotateVel = -1;
       end
+   walk.set_velocity(endPoseX/scaleFactor, endPoseY/scaleFactor,rotateVel);
+  elseif(math.abs(pose.a - endPoseRelative[3]) >.3) then -- now that our distance is fine, let's look at the angle we need to go to
+       if(endPoseRelative[3]<0) then
+           rotateVel = 1;
+      else
+           rotateVel = -1;
+      end
+     walk.set_velocity(0, 0,rotateVel);
   end
-  walk.set_velocity(endPoseX/scaleFactor, endPoseY/scaleFactor,rotateVel);
-
 end
 
 function exit()

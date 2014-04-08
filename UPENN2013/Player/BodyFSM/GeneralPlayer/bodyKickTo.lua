@@ -250,11 +250,13 @@ function update()
     pose = wcm.get_pose();
     print("grabbed pose from wcm");
     receiveRelative = util.pose_relative(wcm.get_horde_kickToPose(), {pose.x, pose.y, pose.a});
+    receiveRelative[3] = math.atan2(receiveRelative[2], receiveRelative[1]);
     --receiveRelative = util.pose_relative(wcm.get_goal_attack(), {pose.x, pose.y, pose.a});
+
      
 	print("calculated goal relative");
     angle_check_done = true;
-    print("goal relative: " .. receiveRelative);
+    print("goal relative: " .. receiveRelative[3]);
    stepFactor = 1;
   --  if(receiveRelative[1]<0)then
 --	stepFactor = -1;
