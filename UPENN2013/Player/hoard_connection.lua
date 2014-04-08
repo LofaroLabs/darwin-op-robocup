@@ -94,9 +94,9 @@ function sendFeatures (client)
         if(wcm.get_horde_sendStatus()~="StartSending") then
          	return;
         end
-	features = {};
-        features["playerID"] = Config.playerID;
-        features["role"] = Config.role;
+	features = {}
+        features["playerID"] = Config.game.playerID;
+        features["role"] = Config.game.role;
 	
 	xPoseArr = {}
 	xPoseArr[1] = wcm.get_team_attacker_pose()[1];
@@ -143,7 +143,7 @@ end
    return udp
 end]]--
 
-function checkTimeout()
+--[[function checkTimeout()
 	--print("commparing values");
 	if(wcm.get_horde_timeMark() ~= nil) then
 		print(" " .. wcm.get_horde_timeMark()); 
@@ -155,7 +155,7 @@ function checkTimeout()
 	if((Body.get_time() - fpsTimer) > .1) then
                 print("time since last frame: " .. (Body.get_time() - fpsTimer) .. updateAllTimer .. " " .. sendFeaturesTimer);
         end
-end
+end--]]
 function connectToHorde(port)
 		local socket = require("socket")
                 local server = assert(socket.bind("*", port))
