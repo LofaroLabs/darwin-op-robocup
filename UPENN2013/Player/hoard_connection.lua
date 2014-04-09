@@ -123,8 +123,8 @@ function sendFeatures (client)
 	features["ready"] = wcm.get_horde_ready();
 	features["passKick"] = wcm.get_horde_passKick();
         
-	print("sending some features, yo\n");-- wcm.set_horde_doneFrontApproach("true");
-        print(json.encode(features) .. "\n");
+	--print("sending some features, yo\n");-- wcm.set_horde_doneFrontApproach("true");
+        --print(json.encode(features) .. "\n");
 	client:settimeout(.002);
 	client:send(json.encode(features) .. "\n");
         -- Send the features to horde via the client
