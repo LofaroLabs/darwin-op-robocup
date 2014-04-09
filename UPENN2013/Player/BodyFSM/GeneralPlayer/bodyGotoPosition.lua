@@ -39,7 +39,7 @@ function update()
  
   endPoseX = endPoseRelative[1];
   endPoseY = endPoseRelative[2];
-  if(math.abs(endPoseX)+math.abs(endPoseY)<.2 and math.abs(pose.a - endPoseRelative[3]) >.3) then
+  if(math.abs(endPoseX)+math.abs(endPoseY)<.4 and math.abs(pose.a - endPoseRelative[3]) >.3) then
 	Motion.sm:set_state('standstill');
 	alreadyDone = true;
 	wcm.set_horde_ready(1);

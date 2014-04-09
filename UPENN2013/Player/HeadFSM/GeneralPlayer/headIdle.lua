@@ -16,7 +16,7 @@ function entry()
 
   -- set head to default position
   local yaw = 0;
-  local pitch =-14*math.pi/180;-- 22 is MAX DONOT GO HIGH (thank you chau)
+  local pitch =-16*math.pi/180;-- 22 is MAX DONOT GO HIGH (thank you chau)
   Body.set_head_command({yaw, pitch});
 
   -- continuously switch cameras
@@ -24,7 +24,7 @@ function entry()
 end
 
 function update()
-local pitch = -14*math.pi/180;-- 22 is MAX DONOT GO HIGH (thank you chau)
+local pitch = -16*math.pi/180;-- 22 is MAX DONOT GO HIGH (thank you chau)
   Body.set_head_command({yaw, pitch});
 end
 
