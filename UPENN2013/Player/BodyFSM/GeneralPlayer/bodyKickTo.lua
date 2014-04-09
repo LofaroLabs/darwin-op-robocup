@@ -371,7 +371,7 @@ print("would TURNRIGHT")
 	print("1OMFGOMFGOMFOMGOMFOMFOMGOMGOMGOMG KICK");
 	print("1OMFGOMFGOMFOMGOMFOMFOMGOMGOMGOMG KICK");
 	wcm.set_horde_doneFrontApproach(1);
-	wcm.set_horde_ready(1);
+	--wcm.set_horde_ready(0);
 	return "kick";
       else 
 	print("OMFGOMFGOMFOMGOMFOMFOMGOMGOMGOMG KICK");
@@ -380,7 +380,7 @@ print("OMFGOMFGOMFOMGOMFOMFOMGOMGOMGOMG KICK");
 	print("OMFGOMFGOMFOMGOMFOMFOMGOMGOMGOMG KICK");
 	print("OMFGOMFGOMFOMGOMFOMFOMGOMGOMGOMG KICK");
 	wcm.set_horde_doneFrontApproach(1);
-	wcm.set_horde_ready(1);
+	--wcm.set_horde_ready(1);
 	return "walkkick";
       end
     else

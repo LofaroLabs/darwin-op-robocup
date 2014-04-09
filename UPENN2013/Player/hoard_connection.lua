@@ -248,7 +248,9 @@ end
 if(darwin) then 
 --        hoard_functions.hordeFunctions["murder all humans"](nil,nil);
 	--Motion.event("standup");	
-        initMotion();
+        wcm.set_horde_ready(0);
+	wcm.set_horde_passKick(0);
+	initMotion();
 	print("starting connection thread\n");
 	coroutine.resume(connectionThread);
 	print("connection lost")
