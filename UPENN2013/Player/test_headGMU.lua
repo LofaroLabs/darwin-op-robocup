@@ -50,8 +50,7 @@ darwin = true;
 ready = true;
 smindex = 0;
 initToggle = true;
-updateAllTimer=0;
-sendFeaturesTimer =0;
+
 -- main loop
 count = 0;
 lcount = 0;
@@ -76,85 +75,35 @@ end
 --table.foreach(Body.get_sensor_data(),inspect)
 
 --my stuff, ugly
---        gcm.set_game_state(3);
- 
+
 previousState = "nil";
-fpsTimer = Body.get_time();
 function updateAll(newState)
 	gcm.set_game_state(3);
        	Motion.update();
        	Body.update();
         BodyFSM.update();
         HeadFSM.update();
-	
-	fpsTimer = Body.get_time(); 
 end
 count = 0;
 function sendFeatures (client)
         if(wcm.get_horde_sendStatus()~="StartSending") then
          	return;
         end
-	features = {}
-        features["playerID"] = Config.game.playerID;
-        features["role"] = Config.game.role;
-	
-	xPoseArr = {}
-	xPoseArr[1] = wcm.get_team_attacker_pose()[1];
-	xPoseArr[2] = wcm.get_team_defender_pose()[1];
-	yPoseArr = {}
-	yPoseArr[1] = wcm.get_team_attacker_pose()[2];
-        yPoseArr[2] = wcm.get_team_defender_pose()[2];
-	aPoseArr = {}
-	aPoseArr[1] = wcm.get_team_attacker_pose()[3];
-	aPoseArr[2] = wcm.get_team_defender_pose()[3];
-
-	features["poseX"] = xPoseArr;
-        features["poseY"] = yPoseArr;
-        features["poseA"] = aPoseArr;
-        
-	
+	features = {};
+        features["poseX"] = wcm.get_pose().x;
+        features["poseY"] = wcm.get_pose().y;
+        features["poseA"] = wcm.get_pose().a;
         features["ballDetect"] = vcm.get_ball_detect();
         features["ballX"] = wcm.get_ball_x();
         features["ballY"] = wcm.get_ball_y();
         features["doneFrontApproach"] = wcm.get_horde_doneFrontApproach();
-        features["particleX"] = wcm.get_particle_x();
-        features["particleY"] = wcm.get_particle_y();
-	features["particleA"] = wcm.get_particle_a();
-	features["ready"] = wcm.get_horde_ready();
-	features["passKick"] = wcm.get_horde_passKick();
-        
-	print("sending some features, yo\n");-- wcm.set_horde_doneFrontApproach("true");
-        print(json.encode(features) .. "\n");
-	client:settimeout(.002);
+        --print("sending some features, yo\n");-- wcm.set_horde_doneFrontApproach("true");
+        --print(json.encode(features) .. "\n");
+	client:settimeout(nil);
 	client:send(json.encode(features) .. "\n");
         -- Send the features to horde via the client
         -- args may contain the amount of time to wait between sending
 
-end
---[[function setupUDPDarwins()
-    --local myClient = 
-   local host, port = "localhost", 4010
-   -- load namespace
-   local socket = require("socket")
-   -- convert host name to ip address
-   local ip = assert(socket.dns.toip(host))
-   -- create a new UDP object
-   local udp = assert(socket.udp())
-   return udp
-end]]--
-
-function checkTimeout()
-	--print("commparing values");
-	if(wcm.get_horde_timeMark() ~= nil) then
-	--	print(" " .. wcm.get_horde_timeMark()); 
-	end
-	if(Body.get_time() - wcm.get_horde_timeMark() > 5.0) then
-	--	print("setting value");
-		wcm.set_horde_passKick(0);
-	end
-	if((Body.get_time() - fpsTimer) > .1) then
-                print("time since last frame: " .. (Body.get_time() - fpsTimer) .. updateAllTimer .. " " .. sendFeaturesTimer);
-        end
 end
 function connectToHorde(port)
 		local socket = require("socket")
@@ -171,25 +120,15 @@ connectionThread = coroutine.create(function ()
  -- setup the server
                client = connectToHorde(4009);--initialize connection, wait for it.....
                connected = true;
---               darwinComm = setupUDPDarwins();
-                     
-		print("connected")
+               print("connected")
   
                 while connected do
---                        print("update all")
-			updateAllTimer = Body.get_time();
-			updateAll();--move mah body, update FSM
-			updateAllTimer = Body.get_time()-updateAllTimer;
-  --              	print("send features");
-			sendFeaturesTimer = Body.get_time();
-			sendFeatures(client);--send all the features to horde
-			sendFeaturesTimer = Body.get_time() - sendFeaturesTimer;
-    --                    print("checkTimeout");
-			--checkTimeout(); -- very special case for passKick timing out the feature to 0 after a second
-			client:settimeout(0);--non blocking read
-			local line, err = client:receive() -- read in horde commands
+                        updateAll();--move mah body, update FSM
+                	sendFeatures(client);
+                        client:settimeout(0);--non blocking read
+			local line, err = client:receive()
 			if not err then
-                                print(line);
+                                --print(line);
                                 if(line~=nil) then
 					updateAction(line, client);
 				end
@@ -207,29 +146,23 @@ function updateAction(servData, client)
   --Update battery info
   wcm.set_robot_battery_level(Body.get_battery_level());
   vcm.set_camera_teambroadcast(1); --Turn on wireless team broadcast
-        --print("printing servData");
-	print(servData);  
-	--print("In update")
+  
+	print("In update")
 	req = json.decode(servData)
-        --print("fuckshit\n")
-	--print("unholywords\n");
-	unix.usleep(.04*1E6);
+
 	print("Received action "..req.action);
 	hoard_functions.hordeFunctions[req.action](req.args, client)--this is wrong, only here for the send.... TODO
-	--print("after horde function");
-	--unix.usleep(1*1E6);	
---updateAll
+	--updateAll
 	--wcm.set_horde_state(req.action);
 --  hordeFunctions["walkForward"](nil,nil);  
 end
 
 function initMotion()--should be cleaned up, gets servos hard and standing up
-	gcm.set_game_state(3);
- 	BodyFSM.entry();
+	BodyFSM.entry();
 	Motion.entry();
         unix.usleep(1.00*1E6);
 
-        Body.set_body_hardness(.00);
+        Body.set_body_hardness(.0);
         Motion.event("sit");
         k = 0;
         while(.005 * k < 5.27) do
@@ -238,21 +171,26 @@ function initMotion()--should be cleaned up, gets servos hard and standing up
                 unix.usleep(.005*1E6);
                 k=k+1;
         end
-	Motion.event("sit");
-	--BodyFSM.sm:set_state('bodyStop')		
+	--Motion.event("sit");
+	unix.usleep(5.0*1E6);
+	BodyFSM.sm:set_state('bodyKickTo')		
 	BodyFSM.update();
-	
+	HeadFSM.sm:set_state('headTrackGMU');	
 --	BodyFSM.entry();	
 end
 --start "main"
 if(darwin) then 
 --        hoard_functions.hordeFunctions["murder all humans"](nil,nil);
-	--Motion.event("standup");	
-        wcm.set_horde_ready(0);
-	wcm.set_horde_passKick(0);
 	initMotion();
 	print("starting connection thread\n");
-	coroutine.resume(connectionThread);
+	while(1) do
+		unix.usleep(.05*1E6);
+		updateAll();
+		unix.usleep(.05*1E6);
+		updateAll();
+--		BodyFSM.sm:set_state('bodyKickGMU');
+	end
+--	coroutine.resume(connectionThread);
 	print("connection lost")
 --	wcm.set_horde_state("gotoBall");
 end
