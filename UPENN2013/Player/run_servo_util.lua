@@ -83,13 +83,13 @@ myFunctions["setServoHardness"] = function (args, client)
 
 end
 
-co = coroutine.create(function (args, client)
+co = nill;--coroutine.create(function (args, client)
 	
 --	client:send(json.encode(thedata));
 	-- Send the features to horde via the client
 	-- args may contain the amount of time to wait between sending
 	
-)
+--)
 myFunctions["StartSending"] = function (args, client)
 	coroutine.resume(co,args, client);
 end

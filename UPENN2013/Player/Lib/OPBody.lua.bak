@@ -12,17 +12,19 @@ for k,v in pairs(dcm) do
   getfenv()[k] = v;
 end
 
--- Used for UI
+-- I don't think we use these joint names ever
+--[[
 jointNames = {"HeadYaw", "HeadPitch",
               "LShoulderPitch", "LShoulderRoll",
-              "LElbow",
+              "LElbowYaw", "LElbowRoll",
               "LHipYawPitch", "LHipRoll", "LHipPitch",
               "LKneePitch", "LAnklePitch", "LAnkleRoll",
               "RHipYawPitch", "RHipRoll", "RHipPitch",
               "RKneePitch", "RAnklePitch", "RAnkleRoll",
               "RShoulderPitch", "RShoulderRoll",
-              "RElbow"};
+              "RElbowYaw", "RElbowRoll"};
 
+----]]
 
 nJoint = controller.nJoint; --DLC
 
@@ -45,15 +47,6 @@ nJointAux=nJoint-20;
 get_time = unix.time; --DLC specific
 
 function update()
-end
-
-function get_sensor_data() 
-	local q = get_sensor_position();
-	local output = {}
-	for i, jname in ipairs(jointNames) do
-		output[i] = {name = jname, current = 180/math.pi*q[i]}
-	end
-	return output
 end
 
 -- setup convience functions
@@ -107,12 +100,6 @@ function set_rleg_pid(val)
   set_actuator_d_param(d_param,indexRLeg);
 
   set_actuator_slopeChanged(1,1);
-end
-
-
-function set_servo_hardness(index, val)
-	set_actuator_hardness(val, index);
-	set_actuator_hardnessChanged(1);
 end
 
 function set_body_hardness(val)
@@ -198,11 +185,6 @@ function set_aux_command(val)
   if nJointAux==0 then return;end
   set_actuator_command(val, indexAux);
 end
-
-function set_servo_command(servo_index, val)
-	set_actuator_command(val, servo_index)
-end
-
 
 --Added by SJ
 function set_syncread_enable(val) 
