@@ -143,19 +143,19 @@ end
    return udp
 end]]--
 
---[[function checkTimeout()
+function checkTimeout()
 	--print("commparing values");
 	if(wcm.get_horde_timeMark() ~= nil) then
-		print(" " .. wcm.get_horde_timeMark()); 
+	--	print(" " .. wcm.get_horde_timeMark()); 
 	end
 	if(Body.get_time() - wcm.get_horde_timeMark() > 5.0) then
-		print("setting value");
+	--	print("setting value");
 		wcm.set_horde_passKick(0);
 	end
 	if((Body.get_time() - fpsTimer) > .1) then
                 print("time since last frame: " .. (Body.get_time() - fpsTimer) .. updateAllTimer .. " " .. sendFeaturesTimer);
         end
-end--]]
+end
 function connectToHorde(port)
 		local socket = require("socket")
                 local server = assert(socket.bind("*", port))

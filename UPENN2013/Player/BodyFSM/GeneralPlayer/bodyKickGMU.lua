@@ -58,5 +58,7 @@ function update()
 end
 
 function exit()
+    wcm.set_horde_passKick(1);
+    wcm.set_horde_timeMark(Body.get_time()) 
  -- HeadFSM.sm:set_state('headTrack');
 end
