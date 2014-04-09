@@ -21,16 +21,10 @@ function update()
     tempTimer = Body.get_time();
     end
   end
-  if(started and (Body.get_time() - tempTimer) == 5.0) then
-    wcm.set_horde_ready(1);
-  end
-  
+ 
 end
 
 function exit()
-  wcm.set_horde_ready(1);
-  --wcm.set_horde_passKick(1);
-  wcm.set_horde_timeMark(Body.get_time());
   Motion.sm:add_event('walk');
   Motion.update();--he wasnt getting out of stop trying to tease him back into it.
   HeadFSM.sm:set_state('headLookGoalGMU');

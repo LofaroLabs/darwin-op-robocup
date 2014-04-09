@@ -47,8 +47,9 @@ initToggle = true;
 targetvel=vector.zeros(3);
 button_pressed = {0,0};
 
-
-
+ballDistToggle = 0;
+ insist = false;
+insistBall = false;
 function process_keyinput()
   local str=getch.get();
   if #str>0 then
@@ -68,13 +69,28 @@ function process_keyinput()
           wcm.set_horde_passKick(0);
         end
     end
-   if byte==string.byte("a") then
+   if byte==string.byte("f") then
         if (wcm.get_horde_doneFrontApproach()==0) then
           wcm.set_horde_doneFrontApproach(1);
-        else
+          insist = true;
+	else
+ 	  insist = false;
           wcm.set_horde_doneFrontApproach(0);
         end
     end
+   if byte==string.byte("d") then
+        if (vcm.get_ball_detect()==0) then
+          vcm.set_ball_detect(1);
+          insistBall = true;
+	else
+	  insistBall = false;
+	  vcm.get_ball_detect(0);         
+        end
+    end
+    if(byte==string.byte("b")) then
+	ballDistToggle = (ballDistToggle +1) % 4;
+    end
+
   end
 end
 
@@ -89,6 +105,25 @@ end
   while (true) do
     -- update motion process
     update();
-    io.stdout:flush();
-	print("frontApproach: " .. tostring(wcm.get_horde_doneFrontApproach()) .. "ready: " .. tostring(wcm.get_horde_ready()) .. " passkick: " .. tostring(wcm.get_horde_passKick()));
+   if(ballDistToggle == 0) then
+	ballDist = .582259821
+   elseif(ballDistToggle==1) then
+   	ballDist = .2711234985
+   elseif(ballDistToggle==2) then
+	ballDist = .15;
+   else
+        ballDist = 0.0;
+   end
+   if(ballDistToggle~=3) then
+   	wcm.set_ball_x(ballDist);
+   end
+   wcm.set_ball_y(0);
+   if (insist) then
+   	wcm.set_horde_doneFrontApproach(1);
+   end
+   if(insistBall) then
+	vcm.set_ball_detect(1);
+   end
+   io.stdout:flush();
+	print("detect ball: " .. vcm.get_ball_detect() ..  " ball dist:" .. wcm.get_ball_x().. " frontApproach: " .. tostring(wcm.get_horde_doneFrontApproach()) .. " ready: " .. tostring(wcm.get_horde_ready()) .. " passkick: " .. tostring(wcm.get_horde_passKick()));
  end
