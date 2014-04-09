@@ -53,6 +53,8 @@ public class Calibrate extends JFrame
 	/** The backup for the data, for undo purposes. */
 	int[][][] prev = new int[NUM_COLORS][NUM_COLORS][NUM_COLORS];
 	
+	/** Should we disregard the Y information in the bounding box, that is, make the box maximal in the Y direction? */
+	boolean disregardY = false;
 	
 	/** GUI Widgets */
 	JButton save = new JButton("Save");
@@ -63,6 +65,7 @@ public class Calibrate extends JFrame
 	JComboBox labels;
 	JLabel indexLabel = new JLabel("1");
 	JCheckBox displayOverlayCheck = new JCheckBox("Overlay");
+	JCheckBox disregardYCheck = new JCheckBox("No Y");
 	
 	/** Labels for the JComboBox */
 	String cyan = new String("<html><body bgcolor=#00FFFF><font color=black><b>Cyan</b></font></body></html>");
@@ -353,6 +356,11 @@ public class Calibrate extends JFrame
 		int maxcb = 0;
 		int[] ycbcr = new int[3];
 		
+		
+		// are we flattening to two dimensions?
+		if (disregardY)
+			{ miny = 0; maxy = 255; }
+		
 		// normalize coordinates
 		if (x1 < 0) x1 = 0;
 		if (y1 < 0) y1 = 0;
@@ -554,6 +562,17 @@ public class Calibrate extends JFrame
 			public void actionPerformed(ActionEvent e)
 				{
 				displayOverlay = displayOverlayCheck.isSelected();
+				display.repaint();
+				}
+			});
+			
+		box.add(disregardYCheck);
+		disregardYCheck.setSelected(false);
+		disregardYCheck.addActionListener(new ActionListener()
+			{
+			public void actionPerformed(ActionEvent e)
+				{
+				disregardY = disregardYCheck.isSelected();
 				display.repaint();
 				}
 			});
