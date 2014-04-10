@@ -124,7 +124,7 @@ function sendFeatures (client)
 	features["yelledKick"] = wcm.get_horde_yelledKick();
         features["yelledFail"] = wcm.get_horde_yelledFail(); 
 	--print("sending some features, yo\n");-- wcm.set_horde_doneFrontApproach("true");
-        --print(json.encode(features) .. "\n");
+        print(json.encode(features) .. "\n");
 	client:settimeout(.002);
 	client:send(json.encode(features) .. "\n");
         -- Send the features to horde via the client
@@ -241,7 +241,7 @@ function initMotion()--should be cleaned up, gets servos hard and standing up
 	Motion.event("sit");
 	--BodyFSM.sm:set_state('bodyStop')		
 	BodyFSM.update();
-	
+	--Speak.talk('I am Darwin. O P. 2.0. del ocho. ESPN 8, the ocho..... DODGEBALL ');	
 --	BodyFSM.entry();	
 end
 --start "main"

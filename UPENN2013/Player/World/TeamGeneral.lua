@@ -496,7 +496,7 @@ function set_role(r)
   if role ~= r then 
     role = r;
     Body.set_indicator_role(role);
-    if role == ROLE_ATTACKER then  Speak.talk('Attack');
+    --[[if role == ROLE_ATTACKER then  Speak.talk('Attack');
     elseif role == ROLE_DEFENDER then  Speak.talk('Defend');
     elseif role == ROLE_SUPPORTER then Speak.talk('Support');
     elseif role == ROLE_GOALIE then Speak.talk('Goalie');
@@ -505,7 +505,7 @@ function set_role(r)
     elseif role == ROLE_RESERVE_PLAYER then Speak.talk('Player waiting')
     elseif role == ROLE_RESERVE_GOALIE then Speak.talk('Goalie waiting')
     else Speak.talk('ERROR: Unknown Role');
-    end
+    end]]--
   end
   update_shm();
 end
