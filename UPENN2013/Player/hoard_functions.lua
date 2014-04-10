@@ -121,6 +121,13 @@ end
 hordeFunctions = {}
 hordeFunctions["headMotion"] = function(args, client)
 end
+hordeFunctions["yellKick"] = function(args, client)
+	BodyFSM.sm:set_state('bodyPassKick');
+end
+hordeFunctions["yellReady"] = function(args, client)
+	BodyFSM.sm:set_state('bodyYellReady');
+end
+
 
 hordeFunctions["walkForward"] = function(args,client)
 	BodyFSM.sm:set_state('bodyWalkForward');
