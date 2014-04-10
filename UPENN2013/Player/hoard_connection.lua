@@ -116,13 +116,13 @@ function sendFeatures (client)
         features["ballDetect"] = vcm.get_ball_detect();
         features["ballX"] = wcm.get_ball_x();
         features["ballY"] = wcm.get_ball_y();
-        features["doneFrontApproach"] = wcm.get_horde_doneFrontApproach();
+        features["doneApproach"] = wcm.get_horde_doneApproach();
         features["particleX"] = wcm.get_particle_x();
         features["particleY"] = wcm.get_particle_y();
 	features["particleA"] = wcm.get_particle_a();
-	features["ready"] = wcm.get_horde_ready();
-	features["passKick"] = wcm.get_horde_passKick();
-        
+	features["yelledReady"] = wcm.get_horde_yelledReady();
+	features["yelledKick"] = wcm.get_horde_yelledKick();
+        features["yelledFail"] = wcm.get_horde_yelledFail(); 
 	--print("sending some features, yo\n");-- wcm.set_horde_doneFrontApproach("true");
         --print(json.encode(features) .. "\n");
 	client:settimeout(.002);
@@ -248,8 +248,8 @@ end
 if(darwin) then 
 --        hoard_functions.hordeFunctions["murder all humans"](nil,nil);
 	--Motion.event("standup");	
-        wcm.set_horde_ready(0);
-	wcm.set_horde_passKick(0);
+        wcm.set_horde_yelledReady(0);
+	wcm.set_horde_yelledKick(0);
 	initMotion();
 	print("starting connection thread\n");
 	coroutine.resume(connectionThread);
