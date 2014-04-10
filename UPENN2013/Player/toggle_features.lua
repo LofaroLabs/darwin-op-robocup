@@ -56,26 +56,26 @@ function process_keyinput()
     local byte=string.byte(str,1);
     -- Walk velocity setting
     if byte==string.byte("r") then
-	if(wcm.get_horde_ready()==0) then
-	  wcm.set_horde_ready(1);      
+	if(wcm.get_horde_yelledReady()==0) then
+	  wcm.set_horde_yelledReady(1);      
         else
-	  wcm.set_horde_ready(0);
+	  wcm.set_horde_yelledReady(0);
 	end 
     end
     if byte==string.byte("p") then
-        if (wcm.get_horde_passKick()==0) then
-          wcm.set_horde_passKick(1);
+        if (wcm.get_horde_yelledKick()==0) then
+          wcm.set_horde_yelledKick(1);
         else
-          wcm.set_horde_passKick(0);
+          wcm.set_horde_yelledKick(0);
         end
     end
    if byte==string.byte("f") then
-        if (wcm.get_horde_doneFrontApproach()==0) then
-          wcm.set_horde_doneFrontApproach(1);
+        if (wcm.get_horde_doneApproach()==0) then
+          wcm.set_horde_doneApproach(1);
           insist = true;
 	else
  	  insist = false;
-          wcm.set_horde_doneFrontApproach(0);
+          wcm.set_horde_doneApproach(0);
         end
     end
    if byte==string.byte("d") then
@@ -119,11 +119,11 @@ end
    end
    wcm.set_ball_y(0);
    if (insist) then
-   	wcm.set_horde_doneFrontApproach(1);
+   	wcm.set_horde_doneApproach(1);
    end
    if(insistBall) then
 	vcm.set_ball_detect(1);
    end
    io.stdout:flush();
-	print("detect ball: " .. vcm.get_ball_detect() ..  " ball dist:" .. wcm.get_ball_x().. " frontApproach: " .. tostring(wcm.get_horde_doneFrontApproach()) .. " ready: " .. tostring(wcm.get_horde_ready()) .. " passkick: " .. tostring(wcm.get_horde_passKick()));
+	print("detect ball: " .. vcm.get_ball_detect() ..  " ball dist:" .. wcm.get_ball_x().. " frontApproach: " .. tostring(wcm.get_horde_doneApproach()) .. " ready: " .. tostring(wcm.get_horde_yelledReady()) .. " passkick: " .. tostring(wcm.get_horde_yelledKick()));
  end
