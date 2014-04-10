@@ -47,11 +47,11 @@ shared.horde = {};
 shared.horde.client = "nil";
 shared.horde.state = "nil";
 shared.horde.sendStatus = "nil"
-shared.horde.doneFrontApproach = vector.zeros(1); ---
+shared.horde.doneApproach = vector.zeros(1); ---
 shared.horde.gotoPose = vector.zeros(3); -- the x,y,a that horde told it to go to on the field in the world frame
 --horizontally passed+connection
-shared.horde.ready = vector.zeros(1);
-shared.horde.passKick = vector.zeros(1);
+shared.horde.yelledready = vector.zeros(1);
+shared.horde.yelledKick = vector.zeros(1);
 shared.horde.timeMark = vector.zeros(1);
 shared.horde.kickToPose = vector.zeros(3);
 --shared.horde.robot1 = "10.0.0.51"

@@ -121,6 +121,12 @@ end
 hordeFunctions = {}
 hordeFunctions["headMotion"] = function(args, client)
 end
+hordeFunctions["yellKick"] = function(args, client)
+        BodyFSM.sm:set_state('bodyPassKick');
+end
+hordeFunctions["yellReady"] = function(args, client)
+        BodyFSM.sm:set_state('bodyYellReady');
+end
 
 hordeFunctions["walkForward"] = function(args,client)
 	BodyFSM.sm:set_state('bodyWalkForward');
@@ -129,12 +135,12 @@ end
 hordeFunctions["gotoBall"] = function(args,client)
 	BodyFSM.sm:set_state('bodyGotoBall');
 end
-hordeFunctions["kickTo"] = function(args,client)
+hordeFunctions["bodyApproachTarget"] = function(args,client)
 	dest = json.decode(args)
         print("Dest " .. dest.x);
         --print("The args more specfied... X" .. args.x .. " Y " .. args.y .. " theta: " .. args.a);
         wcm.set_horde_kickToPose(vector.new({dest.x, dest.y, dest.a}));
-	BodyFSM.sm:set_state('bodyKickTo');
+	BodyFSM.sm:set_state('bodyApproachTarget');
 
 end
 hordeFunctions["approachBall"] = function(args,client)
