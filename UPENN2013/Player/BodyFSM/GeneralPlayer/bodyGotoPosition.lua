@@ -19,7 +19,9 @@ function entry()
   HeadFSM.sm:set_state('headLookGoalPose');
   t0 = Body.get_time();
   alreadyDone = false;
-  wcm.set_horde_yellReady(0);-- added this need to check.
+  print("yellin ready"); 
+ wcm.set_horde_yelledReady(0);-- added this need to check.
+ print("yelllED ready");
 end
 
 function update()
@@ -27,7 +29,7 @@ function update()
 	return;
   end
   local t = Body.get_time();
-
+  print("about to grab gootPose");
    pose = wcm.get_pose();
    endPosition = wcm.get_horde_gotoPose();-- goto an arbitrary pose
    print("I'm in update!!\n");
@@ -42,7 +44,7 @@ function update()
   if(math.abs(endPoseX)+math.abs(endPoseY)<.4 and math.abs(pose.a - endPoseRelative[3]) >.3) then
 	Motion.sm:set_state('standstill');
 	alreadyDone = true;
-	wcm.set_horde_yellReady(1);
+	wcm.set_horde_yelledReady(1);
 --	wcm.set_horde_passKick(1);
 --	wcm.set_horde_timeMark(Body.get_time());
 	return;
@@ -69,7 +71,7 @@ function update()
 end
 
 function exit()
-  wcm.set_horde_yellReady(0);
+  wcm.set_horde_yelledReady(0);
   -- wcm.set_horde_passKick(1);
   --wcm.set_horde_timeMark(Body.get_time());
   Motion.sm:add_event('walk');

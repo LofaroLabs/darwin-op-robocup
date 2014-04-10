@@ -10,7 +10,7 @@ function entry()
 end
 
 function update()
-	wcm.set_horde_yellReady(1);
+	wcm.set_horde_yelledReady(1);
         wcm.set_horde_timeMark(Body.get_time()); 
 end
 
