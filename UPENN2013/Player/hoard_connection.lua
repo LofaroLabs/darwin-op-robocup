@@ -43,8 +43,8 @@ require('Motion')
 local hoard_functions = require "hoard_functions"
 json = require("json")
 
-gcm.say_id();
-
+--gcm.say_id();
+Speak.talk('my player ID is defiantly ' .. Config.game.playerID);
 darwin = true;
 
 ready = true;

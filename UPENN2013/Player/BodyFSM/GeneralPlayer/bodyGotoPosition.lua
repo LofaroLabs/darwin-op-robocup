@@ -19,7 +19,7 @@ function entry()
   HeadFSM.sm:set_state('headLookGoalPose');
   t0 = Body.get_time();
   alreadyDone = false;
-  wcm.set_horde_ready(0);-- added this need to check.
+  wcm.set_horde_yellReady(0);-- added this need to check.
 end
 
 function update()
@@ -42,7 +42,7 @@ function update()
   if(math.abs(endPoseX)+math.abs(endPoseY)<.4 and math.abs(pose.a - endPoseRelative[3]) >.3) then
 	Motion.sm:set_state('standstill');
 	alreadyDone = true;
-	wcm.set_horde_ready(1);
+	wcm.set_horde_yellReady(1);
 --	wcm.set_horde_passKick(1);
 --	wcm.set_horde_timeMark(Body.get_time());
 	return;
@@ -69,7 +69,7 @@ function update()
 end
 
 function exit()
-  wcm.set_horde_ready(0);
+  wcm.set_horde_yellReady(0);
   -- wcm.set_horde_passKick(1);
   --wcm.set_horde_timeMark(Body.get_time());
   Motion.sm:add_event('walk');
