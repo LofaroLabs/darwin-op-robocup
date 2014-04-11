@@ -45,6 +45,7 @@ json = require("json")
 
 --gcm.say_id();
 Speak.talk('my player ID is defiantly ' .. Config.game.playerID);
+Speak.talk('I am so happy to finally be connected via ethernet to my masters')
 --Speak.talk('Touch eyeballs to screen for cheap laser surgery');
 darwin = true;
 
