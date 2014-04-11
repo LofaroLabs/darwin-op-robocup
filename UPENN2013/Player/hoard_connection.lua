@@ -42,11 +42,9 @@ require('Body')
 require('Motion')
 local hoard_functions = require "hoard_functions"
 json = require("json")
-
+unix.usleep(2*1E6);
 --gcm.say_id();
-Speak.talk('my player ID is defiantly ' .. Config.game.playerID);
-Speak.talk('I am so happy to finally be connected via ethernet to my masters')
---Speak.talk('Touch eyeballs to screen for cheap laser surgery');
+Speak.talk("My Player ID Is defiantly the number" .. Config.game.playerID);
 darwin = true;
 
 ready = true;
@@ -243,7 +241,7 @@ function initMotion()--should be cleaned up, gets servos hard and standing up
 	Motion.event("sit");
 	--BodyFSM.sm:set_state('bodyStop')		
 	BodyFSM.update();
-	--Speak.talk('I am Darwin. O P. 2.0. del ocho. ESPN 8, the ocho..... DODGEBALL ');	
+	
 --	BodyFSM.entry();	
 end
 --start "main"
