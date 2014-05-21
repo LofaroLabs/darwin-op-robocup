@@ -198,7 +198,7 @@ connectionThread = coroutine.create(function ()
 			client:settimeout(0);--non blocking read
 			local line, err = client:receive() -- read in horde commands
 			if wcm.get_horde_sendStatus()=="StartSending" and (gcm.get_game_state() ~= 3 or gcm.get_game_was_penalized()) then
-				print("calling horde function");
+				print("balling horde function");
 				hoard_functions.hordeFunctions["position"](nil,nil); -- if we are not playing, do upenn positions
 				
 			elseif not err then
