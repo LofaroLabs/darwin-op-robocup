@@ -89,8 +89,15 @@ function update()
      --if role==0 then
        --return "sweep"; --Goalie, sweep to localize
      --else
-       return "timeout";  --Player, look up to see goalpost
-     --end
+--	Velocity.update(wcm.get_ball_v_inf()[1],wcm.get_ball_v_inf()[2],Body.get_time())
+--	vx, vy, dodge = Velocity.getVelocity();
+--	ball =  wcm.get_ball();
+--	print("ballx, bally " .. tostring(vx) .. ", " .. tostring(vy));
+--	if(vx~=nil and vy~=nil) then
+  --      	if(vx + vy < .1) then  
+        		return "timeout";  --Player, look up to see goalpost
+ --       	end
+--	end
   end
 end
 

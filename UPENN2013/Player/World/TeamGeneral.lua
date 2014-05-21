@@ -68,6 +68,7 @@ state.tReceive = Body.get_time();
 state.battery_level = wcm.get_robot_battery_level();
 state.fall=0;
 
+role = Config.game.role
 --Added key vision infos
 state.goal=0;  --0 for non-detect, 1 for unknown, 2/3 for L/R, 4 for both
 state.goalv1={0,0};
@@ -279,13 +280,13 @@ function update()
       end
 
       --Ignore goalie, reserver, penalized player, confused player
-      if (states[id].penalty > 0) or 
+      --[[if (states[id].penalty > 0) or 
         (t - states[id].tReceive > msgTimeout) or
         (states[id].role >=ROLE_CONFUSED) or 
         (states[id].role ==0) then
         eta[id] = math.huge;
         ddefend[id] = math.huge;
-      end
+      end]]--
 
     end
   end
@@ -294,9 +295,9 @@ function update()
   --For defender behavior testing
   force_defender = Config.team.force_defender or 0;
   if force_defender == 1 then
-    gcm.set_team_role(ROLE_DEFENDER);
+    gcm.set_team_role(Config.game.role);
   elseif force_defender ==2 then
-    gcm.set_team_role(ROLE_DEFENDER2);
+    gcm.set_team_role(Config.game.role);
   end
 
   if role ~= gcm.get_team_role() then
@@ -490,13 +491,16 @@ end
 function exit() end
 function get_role()   return role; end
 function get_player_id()    return playerID; end
-function update_shm() gcm.set_team_role(role);end
+function update_shm() 
+   gcm.set_team_role(Config.game.role);
+end
 
 function set_role(r)
-  if role ~= r then 
+   Body.set_indicator_role(Config.game.role);  
+--[[if role ~= r then 
     role = r;
     Body.set_indicator_role(role);
-    --[[if role == ROLE_ATTACKER then  Speak.talk('Attack');
+    if role == ROLE_ATTACKER then  Speak.talk('Attack');
     elseif role == ROLE_DEFENDER then  Speak.talk('Defend');
     elseif role == ROLE_SUPPORTER then Speak.talk('Support');
     elseif role == ROLE_GOALIE then Speak.talk('Goalie');
@@ -505,8 +509,8 @@ function set_role(r)
     elseif role == ROLE_RESERVE_PLAYER then Speak.talk('Player waiting')
     elseif role == ROLE_RESERVE_GOALIE then Speak.talk('Goalie waiting')
     else Speak.talk('ERROR: Unknown Role');
-    end]]--
-  end
+    end
+  end]]--
   update_shm();
 end
 

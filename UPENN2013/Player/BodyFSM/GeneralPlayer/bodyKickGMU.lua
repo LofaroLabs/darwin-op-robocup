@@ -22,7 +22,8 @@ ball = "nil";
 
 function entry()
   print(_NAME.." entry");
-
+  wcm.set_horde_yelledKick(1);
+ 
   t0 = Body.get_time();
   follow=false;
   kick_dir=wcm.get_kick_dir();
@@ -58,7 +59,7 @@ function update()
 end
 
 function exit()
-    wcm.set_horde_passKick(1);
+    wcm.set_horde_yelledKick(0);
     wcm.set_horde_timeMark(Body.get_time()) 
  -- HeadFSM.sm:set_state('headTrack');
 end

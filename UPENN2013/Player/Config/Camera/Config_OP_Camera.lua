@@ -48,7 +48,7 @@ camera.param = {};
 camera.param[1] = {key='brightness',    val={128}};
 camera.param[2] = {key='contrast',      val={32}};
 camera.param[3] = {key='saturation',    val={42}};
-camera.param[4] = {key='gain',          val={0}};
+camera.param[4] = {key='gain',          val={67}};
 -- 3000-9000 produce light spectrums which shift to contain more orange and blue wavelengths,respectively
 camera.param[5] = {key='white balance temperature', val={70}};
 camera.param[6] = {key='sharpness',     val={191}};

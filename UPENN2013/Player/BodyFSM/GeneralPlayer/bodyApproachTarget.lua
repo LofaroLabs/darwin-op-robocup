@@ -345,7 +345,7 @@ print("would TURNRIGHT")
   else
     print("Goal stats ACCEPT: " .. receiveRelative[1] .. ", " .. receiveRelative[2] .. ", " .. receiveRelative[3]);
   end
-  if (math.abs(receiveRelative[3]) >.3) then
+  if (math.abs(receiveRelative[3]) >.15) then
      print("my kick would NOT trigger");
      angle_check_done=false;
   else

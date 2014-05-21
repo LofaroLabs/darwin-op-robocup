@@ -689,7 +689,7 @@ function mod_angle(a)
 end
 
 function addNoise()
-  add_noise();
+  --add_noise();
 end
 
 ---Adds noise to particle x,y coordinates and angle.
