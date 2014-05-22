@@ -107,13 +107,13 @@ function sendFeatures (client)
         features["role"] = Config.game.role;
 	xPoseArr = {}
 	xPoseArr[1] = wcm.get_team_attacker_pose()[1];
-	xPoseArr[2] = wcm.get_team_defender_pose()[1];
+	xPoseArr[2] = wcm.get_team_goalie_pose()[1];
 	yPoseArr = {}
 	yPoseArr[1] = wcm.get_team_attacker_pose()[2];
-        yPoseArr[2] = wcm.get_team_defender_pose()[2];
+        yPoseArr[2] = wcm.get_team_goalie_pose()[2];
 	aPoseArr = {}
 	aPoseArr[1] = wcm.get_team_attacker_pose()[3];
-	aPoseArr[2] = wcm.get_team_defender_pose()[3];
+	aPoseArr[2] = wcm.get_team_goalie_pose()[3];
 	--print("mine: " .. wcm.get_pose().x .. " 1: " .. xPoseArr[1] .. " 2: " .. xPoseArr[2]);
 	--print("role: " .. Config.game.role .. " playerID: " .. Config.game.playerID);
         features["poseX"] = xPoseArr;
