@@ -142,7 +142,7 @@ failed = makeBehavior("failed", nil, nil,
 		end
 	end)
 
-sayFiled = makeBehavior("sayFailed", 
+sayFailed = makeBehavior("sayFailed", 
 	function(hfa)
 		if (not hfa == nil) then
 			setFlag(hfa, "failed")
