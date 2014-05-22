@@ -124,9 +124,28 @@ end
 hordeFunctions["yellKick"] = function(args, client)
 	BodyFSM.sm:set_state('bodyPassKick');
 end
+-- upenn position, should only be used when our game state is set to !3
+hordeFunctions["position"] = function(args, client)
+	print("calling body position");
+	BodyFSM.sm:set_state('bodyPosition');
+	BodyFSM.update();
+	BodyFSM.update();
+	print("game fsm set");
+        GameFSM.sm:set_state('gamePlaying');
+	print("game fsm update");
+	GameFSM.update();
+	GameFSM.update();
+	GameFSM.update();-- updating 3 times because it takes more than one update to resolve when the penality is over
+	print("done with game fsm updates");
+end
+
 hordeFunctions["yellReady"] = function(args, client)
 	BodyFSM.sm:set_state('bodyYellReady');
 end
+hordeFunctions["yellFail"] = function(args, client)
+	BodyFSM.sm:set_state('bodyYellFail');
+end
+
 
 
 hordeFunctions["walkForward"] = function(args,client)
@@ -195,8 +214,9 @@ hordeFunctions["gotoPose"] = function(args, client)
 end
 
 package.path = cwd..'/HeadFSM/'..Config.fsm.head[smindex+1]..'/?.lua;'..package.path;
-
+--package.path = cwd..'/GameFSM/'..Config.fsm.head[smindex+1]..'/?.lua;'..package.path;
 package.path = cwd..'/BodyFSM/'..Config.fsm.head[smindex+1]..'/?.lua;'..package.path;
+ package.path = cwd..'/GameFSM/'..Config.fsm.game..'/?.lua;'..package.path;
 require('BodyFSMGMU')
 require('HeadFSM')
-
+require('GameFSM')

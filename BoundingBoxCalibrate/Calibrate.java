@@ -3,8 +3,10 @@ import java.awt.*;
 import java.io.*;
 import java.awt.image.*;
 import javax.imageio.*;
+import javax.imageio.stream.*;
 import java.awt.event.*;
 import java.util.*;
+import java.net.*;
 
 /**
 	CALIBRATE.JAVA
@@ -20,7 +22,7 @@ import java.util.*;
 	This class expects 100 image files, named imLogsFOO.jpg inside a directory named
 	CalibrationImages/ right where you executed "java Calibrate".    The FOO are
 	zero-padded values 001 ... 100.  The images should store YCbCr values 
-	masquerading as RGB  values in (at present 320 x 480 JPG images (don't ask)).
+	masquerading as RGB  values in (at present) 320 x 480 JPG images (don't ask).
 	
 **/
 
@@ -37,9 +39,9 @@ public class Calibrate extends JFrame
 	public static final int NUM_COLORS = 64;  // 2^COLOR_DEPTH
 	
 	/** The images, loaded and stored as RGB */
-	BufferedImage[] images = new BufferedImage[NUM_IMAGES];
+	BufferedImage[] images; // = new BufferedImage[NUM_IMAGES];
 	/** The images, loaded as an array of packed YCrCb integers. */
-	int[/*index*/][/*width*/][/*height*/] ycbcrImages = new int[NUM_IMAGES][IMAGE_WIDTH][IMAGE_HEIGHT];
+	int[/*index*/][/*width*/][/*height*/] ycbcrImages; // = new int[NUM_IMAGES][IMAGE_WIDTH][IMAGE_HEIGHT];
 	/** The current image index. */
 	int currentImage = 0;
 
@@ -62,6 +64,7 @@ public class Calibrate extends JFrame
 	JButton previous = new JButton("Previous");
 	JButton next = new JButton("Next");
 	JButton undo = new JButton("Undo");
+	JButton reload = new JButton("Reload");
 	JComboBox labels;
 	JLabel indexLabel = new JLabel("1");
 	JCheckBox displayOverlayCheck = new JCheckBox("Overlay");
@@ -436,50 +439,106 @@ public class Calibrate extends JFrame
 		}
 	
 	
-	/** The images coming in are weirdly stretch.ed.  This de-streches them and also
+	
+	
+	/** The images coming in are weirdly stretched.  This de-streches them and also
 		loads the yCBCr array.  It's a hack. */
 	public void stretchImages()
 		{
+		for(int i = 0 ; i < images.length; i++)
+			stretchImage(i);
+		}
+	
+	/** Stretches a single image. */
+	public void stretchImage(int i)
+		{
 		int[] rgb = new int[3];
-		int wratio = images[0].getWidth() / IMAGE_WIDTH;
-		int hratio = images[0].getHeight() / IMAGE_HEIGHT;
+		int wratio = images[i].getWidth() / IMAGE_WIDTH;
+		int hratio = images[i].getHeight() / IMAGE_HEIGHT;
 		
 		// this is the SLOW way to do it, assuming we're not grabbing the raster
-		for(int i = 0; i < images.length; i++)
-			{
-			BufferedImage newImage = new BufferedImage(IMAGE_WIDTH, IMAGE_HEIGHT, BufferedImage.TYPE_INT_ARGB);
-			for(int x = 0; x < IMAGE_WIDTH; x++)
-				for(int y = 0; y < IMAGE_HEIGHT; y++)
-					{
-					int yuv = images[i].getRGB(x * wratio, y * hratio);
-					ycbcrImages[i][x][y] = yuv;
+		BufferedImage newImage = new BufferedImage(IMAGE_WIDTH, IMAGE_HEIGHT, BufferedImage.TYPE_INT_ARGB);
+		for(int x = 0; x < IMAGE_WIDTH; x++)
+			for(int y = 0; y < IMAGE_HEIGHT; y++)
+				{
+				int yuv = images[i].getRGB(x * wratio, y * hratio);
+				ycbcrImages[i][x][y] = yuv;
 
-					Color c = new Color(yuv);
-					int y_ = c.getRed();
-					int cb = c.getGreen();
-					int cr = c.getBlue();
-					ycbcr2rgb(y_, cb, cr, rgb);
-					newImage.setRGB(x, y, new Color(rgb[0], rgb[1], rgb[2]).getRGB());
-					}
-			images[i] = newImage;
-			}
+				Color c = new Color(yuv);
+				int y_ = c.getRed();
+				int cb = c.getGreen();
+				int cr = c.getBlue();
+				ycbcr2rgb(y_, cb, cr, rgb);
+				newImage.setRGB(x, y, new Color(rgb[0], rgb[1], rgb[2]).getRGB());
+				}
+		images[i] = newImage;
 		}
 	
 	
+	/** Reloads the zeroth image */
+	public void reload()
+		{
+		Socket sock = null;
+		try 
+			{
+			sock = new Socket(ip, port); 
+			}
+		catch(UnknownHostException e) { System.err.println("Unknown Host " + ip); return; }
+		catch(IOException e) { System.err.println("IOError on connecting to " + ip); return; }
+		
+		MemoryCacheImageInputStream input = null;
+		try 
+			{
+			input = new MemoryCacheImageInputStream(new BufferedInputStream(sock.getInputStream()));
+			}
+		catch(IOException e) { System.err.println("Can't establish connection to " + ip); return; }
+		
+		try 
+			{
+			images[0] = ImageIO.read(input);
+			}
+		catch(IOException e) { System.err.println("Can't read image from socket."); return; }
+		
+		try { input.close(); } catch (IOException e) { }
+		try { sock.close(); } catch (IOException e) { }
+		stretchImage(0);
+		updateOverlay();
+		display.repaint();
+		}
+		
+	String ip;  // if ip == null then we know we're loading files rather than fetching over a socket
+	int port;
+		
 	/** Builds the GUI, loads the images, and sets things up. */
-	public Calibrate() throws IOException
+	public Calibrate(String[] args) throws IOException
 		{
 		super("Argh");
 		
-		for(int i = 0; i < NUM_IMAGES; i++)
+		if (args.length > 0)
 			{
-			int j = i + 1;
-			File f = new File("CalibrationImages/imLogs" + (j < 100 ? ( j < 10 ? "00" : "0") : "") + j + ".jpg" );
-			System.err.println(f);
-			images[i] = ImageIO.read(f);
+			String ip = args[0];
+			int port = Integer.parseInt(args[1]);
+			// we need to connect to a robot to get a feed
+			System.err.println("Connecting to " + ip + " at " + port);
+			images = new BufferedImage[1];
+			ycbcrImages = new int[1][IMAGE_WIDTH][IMAGE_HEIGHT];
 			}
-		stretchImages();
-		
+		else
+			{
+			System.err.println("No connection made.  Loading files.");
+			
+			images = new BufferedImage[NUM_IMAGES];
+			ycbcrImages = new int[NUM_IMAGES][IMAGE_WIDTH][IMAGE_HEIGHT];
+			for(int i = 0 ; i < NUM_IMAGES; i++)
+				{
+				int j = i + 1;
+				File f = new File("CalibrationImages/imLogs" + (j < 100 ? ( j < 10 ? "00" : "0") : "") + j + ".jpg" );
+				System.err.println(f);
+				images[i] = ImageIO.read(f);
+				}
+			stretchImages();
+			}
+			
 		for(int x = 0; x < IMAGE_WIDTH; x++)
 			for(int y = 0; y < IMAGE_HEIGHT; y++)
 				overlay.setRGB(x,y,C_OTHER);  // clear
@@ -488,7 +547,7 @@ public class Calibrate extends JFrame
 		getContentPane().setLayout(new BorderLayout());
 		Box box = new Box(BoxLayout.X_AXIS);
 		
-		
+		if (ip == null)
 		next.addActionListener(new ActionListener()
 			{
 			public void actionPerformed(ActionEvent e)
@@ -501,6 +560,7 @@ public class Calibrate extends JFrame
 				}
 			});
 
+		if (ip == null)
 		previous.addActionListener(new ActionListener()
 			{
 			public void actionPerformed(ActionEvent e)
@@ -539,8 +599,18 @@ public class Calibrate extends JFrame
 				}
 			});
 			
-		box.add(previous);
-		box.add(next);
+		if (ip != null)
+		reload.addActionListener(new ActionListener()
+			{
+			public void actionPerformed(ActionEvent e)
+				{
+				reload();
+				}
+			});
+			
+		if (ip == null) box.add(previous);
+		if (ip == null) box.add(next);
+		if (ip != null) box.add(reload);
 		box.add(load);
 		box.add(save);
 		box.add(undo);
@@ -581,6 +651,8 @@ public class Calibrate extends JFrame
 		add(box, BorderLayout.SOUTH);
 		pack();
 		setVisible(true);
+		if (ip != null)
+			SwingUtilities.invokeLater(new Runnable() { public void run() { reload(); } });
 		}
 		
 		
@@ -673,7 +745,7 @@ public class Calibrate extends JFrame
 
 	public static void main(String[] args) throws IOException
 		{
-		new Calibrate();
+		new Calibrate(args);
 		}
 	
 	}

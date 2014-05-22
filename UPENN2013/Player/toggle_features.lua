@@ -69,6 +69,14 @@ function process_keyinput()
           wcm.set_horde_yelledKick(0);
         end
     end
+   if byte==string.byte("y") then
+        if (wcm.get_horde_yelledFail()==0) then
+          wcm.set_horde_yelledFail(1);
+         
+        else
+          wcm.set_horde_yelledFail(0);
+        end
+    end
    if byte==string.byte("f") then
         if (wcm.get_horde_doneApproach()==0) then
           wcm.set_horde_doneApproach(1);
@@ -125,5 +133,5 @@ end
 	vcm.set_ball_detect(1);
    end
    io.stdout:flush();
-	print("detect ball: " .. vcm.get_ball_detect() ..  " ball dist:" .. wcm.get_ball_x().. " frontApproach: " .. tostring(wcm.get_horde_doneApproach()) .. " ready: " .. tostring(wcm.get_horde_yelledReady()) .. " passkick: " .. tostring(wcm.get_horde_yelledKick()));
+	print("Yellfailed :".. wcm.get_horde_yelledFail() ..  "detect ball: " .. vcm.get_ball_detect() ..  " ball dist:" .. wcm.get_ball_x().. " frontApproach: " .. tostring(wcm.get_horde_doneApproach()) .. " ready: " .. tostring(wcm.get_horde_yelledReady()) .. " passkick: " .. tostring(wcm.get_horde_yelledKick()));
  end

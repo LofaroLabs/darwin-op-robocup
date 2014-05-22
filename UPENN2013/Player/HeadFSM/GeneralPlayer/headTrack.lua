@@ -88,7 +88,7 @@ function update()
      if role==0 then
        return "sweep"; --Goalie, sweep to localize
      else
-       return "timeout";  --Player, look up to see goalpost
+       --return "timeout";  --Player, look up to see goalpost
      end
   end
 end

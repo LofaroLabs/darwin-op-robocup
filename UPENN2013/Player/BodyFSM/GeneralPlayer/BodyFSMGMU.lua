@@ -31,6 +31,8 @@ require('bodyKickLeftGMU')
 require('bodyKickRightGMU')
 require('bodyApproachTarget')
 require('bodyYellFail')
+require('bodyYellReady')
+require('bodyYellKick')
 
 require('bodyPositionGoalie')
 require('bodyAnticipate')
@@ -74,6 +76,8 @@ sm:add_state(bodyKickRightGMU);
 sm:add_state(bodyGotoPosition);
 sm:add_state(bodyApproachTarget);
 sm:add_state(bodyYellFail);
+sm:add_state(bodyYellReady);
+sm:add_state(bodyYellKick);
 
 sm:add_state(bodyPositionGoalie);
 sm:add_state(bodyAnticipate);

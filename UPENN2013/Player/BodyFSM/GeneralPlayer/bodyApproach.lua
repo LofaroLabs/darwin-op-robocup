@@ -339,7 +339,7 @@ function update()
 	print("1OMFGOMFGOMFOMGOMFOMFOMGOMGOMGOMG KICK");
 	print("1OMFGOMFGOMFOMGOMFOMFOMGOMGOMGOMG KICK");
 	print("1OMFGOMFGOMFOMGOMFOMFOMGOMGOMGOMG KICK");
-	wcm.set_horde_doneFrontApproach(1);
+	wcm.set_horde_doneApproach(1);
 	return "kick";
       else 
 	print("OMFGOMFGOMFOMGOMFOMFOMGOMGOMGOMG KICK");
@@ -347,11 +347,11 @@ function update()
 print("OMFGOMFGOMFOMGOMFOMFOMGOMGOMGOMG KICK");
 	print("OMFGOMFGOMFOMGOMFOMFOMGOMGOMGOMG KICK");
 	print("OMFGOMFGOMFOMGOMFOMFOMGOMGOMGOMG KICK");
-	wcm.set_horde_doneFrontApproach(1);
+	wcm.set_horde_doneApproach(1);
 	return "walkkick";
       end
      else
-        wcm.set_horde_doneFrontApproach(0);
+        wcm.set_horde_doneApproach(0);
      end
   else
     --Side kick, only check one side
@@ -367,7 +367,7 @@ print("KICK DIR,TYPE: " .. kick_dir .. "," ..kick_type);
 print("OMFGOMFGOMFOMGOMFOMFOMGOMGOMGOMG KICK");
 	print("OMFGOMFGOMFOMGOMFOMFOMGOMGOMGOMG KICK");
 	print("OMFGOMFGOMFOMGOMFOMFOMGOMGOMGOMG KICK");
-	wcm.set_horde_doneFrontApproach(1);
+	wcm.set_horde_doneApproach(1);
 	return "kick";
       else 
 	print("OMFGOMFGOMFOMGOMFOMFOMGOMGOMGOMG KICK");
@@ -375,17 +375,17 @@ print("OMFGOMFGOMFOMGOMFOMFOMGOMGOMGOMG KICK");
 	print("OMFGOMFGOMFOMGOMFOMFOMGOMGOMGOMG KICK");
 	print("OMFGOMFGOMFOMGOMFOMFOMGOMGOMGOMG KICK");
 	print("OMFGOMFGOMFOMGOMFOMFOMGOMGOMGOMG KICK");
-	wcm.set_horde_doneFrontApproach(1);
+	wcm.set_horde_doneApproach(1);
 	return "walkkick";
       end
     else
-	wcm.set_horde_doneFrontApproach(0);
+	wcm.set_horde_doneApproach(0);
     end
   end
 end
 
 function exit()
-   wcm.set_horde_doneFrontApproach(0);
+   wcm.set_horde_doneApproach(0);
    HeadFSM.sm:set_state('headTrack');
 end
 

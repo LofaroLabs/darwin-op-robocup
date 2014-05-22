@@ -14,13 +14,13 @@ end
 tempTimer = 0.0;
 function update()
   --for webots : we have to stop with 0 bodytilt
-  if not started then
+  --[[if not started then
     if not walk.active then
     Motion.sm:set_state('standstill');
     started = true;
     tempTimer = Body.get_time();
     end
-  end
+  end]]--
  
 end
 
