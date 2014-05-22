@@ -4,6 +4,8 @@ startHFA = function(hfa)
 	hfa.done = false;
 	hfa.failed = false;
 	hfa.counter = 0;
+	-- maybe this is too costly and we should restrict it to the zeroTimer function?
+	hfa.timer = os.time()
 	hfa.behaviorTransition = nil;
 	if (not(hfa.interruptable)) then
 		hfa.current = nil;
@@ -80,7 +82,8 @@ makeHFA = function(name, transition, interruptable)
 	return { ["behaviorTransition"] = nil, ["name"] = name, 
 			 ["start"] = startHFA, ["stop"] = stopHFA, ["go"] = goHFA, 
 		 	 ["transition"] = transition, ["interruptable"] = interruptable, ["parent"] = nil,
-			 ["counter"] = 0, ["done"] = false, ["failed"] = failed, ["current"] = nil }
+			 ["counter"] = 0, ["timer"] = 0, ["done"] = false, ["failed"] = false, ["current"] = nil,
+			 ["propagateFlags"] = false }
 end
 
 bumpCounter = makeBehavior("bumpCounter", 
@@ -97,25 +100,55 @@ zeroCounter = makeBehavior("zeroCounter",
 		end
 	end, nil, nil)
 	
+currentCounter = function(hfa) return hfa.counter end
+currentTimer = function(hfa) return hfa.timer - os.time() end
+
+zeroTimer = makeBehavior("zeroTimer",
+	function(behavior)
+		if ((not behavior == nil) and (not behavior.parent == nil)) then
+			behavior.parent.timer = os.time()
+		end
+	end, nil, nil)
+
+setFlag = function(hfa, flag)
+	if (not hfa.parent == nil) then
+		hfa.parent[flag] = true
+		if (hfa.parent.propagateFlags == true) then
+			setFlag(hfa.parent, flag)
+		end
+	end
+end
+
 done = makeBehavior("done", nil, nil,
 	function(hfa) 
 		if (not hfa == nil) then
 			hfa.current = start
-			if (not hfa.parent == nil) then
-				hfa.parent.done = true
-			end
+			setFlag(hfa, "done")
 		end
 	end)
+
+sayDone = makeBehavior("sayDone", 
+	function(hfa)
+		if (not hfa == nil) then
+			setFlag(hfa, "done")
+		end
+	end, nil, nil)
 	
 failed = makeBehavior("failed", nil, nil,
 	function(hfa) 
 		if (not hfa == nil) then
 			hfa.current = start
-			if (not hfa.parent == nil) then
-				hfa.parent.failed = true
-			end
+			setFlag(hfa, "failed")
 		end
 	end)
+
+sayFiled = makeBehavior("sayFailed", 
+	function(hfa)
+		if (not hfa == nil) then
+			setFlag(hfa, "failed")
+		end
+	end, nil, nil)
+	
 
 started = false
 pulse = function(behavior)
