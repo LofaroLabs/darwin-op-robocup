@@ -243,7 +243,10 @@ function update_shm()
   gcm.set_game_nplayers(nPlayers);
   gcm.set_game_kickoff(kickoff);
   gcm.set_game_half(half);
+  print("updating that shm. here is get_penalty: ".. vector.tostring(get_penalty()));
   gcm.set_game_penalty(get_penalty());
+  print("retriving penalty which i just populated: " .. vector.tostring(gcm.get_game_penalty()));
+  gcm.set_random_integer(4);  
   gcm.set_game_time_remaining(timeRemaining);
   gcm.set_game_last_update(lastUpdate);
 

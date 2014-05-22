@@ -11,7 +11,7 @@ require('HeadFSM')
 
 function entry()
   print(_NAME..' entry');
-
+  
   HeadFSM.sm:set_state('headIdle');
   BodyFSM.sm:set_state('bodyIdle');
 

@@ -255,7 +255,7 @@ end
 
 
 function update()
-
+  print("walk update: this should be happening almost constantly");
   advanceMotion();
   footX = mcm.get_footX();
 

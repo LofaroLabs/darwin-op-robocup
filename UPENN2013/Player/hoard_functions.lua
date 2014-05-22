@@ -43,6 +43,8 @@ require('Body')
 require('Motion')
 json = require("json")
 
+initGamePlaying = false;
+initPenalized = false;
 gcm.say_id();
 
 darwin = true;
@@ -126,17 +128,33 @@ hordeFunctions["yellKick"] = function(args, client)
 end
 -- upenn position, should only be used when our game state is set to !3
 hordeFunctions["position"] = function(args, client)
-	print("calling body position");
-	BodyFSM.sm:set_state('bodyPosition');
-	BodyFSM.update();
-	BodyFSM.update();
-	print("game fsm set");
-        GameFSM.sm:set_state('gamePlaying');
-	print("game fsm update");
+	--print("calling body position");
+	--BodyFSM.update();
+	
+	--print("game fsm set");
+	if (gcm.in_penalty() and initPenalized==false) then
+		print("setting game and body state");
+		initPenalized = true;
+		--initGamePlaying = false;
+		GameFSM.sm:set_state('gamePenalized');
+		BodyFSM.sm:set_state('bodyIdle');
+	elseif gcm.get_game_state()==3 and initGamePlaying == false then
+		initGamePlaying = true;
+		initPenalized = false;
+        	print("setting game and body state in init game playing");
+		GameFSM.sm:set_state('gamePlaying');
+ 		BodyFSM.sm:set_state('bodyPosition');
+		BodyFSM.update();
+		
+	end
+	--print("game fsm update");
 	GameFSM.update();
 	GameFSM.update();
 	GameFSM.update();-- updating 3 times because it takes more than one update to resolve when the penality is over
-	print("done with game fsm updates");
+	--if(gcm.in_penalty() == 1) then
+	-- walk.update();
+	--end
+	--print("done with game fsm updates");
 end
 
 hordeFunctions["yellReady"] = function(args, client)

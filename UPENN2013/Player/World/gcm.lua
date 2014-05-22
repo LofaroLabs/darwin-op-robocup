@@ -11,6 +11,7 @@ shared = {};
 shsize = {};
 
 shared.game = {};
+shared.random = {};
 shared.game.state = vector.zeros(1);
 shared.game.nplayers = vector.zeros(1);
 shared.game.kickoff = vector.zeros(1);
@@ -19,7 +20,7 @@ shared.game.penalty = vector.zeros(Config.game.nPlayers);
 shared.game.opponent_penalty = vector.zeros(Config.game.nPlayers);
 shared.game.time_remaining = vector.zeros(1);
 shared.game.last_update = vector.zeros(1);
-
+shared.random.integer = vector.zeros(1);
 shared.game.paused = vector.zeros(1);
 shared.game.gc_latency = vector.zeros(1);--GC message latency
 shared.game.tm_latency = vector.zeros(1);--Team message latency
