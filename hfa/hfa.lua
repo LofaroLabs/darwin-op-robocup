@@ -118,7 +118,7 @@ a transition funtion which, in essence, will specify the initial behavior perfor
 by the HFA.  That's why the "start" state isn't even a behavior: it's just the
 string "start".  It's defined in the global variable:
 
-start
+start = "start"
 
 Also notice that the HFA doesn't actually store any of its sub-behaviors.  They're
 just specified by the transition function based on the current state of the HFA.
