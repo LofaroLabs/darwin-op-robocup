@@ -2,3 +2,4 @@ syntax: glob
 *.class
 *.jpg
 .DS_Store
+UPENN2013/Player/Config/Config_OP.lua
