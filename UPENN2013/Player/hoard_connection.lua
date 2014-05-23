@@ -63,8 +63,9 @@ package.path = cwd..'/GameFSM/'..Config.fsm.head[smindex+1]..'/?.lua;'..package.
 
 
 package.path = cwd..'/BodyFSM/'..Config.fsm.head[smindex+1]..'/?.lua;'..package.path;
-require('BodyFSM')
-require('HeadFSM')
+--currentBodyFSM = require('BodyFSM')
+require('BodyFSM');
+require('HeadFSM');
 --HeadFSM.entry();
 --HeadFSM.sm:set_state('headStart');
 --Body.set_head_hardness(.5); -- required to at least set the hardness in order for motions to work
@@ -199,6 +200,7 @@ connectionThread = coroutine.create(function ()
 			local line, err = client:receive() -- read in horde commands
 			if wcm.get_horde_sendStatus()=="StartSending" and (gcm.get_game_state() ~= 3 or gcm.get_game_was_penalized()) then
 				print("balling horde function");
+				--BodyFSM = require('BodyFSMAdvanced');
 				hoard_functions.hordeFunctions["position"](nil,nil); -- if we are not playing, do upenn positions
 				
 			elseif not err then
@@ -228,6 +230,7 @@ function updateAction(servData, client)
 	print("unholywords\n");
 	unix.usleep(.04*1E6);
 	print("Received action "..req.action);
+	--BodyFSM = require('BodyFSM');
 	hoard_functions.hordeFunctions[req.action](req.args, client)--this is wrong, only here for the send.... TODO
 	--print("after horde function");
 	--unix.usleep(1*1E6);	

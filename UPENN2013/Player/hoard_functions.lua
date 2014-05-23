@@ -127,6 +127,7 @@ end
 -- upenn position, should only be used when our game state is set to !3
 hordeFunctions["position"] = function(args, client)
 	print("calling body position");
+	--BodyFSM = require('BodyFSMAdvanced');
 	BodyFSM.sm:set_state('bodyPosition');
 	BodyFSM.update();
 	BodyFSM.update();

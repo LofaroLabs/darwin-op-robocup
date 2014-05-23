@@ -112,8 +112,8 @@ team.confused_threshold_y = 4.0;
 
 
 --Disabled
-team.confused_threshold_x = -0.5;
-team.confused_threshold_y = -0.5;
+--team.confused_threshold_x = -0.5;
+--team.confused_threshold_y = -0.5;
 
 
 team.flip_threshold_x = 1.5;

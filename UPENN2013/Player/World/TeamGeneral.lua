@@ -562,8 +562,9 @@ end
 
 function check_flip2()
   local is_confused = wcm.get_robot_is_confused();
+  print(" may check flip if im confused");
   if is_confused==0 then return; end
-
+  print("okay im confused  now, but i should wait some time to be sure im still confused");
   local pose = wcm.get_pose();
   local ball = wcm.get_ball();
   local ball_global = util.pose_global({ball.x,ball.y,0},{pose.x,pose.y,pose.a});
@@ -573,12 +574,12 @@ function check_flip2()
   --Wait a bit before trying correction
   if t-t_confused < flip_check_t then return; end
 
---[[
+  print("okay im still confused, I should do something");
   print(string.format("Goalie ball :%.1f %.1f %.1f",
 		goalie_ball[1],goalie_ball[2],goalie_ball[3] ));
   print(string.format("Player ball: %.1f %.1f %.1f", 
 		ball_global[1],ball_global[2],t-ball.t));
---]]
+
 
 
   if t-ball.t<flip_threshold_t	and goalie_ball[3]<flip_threshold_t then
