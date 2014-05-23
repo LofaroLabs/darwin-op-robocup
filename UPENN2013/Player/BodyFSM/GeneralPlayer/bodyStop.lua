@@ -26,6 +26,8 @@ end
 
 function exit()
   Motion.sm:add_event('walk');
+  walk.set_velocity(0,0,0);
+  walk.start();
   Motion.update();--he wasnt getting out of stop trying to tease him back into it.
   HeadFSM.sm:set_state('headLookGoalGMU');
 

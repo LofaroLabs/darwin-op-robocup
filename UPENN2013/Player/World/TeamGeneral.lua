@@ -562,8 +562,9 @@ end
 
 function check_flip2()
   local is_confused = wcm.get_robot_is_confused();
+  
   if is_confused==0 then return; end
-
+  print("cofused is true, now i gotta wait some time");
   local pose = wcm.get_pose();
   local ball = wcm.get_ball();
   local ball_global = util.pose_global({ball.x,ball.y,0},{pose.x,pose.y,pose.a});
@@ -572,19 +573,20 @@ function check_flip2()
 
   --Wait a bit before trying correction
   if t-t_confused < flip_check_t then return; end
+  print("okay that amount of time has passed");
 
---[[
   print(string.format("Goalie ball :%.1f %.1f %.1f",
 		goalie_ball[1],goalie_ball[2],goalie_ball[3] ));
   print(string.format("Player ball: %.1f %.1f %.1f", 
 		ball_global[1],ball_global[2],t-ball.t));
---]]
+
 
 
   if t-ball.t<flip_threshold_t	and goalie_ball[3]<flip_threshold_t then
      --Check X position
-     if (math.abs(ball_global[1])>flip_threshold_x) and
-        (math.abs(goalie_ball[1])>flip_threshold_x) then
+     if ((math.abs(ball_global[1])>flip_threshold_x) and
+        (math.abs(goalie_ball[1])>flip_threshold_x)) or
+	(math.abs(goalie_ball[1]-ball_global[1])>.75) then
        if ball_global[1]*goalie_ball[1]<0 then
          wcm.set_robot_flipped(1);
        end
@@ -595,8 +597,9 @@ function check_flip2()
        end
 
      --Check Y position
-     elseif (math.abs(ball_global[2])>flip_threshold_y) and
-            (math.abs(goalie_ball[2])>flip_threshold_y) then
+     elseif ((math.abs(ball_global[2])>flip_threshold_y) and
+            (math.abs(goalie_ball[2])>flip_threshold_y)) or
+	    (math.abs(goalie_ball[2]-ball_global[2])>.75) then
        if ball_global[2]*goalie_ball[2]<0 then
          wcm.set_robot_flipped(1);
        end
@@ -658,6 +661,14 @@ function check_confused()
       end
     end
   else
+
+    print(".........................................................................");
+    print("Is Fall Down = " .. wcm.get_robot_is_fall_down());
+    print("Pose x == " .. math.abs(pose.x))
+    print("Pose y = " .. math.abs(pose.y))
+    print("Game state = " .. gcm.get_game_state());
+    print("confused_threshold_x " .. confused_threshold_x)
+    print("confused_threshold_y " .. confused_threshold_y)
     --Should we turn confused?
     if wcm.get_robot_is_fall_down()>0 
        and math.abs(pose.x)<confused_threshold_x 

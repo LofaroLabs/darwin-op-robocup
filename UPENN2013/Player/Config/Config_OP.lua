@@ -44,7 +44,7 @@ game.teamNumber = 16;   --17 at RC12  --16 for GMU robots
 --Default role: 0 for goalie, 1 for attacker, 2 for defender
 ball_shift={0,0};
 game.playerID = 1;
-game.role = 0; 
+game.role = 1; 
 
 if (robotName=='lucy') then
   game.playerID = 1; 
@@ -112,8 +112,8 @@ team.confused_threshold_y = 4.0;
 
 
 --Disabled
-team.confused_threshold_x = -0.5;
-team.confused_threshold_y = -0.5;
+--team.confused_threshold_x = -0.5;
+--team.confused_threshold_y = -0.5;
 
 
 team.flip_threshold_x = 1.5;
