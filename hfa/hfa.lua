@@ -360,6 +360,29 @@ foo = makeHFA("foo", makeTransition(
 	}), false)
 
 
+
+-- STUFF TO NOTE --
+
+You should be aware of the fact that this library effectively creates directed acyclic
+graphs (DAGs) of HFA.  That is, the exact same behavior may be used by different
+parent behaviors.  This could have an effect if the behavior maintains some internal
+state which is not reset when STOP or START are called.  For example, imagine you had
+a behavior called COUNT:
+
+theCount = 0
+count = makeBehavior("count", nil, nil, 
+	function(behavior) theCount = theCount + 1; print(theCount) end
+	)
+
+Now imagine you had two HFAs which both include this behavior among their states.
+You're in HFA #1 and it calls count four times, resulting in the numbers 1...4 being
+printed to the screen.  Then you're in HFA #2 and it calls count five times.  This
+results in the numbers 5...9 being printed to the screen.  This happens because the
+same behavior is being used, not multiple copies of it.  If you want multiple copies
+of behaviors, you'll need to make them.  Keep this in mind.
+
+
+
 ... it's always a good sign when the comments are much longer than the code, right?
 ]]--
 
