@@ -138,13 +138,14 @@ hordeFunctions["position"] = function(args, client)
 		--initGamePlaying = false;
 		GameFSM.sm:set_state('gamePenalized');
 		BodyFSM.sm:set_state('bodyIdle');
-	elseif gcm.get_game_state()==3 and initGamePlaying == false then
+	elseif gcm.get_game_state()~=3 and initGamePlaying == false then
 		initGamePlaying = true;
 		initPenalized = false;
         	print("setting game and body state in init game playing");
 		GameFSM.sm:set_state('gamePlaying');
  		BodyFSM.sm:set_state('bodyPosition');
 		BodyFSM.update();
+	--	GameFSM.update();
 		
 	end
 	--print("game fsm update");

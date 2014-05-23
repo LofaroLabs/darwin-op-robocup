@@ -1,0 +1,17 @@
+set the classpath in your ~/.bashrc to 
+export CLASSPATH=.:/home/darwin/horde/
+
+
+svn update both mason and horde
+in mason do:
+make clean
+make all
+make jar
+cd jar
+cp mason.17.jar /usr/lib/jvm/java-1.7.0-openjdk-i386/jre/lib/ext/mason.17.jar
+
+in horde/sim/app/horde do:
+make clean
+make all
+
+Then everything will work 
