@@ -152,7 +152,7 @@ end
    local udp = assert(socket.udp())
    return udp
 end]]--
-
+lastState = 100;
 function checkTimeout()
 	--print("commparing values");
 	if(wcm.get_horde_timeMark() ~= nil) then
@@ -206,36 +206,37 @@ connectionThread = coroutine.create(function ()
 			if wcm.get_horde_sendStatus()=="StartSending" and (gcm.get_game_state() ~= 3 or in_penalty()) then
 				--print("not doing horde stuff, that's for sure " .. wcm.get_horde_sendStatus() .. " " .. gcm.get_game_state() .. " " .. tostring(in_penalty()));
 				--print("not calling horde function");
+				local state = gcm.get_game_state();
 				
-				if(gcm.get_game_state() ~=3 and setBodyFSM == true) then
-					setBodyFSM = false;
-					print("setting new machine");
-					BodyFSM.exit();
-					hoard_functions.BodyFSM.exit();
-
-					hoard_functions.BodyFSM = require('BodyFSMAdvanced');
-					BodyFSM = require('BodyFSMAdvanced');
+		        	if state ~= 3 then
+  					if (state == 0 and lastState ~= 0) then
+    						
+						BodyFSM.sm:set_state('bodyIdle')-- 'initial';
+  						BodyFSM.update();
+						BodyFSM.update();
+						BodyFSM.sm:set_state('bodyStop');
+						HeadFSM.sm:set_state('headIdle')
+						
+					elseif state == 1 and lastState ~= 1 then
+						BodyFSM.sm:set_state('bodyReady') -- ready
+						BodyFSM.update();
+						BodyFSM.update();
+						BodyFSM.update();
+						BodyFSM.sm:set_state('bodyReadyMove') -- ready
+						HeadFSM.sm:set_state('headLookGoalGMU')
+					elseif (state == 2 and lastState ~=2 ) then
+    						BodyFSM.sm:set_state('bodyStop') --'set';
+  						HeadFSM.sm:set_state('headTrack');
+				--	elseif (state == 3) then
+    				--		return 'playing';
+  					elseif (state == 4 and lastState ~=3) then
+    						BodyFSM.sm:set_state('bodyIdle')	-- 'finished';
+  						HeadFSM.sm:set_state('headIdle');
+					end
 					
-					--GameFSM.entry();
-					
-					initMotion();
-					GameFSM.sm:set_state('gameInitial');
-					GameFSM.update();
-					GameFSM.update();
-					GameFSM.update();
-					GameFSM.update();
-					GameFSM.update();
-					--BodyFSM.sm:set_state('bodyPosition');
-					BodyFSM.update();
-					BodyFSM.update();
-					BodyFSM.update();
-					BodyFSM.update();
-					print("done requiring");
-					--HeadFSM = require('HeadFSMAdvanced');
-				
-				elseif gcm.get_game_state() ~= 3 then
-					GameFSM.update();
+					--GameFSM.update();
 				end
+				lastState = state;
 				if in_penalty() then
 					hoard_functions.hordeFunctions["position"](nil,nil); -- if we are not playing, do upenn positions
 				end
@@ -285,21 +286,6 @@ function updateAction(servData, client)
 	unix.usleep(.04*1E6);
 	print("Received action "..req.action);
 	--BodyFSM = require('BodyFSM');
-	if(gcm.get_game_state() ==3 and setBodyFSM == false) then
-	     
-	     setBodyFSM = true;
-		BodyFSM.exit();
-		hoard_functions.BodyFSM.exit();
-		print("load 1 fucker");
-             BodyFSM = require('BodyFSMGMU');
-		print("load 2 fucker"); 
-	     hoard_functions.BodyFSM = require('BodyFSMGMU');
-		BodyFSM.entry();
-		hoard_functions.BodyFSM.entry();
-          --   BodyFSM.entry();
-		print("init motion fucker");
-		initMotion();
-	end
 	hoard_functions.hordeFunctions[req.action](req.args, client)--this is wrong, only here for the send.... TODO
 	--print("after horde function");
 	--unix.usleep(1*1E6);	
@@ -311,7 +297,19 @@ end
 function initMotion()--should be cleaned up, gets servos hard and standing up
 	BodyFSM.entry();
 	Motion.entry();
-        GameFSM.entry();
+  	BodyFSM.update();
+	BodyFSM.update();
+	BodyFSM.sm:set_state('bodyReady');
+	BodyFSM.update();
+	BodyFSM.update();
+	BodyFSM.sm:set_state('bodyUnpenalized');
+	BodyFSM.update();
+	BodyFSM.update();
+	BodyFSM.sm:set_state('bodyIdle');
+	BodyFSM.update();
+	BodyFSM.update();
+
+	--      GameFSM.entry();
 	
 		Motion.update();
 		Motion.update();

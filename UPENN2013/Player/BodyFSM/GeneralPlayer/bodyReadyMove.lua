@@ -78,6 +78,7 @@ function getHomePose()
 end
 
 function update()
+  print("in update for ready move");
   local t = Body.get_time();
   pose = wcm.get_pose();
   home =getHomePose();
@@ -87,6 +88,8 @@ function update()
   vx,vy,va=0,0,0;
 
   if phase==0 then 
+	print("phase 0");
+
     if t - t0 < tstart then 
       walk.set_velocity(0,0,0);
       return;
@@ -94,11 +97,13 @@ function update()
       phase=1;
     end
   elseif phase==1 then --Approach phase 
+    print("phase 1")
     vx = maxStep * homeRelative[1]/rhome;
     vy = maxStep * homeRelative[2]/rhome;
     va = .2 * math.atan2(homeRelative[2], homeRelative[1]);
     if rhome < rClose then phase=2; end
   elseif phase==2 then --Turning phase, face center
+    print("phase 2");
     vx = maxStep * homeRelative[1]/rhome;
     vy = maxStep * homeRelative[2]/rhome;
     va = .2*attackBearing;
@@ -127,11 +132,13 @@ function update()
 
   if phase~=3 and rhome < rClose and 
      math.abs(attackBearing)<thClose then 
-      walk.stop(); 
+      print("close enough");
+	walk.stop(); 
       phase=3;
   end
   --To prevent robot keep walking after falling down
   if phase==3 then
+      print("stop plz");
       walk.stop(); 
   end
 end
