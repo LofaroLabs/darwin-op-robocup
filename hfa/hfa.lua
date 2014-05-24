@@ -474,6 +474,9 @@ start = "start"
 -- HFA will call the transition function and transition to the state indicated.
 makeTransition = function(transitions)
 	return function(hfa)
+		print("transitions[start] = " .. tostring(transitions[start]));
+		print("about to print a")
+		transitions[start][start]()
 		if (hfa.currentBehavior == nil) then
 			return transitions[start].transition(hfa)
 		else
@@ -629,8 +632,8 @@ myArray =  {
 		["printA"] = printB, 
 		["printB"] = printA,
 	}
-print(myArray[start]);
-myArray[start](myArray);
+--print(myArray[start]);
+--myArray[start][start]();
 foo = makeHFA("foo", makeTransition(
         {
 		[start] = printA,
