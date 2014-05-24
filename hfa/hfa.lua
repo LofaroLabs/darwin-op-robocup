@@ -389,7 +389,7 @@ of behaviors, you'll need to make them.  Keep this in mind.
 
 
 require("string")
-
+start = "start"
 -- startHFA(hfa)
 -- Private internal function which is the START function for an HFA.
 startHFA = function(hfa)
@@ -425,7 +425,7 @@ goHFA = function(hfa)
 		else
 			newBehavior = hfa.transition
 		end
-	
+        end	
 	if (newBehavior == nil and not(hfa.goReturnValue==nil)) then
 		newBehavior = hfa.goReturnValue
 		hfa.goReturnValue = nil
@@ -601,4 +601,43 @@ sayFailed = makeBehavior("sayFailed",
 
 -- END HFA.LUA
 
-	
+
+printAStart = function(hfa)
+	print("a")
+end
+printAStop = function(hfa)
+
+end
+printAGo = function(hfa)
+
+end
+printA = makeBehavior("printA", printAStart, printAStop, printAGo);
+
+printBStart = function(hfa)
+	print("b")
+end
+printBStop = function(hfa)
+
+end
+printBGo = function(hfa)
+
+end
+printB= makeBehavior("printB", printAStart, printAStop, printAGo);
+
+myArray =  {
+		[start] = printA,
+		["printA"] = printB, 
+		["printB"] = printA,
+	}
+print(myArray[start]);
+myArray[start](myArray);
+foo = makeHFA("foo", makeTransition(
+        {
+		[start] = printA,
+		["printA"] = printB, 
+		["printB"] = printA,
+	}), false)
+
+while 1 do
+	pulse(foo);
+end
