@@ -426,7 +426,7 @@ goHFA = function(hfa)
 			newBehavior = hfa.transition
 		end
 	
-	if (newBehavior == nil and not(hfa.goReturnValue==nil))
+	if (newBehavior == nil and not(hfa.goReturnValue==nil)) then
 		newBehavior = hfa.goReturnValue
 		hfa.goReturnValue = nil
 	end
