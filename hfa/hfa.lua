@@ -183,10 +183,10 @@ For example, you might have something like this.  See if you can make out what's
 
 foo = makeHFA("foo", makeTransition(
 	{
-	["start"] = forward,
-	["forward"] = function(hfa) if (closeToBall()) then return kick else return forward end end,
-	["kick"] = rotate,
-	["rotate"] = function(hfa) if (ballAhead()) then return forward else return rotate end end,
+	[start] = forward,
+	[forward] = function(hfa) if (closeToBall()) then return kick else return forward end end,
+	[kick] = rotate,
+	[rotate] = function(hfa) if (ballAhead()) then return forward else return rotate end end,
 	}), false)
 
 Second, you can create behaviors which specify their own transitions.  More specifically,
@@ -316,13 +316,13 @@ to the ball, you transferred to the run state, then go back to forward.  You mig
 
 foo = makeHFA("foo", makeTransition(
 	{
-	["start"] = forward,
-	["forward"] = function(hfa) if (closeToBall()) then return kick else return bumpCounter end end,
-	["kick"] = rotate,
-	["rotate"] = function(hfa) if (ballAhead()) then return forward else return rotate end end,
-	["bumpCounter"] = function(hfa) if (hfa.counter > 3) then return run else return forward end end,
-	["run"] = resetCounter,
-	["resetCounter"] = forward,
+	[start] = forward,
+	[forward] = function(hfa) if (closeToBall()) then return kick else return bumpCounter end end,
+	[kick] = rotate,
+	[rotate] = function(hfa) if (ballAhead()) then return forward else return rotate end end,
+	[bumpCounter] = function(hfa) if (hfa.counter > 3) then return run else return forward end end,
+	[run] = resetCounter,
+	[resetCounter] = forward,
 	}), false)
 	
 Similarly, a TIMER is an integer which stores a time interval in seconds.  When the HFA's
@@ -346,17 +346,17 @@ might say:
 
 foo = makeHFA("foo", makeTransition(
 	{
-	["start"] = forward,
-	["forward"] = function(hfa)	
+	[start] = forward,
+	[forward] = function(hfa)	
 		if (closeToBall()) then return kick 
 		elseif  currentTimer(hfa) > 3 then return run
 		else return forward 
 		end
 	end,
-	["kick"] = rotate,
-	["rotate"] = function(hfa) if (ballAhead()) then return forward else return rotate end end,
-	["run"] = resetTimer,
-	["resetTimer"] = forward,
+	[kick] = rotate,
+	[rotate] = function(hfa) if (ballAhead()) then return forward else return rotate end end,
+	[run] = resetTimer,
+	[resetTimer] = forward,
 	}), false)
 
 
@@ -420,12 +420,8 @@ goHFA = function(hfa)
 	-- TRANSITION
 	local newBehavior = nil
 	if (not(hfa.transition == nil)) then
-		if (type(hfa.transition)=="function") then
-			newBehavior = hfa.transition(hfa)
-		else
-			newBehavior = hfa.transition
-		end
-        end	
+		newBehavior = hfa.transition(hfa)
+	end
 	if (newBehavior == nil and not(hfa.goReturnValue==nil)) then
 		newBehavior = hfa.goReturnValue
 		hfa.goReturnValue = nil
@@ -474,13 +470,16 @@ start = "start"
 -- HFA will call the transition function and transition to the state indicated.
 makeTransition = function(transitions)
 	return function(hfa)
-		print("transitions[start] = " .. tostring(transitions[start]));
-		print("about to print a")
-		transitions[start][start]()
+		local transition = nil
 		if (hfa.currentBehavior == nil) then
-			return transitions[start].transition(hfa)
+			transition = transitions[start]
 		else
-			return transitions[currentBehavior].transition(hfa)
+			transition = transitions[hfa.currentBehavior]
+		end
+		if (type(transition) == "function") then
+			return transition(hfa)
+		else
+			return transition
 		end
 	end
 end
@@ -606,39 +605,39 @@ sayFailed = makeBehavior("sayFailed",
 
 
 printAStart = function(hfa)
-	print("a")
+	print("start a")
 end
 printAStop = function(hfa)
-
+	print("stop a")
 end
 printAGo = function(hfa)
-
+	print("go a")
 end
 printA = makeBehavior("printA", printAStart, printAStop, printAGo);
 
 printBStart = function(hfa)
-	print("b")
+	print("start b")
 end
 printBStop = function(hfa)
-
+	print("stop b")
 end
 printBGo = function(hfa)
-
+	print("go b")
 end
-printB= makeBehavior("printB", printAStart, printAStop, printAGo);
+printB= makeBehavior("printB", printBStart, printBStop, printBGo);
 
 myArray =  {
 		[start] = printA,
-		["printA"] = printB, 
-		["printB"] = printA,
+		[printA] = printB, 
+		[printB] = printA,
 	}
 --print(myArray[start]);
 --myArray[start][start]();
 foo = makeHFA("foo", makeTransition(
         {
 		[start] = printA,
-		["printA"] = printB, 
-		["printB"] = printA,
+		[printA] = printB, 
+		[printB] = printA,
 	}), false)
 
 while 1 do
