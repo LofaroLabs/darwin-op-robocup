@@ -13,23 +13,27 @@ require('Body') -- for the button presses
 require('os')
 
 function update() 
-
-	if (Body.get_change_role() == 1) then
-		--if we want to just run main then press the role button
-		Speak.talk('Changed role is one')
-		-- I need to be able to tell it to stop saying the button has been pressed
-
-		Body.set_change_role(0);
+	if ((Body.get_time() - tButton) > 0.25) then
+		tButton = Body.get_time();
+		if (Body.get_change_role() == 1) then
+			--if we want to just run main then press the role button
+			--Speak.talk('Changed role is one')
+			-- I need to be able to tell it to stop saying the button has been pressed
+			print("Executing leftbutton script")
+			os.execute("sh leftbutton.sh")	
 				
+		end
+		
+		if (Body.get_change_state() == 1) then
+		--	Speak.talk('Changed state')
+			print("Executing middle button script")
+			os.execute("sh middlebutton.sh")
+		end	
 	end
-	if (Body.get_change_state() == 1) then
-		Speak.talk('Changed state')
-
-	end	
-
 
 end
 
+tButton = 0;
 
 local tDelay = 0.005 * 1E6;
 while 1 do
