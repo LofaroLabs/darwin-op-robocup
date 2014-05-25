@@ -27,7 +27,7 @@ function update()
 		if (Body.get_change_state() == 1) then
 		--	Speak.talk('Changed state')
 			print("Executing middle button script")
-			os.execute("sh middlebutton.sh")
+			os.execute("sh middlebutton.sh 1")
 		end	
 	end
 

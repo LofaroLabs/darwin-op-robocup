@@ -99,7 +99,7 @@ end
 count = 0;
 function sendFeatures (client)
         if(wcm.get_horde_sendStatus()~="StartSending") then
-        	print("Start sending was false");
+        	--print("Start sending was false");
 	 	return;
         end
 	--print("wcm send status was true");
