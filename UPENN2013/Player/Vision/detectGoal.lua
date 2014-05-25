@@ -184,7 +184,8 @@ function detect(color)
       extent = postStats.area / (postStats.axisMajor * postStats.axisMinor);
       vcm.add_debug_message(string.format("Fill extent check: %.2f\n", extent));
       vcm.add_debug_message(string.format("Fill check: %d %d\n", postStats.axisMajor, postStats.axisMinor));
-      if (extent < th_min_fill_extent) then 
+    print("this is the extend before failure " .. extent);  
+    if (extent < th_min_fill_extent) then 
         vcm.add_debug_message("Fill extent check fail\n");
         valid = false; 
       end

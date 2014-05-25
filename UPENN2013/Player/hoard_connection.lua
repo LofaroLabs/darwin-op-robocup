@@ -203,7 +203,7 @@ connectionThread = coroutine.create(function ()
 			--print("printing: ".. tostring(in_penalty()));
 			--print("maybe? doing horde stuff, idk " .. wcm.get_horde_sendStatus() .. " " .. gcm.get_game_state() .. " " .. tostring(in_penalty()));
 				
-			if wcm.get_horde_sendStatus()=="StartSending" and (gcm.get_game_state() ~= 3 or in_penalty()) then
+			if (gcm.get_game_state() ~= 3 or in_penalty()) then
 				--print("not doing horde stuff, that's for sure " .. wcm.get_horde_sendStatus() .. " " .. gcm.get_game_state() .. " " .. tostring(in_penalty()));
 				--print("not calling horde function");
 				local state = gcm.get_game_state();

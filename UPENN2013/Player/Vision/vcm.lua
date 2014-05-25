@@ -187,7 +187,9 @@ shared.debug.store_goal_detections = vector.zeros(1);
 shared.debug.store_ball_detections = vector.zeros(1);
 shared.debug.store_all_images = vector.zeros(1);
 shared.debug.message='';
-
+shared.post = {};
+shared.post.d1 = vector.zeros(1);
+shared.post.d2 = vector.zeros(1);
 --Now we disable vision update until getup sequence is done
 shared.vision={};
 shared.vision.enable = vector.zeros(1);

@@ -485,6 +485,8 @@ function goal_observation_unified(pos1,pos2,v)
   local p = wcm.get_pose()
   local d1 = math.sqrt((p.x - pose1.x)^2 + (p.y - pose1.y)^2)
   local d2 = math.sqrt((p.x - pose2.x)^2 + (p.y - pose2.y)^2)
+  vcm.set_post_d1(d1);
+  vcm.set_post_d2(d2); 
   local pose = {}
   local dGoal = 0
 
