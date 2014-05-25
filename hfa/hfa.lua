@@ -20,7 +20,7 @@ that is, you cannot have an HFA which ultimately contains itself.
 Let's begin with the notion of a BEHAVIOR.  A behavior is a simple object 
 (a dictionary) which contains four things:
 
-1. A NAME (a descriptive string)
+1. A NAME (as a string).  This really only exists for debugging (for now).
 2. A backpointer to a PARENT of the behavior (or to nil if there is no parent).
    This item may get changed dynamically to various things as the automaton
    is running.  Before any of the functions below (start/stop/go) are called,
@@ -637,7 +637,7 @@ foo = makeHFA("foo", makeTransition(
         {
 		[start] = printA,
 		[printA] = printB, 
-		[printB] = printA,
+		[printB] = printB,
 	}), false)
 
 while 1 do
