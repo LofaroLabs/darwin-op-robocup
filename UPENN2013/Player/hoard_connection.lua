@@ -83,6 +83,7 @@ end
 setBodyFSM = true;-- assume we start with GMU fsm
 previousState = "nil";
 fpsTimer = Body.get_time();
+lastCommand = nil;
 function updateAll(newState)
 	--gcm.set_game_state(3);
        	--print("Motion update");
@@ -204,6 +205,9 @@ connectionThread = coroutine.create(function ()
 			--print("maybe? doing horde stuff, idk " .. wcm.get_horde_sendStatus() .. " " .. gcm.get_game_state() .. " " .. tostring(in_penalty()));
 				
 			if (gcm.get_game_state() ~= 3 or in_penalty()) then
+				if(line~=nil) then
+					lastCommand = line
+				end
 				--print("not doing horde stuff, that's for sure " .. wcm.get_horde_sendStatus() .. " " .. gcm.get_game_state() .. " " .. tostring(in_penalty()));
 				--print("not calling horde function");
 				local state = gcm.get_game_state();
@@ -229,7 +233,7 @@ connectionThread = coroutine.create(function ()
   						HeadFSM.sm:set_state('headTrack');
 				--	elseif (state == 3) then
     				--		return 'playing';
-  					elseif (state == 4 and lastState ~=3) then
+  					elseif (state == 4 and lastState ~=4) then
     						BodyFSM.sm:set_state('bodyIdle')	-- 'finished';
   						HeadFSM.sm:set_state('headIdle');
 					end
@@ -241,6 +245,7 @@ connectionThread = coroutine.create(function ()
 					hoard_functions.hordeFunctions["position"](nil,nil); -- if we are not playing, do upenn positions
 				end
 			elseif not err then
+				lastState = 3;
                                 print(line);
                                 if(line~=nil) then
 					updateAction(line, client);
@@ -248,7 +253,10 @@ connectionThread = coroutine.create(function ()
 				print("update success\n");
                         elseif err == "closed" then
                                connected = false;
-                        end    
+                        elseif lastCommand ~= nil then
+				updateAction(lastCommand,client);
+				lastCommand = nil;
+			end    
                         unix.usleep(tDelay);
                 end
         end

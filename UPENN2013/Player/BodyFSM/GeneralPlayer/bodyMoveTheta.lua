@@ -8,7 +8,7 @@ function entry()
    Motion.event("walk");
    walk.start();
    started = false;
-   HeadFSM.sm:set_state("headIdle");
+   HeadFSM.sm:set_state("headScan");
 end
 
 function update()

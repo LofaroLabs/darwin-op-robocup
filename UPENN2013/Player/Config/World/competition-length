@@ -7,11 +7,11 @@ require('vector')
 
 world={};
 world.n = 200;--David: is this number of particles?
-world.xLineBoundary = 2.74;--UPDATED
-world.yLineBoundary = 1.8;--UPDATED
+world.xLineBoundary = 5;--UPDATED
+world.yLineBoundary = 3;--UPDATED
 --world.xMax = 4;
-world.xMax = 2.74; --UPDATED, this was 20 cm beyond border for some reason though....
-world.yMax = 1.8;--UPDATED (20cm thing)
+world.xMax = 5; --UPDATED, this was 20 cm beyond border for some reason though....
+world.yMax = 3;--UPDATED (20cm thing)
 world.goalWidth = 1.64;   --UPDATED -- c currently measured outside.  inside yellow is 1.41 outside is 1.64
 world.goalHeight= 0.85;   --UPDATED -- come back
 world.goalDiameter=0.115; --UPDATED -- diameter of a post
@@ -19,11 +19,11 @@ world.ballYellow= {{0,0.0}};-- idk used to b 4.5,0
 world.ballCyan= {{0,0.0}};--idk, used to be -4.5,0
 world.postYellow = {};
 -- field length is 548 cm, 5.48m
-world.postYellow[1] = {2.74, 0.82};-- UPDATED
-world.postYellow[2] = {2.74, -0.82};--UPDATED 
+world.postYellow[1] = {5, 0.82};-- UPDATED
+world.postYellow[2] = {5, -0.82};--UPDATED 
 world.postCyan = {};
-world.postCyan[1] = {-2.74, -0.82}; --UPDATED
-world.postCyan[2] = {-2.74, 0.82}; -- UPDATED
+world.postCyan[1] = {-5, -0.82}; --UPDATED
+world.postCyan[2] = {-5, 0.82}; -- UPDATED
 world.spot = {};
 world.spot[1] = {-1.16, 0};--UPDATED--center to + sign, 116cm -- radius 56
 world.spot[2] = {1.16, 0};--UPDATED
@@ -31,23 +31,23 @@ world.spot[2] = {1.16, 0};--UPDATED
 --They are SPL 2013 values
 world.Lcorner={};
 --Field edge --UPDATED SECTION
-world.Lcorner[1]={2.74,1.80};
-world.Lcorner[2]={2.74,-1.80};
-world.Lcorner[3]={-2.74,1.80};
-world.Lcorner[4]={-2.74,-1.80};
+world.Lcorner[1]={5,1.80};
+world.Lcorner[2]={5,-1.80};
+world.Lcorner[3]={-5,1.80};
+world.Lcorner[4]={-5,-1.80};
 --Center T edge --UPDATED SECTION
-world.Lcorner[5]={0,1.80};
-world.Lcorner[6]={0,-1.80};
+world.Lcorner[5]={0,5};
+world.Lcorner[6]={0,-5};
 --Penalty box edge --UPDATED SECTION
-world.Lcorner[7]={-2.26,.82};--226cm,82cm
-world.Lcorner[8]={-2.26,-.82};
+world.Lcorner[7]={-5,.82};--226cm,82cm
+world.Lcorner[8]={-5,-.82};
 world.Lcorner[9]={2.26,.82};
 world.Lcorner[10]={2.26,-.82};
 --Penalty box T edge --UPDATED SECTION
-world.Lcorner[11]={2.74,.82};
-world.Lcorner[12]={2.74,-.82};
-world.Lcorner[13]={-2.74,.82};
-world.Lcorner[14]={-2.74,-.82};
+world.Lcorner[11]={5,.82};
+world.Lcorner[12]={5,-.82};
+world.Lcorner[13]={-5,.82};
+world.Lcorner[14]={-5,-.82};
 --Center circle junction --UPDATED SECTION
 world.Lcorner[15]={0,0.56};
 world.Lcorner[16]={0,-0.56};
@@ -157,8 +157,8 @@ world.use_same_colored_goal = 1;
 world.use_new_goalposts=1;
 world.use_line_angles = 1;
 
-world.triangulation_threshold = 4.0; 
-world.position_update_threshold = 6.0;
+world.triangulation_threshold = 10.0; 
+world.position_update_threshold = 10.0;
 world.angle_update_threshold = 1.0;
 world.flip_correction = 0;
 
