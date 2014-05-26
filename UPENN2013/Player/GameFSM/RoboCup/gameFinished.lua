@@ -5,7 +5,7 @@ require('HeadFSM')
 require('Speak')
 require('vector')
 require('gcm')
-require('BodyFSMAdvanced')
+require('BodyFSM')
 require('HeadFSM')
 
 function entry()

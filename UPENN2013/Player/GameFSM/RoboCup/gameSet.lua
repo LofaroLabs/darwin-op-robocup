@@ -6,7 +6,7 @@ require('Speak')
 require('vector')
 require('gcm')
 require('wcm')
-require('BodyFSMAdvanced')
+require('BodyFSM')
 require('HeadFSM')
 
 t0 = 0;
