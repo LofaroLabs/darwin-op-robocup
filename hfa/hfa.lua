@@ -571,22 +571,19 @@ translateTargets = function(targets, mapping)
 	if (mapping[0] == nil) then
 		print("ERROR translateTargets(targets, mapping): mapping does not contain 0 as a key") 
 	end
-	for mapping, original in pairs(mapping) do
-		print(mapping)
-		print(original)
-		print("---")
-		if (not(mapping == 0)) then
+	for mapname, original in pairs(mapping) do
+		if (not(mapname == 0)) then
 			if (type(original) == "string") then
 				if (targets == nil) then
 					print ("ERROR translateTargets(targets, mapping): targets is nil while mapping")
 				elseif (targets[original] == nil) then
 					print ("WARNING translateTargets(targets, mapping): targets[original] is nil while mapping")
 				else
-					mapped[mapping] = targets[original]
+					mapped[mapname] = targets[original]
 				end
 			else
 				-- we assume it's a ground target
-				mapped[mapping] = original
+				mapped[mapname] = original
 			end
 		end
 	end

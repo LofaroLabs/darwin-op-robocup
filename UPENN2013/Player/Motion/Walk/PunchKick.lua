@@ -130,7 +130,7 @@ function update()
   end
 
   local t=Body.get_time();
-  ph=(t-t0)/kickDef[kickState][2];
+  ph=((t-t0))/kickDef[kickState][2];
   if ph>1 then
     kickState=kickState+1;
     uLeft1[1],uLeft1[2],uLeft1[3]=uLeft[1],uLeft[2],uLeft[3];
@@ -203,10 +203,11 @@ function update()
     aLeft=ph*kickDef[kickState][6] + (1-ph)*aLeft1;
 
   elseif kickStepType==3 then --Lifting / Landing Right foot
-    uRight=util.se2_interpolate(ph,uRight1,
+    tempPH = ph*20000;
+    uRight=util.se2_interpolate(tempPH,uRight1,
       util.pose_global(kickDef[kickState][4],uRight1));
-    zRight=ph*kickDef[kickState][5] + (1-ph)*zRight1;
-    aRight=ph*kickDef[kickState][6] + (1-ph)*aRight1;
+        zRight=tempPH*kickDef[kickState][5] + (1-tempPH)*zRight1;
+    aRight=tempPH*kickDef[kickState][6] + (1-tempPH)*aRight1;
 
   elseif kickStepType==4 then --Kicking Left foot
     uLeft=util.pose_global(kickDef[kickState][4],uLeft1);
@@ -214,9 +215,10 @@ function update()
     aLeft=kickDef[kickState][6]
 
   elseif kickStepType==5 then --Kicking Right foot
-    uRight=util.pose_global(kickDef[kickState][4],uRight1);
-    zRight=kickDef[kickState][5]
-    aRight=kickDef[kickState][6]
+    uRight=util.se2_interpolate(ph,uRight1,
+      util.pose_global(kickDef[kickState][4],uRight1));
+    zRight=ph*kickDef[kickState][5] + (1-ph)*zRight1;
+    aRight=ph*kickDef[kickState][6] + (1-ph)*aRight1;
 
   elseif kickStepType ==6 then --Returning to walk stance
     uBody=util.se2_interpolate(ph,uBody1,kickDef[kickState][3]);	
