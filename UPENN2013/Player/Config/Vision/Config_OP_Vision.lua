@@ -87,7 +87,7 @@ vision.goal.th_nPostB = 5;
 
 vision.goal.th_min_area = 40;
 vision.goal.th_min_orientation = 60*math.pi/180;
-vision.goal.th_min_fill_extent=0.1; -- 0.65 originally
+vision.goal.th_min_fill_extent=0.65; -- 0.65 originally
 vision.goal.th_aspect_ratio={2.5,15};
 vision.goal.th_edge_margin= 5;
 vision.goal.th_bottom_boundingbox=0.9;

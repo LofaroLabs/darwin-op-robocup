@@ -20,20 +20,25 @@ function update()
 			--Speak.talk('Changed role is one')
 			-- I need to be able to tell it to stop saying the button has been pressed
 			print("Executing leftbutton script")
-			os.execute("sh leftbutton.sh")	
-				
+			Speak.talk('Kiddie Soccer')
+			os.execute("sh leftbutton.sh " .. tostring(leftCount % 2))
+			leftCount = leftCount + 1;
+					
 		end
 		
 		if (Body.get_change_state() == 1) then
-		--	Speak.talk('Changed state')
+			Speak.talk('Wireless Internet')
 			print("Executing middle button script")
-			os.execute("sh middlebutton.sh")
+			os.execute("sh middlebutton.sh ".. tostring(middleCount % 2))
+			middleCount = middleCount + 1;
 		end	
 	end
 
 end
 
 tButton = 0;
+middleCount = 0;
+leftCount = 0;
 
 local tDelay = 0.005 * 1E6;
 while 1 do
