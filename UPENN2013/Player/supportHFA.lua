@@ -74,13 +74,21 @@ gotoPoseFacingStart = function(hfa)
   			action  = {}
                         action["action"] = "gotoPoseFacing";
                         action["args"] = {};
+			ball=wcm.get_ball();
+ 		       	-- my pose global
+       		 	pose=wcm.get_pose();
+
+        		-- determine which goal post the ball is closest to
+       			-- so need its global coords
+       			ballGlobal = util.pose_global({ball.x, ball.y, 0}, {pose.x, pose.y, pose.a})			
+			dest = getMidpoint()
 			action.args.facing = {};
-			action.args.facing.x = 1.1
-			action.args.facing.y = 0
+			action.args.facing.x = ballGlobal.x
+			action.args.facing.y = ballGlobal.y
 			action.args.facing.a = 0
 			action.args.gotoPose = {};   
-                        action.args.gotoPose.x = 0
-                        action.args.gotoPose.y = 0
+                        action.args.gotoPose.x = dest.x
+                        action.args.gotoPose.y = dest.y
                         action.args.gotoPose.a = 0
      			print(json.encode(action) .. "\n") 
                         client:send(json.encode(action) .. "\n");
