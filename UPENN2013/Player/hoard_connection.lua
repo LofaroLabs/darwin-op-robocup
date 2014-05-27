@@ -173,7 +173,7 @@ function connectToHorde(port)
                 local client = server:accept()
               	return client;
 end
-connectionThread = coroutine.create(function ()
+connectionThread = function ()
         print("got into con thread");
 	if( darwin ) then
                 local tDelay = 0.005 * 1E6; -- Loop every 5ms
@@ -260,7 +260,7 @@ connectionThread = coroutine.create(function ()
                         unix.usleep(tDelay);
                 end
         end
-end)
+end
 function in_penalty() 
 	--print(Config.game.playerID);
 	
@@ -341,7 +341,8 @@ if(darwin) then
 	wcm.set_horde_yelledKick(0);
 	initMotion();
 	print("starting connection thread\n");
-	coroutine.resume(connectionThread);
+	--coroutine.resume(connectionThread);
+	connectionThread();
 	print("connection lost")
 --	wcm.set_horde_state("gotoBall");
 end

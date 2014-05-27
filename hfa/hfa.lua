@@ -834,10 +834,12 @@ printBStart = function(behavior, targets)
 	print("start b")
 end
 printBStop = function(behavior, targets)
-	print("stop b")
+	print("incrementing number b")
+--	targets["theNumber"] = targets["X"] + 8; 
+--	print("it is now " .. targets["X"]);
 end
 printBGo = function(behavior, targets)
-	print("go b")
+	print("go b " .. targets["X"])
 end
 printB= makeBehavior("printB", printBStart, printBStop, printBGo);
 
@@ -851,10 +853,13 @@ myArray =  {
 foo = makeHFA("foo", makeTransition(
         {
 		[start] = printA,
-		[printA] = printB, 
-		[printB] = printB,
+		[printA] = {[0] = printB, ["X"] = "theNumber"}, 
+		[printB] = printA,
 	}), false)
-
+number = 1;
 while 1 do
-	pulse(foo, nil);
+	print("i am pulsing");
+	number = number+1
+	pulse(foo, {["theNumber"] = number});
+	
 end
