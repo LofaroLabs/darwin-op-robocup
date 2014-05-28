@@ -18,7 +18,7 @@ that is, you cannot have an HFA which ultimately contains itself.
 -- Behaviors --
 
 Let's begin with the notion of a BEHAVIOR.  A behavior is a simple object 
-(a dictionary) which contains four things:
+(a dictionary) which contains a few things:
 
 1. A NAME (as a string).  This really only exists for debugging (for now).
 2. A backpointer to a PARENT of the behavior (or to nil if there is no parent).
@@ -34,16 +34,19 @@ Let's begin with the notion of a BEHAVIOR.  A behavior is a simple object
    the first of which is the behavior itself.  This value may be nil.
    The second is a table of targets.  We'll get to these later in the TARGETS 
    section, for now set them to NIL.
-6. A STOP function.  This function is called when the behavior is stopped.
+5. A STOP function.  This function is called when the behavior is stopped.
    The function takes a single argument, the first of which is the behavior itself.
    After being stopped, a behavior can be started again.  This value may be nil.
    The second is a table of targets.  We'll get to these later in the TARGETS 
    section, for now set them to NIL.
+5. Whether the behavior has yet been PULSED.  This is used by the pulse function.
+
 
 Imagine you had a behavior called myBehavior.  Then you could access these as:
 
 myBehavior.name
 myBehavior.parent
+myBehavior.pulsed
 myBehavior.start
 myBehavior.stop
 myBehavior.go
@@ -81,6 +84,7 @@ the string "start".  Thus we have (for some HFA called myHFA):
 
 myHFA.name            (Because an hfa is a behavior)
 myHFA.parent        (Likewise)
+myHFA.pulsed		(Likewise)
 myHFA.start            (Likewise.  Set to startHFA, see below.)
 myHFA.stop            (Likewise.  Set to stopHFA, see below.)
 myHFA.go            (Likewise.  Set to goHFA, see below.)
@@ -142,10 +146,10 @@ you're doing, don't make your HFA interruptable.
 myHFA.interruptable
 
 HFA are created with a different utility function than basic hard-coded behaviors.
-You call makeHFA, providing the name, the transition function, and whether or not
-you want the HFA to be interruptable (usually false).
+You call makeHFA, providing the name, the transition function.  The HFA is
+not interruptable by default.
 
-makeHFA(name, transition, interruptable)           returns an HFA.
+makeHFA(name, transition)           returns an HFA.
 
 Again, when creating an HFA, you'd typically store it in a global variable of the
 same name as the HFA, thus if you were creating an HFA called FOO, you'd say:
@@ -182,7 +186,7 @@ edge in an FSA.
 
 Thus the most common pattern for making an HFA called FOO would be:
 
-foo = makeHFA("foo", makeTransition(...), false)
+foo = makeHFA("foo", makeTransition(...))
 
 For example, you might have something like this.  See if you can make out what's going on:
 
@@ -192,7 +196,7 @@ foo = makeHFA("foo", makeTransition(
     [forward] = function(hfa) if (closeToBall()) then return kick else return forward end end,
     [kick] = rotate,
     [rotate] = function(hfa) if (ballAhead()) then return forward else return rotate end end,
-    }), false)
+    }))
 
 Second, you can create behaviors which specify their own transitions.  More specifically,
 if a behavior is the current state, and that behavior's GO function returns a behavior
@@ -229,19 +233,18 @@ pulse(behavior, targets)    initially calls START on the behavior, then GO.  The
 
 Typically you'd just set up your HFA and then call pulse(...) on it forever.  If for 
 some reason you need to reset the HFA after calling pulse(...) on it some number of times,
-you should do the following:
+you can do so with the following function:
 
-1. call STOP on the behavior
-2. set the global variable PULSED to false
+reset(behavior, targets)	calls STOP on the behavior, then resets it so pulse will
+							call START on it again in the future.
 
 Example:
 
-pulse(myHFA)
-pulse(myHFA)
-pulse(myHFA)
+pulse(myHFA, myTargets)
+pulse(myHFA, myTargets)
+pulse(myHFA, myTargets)
 -- ... and so on, then to reset:
-myHFA.stop(myHFA)
-pulsed = false
+reset(myHFA, myTargets)
 -- we're now ready to begin pulsing again...
 
 
@@ -330,7 +333,7 @@ foo = makeHFA("foo", makeTransition(
     [bumpCounter] = function(hfa) if (hfa.counter > 3) then return run else return forward end end,
     [run] = resetCounter,
     [resetCounter] = forward,
-    }), false)
+    }))
     
 Similarly, a TIMER is an integer which stores a time interval in seconds.  When the HFA's
 startHFA(...) function is called, the timer is set to the current time.  A single behavior
@@ -364,7 +367,7 @@ foo = makeHFA("foo", makeTransition(
     [rotate] = function(hfa) if (ballAhead()) then return forward else return rotate end end,
     [run] = resetTimer,
     [resetTimer] = forward,
-    }), false)
+    }))
 
 
 
@@ -422,7 +425,7 @@ attack = makeHFA("attack", makeTransition(
         end,
     [kick] = { [0] = goto, ["X"] = "goal"}, 
     ...
-    }), false)
+    }))
 
 ... Now you have an "attack" behavior which expects a "goal"  paramter (and perhaps
 a "ball" paramter used in some other sub-function not shown), and whenever goto is transitioned
@@ -451,7 +454,7 @@ attack = makeHFA("attack", makeTransition(
         end,
     [kick] = { [0] = goto, ["X"] = TheGoal }, 
     ...
-    }), false)
+    }))
 
 We call this binding the target to a GROUND VALUE.  Now perhaps attack only needs to be provided
 with a "ball" target.  Or if you bound both "goal" and "ball" to ground values when passing them
@@ -703,27 +706,37 @@ end
 -- Creates a behavior with the given name and start/stop/go functions.  Any
 -- of these functions can be nil.
 makeBehavior = function(name, start, stop, go)
-    return { ["name"] = name, ["start"] = start, ["stop"] = stop, ["go"] = go, ["parent"] = nil }
+    return { ["name"] = name, ["start"] = start, ["stop"] = stop, 
+    		 ["go"] = go, ["parent"] = nil, ["pulsed"] = false }
 end
 
 -- makeHFA(name, transition, interruptable)
 -- Creates a potentially interruptable HFA with the given name and transition function.
 -- Though the transition function can be nil, it's almost certainlly not appropriate to do so.
-makeHFA = function(name, transition, interruptable)
+makeHFA = function(name, transition)
     return { ["name"] = name, ["start"] = startHFA, ["stop"] = stopHFA, ["go"] = goHFA, 
-             ["transition"] = transition, ["interruptable"] = interruptable, 
+             ["transition"] = transition, ["interruptable"] = false,  ["pulsed"] = false,
              ["parent"] = nil, ["goReturnValue"] = nil, ["counter"] = 0, ["timer"] = 0, 
              ["done"] = false, ["failed"] = false, ["current"] = start,
              ["propagateFlags"] = false, ["targets"] = nil, ["behaviorTargets"] = nil }
 end
 
--- Has pulse(...) been called at least once?
-pulsed = false
+-- makeWrapper(name, wrappedBehavior)
+-- Creates a wrapper HFA for the given behavior, which works exactly like the
+-- behavior does.  This allows you to have the same behavior appear as multiple
+-- states in a parent HFA.
+makeWrapper = function(name, wrappedBehavior)
+  return makeHFA(name, 
+                 function(hfa)
+                   return wrappedBehavior 
+                 end)
+end
+    
 
 -- Pulses the behavior.  This is the top-level stepping procedure for your HFA.
 pulse = function(behavior, targets)
-    if (not pulsed) then
-        pulsed = true
+    if (not behavior.pulsed) then
+        behavior.pulsed = true
         if (not(behavior.start == nil)) then
             behavior.start(behavior, targets)
         end
@@ -734,6 +747,15 @@ pulse = function(behavior, targets)
 end
         
 
+-- Resets a behavior so that next time it is pulsed, it will call start() again.
+reset = function(behavior, targets)
+    if (behavior.pulsed) then
+        if (not(behavior.stop == nil)) then
+            behavior.stop(behavior, targets)
+        end
+        behavior.pulsed = false
+    end
+end
 
 
 -- UTILITY BEHAVIORS --
@@ -819,12 +841,53 @@ sayFailed = makeBehavior("sayFailed",
     end, nil, nil)
 
 
-makeWrapper = function(name, wrappedBehavior)
-  return makeHFA(name, 
-                 function(hfa)
-                   return wrappedBehavior 
-                 end)
-end
-    
 
 -- END HFA.LUA
+
+
+--[[
+printAStart = function(behavior, targets)
+	print("start a")
+end
+printAStop = function(behavior, targets)
+	print("stop a")
+end
+printAGo = function(behavior, targets)
+	print("go a")
+end
+printA = makeBehavior("printA", printAStart, printAStop, printAGo);
+
+printBStart = function(behavior, targets)
+	print("start b")
+end
+printBStop = function(behavior, targets)
+	print("incrementing number b")
+--	targets["theNumber"] = targets["X"] + 8; 
+--	print("it is now " .. targets["X"]);
+end
+printBGo = function(behavior, targets)
+	print("go b " .. targets["X"])
+end
+printB= makeBehavior("printB", printBStart, printBStop, printBGo);
+
+myArray =  {
+		[start] = printA,
+		[printA] = printB, 
+		[printB] = printA,
+	}
+--print(myArray[start]);
+--myArray[start][start]();
+foo = makeHFA("foo", makeTransition(
+        {
+		[start] = printA,
+		[printA] = {[0] = printB, ["X"] = "theNumber"}, 
+		[printB] = printA,
+	}))
+number = 1;
+while 1 do
+	print("i am pulsing");
+	number = number+1
+	pulse(foo, {["theNumber"] = number});
+	
+end
+]]--
