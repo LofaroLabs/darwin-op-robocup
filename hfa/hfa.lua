@@ -597,7 +597,6 @@ startHFA = function(hfa, targets)
     hfa.done = false;
     hfa.failed = false;
     hfa.counter = 0;
-    hfa.targets = targets
     -- maybe this is too costly and we should restrict it to the resetTimer function?
     hfa.timer = os.time()
     hfa.goReturnValue = nil;
@@ -609,6 +608,7 @@ end
 -- stopHFA(hfa)
 -- Private internal function which is the STOP function for an HFA.
 stopHFA = function(hfa, targets)
+	hfa.targets = nil
     if (hfa.current == nil) then
     	print("WARNING (stopHFA) current is nil")
     elseif (not(hfa.current == start) and
@@ -628,14 +628,14 @@ goHFA = function(hfa, targets)
     if (not(hfa.transition == nil)) then
         newBehavior = hfa.transition(hfa)
     end
-    if (newBehavior == nil and not(hfa.goReturnValue==nil)) then
+    if (newBehavior == nil) then
         newBehavior = hfa.goReturnValue
-        hfa.goReturnValue = nil
     end
+    hfa.goReturnValue = nil
     
     -- EXTRACT TARGETS
     -- this is the previous subset, we use it in calling stop() if necessary
-    local oldbehaviorTargets = hfa.behaviorTargets
+    local oldBehaviorTargets = hfa.behaviorTargets
     -- figure out the new subset.  We test for target lists based on whether
     -- the table provided has 0 as a key
     if (not(newBehavior == nil) and not(newBehavior[0] == nil)) then
@@ -653,7 +653,7 @@ goHFA = function(hfa, targets)
     			print("WARNING (stopHFA) current is nil")
     		elseif((not(hfa.current == start)) and
     			   (not(hfa.current.stop == nil))) then
-                    hfa.current.stop(hfa.current, oldbehaviorTargets)
+                    hfa.current.stop(hfa.current, oldBehaviorTargets)
             end
             if (not(newBehavior.start == nil)) then
                  newBehavior.parent = hfa
@@ -764,7 +764,7 @@ end
 bumpCounter = makeBehavior("bumpCounter", 
     function(behavior, targets) 
         if ((not behavior == nil) and (not behavior.parent == nil)) then 
-            behavior.parent.counter = behavior.paranet.counter + 1
+            behavior.parent.counter = behavior.parent.counter + 1
         end
     end, nil, nil)
 
@@ -822,6 +822,12 @@ sayDone = makeBehavior("sayDone",
             setFlag(behavior.parent, "done")
         end
     end, nil, nil)
+    
+-- isDone(hfa)	returns the current done flag in the HFA
+isDone = function(hfa) return hfa.done end
+
+-- isFailed(hfa)	returns the current failed flag in the HFA
+isFailed = function(hfa) return hfa.failed end
     
 -- failed: sets the "failed" flag in the HFA's parent, and transitions to "start"
 failed = makeBehavior("failed", nil, nil,
