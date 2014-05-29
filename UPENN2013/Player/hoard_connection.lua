@@ -205,7 +205,7 @@ connectionThread = function ()
 			--print("maybe? doing horde stuff, idk " .. wcm.get_horde_sendStatus() .. " " .. gcm.get_game_state() .. " " .. tostring(in_penalty()));
 				
 			if (gcm.get_game_state() ~= 3 or in_penalty()) then
-				if(line~=nil) then
+				if(line~=nil and not string.find(line, "update") ) then
 					lastCommand = line
 				end
 				--print("not doing horde stuff, that's for sure " .. wcm.get_horde_sendStatus() .. " " .. gcm.get_game_state() .. " " .. tostring(in_penalty()));
@@ -246,19 +246,23 @@ connectionThread = function ()
 				end
 			elseif not err then
 				lastState = 3;
-                                print(line);
-                                if(line~=nil) then
+                print(line);
+
+                if(line~=nil) then
 					updateAction(line, client);
 				end
 				print("update success\n");
-                        elseif err == "closed" then
+                if err == "closed" then
                                connected = false;
-                        elseif lastCommand ~= nil then
-				updateAction(lastCommand,client);
-				lastCommand = nil;
-			end    
-                        unix.usleep(tDelay);
                 end
+				if lastCommand ~= nil then
+					updateAction(lastCommand,client);
+					lastCommand = nil;
+				end
+			end    
+            end
+			 unix.usleep(tDelay);
+
         end
 end
 function in_penalty() 

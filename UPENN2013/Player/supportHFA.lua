@@ -27,7 +27,7 @@ package.path = cwd .. '/Motion/Walk/?.lua;' .. package.path;
 package.path = cwd .. '/Vision/?.lua;' .. package.path;
 package.path = cwd .. '/World/?.lua;' .. package.path;
 package.path = cwd .. '/Lib/json4lua-0.9.50/?/?.lua;' .. package.path
-hfa = require('hfa')
+require('hfa')
 require('init')
 require('unix')
 require('Config')
@@ -65,9 +65,10 @@ end
 
 function connectToHorde(port)
 		local socket = require("socket")
-                local client = assert(socket.connect("127.0.0.1", port))
-                --local client = server:accept()
-              	return client;
+        local client = assert(socket.connect("127.0.0.1", port))
+        --local client = server:accept()
+        client:settimeout(0);--non blocking read
+		return client;
 end
 
 gotoPoseFacingStart = function(hfa) 
@@ -75,26 +76,56 @@ gotoPoseFacingStart = function(hfa)
                         action["action"] = "gotoPoseFacing";
                         action["args"] = {};
 			ball=wcm.get_ball();
- 		       	-- my pose global
-       		 	pose=wcm.get_pose();
+ 		    -- my pose global
+       		pose=wcm.get_pose();
 
-        		-- determine which goal post the ball is closest to
-       			-- so need its global coords
-       			ballGlobal = util.pose_global({ball.x, ball.y, 0}, {pose.x, pose.y, pose.a})			
+            -- determine which goal post the ball is closest to
+       	    -- so need its global coords
+       		ballGlobal = util.pose_global({ball.x, ball.y, 0}, {pose.x, pose.y, pose.a})			
+			ballGlobal.x = ballGlobal[1];
+			ballGlobal.y = ballGlobal[2];
 			dest = getMidpoint()
 			action.args.facing = {};
 			action.args.facing.x = ballGlobal.x
 			action.args.facing.y = ballGlobal.y
 			action.args.facing.a = 0
 			action.args.gotoPose = {};   
-                        action.args.gotoPose.x = dest.x
-                        action.args.gotoPose.y = dest.y
-                        action.args.gotoPose.a = 0
-     			print(json.encode(action) .. "\n") 
-                        client:send(json.encode(action) .. "\n");
+            action.args.gotoPose.x = dest.x
+            action.args.gotoPose.y = dest.y
+            action.args.gotoPose.a = 0
+            print("i am currently at: " .. pose.x .. ", " .. pose.y);
+			print("trying to face " .. ballGlobal.x .. ", " .. ballGlobal.y);
+			print("also moving to around " .. dest.x .. ", " .. dest.y);
+			
+			print(json.encode(action) .. "\n") 
+            client:send(json.encode(action) .. "\n");
 end	
 gotoPoseFacingGo = function(hfa)
-
+	action  = {}
+                        action["action"] = "updateGotoPoseFacing";
+                        action["args"] = {};
+			ball=wcm.get_ball();
+ 		    -- my pose global
+       		pose=wcm.get_pose();
+            -- determine which goal post the ball is closest to
+       	    -- so need its global coords
+       		ballGlobal = util.pose_global({ball.x, ball.y, 0}, {pose.x, pose.y, pose.a})			
+			ballGlobal.x = ballGlobal[1];
+			ballGlobal.y = ballGlobal[2];
+			dest = getMidpoint()
+			action.args.facing = {};
+			action.args.facing.x = ballGlobal.x
+			action.args.facing.y = ballGlobal.y
+			action.args.facing.a = 0
+			action.args.gotoPose = {};   
+            action.args.gotoPose.x = dest.x
+            action.args.gotoPose.y = dest.y
+            action.args.gotoPose.a = 0
+            print("i am currently at: " .. pose.x .. ", " .. pose.y);	
+			print("trying to face " .. ballGlobal.x .. ", " .. ballGlobal.y);
+			print("also moving to around " .. dest.x .. ", " .. dest.y);
+			print(json.encode(action) .. "\n"); 
+            client:send(json.encode(action) .. "\n");
 end
 gotoPoseFacingStop = function (hfa)
 end
@@ -158,20 +189,20 @@ stopPoseStart = function()
 	client:send(json.encode(action) .. "\n");
 end
 
-stopPose = makeBehvior("stopPose", stopPoseStart, nil, nil);
+stopPose = makeBehavior("stopPose", stopPoseStart, nil, nil);
 walkForward = makeBehavior("walkForward", walkForwardStart, walkForwardStop, walkForwardGo);
 stop = makeBehavior("stop", stopStart, stopStop, stopGo);
 gotoPoseFacing = makeBehavior("gotoPoseFacing", gotoPoseFacingStart, gotoPoseFacingStop, gotoPoseFacingGo);
 gotoBall = makeBehavior("gotoBall", gotoBallStart, gotoBallStop, gotoBallGo);
 approachTarget = makeBehavior("approachTarget", approachTargetStart, approachTargetStop, approachTargetGo);
 kickBall = makeBehavior("kickBall", kickBallStart, kickBallStop, kickBallGo);
-
+locateBall = makeBehavior("locateBall",locateBallStart,nil,nil);
 
 myMachine = makeHFA("myMachine", makeTransition({
-	[start] = locateBall --gotoPoseFacing,
+	[start] = locateBall, --gotoPoseFacing,
 	[locateBall] = function() if ballLost  then return locateBall else return gotoPoseFacing end end,
-	[gotoPoseFacing] = function() if distToMidpoint() < 0.3 then return stopPose else return gotoPoseFacing   end end
-	[stopPose] = function() if distToMidpoint() > 0.3 then return gotoPoseFacing elseif closestToBall() >= 1 then return done  else  return stopPose end end
+	[gotoPoseFacing] = function() if ballLost then return locateBall elseif distToMidpoint() < 0.3 then return stopPose else return gotoPoseFacing   end end,
+	[stopPose] = function() if distToMidpoint() > 0.3 or ballLost then return gotoPoseFacing elseif closestToBall() >= 1 then return done  else  return stopPose end end,
 	--[gotoBall] = function() if ballLost then return locateBall elseif (math.abs(wcm.get_ball_x())+math.abs(wcm.get_ball_y())) < .2 then return approachTarget else  return gotoBall  end end,
 	--[approachTarget] = function() if ballLost then return locateBall elseif wcm.get_horde_doneApproach()~= 0 then return kickBall else return approachTarget end end, 
 	--[kickBall] = function() unix.usleep(1 * 1E6); return locateBall; end
@@ -192,13 +223,7 @@ function isBallLost()
 end
 
 
-function closestToBall() 
-
-	
-
-	
-
-
+function closestToBall()
 	return 0;
 end
 
@@ -209,7 +234,7 @@ end
 function getMidpoint()
 
 	
-	if gcm.get_team_color() == 1 then
+	if gcm.get_team_color() ~= 1 then
     		-- red attacks cyan goal
     		postDefend = PoseFilter.postYellow;
   	else
@@ -220,7 +245,9 @@ function getMidpoint()
 	-- global 
 	LPost = postDefend[1];
 	RPost = postDefend[2];
-	-- relative
+	--print(tostring(LPost))
+    --print(tostring(RPost))
+    -- relative
 	ball=wcm.get_ball();
 	-- my pose global
   	pose=wcm.get_pose();
@@ -228,12 +255,21 @@ function getMidpoint()
 	-- determine which goal post the ball is closest to
 	-- so need its global coords
 	ballGlobal = util.pose_global({ball.x, ball.y, 0}, {pose.x, pose.y, pose.a})
+	ballGlobal.x = ballGlobal[1];
+	ballGlobal.y = ballGlobal[2];
+    LPost.x = LPost[1]
+	LPost.y = LPost[2]
+	RPost.x = RPost[1]
+	RPost.y = RPost[2]
+    farPost = {}
 	if dist(ballGlobal, LPost) > dist(ballGlobal, RPost) then
-		farPost = LPost
+		farPost.x = LPost[1]
+		farPost.y = LPost[2]
 	else
-		farPost = RPost
+		farPost.x = RPost[1]
+		farPost.y = RPost[2]
 	end
-	
+	--print("going to the po	
 	midpoint = {}
 	midpoint.x = (ballGlobal.x - farPost.x) / 2
 	midpoint.y = (ballGlobal.y - farPost.y) /2
@@ -247,7 +283,10 @@ function distToMidpoint()
 end
 -- simple dist function
 function dist(curA, targetB)
-
+    --print("curA: " .. tostring(curA));
+    --print("targetB:  " .. tostring(targetB));
+	--print("curA.x: " .. curA.x);
+	--print("targetB.x " .. targetB.x);
 	return math.sqrt(math.pow(curA.x - targetB.x,2) + math.pow(curA.y - targetB.y,2))
 end
 
@@ -255,27 +294,22 @@ end
 connectionThread = function ()
         print("got into con thread");
 	if( darwin ) then
-                local tDelay = 0.005 * 1E6; -- Loop every 5ms
+        local tDelay = 0.005 * 1E6; -- Loop every 5ms
 
 
- -- setup the server
-               client = connectToHorde(4009);--initialize connection, wait for it.....
-               connected = true;
---               darwinComm = setupUDPDarwins();
+--      setup the server
+        client = connectToHorde(4009);--initialize connection, wait for it.....
+        connected = true;
+--      darwinComm = setupUDPDarwins();
                      
 		print("connected")
   
-                while connected do
---[[                	action  = {}
-			action["action"] = "walkForward";
-			action["args"] = "nan";      
-			client:send(json.encode(action) .. "\n");
-		]]--
+        while connected do
 			isBallLost();
 			--print("ball detect? : " .. tostring(vcm.get_ball_detect()));
 			pulse(myMachine);
 		end
-        end
+    end
 end
 
 --start "main"

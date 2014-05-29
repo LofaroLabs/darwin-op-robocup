@@ -30,16 +30,18 @@ function update()
   pose = wcm.get_pose();
   endPosition = wcm.get_horde_gotoPose();-- goto an arbitrary pose
   facing = wcm.get_horde_facing(); 
-   print("I'm in update!!\n");
-   print(endPosition);
-   -- centerPosition = {x,y,a} in global coordinates
-   -- pose_relative will convert centerPosition to coordinates relative to the robot.
- 
+  
+  print("going to "..  tostring(endPosition.x) .. ", " ..  tostring(endPosition.y));
+  print("facing " .. tostring(facing.x) .. ", " .. tostring(facing.y));
+  print("I'm in update!!\n");
+  print(endPosition);
+  -- centerPosition = {x,y,a} in global coordinates
+  -- pose_relative will convert centerPosition to coordinates relative to the robot.
   endPoseRelative  = util.pose_relative(endPosition, {pose.x, pose.y, pose.a});
   endPoseX = endPoseRelative[1];
   endPoseY = endPoseRelative[2];
   endFacingRelative = util.pose_relative(facing, {pose.x, pose.y, pose.a});
-  scaleFactor = 7.5*(math.abs(endPoseX)+math.abs(endPoseY));
+  scaleFactor = (math.abs(endPoseX)+math.abs(endPoseY));
   walk.start();
   if(alreadyDone) then --checking if we've already gotten there to our best tolerance
       print("nitpick adjustments");
@@ -48,7 +50,7 @@ function update()
       else
            rotateVel = -1;
       end
-      print("velocity is set to: " .. (endPoseX/scaleFactor/5 + -.005) ); 
+      print("velocity is set to: " .. (endPoseX/scaleFactor/5 + -.005) );
         walk.set_velocity(endPoseX/scaleFactor/5 + -.005, endPoseY/scaleFactor/5,rotateVel/10);
 	return;
   end
@@ -57,18 +59,18 @@ function update()
   print("I converted\n");
   angleRelativeFacing = math.atan2(endFacingRelative[2],endFacingRelative[1]) 
   if(math.abs(angleRelativeFacing)> angleTolerance) then -- now that our distance is fine, let's look at the angle we need to go to
-      print("my pose X is: ".. pose.x)
+      --print("my pose X is: ".. pose.x)
       print("adjusting angle first" .. endFacingRelative[3]); 
-      if(endFacingRelative[2]>0) then
+      if(angleRelativeFacing>0) then
            rotateVel = 1;
       else
            rotateVel = -1;
       end
      walk.set_velocity(0, 0,rotateVel);
 	return;
---   elseif true then
---   	print("DEBUG STOPPED IM FACING AS EXPECTD");
---	return;
+    elseif true then
+      	print("DEBUG STOPPED IM FACING AS EXPECTD");
+	return;
    elseif(math.abs(endPoseX)+math.abs(endPoseY)<distanceTolerance and math.abs(endFacingRelative[3]) < angleTolerance) then
 	walk.stop();
 	--walk.set_velocity(0,0,0);
@@ -85,7 +87,7 @@ function update()
   --moving back and forth while moving need to fix TODO
   if(math.abs(endPoseX)+math.abs(endPoseY)>distanceTolerance) then
       print("walking toward final point " .. (math.abs(endPoseX)+math.abs(endPoseY)));
-	rotateVel = 0; 
+	  rotateVel = 0; 
 --     if(endPoseY>0) then
  --          rotateVel = .5;
   --    else

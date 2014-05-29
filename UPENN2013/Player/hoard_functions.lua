@@ -235,6 +235,22 @@ hordeFunctions["gotoPose"] = function(args, client)
 	-- call the state
 	BodyFSM.sm:set_state('bodyGotoPosition');
 end
+
+hordeFunctions["updateGotoPoseFacing"] = function(args, client)
+	-- set the wcm values to the x,y,a from the args
+	print("The args for gotoPose: " .. tostring(args) .. "\n");
+	print("HI");
+	decodedArgs = args;
+	dest = decodedArgs["gotoPose"];
+	facing = decodedArgs["facing"];
+	print("Dest " .. dest.x);
+	--print("The args more specfied... X" .. args.x .. " Y " .. args.y .. " theta: " .. args.a);
+	wcm.set_horde_gotoPose(vector.new({dest.x, dest.y, dest.a}));
+	wcm.set_horde_facing(vector.new({facing.x,facing.y,facing.a}));
+	-- call the state
+	--BodyFSM.sm:set_state('bodyGotoWhileFacing');
+end
+
 hordeFunctions["gotoPoseFacing"] = function(args, client)
 	-- set the wcm values to the x,y,a from the args
 	print("The args for gotoPose: " .. tostring(args) .. "\n");
