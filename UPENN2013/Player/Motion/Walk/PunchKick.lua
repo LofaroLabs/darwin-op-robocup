@@ -215,7 +215,9 @@ function update()
     aLeft=kickDef[kickState][6]
 
   elseif kickStepType==5 then --Kicking Right foot
-    tempPH = ((t-t0)*2)/kickDef[kickState][2];
+    factor=1;
+    tempPH = ((t-t0)*factor)/kickDef[kickState][2];
+--  ph=((t-t0))/kickDef[kickState][2];
     if(tempPH>1)then 
 	tempPH = 1
     end
@@ -223,6 +225,11 @@ function update()
       util.pose_global(kickDef[kickState][4],uRight1));
     zRight=tempPH*kickDef[kickState][5] + (1-tempPH)*zRight1;
     aRight=tempPH*kickDef[kickState][6] + (1-tempPH)*aRight1;
+
+-- Default Kicking Right Foot defs
+--    uRight=util.pose_global(kickDef[kickState][4],uRight1);
+    zRight=kickDef[kickState][5]
+    aRight=kickDef[kickState][6]
 
   elseif kickStepType ==6 then --Returning to walk stance
     uBody=util.se2_interpolate(ph,uBody1,kickDef[kickState][3]);	
