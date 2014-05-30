@@ -281,7 +281,7 @@ function update()
         wcm.set_team_my_eta(eta[id]);
       end
 
-      if eta[id] < smallest_eta then
+      if eta[id] < smallest then
 	smallest_id = id
 	smallest = eta[id];
       end
@@ -299,9 +299,9 @@ function update()
   end
 
   if smallest_id == playerID then
-	wcm.set_is_smallest_eta(1);
+	wcm.set_team_is_smallest_eta(1);
   else
-        wcm.set_is_smallest_eta(0);
+        wcm.set_team_is_smallest_eta(0);
   end
 
   --For defender behavior testing
