@@ -224,7 +224,7 @@ end
 
 
 function closestToBall()
-	return 0;
+	return wcm.get_team_is_smallest_eta();
 end
 
 

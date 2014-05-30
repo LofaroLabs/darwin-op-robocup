@@ -62,7 +62,7 @@ shared.horde.kickToPose = vector.zeros(3);
 -- wcm.get_horde_doneFrontApproach();
 shared.team = {};
 
-
+shared.team.is_smallest_eta = vector.zeros(1);-- 1 if I have the smallest eta 0 otherwise
 shared.team.my_eta = vector.zeros(1);
 shared.team.attacker_eta = vector.zeros(1);
 shared.team.defender_eta = vector.zeros(1);
