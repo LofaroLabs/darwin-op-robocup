@@ -206,12 +206,12 @@ stopPoseStart = function()
 end
 
 stopPose = makeBehavior("stopPose", stopPoseStart, nil, nil);
-walkForward = makeBehavior("walkForward", walkForwardStart, walkForwardStop, walkForwardGo);
-stopMoving = makeBehavior("stopMoving", stopStart, stopStop, stopGo);
-gotoPoseFacing = makeBehavior("gotoPoseFacing", gotoPoseFacingStart, gotoPoseFacingStop, gotoPoseFacingGo);
-gotoBall = makeBehavior("gotoBall", gotoBallStart, gotoBallStop, gotoBallGo);
-approachTarget = makeBehavior("approachTarget", approachTargetStart, approachTargetStop, approachTargetGo);
-kickBall = makeBehavior("kickBall", kickBallStart, kickBallStop, kickBallGo);
+walkForward = makeBehavior("walkForward", walkForwardStart, walkForwardStop, walkForwardStart);
+stopMoving = makeBehavior("stopMoving", stopStart, stopStop, stopStart);
+gotoPoseFacing = makeBehavior("gotoPoseFacing", gotoPoseFacingStart, gotoPoseFacingStop, gotoPoseFacingStart);
+gotoBall = makeBehavior("gotoBall", gotoBallStart, gotoBallStop, gotoBallStart);
+approachTarget = makeBehavior("approachTarget", approachTargetStart, approachTargetStop, approachTargetStart);
+kickBall = makeBehavior("kickBall", kickBallStart, kickBallStop, kickBallStart);
 locateBall = makeBehavior("locateBall",locateBallStart,nil,nil);
 
 myMachine = makeHFA("myMachine", makeTransition({
