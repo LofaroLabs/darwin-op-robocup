@@ -395,6 +395,19 @@ function update_shm()
 
   wcm.set_ball_x(ball.x);
   wcm.set_ball_y(ball.y);
+  if vcm.get_ball_detect()==1 then
+  	ball_global = util.pose_global({ball.x,ball.y,0},{pose.x,pose.y,pose.a})
+    
+	if(ball_global~=nil) then
+		wcm.set_ballGlobal_x(ball_global[1])
+    	wcm.set_ballGlobal_y(ball_global[2])
+    
+	end
+    if(ball_global==nil and (ball_global[1] == nil or ball_global[2] ==nil)) then
+		wcm.set_ballGlobal_x(0);
+		wcm.set_ballGlobal_y(0);
+	end
+  end
   wcm.set_ball_t(ball.t);
   wcm.set_ball_velx(ball.vx);
   wcm.set_ball_vely(ball.vy);
