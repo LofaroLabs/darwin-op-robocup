@@ -180,6 +180,7 @@ connectionThread = function ()
 			client:send(json.encode(action) .. "\n");
 		]]--
 			isBallLost();
+			while(client:receive() ~= "request") do end
 			--print("ball detect? : " .. tostring(vcm.get_ball_detect()));
 			pulse(myMachine);
 		end
