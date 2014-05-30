@@ -207,7 +207,7 @@ end
 
 stopPose = makeBehavior("stopPose", stopPoseStart, nil, nil);
 walkForward = makeBehavior("walkForward", walkForwardStart, walkForwardStop, walkForwardGo);
-stop = makeBehavior("stop", stopStart, stopStop, stopGo);
+stopMoving = makeBehavior("stopMoving", stopStart, stopStop, stopGo);
 gotoPoseFacing = makeBehavior("gotoPoseFacing", gotoPoseFacingStart, gotoPoseFacingStop, gotoPoseFacingGo);
 gotoBall = makeBehavior("gotoBall", gotoBallStart, gotoBallStop, gotoBallGo);
 approachTarget = makeBehavior("approachTarget", approachTargetStart, approachTargetStop, approachTargetGo);
@@ -217,9 +217,12 @@ locateBall = makeBehavior("locateBall",locateBallStart,nil,nil);
 myMachine = makeHFA("myMachine", makeTransition({
 	[start] = locateBall, --gotoPoseFacing,
 	[locateBall] = function() if ballLost  then return locateBall else return gotoPoseFacing end end,
-	[gotoPoseFacing] = function() print("considering transitioning out of gotoPoseFacing"); if ballLost then return locateBall elseif distToMidpoint() < 0.3 then return stopPose else return gotoPoseFacing   end end,
+	[gotoPoseFacing] = function() print("considering transitioning out of gotoPoseFacing"); if ballLost then print("locate ball"); return locateBall elseif closestToBall()<1 then print("trans to stop "); return stopMoving elseif distToMidpoint() < 0.3 then print("going to stop pose from goto"); 
+		return stopPose;
+		else print("going back to myself in gotopose"); return gotoPoseFacing   end end,
 	[stopPose] = function() if distToMidpoint() > 0.3 or ballLost then return gotoPoseFacing elseif closestToBall() >= 1 then return done  else  return stopPose end end,
-	--[gotoBall] = function() if ballLost then return locateBall elseif (math.abs(wcm.get_ball_x())+math.abs(wcm.get_ball_y())) < .2 then return approachTarget else  return gotoBall  end end,
+	[stopMoving] = function() if ballLost then return locateBall elseif closestToBall() >= 1 then return gotoPoseFacing ; else return stopMoving end end,
+ 	--[gotoBall] = function() if ballLost then return locateBall elseif (math.abs(wcm.get_ball_x())+math.abs(wcm.get_ball_y())) < .2 then return approachTarget else  return gotoBall  end end,
 	--[approachTarget] = function() if ballLost then return locateBall elseif wcm.get_horde_doneApproach()~= 0 then return kickBall else return approachTarget end end, 
 	--[kickBall] = function() unix.usleep(1 * 1E6); return locateBall; end
 	--[done] = start;	
