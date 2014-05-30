@@ -370,8 +370,9 @@ connectionThread = function ()
   
         while connected do
 			isBallLost();
-			unix.usleep(.5 * 1E6);
+			--unix.usleep(.5 * 1E6);
 			--print("ball detect? : " .. tostring(vcm.get_ball_detect()));
+			while(client:receive() ~= "request") do end
 			pulse(myMachine);
 		end
     end

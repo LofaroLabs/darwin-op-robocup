@@ -131,12 +131,12 @@ end
 kickBallStop = function()end
 kickBallgo = function()end
 
-walkForward = makeBehavior("walkForward", walkForwardStart, walkForwardStop, walkForwardGo);
-stop = makeBehavior("stop", stopStart, stopStop, stopGo);
-locateBall = makeBehavior("locateBall", locateBallStart, locateBallStop, locateBallGo);
-gotoBall = makeBehavior("gotoBall", gotoBallStart, gotoBallStop, gotoBallGo);
-approachTarget = makeBehavior("approachTarget", approachTargetStart, approachTargetStop, approachTargetGo);
-kickBall = makeBehavior("kickBall", kickBallStart, kickBallStop, kickBallGo);
+walkForward = makeBehavior("walkForward", walkForwardStart, walkForwardStop, walkForwardStart);
+stop = makeBehavior("stop", stopStart, stopStop, stopStart);
+locateBall = makeBehavior("locateBall", locateBallStart, locateBallStop, locateBallStart);
+gotoBall = makeBehavior("gotoBall", gotoBallStart, gotoBallStop, gotoBallStart);
+approachTarget = makeBehavior("approachTarget", approachTargetStart, approachTargetStop, approachTargetStart);
+kickBall = makeBehavior("kickBall", kickBallStart, kickBallStop, kickBallStart);
 
 
 myMachine = makeHFA("myMachine", makeTransition({
@@ -180,6 +180,7 @@ connectionThread = function ()
 			client:send(json.encode(action) .. "\n");
 		]]--
 			isBallLost();
+			while(client:receive() ~= "request") do end
 			--print("ball detect? : " .. tostring(vcm.get_ball_detect()));
 			pulse(myMachine);
 		end
