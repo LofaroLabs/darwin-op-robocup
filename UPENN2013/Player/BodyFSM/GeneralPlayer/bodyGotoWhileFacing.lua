@@ -29,53 +29,38 @@ end
 function update()
   pose = wcm.get_pose();
   endPosition = wcm.get_horde_gotoPose();-- goto an arbitrary pose
-  facing = wcm.get_horde_facing(); 
-  
-  print("going to "..  tostring(endPosition.x) .. ", " ..  tostring(endPosition.y));
-  print("facing " .. tostring(facing.x) .. ", " .. tostring(facing.y));
+  endFacing = wcm.get_horde_facing(); 
   print("I'm in update!!\n");
-  print(endPosition);
-  -- centerPosition = {x,y,a} in global coordinates
-  -- pose_relative will convert centerPosition to coordinates relative to the robot.
+   print(endPosition);
+   -- centerPosition = {x,y,a} in global coordinates
+   -- pose_relative will convert centerPosition to coordinates relative to the robot.
+ 
   endPoseRelative  = util.pose_relative(endPosition, {pose.x, pose.y, pose.a});
   endPoseX = endPoseRelative[1];
   endPoseY = endPoseRelative[2];
-  endFacingRelative = util.pose_relative(facing, {pose.x, pose.y, pose.a});
-  scaleFactor = (math.abs(endPoseX)+math.abs(endPoseY));
-  walk.start();
+  endFacingRelative = util.pose_relative(endPosition,{pose.x,pose.y,pose.a})
+  endFacingX = endFacing[1];
+  endFacingY = endFacing[2];
+  scaleFactor = 15*(math.abs(endPoseX)+math.abs(endPoseY));
+  
   if(alreadyDone) then --checking if we've already gotten there to our best tolerance
       print("nitpick adjustments");
-      if(endFacingRelative[2]>0) then
-           rotateVel = 1;
-      else
+      if(endPoseRelative[3]<0) then
            rotateVel = -1;
+      else
+           rotateVel = 1;
       end
-      print("velocity is set to: " .. (endPoseX/scaleFactor/5 + -.005) );
+      print("velocity is set to: " .. (endPoseX/scaleFactor/5 + -.005) ); 
         walk.set_velocity(endPoseX/scaleFactor/5 + -.005, endPoseY/scaleFactor/5,rotateVel/10);
 	return;
   end
   local t = Body.get_time();
   print("about to grab gootPose");
   print("I converted\n");
-  angleRelativeFacing = math.atan2(endFacingRelative[2],endFacingRelative[1]) 
-  if(math.abs(angleRelativeFacing)> angleTolerance) then -- now that our distance is fine, let's look at the angle we need to go to
-      --print("my pose X is: ".. pose.x)
-      print("adjusting angle first" .. endFacingRelative[3]); 
-      if(angleRelativeFacing>0) then
-           rotateVel = 1;
-      else
-           rotateVel = -1;
-      end
-     walk.set_velocity(0, 0,rotateVel);
-	return;
-    elseif true then
-      	print("DEBUG STOPPED IM FACING AS EXPECTD");
-	return;
-   elseif(math.abs(endPoseX)+math.abs(endPoseY)<distanceTolerance and math.abs(endFacingRelative[3]) < angleTolerance) then
-	walk.stop();
+  if(math.abs(endPoseX)+math.abs(endPoseY)<distanceTolerance and math.abs(endFacingRelative[3]) < angleTolerance) then
 	--walk.set_velocity(0,0,0);
 --	Motion.sm:set_state('standstill');
---	alreadyDone = true;
+	--alreadyDone = true;
 	wcm.set_horde_yelledReady(1);
      --	wcm.set_horde_passKick(1);
 --	wcm.set_horde_timeMark(Body.get_time());
@@ -85,15 +70,22 @@ function update()
   rotateVel = 0;
   --if we are not close enough to our goal position
   --moving back and forth while moving need to fix TODO
-  if(math.abs(endPoseX)+math.abs(endPoseY)>distanceTolerance) then
-      print("walking toward final point " .. (math.abs(endPoseX)+math.abs(endPoseY)));
-	  rotateVel = 0; 
---     if(endPoseY>0) then
- --          rotateVel = .5;
-  --    else
-  --         rotateVel = -.5;
-  --    end
-   walk.set_velocity(endPoseX/scaleFactor, endPoseY/scaleFactor,rotateVel);
+  if(math.abs(endFacingRelative[3]) > angleTolerance) then -- now that our distance is fine, let's look at the angle we need to go to
+      print("adjusting final angle " .. endFacingRelative[3]); 
+      if(endFacingRelative[3]<0) then
+           rotateVel = -1;
+      else
+           rotateVel = 1;
+      end
+      walk.set_velocity(0, 0,rotateVel);
+  elseif (math.abs(endPoseX)+math.abs(endPoseY)>distanceTolerance) then
+--[[      print("walking toward final point " .. (math.abs(endPoseX)+math.abs(endPoseY)));
+      if(endPoseY>0) then
+           rotateVel = .5;
+      else
+           rotateVel = -.5;
+      end]]--
+      walk.set_velocity(endPoseX/scaleFactor, endPoseY/scaleFactor,endFacingRelative[3]);
   end
 end
 
