@@ -285,11 +285,11 @@ function getMidpoint()
 
     		-- red attacks cyan goali
 --			print(" yellow ")
-  --  		postDefend = PoseFilter.postYellow;
+     		postDefend = PoseFilter.postYellow;
   --	else
 	--		print("not yellow")
     		-- blue attack yellow goal
-    		postDefend = PoseFilter.postCyan;
+   -- 		postDefend = PoseFilter.postCyan;
   	--end
 	
 	-- global 

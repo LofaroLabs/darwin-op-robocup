@@ -104,18 +104,18 @@ function sendFeatures (client)
 	 	return;
         end
 	--print("wcm send status was true");
-	features = {}
+		features = {}
         features["playerID"] = Config.game.playerID;
         features["role"] = Config.game.role;
-	xPoseArr = {}
-	xPoseArr[1] = wcm.get_team_attacker_pose()[1];
-	xPoseArr[2] = wcm.get_team_goalie_pose()[1];
-	yPoseArr = {}
-	yPoseArr[1] = wcm.get_team_attacker_pose()[2];
+		xPoseArr = {}
+		xPoseArr[1] = wcm.get_team_attacker_pose()[1];
+		xPoseArr[2] = wcm.get_team_goalie_pose()[1];
+		yPoseArr = {}
+		yPoseArr[1] = wcm.get_team_attacker_pose()[2];
         yPoseArr[2] = wcm.get_team_goalie_pose()[2];
-	aPoseArr = {}
-	aPoseArr[1] = wcm.get_team_attacker_pose()[3];
-	aPoseArr[2] = wcm.get_team_goalie_pose()[3];
+		aPoseArr = {}
+		aPoseArr[1] = wcm.get_team_attacker_pose()[3];
+		aPoseArr[2] = wcm.get_team_goalie_pose()[3];
 	--print("mine: " .. wcm.get_pose().x .. " 1: " .. xPoseArr[1] .. " 2: " .. xPoseArr[2]);
 	--print("role: " .. Config.game.role .. " playerID: " .. Config.game.playerID);
         features["poseX"] = xPoseArr;
@@ -129,15 +129,16 @@ function sendFeatures (client)
         features["doneApproach"] = wcm.get_horde_doneApproach();
         features["particleX"] = wcm.get_particle_x();
         features["particleY"] = wcm.get_particle_y();
-	features["particleA"] = wcm.get_particle_a();
+		features["particleA"] = wcm.get_particle_a();
 	--print("gonna broadcast my features");
-	features["yelledReady"] = wcm.get_horde_yelledReady();
-	features["yelledKick"] = wcm.get_horde_yelledKick();
-        features["yelledFail"] = wcm.get_horde_yelledFail(); 
+		features["yelledReady"] = wcm.get_horde_yelledReady();
+		features["yelledKick"] = wcm.get_horde_yelledKick();
+    	features["yelledFail"] = wcm.get_horde_yelledFail(); 
 	--print("sending some features, yo\n");-- wcm.set_horde_doneFrontApproach("true");
        -- print(json.encode(features) .. "\n");
-	client:settimeout(.002);
-	client:send(json.encode(features) .. "\n");
+	
+		client:settimeout(.01);
+		client:send(json.encode(features) .. "\n");
         -- Send the features to horde via the client
         -- args may contain the amount of time to wait between sending
 
@@ -173,6 +174,7 @@ function connectToHorde(port)
                 local client = server:accept()
               	return client;
 end
+lastReceivedState = nil;
 connectionThread = function ()
         print("got into con thread");
 	if( darwin ) then
@@ -198,7 +200,9 @@ connectionThread = function ()
                         --print("checkTimeout");
 			--checkTimeout(); -- very special case for passKick timing out the feature to 0 after a second
 			client:settimeout(0);--non blocking read
+			client:send("request");
 			local line, err = client:receive() -- read in horde commands
+			
 			--print("are we in penalty?")
 			--print("vector of penalites: ", gcm.get_game_penalty())	
 			--print("printing: ".. tostring(in_penalty()));
@@ -248,8 +252,9 @@ connectionThread = function ()
 				lastState = 3;
                 print(line);
 
-                if(line~=nil) then
+                if(line~=nil and (line~=lastReceivedState or string.find(line,"update"))) then -- uf we received somethin:g
 					updateAction(line, client);
+					lastReceivedState = line;
 				end
 				print("update success\n");
                 if err == "closed" then
@@ -339,9 +344,9 @@ function initMotion()--should be cleaned up, gets servos hard and standing up
 end
 --start "main"
 if(darwin) then 
-		--        hoard_functions.hordeFunctions["murder all humans"](nil,nil);
+	--        hoard_functions.hordeFunctions["murder all humans"](nil,nil);
 	--Motion.event("standup");	
-        wcm.set_horde_yelledReady(0);
+    wcm.set_horde_yelledReady(0);
 	wcm.set_horde_yelledKick(0);
 	initMotion();
 	print("starting connection thread\n");

@@ -851,7 +851,6 @@ sayFailed = makeBehavior("sayFailed",
 -- END HFA.LUA
 
 
---[[
 printAStart = function(behavior, targets)
 	print("start a")
 end
@@ -879,7 +878,7 @@ printB= makeBehavior("printB", printBStart, printBStop, printBGo);
 myArray =  {
 		[start] = printA,
 		[printA] = printB, 
-		[printB] = printA,
+		[printB] = done,
 	}
 --print(myArray[start]);
 --myArray[start][start]();
@@ -896,4 +895,3 @@ while 1 do
 	pulse(foo, {["theNumber"] = number});
 	
 end
-]]--
