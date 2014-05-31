@@ -200,7 +200,9 @@ connectionThread = function ()
                         --print("checkTimeout");
 			--checkTimeout(); -- very special case for passKick timing out the feature to 0 after a second
 			client:settimeout(0);--non blocking read
-			client:send("request");
+			
+			--client:send("request\n");
+	--		print("sending request");
 			local line, err = client:receive() -- read in horde commands
 			
 			--print("are we in penalty?")
@@ -250,10 +252,19 @@ connectionThread = function ()
 				end
 			elseif not err then
 				lastState = 3;
-                print(line);
+                --print(line);
 
                 if(line~=nil and (line~=lastReceivedState or string.find(line,"update"))) then -- uf we received somethin:g
+					print("last Received was " .. tostring(lastReceivedState));
 					updateAction(line, client);
+					i = 0
+					while i<100 do
+						
+						updateAll();
+					
+						unix.usleep(.005 * 1E6);
+						i=i+1;
+					end	
 					lastReceivedState = line;
 				end
 				print("update success\n");

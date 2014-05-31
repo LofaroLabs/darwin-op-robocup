@@ -143,22 +143,26 @@ myMachine = makeHFA("myMachine", makeTransition({
 	[start] = locateBall,
 	[locateBall] = function() if ballLost  then return locateBall else return gotoBall end end,
 	[gotoBall] = function() if ballLost then return locateBall elseif (math.abs(wcm.get_ball_x())+math.abs(wcm.get_ball_y())) < .2 then return approachTarget else  return gotoBall  end end,
-	[approachTarget] = function() if ballLost then return locateBall elseif wcm.get_horde_doneApproach()~= 0 then return kickBall else return approachTarget end end, 
-	[kickBall] = function() unix.usleep(1 * 1E6); return locateBall; end
+	[approachTarget] = function() if ballLost then return locateBall elseif wcm.get_horde_doneApproach()~= 0 then print("We are done done approach? " .. tostring(wcm.get_horde_doneApproach())); return kickBall else return approachTarget end end, 
+	[kickBall] = function() return locateBall; end
 	--[done] = start;	
 --[done] = done;
 	}),false);
+
+--myMachine = makeHFA("myMachine", makeTransition({
+--	[start] = locateBall,
+--	[locateBall] = kickBall}), false);
 ballLost = true;
 lastTimeFound = Body.get_time();
 function isBallLost()
-	--print("got into ball lost")
+	print("got into ball lost")
 	if vcm.get_ball_detect() ~= 0 then
 		ballLost = false;
 		lastTimeFound = Body.get_time();
 	elseif(Body.get_time() - lastTimeFound > 5) then
 		ballLost = true;
 	end
-	--print("got out of ball lost");
+	print("got out of ball lost" .. tostring(ballLost));
 end
 connectionThread = function ()
         print("got into con thread");
@@ -179,8 +183,14 @@ connectionThread = function ()
 			action["args"] = "nan";      
 			client:send(json.encode(action) .. "\n");
 		]]--
+		--	isBallLost();
+			recval = client:receive()
+			while(recval ~= "request") do
+				print(tostring(recval))
+				recval = client:receive()
+			 end
+			print("Got a request!");
 			isBallLost();
-			while(client:receive() ~= "request") do end
 			--print("ball detect? : " .. tostring(vcm.get_ball_detect()));
 			pulse(myMachine);
 		end
