@@ -97,6 +97,7 @@ gotoPoseFacingStart = function(hfa)
             action.args.gotoPose.x = dest.x
             action.args.gotoPose.y = dest.y
             action.args.gotoPose.a = 0
+			action.args.counter = countReceives;
             print("i am currently at: " .. pose.x .. ", " .. pose.y);
 			print("trying to face " .. ballGlobal.x .. ", " .. ballGlobal.y);
 			print("also moving to around " .. dest.x .. ", " .. dest.y);
@@ -134,6 +135,7 @@ gotoPoseFacingGo = function(hfa)
             action.args.gotoPose.x = dest.x
             action.args.gotoPose.y = dest.y
             action.args.gotoPose.a = 0
+			action.args.counter = countReceives;
             print("i am currently at: " .. pose.x .. ", " .. pose.y);	
 			print("trying to face " .. ballGlobal.x .. ", " .. ballGlobal.y);
 			print("also moving to around " .. dest.x .. ", " .. dest.y);
@@ -149,8 +151,10 @@ end
 stopStart = function(hfa)
 	action  = {}
         action["action"] = "stop";
-        action["args"] = "nan";
-        client:send(json.encode(action) .. "\n");
+        action["args"] = {};
+		action.args.counter = countReceives;
+        print(json.encode(action) .. "\n");
+		client:send(json.encode(action) .. "\n");
 end
 stopGo = function(hfa)
 end
@@ -161,7 +165,8 @@ locateBallStart = function(hfa)
 	print("locating ball") 
 action  = {}
         action["action"] = "moveTheta";
-        action["args"] = "nan";
+        action["args"] = {};
+		action.args.counter = countReceives;
         client:send(json.encode(action) .. "\n");
 end
 locateBallStop = function()end
@@ -171,7 +176,8 @@ gotoBallStart = function()
 	print("going to ball")
  	action  = {}
         action["action"] = "gotoBall";
-        action["args"] = "nan";
+        action["args"] = {};
+		action.args.counter = countReceives;
         client:send(json.encode(action) .. "\n");
 end
 gotoBallStop = function()end
@@ -180,7 +186,8 @@ approachTargetStart = function()
 	print("approach target")
 	 action  = {}
         action["action"] = "approachBall";
-        action["args"] = "nan";
+        action["args"] = {};
+		action.args.counter = countReceives;
         client:send(json.encode(action) .. "\n");
 end
 approachTargetStop = function()end
@@ -189,7 +196,8 @@ kickBallStart = function()
 	print("kicking ball");
  	action  = {}
         action["action"] = "kickBall";
-        action["args"] = "nan";
+        action["args"] = {};
+		action.args.counter = countReceives;
         client:send(json.encode(action) .. "\n");
 end
 kickBallStop = function()end
@@ -201,18 +209,19 @@ stopPoseStart = function()
 
 	action = {}
 	action["action"] = "stop";
-	action["args"] = "nan";
+	action["args"] = {};
+	action.args.counter = countReceives;
 	client:send(json.encode(action) .. "\n");
 end
 
-stopPose = makeBehavior("stopPose", stopPoseStart, nil, nil);
-walkForward = makeBehavior("walkForward", walkForwardStart, walkForwardStop, walkForwardGo);
-stopMoving = makeBehavior("stopMoving", stopStart, stopStop, stopGo);
-gotoPoseFacing = makeBehavior("gotoPoseFacing", gotoPoseFacingStart, gotoPoseFacingStop, gotoPoseFacingGo);
-gotoBall = makeBehavior("gotoBall", gotoBallStart, gotoBallStop, gotoBallGo);
-approachTarget = makeBehavior("approachTarget", approachTargetStart, approachTargetStop, approachTargetGo);
-kickBall = makeBehavior("kickBall", kickBallStart, kickBallStop, kickBallGo);
-locateBall = makeBehavior("locateBall",locateBallStart,nil,nil);
+stopPose = makeBehavior("stopPose", nil, nil, stopPoseStart);
+walkForward = makeBehavior("walkForward", nil, walkForwardStop, walkForwardStart);
+stopMoving = makeBehavior("stopMoving", nil, nil, stopPoseStart);
+gotoPoseFacing = makeBehavior("gotoPoseFacing", nil, gotoPoseFacingStop, gotoPoseFacingStart);
+gotoBall = makeBehavior("gotoBall", nil, gotoBallStop, gotoBallStart);
+approachTarget = makeBehavior("approachTarget", nil, approachTargetStop, approachTargetStart);
+kickBall = makeBehavior("kickBall", nil, kickBallStop, kickBallStart);
+locateBall = makeBehavior("locateBall",nil,nil,locateBallStart);
 
 myMachine = makeHFA("myMachine", makeTransition({
 	[start] = locateBall, --gotoPoseFacing,
@@ -224,7 +233,8 @@ myMachine = makeHFA("myMachine", makeTransition({
 					elseif closestToBall()<1 then 
 						print("trans to stop "); 
 						return stopMoving 
-					elseif distToMidpoint() < 0.3 then 
+					--elseif distToMidpoint() < 0.3 then
+					elseif wcm.get_horde_yelledReady() == 1  then 
 						print("going to stop pose from goto"); 
 						return stopPose;
 					else 
@@ -232,12 +242,15 @@ myMachine = makeHFA("myMachine", makeTransition({
 						return gotoPoseFacing   
 					end 
 				end,
-	[stopPose] = function() 
-					if distToMidpoint() > 0.3 or ballLost then 
+	[stopPose] = function()
+					if ballLost == true then
+						return locateBall;
+					end
+					if distToMidpoint() > 0.3 then 
 						return gotoPoseFacing 
 					elseif closestToBall() >= 1 then 
 						print("go to done from stopPose")
-						return done  
+						return locateBall
 					else 
 						print("goto stop pse againin from stop pose") 
 						return stopPose 
@@ -247,7 +260,8 @@ myMachine = makeHFA("myMachine", makeTransition({
 						return locateBall 
 					elseif closestToBall() >= 1 then 
 						return gotoPoseFacing ; 
-					else 
+					else
+						print("I stoped moving"); 
 						return stopMoving 
 					end end,
  	--[gotoBall] = function() if ballLost then return locateBall elseif (math.abs(wcm.get_ball_x())+math.abs(wcm.get_ball_y())) < .2 then return approachTarget else  return gotoBall  end end,
@@ -285,7 +299,7 @@ function getMidpoint()
 
     		-- red attacks cyan goali
 --			print(" yellow ")
-     		postDefend = PoseFilter.postYellow;
+     		postDefend = PoseFilter.postCyan;
   --	else
 	--		print("not yellow")
     		-- blue attack yellow goal
@@ -365,15 +379,32 @@ connectionThread = function ()
         client = connectToHorde(4009);--initialize connection, wait for it.....
         connected = true;
 --      darwinComm = setupUDPDarwins();
-                     
+        countReceives = 0             
 		print("connected")
   
         while connected do
+			recval = client:receive()
+			
+			print("got something")
+
+			while(recval ~= "request") do
+                print(tostring(recval))
+                recval = client:receive()
+             end
+
+
 			isBallLost();
-			--unix.usleep(.5 * 1E6);
-			--print("ball detect? : " .. tostring(vcm.get_ball_detect()));
-			while(client:receive() ~= "request") do end
+		
 			pulse(myMachine);
+
+			print("cur rec number " .. tostring(countReceives) .. "..........................................")
+			countReceives = countReceives + 1;
+			
+
+			while(recval ~= "ack") do
+        --      print(tostring(recval))
+                recval = client:receive()
+            end
 		end
     end
 end

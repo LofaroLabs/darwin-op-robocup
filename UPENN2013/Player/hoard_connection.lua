@@ -211,7 +211,7 @@ connectionThread = function ()
 				local req = json.decode(line)	
 				
 				print("Received: " .. tostring(line))
-				if(req.args-1 >  lineID) then
+				if(req.args.counter ~=  lineID) then
 					return;
 				end
 				lineID = lineID+1;

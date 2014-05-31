@@ -38,11 +38,15 @@ function update()
   endPoseRelative  = util.pose_relative(endPosition, {pose.x, pose.y, pose.a});
   endPoseX = endPoseRelative[1];
   endPoseY = endPoseRelative[2];
-  endFacingRelative = util.pose_relative(endPosition,{pose.x,pose.y,pose.a})
-  endFacingX = endFacing[1];
-  endFacingY = endFacing[2];
+  endFacingRelative = util.pose_relative(endFacing,{pose.x,pose.y,pose.a})
+  endFacingX = endFacingRelative[1];
+  endFacingY = endFacingRelative[2];
   scaleFactor = 15*(math.abs(endPoseX)+math.abs(endPoseY));
-  
+
+  print("im currently at " .. pose.x .. ", " .. pose.y );
+  print("im trying to face " .. endFacing[1] .. ", " .. endFacing[2])
+  print("also, trying to move to " .. endPosition[1] .. ", " .. endPosition[2]);
+  print("relative to the ball, i am facing " .. endFacingRelative[3])
   if(alreadyDone) then --checking if we've already gotten there to our best tolerance
       print("nitpick adjustments");
       if(endPoseRelative[3]<0) then

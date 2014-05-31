@@ -849,8 +849,8 @@ sayFailed = makeBehavior("sayFailed",
 
 
 -- END HFA.LUA
-
 --[[
+
 printAStart = function(behavior, targets)
 	print("start a")
 end
@@ -894,4 +894,5 @@ while 1 do
 	number = number+1
 	pulse(foo, {["theNumber"] = number});
 	
-end--]]
+end
+]]--
