@@ -73,6 +73,6 @@ function in_penalty()
 end
 
 function say_id()
-  Speak.talk('ID '..Config.game.playerID);
+  --Speak.talk('ID '..Config.game.playerID);
   --Speak.talk('Team Number '..Config.game.teamNumber);
 end

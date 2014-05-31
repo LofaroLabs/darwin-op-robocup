@@ -22,6 +22,7 @@ ball = "nil";
 
 function entry()
   print(_NAME.." entry");
+--  wcm.set_horde_doneKick(0);
   wcm.set_horde_yelledKick(1);
  
   t0 = Body.get_time();
@@ -39,6 +40,7 @@ end
 
 function update()
       local t = Body.get_time();
+      print("am updating kick")
       if(ball.y>0) then
       	kick.set_kick("kickForwardLeft");
       	Motion.event("kick");
@@ -59,6 +61,7 @@ function update()
 end
 
 function exit()
+    wcm.set_horde_doneKick(1)
     wcm.set_horde_yelledKick(0);
     wcm.set_horde_timeMark(Body.get_time()) 
  -- HeadFSM.sm:set_state('headTrack');

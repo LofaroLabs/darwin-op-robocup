@@ -154,6 +154,7 @@ end
    local udp = assert(socket.udp())
    return udp
 end]]--
+lineID = 0
 lastState = 100;
 function checkTimeout()
 	--print("commparing values");
@@ -195,23 +196,33 @@ connectionThread = function ()
 			updateAllTimer = Body.get_time()-updateAllTimer;
                         --print("send features");
 			sendFeaturesTimer = Body.get_time();
-			sendFeatures(client);--send all the features to horde
+			--sendFeatures(client);--send all the features to horde
 			sendFeaturesTimer = Body.get_time() - sendFeaturesTimer;
                         --print("checkTimeout");
 			--checkTimeout(); -- very special case for passKick timing out the feature to 0 after a second
 			client:settimeout(0);--non blocking read
 			
-			--client:send("request\n");
+			client:send("request\n");
 	--		print("sending request");
 			local line, err = client:receive() -- read in horde commands
-			
+			if(line~=nil) then
+				client:send("ack\n")
+				print("---------------------------- ID OF LINE IS " .. lineID .. " ----------------------------------")
+				local req = json.decode(line)	
+				
+				print("Received: " .. tostring(line))
+				if(req.args-1 >  lineID) then
+					return;
+				end
+				lineID = lineID+1;
+			end	
 			--print("are we in penalty?")
 			--print("vector of penalites: ", gcm.get_game_penalty())	
 			--print("printing: ".. tostring(in_penalty()));
 			--print("maybe? doing horde stuff, idk " .. wcm.get_horde_sendStatus() .. " " .. gcm.get_game_state() .. " " .. tostring(in_penalty()));
 				
 			if (gcm.get_game_state() ~= 3 or in_penalty()) then
-				if(line~=nil and not string.find(line, "update") ) then
+				if(line~=nil and not string.find(line, "update") and not err) then
 					lastCommand = line
 				end
 				--print("not doing horde stuff, that's for sure " .. wcm.get_horde_sendStatus() .. " " .. gcm.get_game_state() .. " " .. tostring(in_penalty()));

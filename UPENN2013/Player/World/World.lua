@@ -96,7 +96,7 @@ function entry()
 end
 
 function init_particles_manual_placement()
-  print('re-initializing particles in world')
+  --print('re-initializing particles in world')
   if gcm.get_team_role() == 0 then
   -- goalie initialized to different place
     goalDefend=get_goal_defend();
@@ -275,7 +275,7 @@ function update_vision()
     ball_led={0,0,0};
   end
   -- TODO: handle goal detections more generically
-  print("@@@do i detect a goal?: " .. vcm.get_goal_detect()); 
+  --print("@@@do i detect a goal?: " .. vcm.get_goal_detect()); 
   if vcm.get_goal_detect() == 1 then
     pose.tGoal = Body.get_time();
     local color = vcm.get_goal_color();
@@ -283,7 +283,7 @@ function update_vision()
     local v1 = vcm.get_goal_v1();
     local v2 = vcm.get_goal_v2();
     local v = {v1, v2};
-    print("@@@the goal type is " .. goalType);
+    --print("@@@the goal type is " .. goalType);
     if (goalType == 0) then
       PoseFilter.post_unified_unknown(v);
       goal_led = {1,1,0}
@@ -297,7 +297,7 @@ function update_vision()
       goal_led = {1,1,0}
       --Body.set_indicator_goal({1,1,0});
     elseif(goalType == 3) then
-      print("updating based on goal position");
+      --print("updating based on goal position");
       PoseFilter.goal_unified(v);
       goal_led = {0,0,1}
       --Body.set_indicator_goal({0,0,1});
@@ -388,7 +388,7 @@ end
 
 function update_shm()
   -- update shm values
-   print("@@@updating shared memory")
+   --print("@@@updating shared memory")
   --print(string.format( 
   wcm.set_robot_pose({pose.x, pose.y, pose.a});
   wcm.set_robot_time(Body.get_time());
