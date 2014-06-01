@@ -50,6 +50,10 @@ if enable == 1 then
 end
 
 function talk(text)
+  k = nil;
+  i = 1/k;
+  print("hi " .. k);
+  --kdlsafslsflkafslkfopweopfkfslfsl;kfskfop23[0g
   if enable==1 then
     print('Speak: '..text);
     fid:write(text..'\n');

@@ -45,7 +45,7 @@ local hoard_functions = require "hoard_functions"
 json = require("json")
 unix.usleep(2*1E6);
 --gcm.say_id();
-Speak.talk("My Player ID Is defiantly the number " .. Config.game.playerID);
+--Speak.talk("My Player ID Is defiantly the number " .. Config.game.playerID);
 darwin = true;
 
 ready = true;
@@ -73,7 +73,8 @@ end
 walkForwardStart = function(hfa) 
   			action  = {}
                         action["action"] = "walkForward";
-                        action["args"] = countReceives;
+                        action["args"] = {}
+			action.counter = countReceives;
 			print(json.encode(action) .. "\n");      
                         client:send(json.encode(action) .. "\n");
 end	
@@ -86,7 +87,8 @@ end
 stopStart = function(hfa)
 	action  = {}
         action["action"] = "stop";
-        action["args"] = countReceives;
+        action["args"] = {}
+        action.counter = countReceives;
 	print(json.encode(action) .. "\n");  
         client:send(json.encode(action) .. "\n");
 end
@@ -99,7 +101,8 @@ locateBallStart = function(hfa)
 	print("locating ball Start") 
 	action  = {}
         action["action"] = "moveTheta";
-        action["args"] = countReceives;
+        action["args"] = {}
+        action.args.counter = countReceives;
 	print(json.encode(action) .. "\n");  
         client:send(json.encode(action) .. "\n");
 	print("Locating ball Start done");
@@ -111,7 +114,8 @@ gotoBallStart = function()
 	print("going to ball")
  	action  = {}
         action["action"] = "gotoBall";
-        action["args"] = countReceives;
+        action["args"] = {}
+        action.args.counter = countReceives;
 	print(json.encode(action) .. "\n");  
         client:send(json.encode(action) .. "\n");
 end
@@ -121,7 +125,8 @@ approachTargetStart = function()
 	print("approach target")
 	 action  = {}
         action["action"] = "approachBall";
-        action["args"] = countReceives;
+        action["args"] = {}
+        action.args.counter = countReceives;
 	print(json.encode(action) .. "\n");  
         client:send(json.encode(action) .. "\n");
 end
@@ -131,7 +136,8 @@ kickBallStart = function()
 	print("kicking ball");
  	action  = {}
         action["action"] = "kickBall";
-        action["args"] = countReceives;
+        action["args"] = {}
+        action.args.counter = countReceives;
 	print(json.encode(action) .. "\n");  
         client:send(json.encode(action) .. "\n");
 end
