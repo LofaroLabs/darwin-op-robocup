@@ -68,10 +68,10 @@ function set_team_color(color)
   if teamColor ~= color then
     teamColor = color;
     if (teamColor == 1) then
-      Speak.talk('I am on the red team');
+      --Speak.talk('I am on the red team');
 --      Body.set_actuator_ledFootLeft({1, 0, 0});
     else
-      Speak.talk('I am on the blue team');
+      --Speak.talk('I am on the blue team');
 --      Body.set_actuator_ledFootLeft({0, 0, 1});
     end
   end
@@ -81,10 +81,10 @@ function set_kickoff(k)
   if (kickoff ~= k) then
     kickoff = k;
     if (kickoff == 1) then
-      Speak.talk('We have kickoff');
+      --Speak.talk('We have kickoff');
 --      Body.set_actuator_ledFootRight({1, 1, 1});
     else
-      Speak.talk('Opponents have kickoff');
+      --Speak.talk('Opponents have kickoff');
 --      Body.set_actuator_ledFootRight({0, 0, 0});
     end
   end   

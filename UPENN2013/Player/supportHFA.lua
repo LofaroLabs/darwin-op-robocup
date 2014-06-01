@@ -41,6 +41,7 @@ require('Speak')
 require('getch')
 require('Body')
 require('Motion')
+require('kittySoccerHFA')
 local hoard_functions = require "hoard_functions"
 json = require("json")
 unix.usleep(2*1E6);
@@ -223,16 +224,16 @@ approachTarget = makeBehavior("approachTarget", nil, approachTargetStop, approac
 kickBall = makeBehavior("kickBall", nil, kickBallStop, kickBallStart);
 locateBall = makeBehavior("locateBall",nil,nil,locateBallStart);
 
-myMachine = makeHFA("myMachine", makeTransition({
+supportMachine = makeHFA("supportMachine", makeTransition({
 	[start] = locateBall, --gotoPoseFacing,
 	[locateBall] = function() if ballLost  then return locateBall else return gotoPoseFacing end end,
 	[gotoPoseFacing] = function() print("considering transitioning out of gotoPoseFacing"); 
 					if ballLost then 
 						print("locate ball"); 
 						return locateBall 
-					elseif closestToBall()<1 then 
+					elseif closestToBall()==1 then 
 						print("trans to stop "); 
-						return stopMoving 
+						return kittySoccer 
 					--elseif distToMidpoint() < 0.3 then
 					elseif wcm.get_horde_yelledReady() == 1  then 
 						print("going to stop pose from goto"); 
@@ -248,9 +249,9 @@ myMachine = makeHFA("myMachine", makeTransition({
 					end
 					if distToMidpoint() > 0.3 then 
 						return gotoPoseFacing 
-					elseif closestToBall() >= 1 then 
+					elseif closestToBall() == 1 then 
 						print("go to done from stopPose")
-						return locateBall
+						return kittySoccer
 					else 
 						print("goto stop pse againin from stop pose") 
 						return stopPose 
@@ -258,12 +259,17 @@ myMachine = makeHFA("myMachine", makeTransition({
 	[stopMoving] = function() 
 					if ballLost then 
 						return locateBall 
-					elseif closestToBall() >= 1 then 
+					elseif closestToBall() == 0 then 
 						return gotoPoseFacing ; 
 					else
 						print("I stoped moving"); 
 						return stopMoving 
 					end end,
+	[kittySoccer] = function()
+	
+		
+
+	end,
  	--[gotoBall] = function() if ballLost then return locateBall elseif (math.abs(wcm.get_ball_x())+math.abs(wcm.get_ball_y())) < .2 then return approachTarget else  return gotoBall  end end,
 	--[approachTarget] = function() if ballLost then return locateBall elseif wcm.get_horde_doneApproach()~= 0 then return kickBall else return approachTarget end end, 
 	--[kickBall] = function() unix.usleep(1 * 1E6); return locateBall; end
@@ -295,16 +301,16 @@ end
 function getMidpoint()
 
 	
---	if gcm.get_team_color() == 1 then
+	if gcm.get_team_color() == 1 then
 
     		-- red attacks cyan goali
---			print(" yellow ")
-     		postDefend = PoseFilter.postCyan;
-  --	else
-	--		print("not yellow")
+			print(" yellow " .. tostring(PoseFilter.postYellow) .. "YYYYYYYYYYYYYYYYYYYYYY")
+     		postDefend = PoseFilter.postYellow;
+  	else
+			print("Cyan " .. tostring(PoseFilter.postCyan) .. "CCCCCCCCCCCCCCCCCCCCCCCC")
     		-- blue attack yellow goal
-   -- 		postDefend = PoseFilter.postCyan;
-  	--end
+    		postDefend = PoseFilter.postCyan;
+  	end
 	
 	-- global 
 	LPost = postDefend[1];
@@ -395,7 +401,7 @@ connectionThread = function ()
 
 			isBallLost();
 		
-			pulse(myMachine);
+			pulse(supportMachine);
 
 			print("cur rec number " .. tostring(countReceives) .. "..........................................")
 			countReceives = countReceives + 1;

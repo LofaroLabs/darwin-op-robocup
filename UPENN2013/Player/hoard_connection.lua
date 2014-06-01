@@ -44,7 +44,7 @@ local hoard_functions = require "hoard_functions"
 json = require("json")
 unix.usleep(2*1E6);
 --gcm.say_id();
-Speak.talk("My Player ID Is defiantly the number " .. Config.game.playerID);
+--Speak.talk("My Player ID Is defiantly the number " .. Config.game.playerID);
 darwin = true;
 
 ready = true;
