@@ -150,7 +150,7 @@ kittyMachine = makeHFA("myMachine", makeTransition({
 	[locateBall] = function() if ballLost  then return locateBall else return gotoBall end end,
 	[gotoBall] = function() if ballLost then return locateBall elseif (math.abs(wcm.get_ball_x())+math.abs(wcm.get_ball_y())) < .2 then return approachTarget else  return gotoBall  end end,
 	[approachTarget] = function() if ballLost then return locateBall elseif wcm.get_horde_doneApproach()~= 0 then print("We are done done approach? " .. tostring(wcm.get_horde_doneApproach())); return kickBall else return approachTarget end end, 
-	[kickBall] = function() return locateBall; end
+	[kickBall] = function() return done; end
 	--[done] = start;	
 --[done] = done;
 	}),false);
