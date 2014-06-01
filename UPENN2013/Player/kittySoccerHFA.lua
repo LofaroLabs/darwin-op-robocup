@@ -145,8 +145,7 @@ gotoBall = makeBehavior("gotoBall", nil, gotoBallStop, gotoBallStart);
 approachTarget = makeBehavior("approachTarget", nil, approachTargetStop, approachTargetStart);
 kickBall = makeBehavior("kickBall", nil, kickBallStop, kickBallStart);
 
-
-myMachine = makeHFA("myMachine", makeTransition({
+kittyMachine = makeHFA("myMachine", makeTransition({
 	[start] = function()  print("transitoin for start to locate ball " .. tostring(countReceives));  return locateBall; end,
 	[locateBall] = function() if ballLost  then return locateBall else return gotoBall end end,
 	[gotoBall] = function() if ballLost then return locateBall elseif (math.abs(wcm.get_ball_x())+math.abs(wcm.get_ball_y())) < .2 then return approachTarget else  return gotoBall  end end,
