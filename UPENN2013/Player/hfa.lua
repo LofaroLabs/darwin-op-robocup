@@ -888,9 +888,9 @@ bar = makeHFA("bar", makeTransition(
 	}))
 
 number = 1;
-while 1 do
+--[[while 1 do
 	print("i am pulsing");
 	number = number+1
 	pulse(bar, {["theNumber"] = 88});
 	
-end
+end--]]

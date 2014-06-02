@@ -190,9 +190,7 @@ connectionThread = function ()
                      
 		print("connected")
   
-        while connected do
-			
-					
+        while connected do			
                         --print("update all")
 			updateAllTimer = Body.get_time();
 			updateAll();--move mah body, update FSM
@@ -228,8 +226,9 @@ connectionThread = function ()
 			--print("vector of penalites: ", gcm.get_game_penalty())	
 			--print("printing: ".. tostring(in_penalty()));
 			--print("maybe? doing horde stuff, idk " .. wcm.get_horde_sendStatus() .. " " .. gcm.get_game_state() .. " " .. tostring(in_penalty()));
-				
-			if (gcm.get_game_state() ~= 3 or in_penalty()) then
+		        if(line ~=nil and string.find(line, "StartSending")) then
+				updateAction(line, client)		
+			elseif (gcm.get_game_state() ~= 3 or in_penalty()) then
 				if(line~=nil and not string.find(line, "update") and not err) then
 					lastCommand = line
 				end
@@ -278,9 +277,7 @@ connectionThread = function ()
 					updateAction(line, client);
 					i = 0
 					while i<100 do
-						
-						updateAll();
-					
+						updateAll();		
 						unix.usleep(.005 * 1E6);
 						i=i+1;
 					end	

@@ -214,6 +214,7 @@ hordeFunctions["stop"] = function(args,client)
        
 end
 hordeFunctions["StartSending"] = function (args, client)
+	print("i got here bitch")
 --      coroutine.resume(co,args, client);
         wcm.set_horde_sendStatus("StartSending");
 end
