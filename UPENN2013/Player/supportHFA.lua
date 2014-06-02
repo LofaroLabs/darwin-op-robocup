@@ -223,6 +223,8 @@ approachTarget = makeBehavior("approachTarget", nil, approachTargetStop, approac
 kickBall = makeBehavior("kickBall", nil, kickBallStop, kickBallStart);
 locateBall = makeBehavior("locateBall",nil,nil,locateBallStart);
 
+--super SUPER SUPER SUPER TODO IMPORTANT TODO NOW--- 
+-- IF YOU EXPECT THIS MACHINE TO WORK WITH MORE THAN ONE PLAYER LIKE A REAL GAME CHANGE THE LOGIC FOR CLOSEST BALL, IT'S COMPLETELY BACKWARDS ( ON PURPOSE FOR TESTING--
 myMachine = makeHFA("myMachine", makeTransition({
 	[start] = locateBall, --gotoPoseFacing,
 	[locateBall] = function() if ballLost  then return locateBall else return gotoPoseFacing end end,
@@ -230,7 +232,7 @@ myMachine = makeHFA("myMachine", makeTransition({
 					if ballLost then 
 						print("locate ball"); 
 						return locateBall 
-					elseif closestToBall()>=1 then 
+					elseif closestToBall()==0 then 
 						print("trans to stop "); 
 						return stopMoving 
 					--elseif distToMidpoint() < 0.3 then
@@ -246,9 +248,9 @@ myMachine = makeHFA("myMachine", makeTransition({
 					if ballLost == true then
 						return locateBall;
 					end
-					if distToMidpoint() > 0.3 then 
+					if distToMidpoint() > 0.3 then --- we will want to check the facing angle too... 
 						return gotoPoseFacing 
-					elseif closestToBall() >= 1 then 
+					elseif closestToBall() == 0 then 
 						print("go to done from stopPose")
 						return locateBall
 					else 
@@ -295,16 +297,16 @@ end
 function getMidpoint()
 
 	
---	if gcm.get_team_color() == 1 then
+	if gcm.get_team_color() == 1 then
 
     		-- red attacks cyan goali
---			print(" yellow ")
-     		postDefend = PoseFilter.postCyan;
-  --	else
-	--		print("not yellow")
+		print(" yellow ")
+     		postDefend = PoseFilter.postYellow;
+  	else
+		print("not yellow")
     		-- blue attack yellow goal
-   -- 		postDefend = PoseFilter.postCyan;
-  	--end
+    		postDefend = PoseFilter.postCyan;
+  	end
 	
 	-- global 
 	LPost = postDefend[1];

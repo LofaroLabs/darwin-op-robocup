@@ -207,10 +207,10 @@ connectionThread = function ()
 			local line, err = client:receive() -- read in horde commands
 			if(line~=nil) then
 				client:send("ack\n")
-				print("---------------------------- ID OF LINE IS " .. lineID .. " ----------------------------------")
+			--	print("---------------------------- ID OF LINE IS " .. lineID .. " ----------------------------------")
 				local req = json.decode(line)	
 				
-				print("Received: " .. tostring(line))
+			--	print("Received: " .. tostring(line))
 				if(req.args.counter ~=  lineID) then
 					return;
 				end

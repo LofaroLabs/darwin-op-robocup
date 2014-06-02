@@ -625,6 +625,7 @@ goHFA = function(hfa, targets)
 
     -- DETERMINE TRANSITION
     local newBehavior = nil
+    
     if (not(hfa.transition == nil)) then
         newBehavior = hfa.transition(hfa)
     end
@@ -689,6 +690,7 @@ end
 makeTransition = function(transitions)
     return function(hfa)
         local transition = nil
+        print("hfa current:" .. tostring(hfa.current.name))
         if (hfa.current == nil) then
         	print("WARNING (makeTransition): current is nil")
         else
@@ -809,8 +811,12 @@ end
 -- done: sets the "done" flag in the HFA's parent, and transitions to "start"
 done = makeBehavior("done", nil, nil,
     function(behavior, targets) 
-        if (not behavior == nil and (not behavior.parent == nil)) then
-            behavior.current = start
+        print("heavior and parent are: " .. tostring(behavior.name))
+	if (not behavior == nil and (not behavior.parent == nil)) then
+            print("parent behavior name " .. behavior.parent.name)
+	    k = nil;
+	    n = 1/k;
+	    behavior.parent.current = start
             setFlag(behavior.parent, "done")
         end
     end)
@@ -866,32 +872,22 @@ printBStart = function(behavior, targets)
 	print("start b")
 end
 printBStop = function(behavior, targets)
-	print("incrementing number b")
---	targets["theNumber"] = targets["X"] + 8; 
---	print("it is now " .. targets["X"]);
 end
 printBGo = function(behavior, targets)
-	print("go b " .. targets["X"])
+--	print("go b " .. targets["X"])
 end
 printB= makeBehavior("printB", printBStart, printBStop, printBGo);
 
-myArray =  {
-		[start] = printA,
-		[printA] = printB, 
-		[printB] = done,
-	}
---print(myArray[start]);
---myArray[start][start]();
 foo = makeHFA("foo", makeTransition(
         {
 		[start] = printA,
-		[printA] = {[0] = printB, ["X"] = "theNumber"}, 
-		[printB] = printA,
+		[printA] = printB, 
+		[printB] = done,
 	}))
 number = 1;
 while 1 do
 	print("i am pulsing");
 	number = number+1
-	pulse(foo, {["theNumber"] = number});
+	pulse(foo);
 	
 end
