@@ -210,7 +210,7 @@ connectionThread = function ()
 				--client:send("ack\n")
 				
 				print("---------------------------- ACK Number IS " .. ackNumber .. " ----------------------------------")
-				local req = json.decode(line)	
+				local err, req = pcall(json.decode, line);	
 				
 				print("Received: " .. tostring(line))
 				if(req.ackNumber ==  ackNumber) then
