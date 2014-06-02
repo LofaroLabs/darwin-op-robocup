@@ -132,22 +132,8 @@ start = "start"
 Also notice that the HFA doesn't actually store any of its sub-behaviors.  They're
 just specified by the transition function based on the current state of the HFA.
  
-An HFA can also be INTERRUPTABLE.  This means that when STOP is called on the behavior,
-the current state is NOT set to nil, and the previous current state doees NOT
-have its STOP function called.  Additionally, when the START function is called,
-the current state is NOT reset to the "start" state, but simply remains the old
-current state.  What's the point of this?  It allows us to transition away from
-the HFA, then back again, without resetting it: it just continues right where it
-left off.  This is typically used for HFA where you'd temporarily transition away 
-from the HFA to handle some kind of "interrupt", not becuase you're finished with 
-the HFA.  In truth, this is a relatively less common need, so unless you know what
-you're doing, don't make your HFA interruptable.
-
-myHFA.interruptable
-
 HFA are created with a different utility function than basic hard-coded behaviors.
-You call makeHFA, providing the name, the transition function.  The HFA is
-not interruptable by default.
+You call makeHFA, providing the name, the transition function.  
 
 makeHFA(name, transition)           returns an HFA.
 
@@ -573,7 +559,7 @@ translateTargets = function(targets, mapping)
         print("ERROR translateTargets(targets, mapping): mapping does not contain 0 as a key") 
     end
     for mapname, original in pairs(mapping) do
-        if (not(mapname == 0)) then
+        if (not (mapname == 0)) then
             if (type(original) == "string") then
                 if (targets == nil) then
                     print ("ERROR translateTargets(targets, mapping): targets is nil while mapping")
@@ -600,9 +586,7 @@ startHFA = function(hfa, targets)
     -- maybe this is too costly and we should restrict it to the resetTimer function?
     hfa.timer = os.time()
     hfa.goReturnValue = nil;
-    if (not(hfa.interruptable)) then
-        hfa.current = start;
-    end
+    hfa.current = start;
 end
 
 -- stopHFA(hfa)
@@ -611,10 +595,11 @@ stopHFA = function(hfa, targets)
 	hfa.targets = nil
     if (hfa.current == nil) then
     	print("WARNING (stopHFA) current is nil")
-    elseif (not(hfa.current == start) and
-	        not(hfa.current.stop == nil) and
-    	    not(hfa.interruptable)) then
-        hfa.current.stop(hfa.current, hfa.behaviorTargets)
+    elseif (not (hfa.current == start)) then
+    	if (not (hfa.current.stop == nil)) then
+        	hfa.current.stop(hfa.current, hfa.behaviorTargets)
+        end
+    	hfa.current.parent = nil
     end
 end
 
@@ -626,7 +611,7 @@ goHFA = function(hfa, targets)
     -- DETERMINE TRANSITION
     local newBehavior = nil
     
-    if (not(hfa.transition == nil)) then
+    if (not (hfa.transition == nil)) then
         newBehavior = hfa.transition(hfa)
     end
     if (newBehavior == nil) then
@@ -639,7 +624,7 @@ goHFA = function(hfa, targets)
     local oldBehaviorTargets = hfa.behaviorTargets
     -- figure out the new subset.  We test for target lists based on whether
     -- the table provided has 0 as a key
-    if (not(newBehavior == nil) and not(newBehavior[0] == nil)) then
+    if (not (newBehavior == nil) and not (newBehavior[0] == nil)) then
         -- translate using newBehavior as a mpaping, ignoring [0], which is the "real" newbehavior
         hfa.behaviorTargets = translateTargets(targets, newBehavior)
         newBehavior = newBehavior[0]
@@ -648,18 +633,18 @@ goHFA = function(hfa, targets)
     end
         
     -- PERFORM TRANSITION
-    if (not(newBehavior == nil)) then
-        if (not(newBehavior == hfa.current)) then
+    if (not (newBehavior == nil)) then
+        if (not (newBehavior == hfa.current)) then
             if (hfa.current == nil)  then
     			print("WARNING (stopHFA) current is nil")
-    		elseif(not(hfa.current == start)) then
-				if (not(hfa.current.stop == nil)) then
+    		elseif (not (hfa.current == start)) then
+				if (not (hfa.current.stop == nil)) then
                     hfa.current.stop(hfa.current, oldBehaviorTargets)
                  end
     			hfa.current.parent = nil
             end
             newBehavior.parent = hfa
-            if (not(newBehavior.start == nil)) then
+            if (not (newBehavior.start == nil)) then
                 newBehavior.start(newBehavior, hfa.behaviorTargets)
             end
             hfa.current = newBehavior
@@ -675,7 +660,7 @@ goHFA = function(hfa, targets)
         print("WARNING (goHFA): nil current behavior")
     elseif (hfa.current == start) then
     	print("WARNING (goHFA): start current behavior")
-    elseif (not(hfa.current.go == nil)) then
+    elseif (not (hfa.current.go == nil)) then
         hfa.goReturnValue = hfa.current.go(hfa.current, hfa.behaviorTargets)
     end
 end
@@ -714,12 +699,12 @@ makeBehavior = function(name, start, stop, go)
     		 ["go"] = go, ["parent"] = nil, ["pulsed"] = false }
 end
 
--- makeHFA(name, transition, interruptable)
--- Creates a potentially interruptable HFA with the given name and transition function.
+-- makeHFA(name, transition)
+-- Creates an HFA with the given name and transition function.
 -- Though the transition function can be nil, it's almost certainlly not appropriate to do so.
 makeHFA = function(name, transition)
     return { ["name"] = name, ["start"] = startHFA, ["stop"] = stopHFA, ["go"] = goHFA, 
-             ["transition"] = transition, ["interruptable"] = false,  ["pulsed"] = false,
+             ["transition"] = transition, ["pulsed"] = false,
              ["parent"] = nil, ["goReturnValue"] = nil, ["counter"] = 0, ["timer"] = 0, 
              ["done"] = false, ["failed"] = false, ["current"] = start,
              ["propagateFlags"] = false, ["targets"] = nil, ["behaviorTargets"] = nil }
@@ -741,11 +726,11 @@ end
 pulse = function(behavior, targets)
     if (not behavior.pulsed) then
         behavior.pulsed = true
-        if (not(behavior.start == nil)) then
+        if (not (behavior.start == nil)) then
             behavior.start(behavior, targets)
         end
     end
-    if (not(behavior.go == nil)) then
+    if (not (behavior.go == nil)) then
         behavior.go(behavior, targets)
     end
 end
@@ -754,7 +739,7 @@ end
 -- Resets a behavior so that next time it is pulsed, it will call start() again.
 reset = function(behavior, targets)
     if (behavior.pulsed) then
-        if (not(behavior.stop == nil)) then
+        if (not (behavior.stop == nil)) then
             behavior.stop(behavior, targets)
         end
         behavior.pulsed = false
