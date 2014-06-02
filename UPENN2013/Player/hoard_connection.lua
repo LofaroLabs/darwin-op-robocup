@@ -55,6 +55,7 @@ sendFeaturesTimer =0;
 -- main loop
 count = 0;
 lcount = 0;
+ackNumber = 0;
 tUpdate = unix.time();
 connected = false;
 
@@ -100,7 +101,7 @@ end
 count = 0;
 function sendFeatures (client)
         if(wcm.get_horde_sendStatus()~="StartSending") then
-        	--print("Start sending was false");
+        	print("Start sending was false");
 	 	return;
         end
 	--print("wcm send status was true");
@@ -136,7 +137,7 @@ function sendFeatures (client)
     	features["yelledFail"] = wcm.get_horde_yelledFail(); 
 	--print("sending some features, yo\n");-- wcm.set_horde_doneFrontApproach("true");
        -- print(json.encode(features) .. "\n");
-	
+		features["ackNumber"] = ackNumber;
 		client:settimeout(.01);
 		client:send(json.encode(features) .. "\n");
         -- Send the features to horde via the client
@@ -154,7 +155,7 @@ end
    local udp = assert(socket.udp())
    return udp
 end]]--
-lineID = 0
+
 lastState = 100;
 function checkTimeout()
 	--print("commparing values");
@@ -189,32 +190,39 @@ connectionThread = function ()
                      
 		print("connected")
   
-                while connected do
+        while connected do
+			
+					
                         --print("update all")
 			updateAllTimer = Body.get_time();
 			updateAll();--move mah body, update FSM
 			updateAllTimer = Body.get_time()-updateAllTimer;
                         --print("send features");
 			sendFeaturesTimer = Body.get_time();
-			--sendFeatures(client);--send all the features to horde
+			sendFeatures(client);--send all the features to horde
 			sendFeaturesTimer = Body.get_time() - sendFeaturesTimer;
                         --print("checkTimeout");
 			--checkTimeout(); -- very special case for passKick timing out the feature to 0 after a second
 			client:settimeout(0);--non blocking read
 			
-			client:send("request\n");
+			--client:send("request\n");
 	--		print("sending request");
 			local line, err = client:receive() -- read in horde commands
 			if(line~=nil) then
-				client:send("ack\n")
-				print("---------------------------- ID OF LINE IS " .. lineID .. " ----------------------------------")
+				--client:send("ack\n")
+				
+				print("---------------------------- ACK Number IS " .. ackNumber .. " ----------------------------------")
 				local req = json.decode(line)	
 				
 				print("Received: " .. tostring(line))
-				if(req.args.counter ~=  lineID) then
+				if(req.ackNumber ==  ackNumber) then
+					ackNumber = ackNumber+1;
+				else
+					print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!GOT A BAD ACK NUMBER - " .. ackNumber .. " ~=  " .. req.ackNumber .. "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
 					return;
 				end
-				lineID = lineID+1;
+				
+				
 			end	
 			--print("are we in penalty?")
 			--print("vector of penalites: ", gcm.get_game_penalty())	

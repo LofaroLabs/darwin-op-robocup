@@ -73,7 +73,8 @@ end
 walkForwardStart = function(hfa) 
   			action  = {}
                         action["action"] = "walkForward";
-                        action["args"] = countReceives;
+                        action["args"] = "";
+						action.ackNumber = ackNumber;
 			print(json.encode(action) .. "\n");      
                         client:send(json.encode(action) .. "\n");
 end	
@@ -86,7 +87,8 @@ end
 stopStart = function(hfa)
 	action  = {}
         action["action"] = "stop";
-        action["args"] = countReceives;
+        action["args"] = ""
+		action.ackNumber = ackNumber;
 	print(json.encode(action) .. "\n");  
         client:send(json.encode(action) .. "\n");
 end
@@ -99,7 +101,8 @@ locateBallStart = function(hfa)
 	print("locating ball Start") 
 	action  = {}
         action["action"] = "moveTheta";
-        action["args"] = countReceives;
+        action["args"] = "";
+		action.ackNumber = ackNumber;
 	print(json.encode(action) .. "\n");  
         client:send(json.encode(action) .. "\n");
 	print("Locating ball Start done");
@@ -111,7 +114,8 @@ gotoBallStart = function()
 	print("going to ball")
  	action  = {}
         action["action"] = "gotoBall";
-        action["args"] = countReceives;
+        action["args"] = "";
+		action.ackNumber = ackNumber;
 	print(json.encode(action) .. "\n");  
         client:send(json.encode(action) .. "\n");
 end
@@ -121,7 +125,8 @@ approachTargetStart = function()
 	print("approach target")
 	 action  = {}
         action["action"] = "approachBall";
-        action["args"] = countReceives;
+        action["args"] = "";
+		action.ackNumber = ackNumber;
 	print(json.encode(action) .. "\n");  
         client:send(json.encode(action) .. "\n");
 end
@@ -131,7 +136,8 @@ kickBallStart = function()
 	print("kicking ball");
  	action  = {}
         action["action"] = "kickBall";
-        action["args"] = countReceives;
+        action["args"] = "";
+		action.ackNumber = ackNumber;
 	print(json.encode(action) .. "\n");  
         client:send(json.encode(action) .. "\n");
 end
@@ -173,59 +179,35 @@ end
 connectionThread = function ()
         print("got into con thread");
 	if( darwin ) then
-                local tDelay = 0.005 * 1E6; -- Loop every 5ms
-
-
-
-
-		
-
-
-
-
-
-
-
- -- setup the server
-               client = connectToHorde(4009);--initialize connection, wait for it.....
-               connected = true;
---               darwinComm = setupUDPDarwins();
-                --client:send("wer\n")    
+		local tDelay = 0.005 * 1E6; -- Loop every 5ms
+		-- setup the server
+		client = connectToHorde(4009);--initialize connection, wait for it.....
+		connected = true;   
 		print("connected")
- 		countReceives = 0 
-                while connected do
---[[                	action  = {}
-			action["action"] = "walkForward";
-			action["args"] = "nan";      
-			client:send(json.encode(action) .. "\n");
-		]]--
-		--	isBallLost();
-		--	print("Going to receive something")
+		startSending = {}
+		startSending.action="StartSending";
+		startSending.args = "";
+		startSending.ackNumber = 0
+		print("to send " .. tostring(json.encode(startSending)) .. " \n "); 
+		client:send(json.encode(startSending) .. "\n");
+
+	
+ 		ackNumber = 1
+        while connected do
 			recval = client:receive()
-		--	print("received " .. tostring(recval));
-			
-			while(recval ~= "request") do
-				--print(tostring(recval))
-				recval = client:receive()
-			 end
-		--	print("Got a request!");
-			isBallLost();
-			--print("ball detect? : " .. tostring(vcm.get_ball_detect()));
-			pulse(myMachine);
-			print("cur rec number " .. tostring(countReceives) .. "..........................................")
-			countReceives = countReceives + 1;
-		--	print("Pulsed! going to wait until i get an ack");
-			while(recval ~= "ack") do
-		--		print(tostring(recval))
-				recval = client:receive()
+			recJson = json.decode(recval);
+			if (recJson.ackNumber == ackNumber) then
+				isBallLost();
+				pulse(kittyMachine)
+				print("cur rec number " .. tostring(ackNumber) .. "..........................................")
+				ackNumber = ackNumber + 1;
 			end
-		--	print("got an ack");
 		end
-        end
+	end
 end
 
 --start "main"
---[[if(darwin) then 
+if(darwin) then 
 		--        hoard_functions.hordeFunctions["murder all humans"](nil,nil);
 	--Motion.event("standup");	
       	print("starting connection thread\n");
@@ -233,6 +215,6 @@ end
 	connectionThread()
 	print("connection lost")
 --	wcm.set_horde_state("gotoBall");
-end]]--
+end
 --connection drew stuff, seriously i'm ruining this beautiful code
 

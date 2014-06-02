@@ -97,7 +97,7 @@ gotoPoseFacingStart = function(hfa)
             action.args.gotoPose.x = dest.x
             action.args.gotoPose.y = dest.y
             action.args.gotoPose.a = 0
-			action.args.counter = countReceives;
+			action.ackNumber = ackNumber;
             print("i am currently at: " .. pose.x .. ", " .. pose.y);
 			print("trying to face " .. ballGlobal.x .. ", " .. ballGlobal.y);
 			print("also moving to around " .. dest.x .. ", " .. dest.y);
@@ -135,7 +135,7 @@ gotoPoseFacingGo = function(hfa)
             action.args.gotoPose.x = dest.x
             action.args.gotoPose.y = dest.y
             action.args.gotoPose.a = 0
-			action.args.counter = countReceives;
+			action.ackNumber = ackNumber;
             print("i am currently at: " .. pose.x .. ", " .. pose.y);	
 			print("trying to face " .. ballGlobal.x .. ", " .. ballGlobal.y);
 			print("also moving to around " .. dest.x .. ", " .. dest.y);
@@ -151,8 +151,8 @@ end
 stopStart = function(hfa)
 	action  = {}
         action["action"] = "stop";
-        action["args"] = {};
-		action.args.counter = countReceives;
+        action["args"] = "";
+		action.ackNumber = ackNumber;
         print(json.encode(action) .. "\n");
 		client:send(json.encode(action) .. "\n");
 end
@@ -165,8 +165,8 @@ locateBallStart = function(hfa)
 	print("locating ball") 
 action  = {}
         action["action"] = "moveTheta";
-        action["args"] = {};
-		action.args.counter = countReceives;
+        action["args"] = "";
+		action.ackNumber = ackNumber;
         client:send(json.encode(action) .. "\n");
 end
 locateBallStop = function()end
@@ -176,8 +176,8 @@ gotoBallStart = function()
 	print("going to ball")
  	action  = {}
         action["action"] = "gotoBall";
-        action["args"] = {};
-		action.args.counter = countReceives;
+        action["args"] = "";
+		action.ackNumber = ackNumber;
         client:send(json.encode(action) .. "\n");
 end
 gotoBallStop = function()end
@@ -186,8 +186,8 @@ approachTargetStart = function()
 	print("approach target")
 	 action  = {}
         action["action"] = "approachBall";
-        action["args"] = {};
-		action.args.counter = countReceives;
+        action["args"] = "";
+		action.ackNumber = ackNumber;
         client:send(json.encode(action) .. "\n");
 end
 approachTargetStop = function()end
@@ -196,8 +196,8 @@ kickBallStart = function()
 	print("kicking ball");
  	action  = {}
         action["action"] = "kickBall";
-        action["args"] = {};
-		action.args.counter = countReceives;
+        action["args"] = "";
+		action.ackNumber = ackNumber;
         client:send(json.encode(action) .. "\n");
 end
 kickBallStop = function()end
@@ -209,8 +209,8 @@ stopPoseStart = function()
 
 	action = {}
 	action["action"] = "stop";
-	action["args"] = {};
-	action.args.counter = countReceives;
+	action["args"] = "";
+	action.ackNumber = ackNumber;
 	client:send(json.encode(action) .. "\n");
 end
 
@@ -372,39 +372,31 @@ end
 connectionThread = function ()
         print("got into con thread");
 	if( darwin ) then
-        local tDelay = 0.005 * 1E6; -- Loop every 5ms
-
-
+        --local tDelay = 0.005 * 1E6; -- Loop every 5ms
 --      setup the server
         client = connectToHorde(4009);--initialize connection, wait for it.....
         connected = true;
---      darwinComm = setupUDPDarwins();
-        countReceives = 0             
+
+		startSending = {}
+        startSending.action="StartSending";
+        startSending.args = "";
+		startSending.ackNumber = 0;
+        print("to send " .. tostring(json.encode(startSending)) .. " \n ");
+        client:send(json.encode(startSending) .. "\n");
+
+
+        ackNumber = 1
 		print("connected")
-  
         while connected do
 			recval = client:receive()
-			
-			print("got something")
-
-			while(recval ~= "request") do
-                print(tostring(recval))
-                recval = client:receive()
-             end
-
-
-			isBallLost();
-		
-			pulse(myMachine);
-
-			print("cur rec number " .. tostring(countReceives) .. "..........................................")
-			countReceives = countReceives + 1;
-			
-
-			while(recval ~= "ack") do
-        --      print(tostring(recval))
-                recval = client:receive()
-            end
+			-- convert the json to get the ackNumber
+			recJson = json.decode(recval);
+			if(recJson.ackNumber == ackNumber) then
+				isBallLost();
+				pulse(myMachine);
+				print("cur rec number " .. tostring(ackNumber) .. "..........................................")
+				ackNumber = ackNumber + 1;
+			end
 		end
     end
 end
