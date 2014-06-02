@@ -652,12 +652,14 @@ goHFA = function(hfa, targets)
         if (not(newBehavior == hfa.current)) then
             if (hfa.current == nil)  then
     			print("WARNING (stopHFA) current is nil")
-    		elseif((not(hfa.current == start)) and
-    			   (not(hfa.current.stop == nil))) then
+    		elseif(not(hfa.current == start)) then
+				if (not(hfa.current.stop == nil)) then
                     hfa.current.stop(hfa.current, oldBehaviorTargets)
+                 end
+    			hfa.current.parent = nil
             end
+            newBehavior.parent = hfa
             if (not(newBehavior.start == nil)) then
-                 newBehavior.parent = hfa
                 newBehavior.start(newBehavior, hfa.behaviorTargets)
             end
             hfa.current = newBehavior
@@ -765,7 +767,7 @@ end
 -- bumpCounter: increments the HFA's counter by 1
 bumpCounter = makeBehavior("bumpCounter", 
     function(behavior, targets) 
-        if ((not behavior == nil) and (not behavior.parent == nil)) then 
+        if (not (behavior == nil) and not (behavior.parent == nil)) then 
             behavior.parent.counter = behavior.parent.counter + 1
         end
     end, nil, nil)
@@ -773,7 +775,7 @@ bumpCounter = makeBehavior("bumpCounter",
 -- zeroCounter: sets the HFA's counter to 0
 resetCounter = makeBehavior("resetCounter",
     function(behavior, targets) 
-        if ((not behavior == nil) and (not behavior.parent == nil)) then 
+        if (not (behavior == nil) and not (behavior.parent == nil)) then 
             behavior.parent.counter = 0
         end
     end, nil, nil)
@@ -786,7 +788,7 @@ currentCounter = function(hfa) return hfa.counter end
 --                   function for making transition functions.
 resetTimer = makeBehavior("resetTimer",
     function(behavior, targets)
-        if ((not behavior == nil) and (not behavior.parent == nil)) then
+        if (not (behavior == nil) and not (behavior.parent == nil)) then
             behavior.parent.timer = os.time()
         end
     end, nil, nil)
@@ -800,7 +802,7 @@ currentTimer = function(hfa) return os.time() - hfa.timer end
 --                      to set a flag in an HFA, potentially recursively if
 --                      propagation is turned on.
 setFlag = function(hfa, flag)
-    if (not hfa.parent == nil) then
+    if (not (hfa.parent == nil)) then
         hfa.parent[flag] = true
         if (hfa.parent.propagateFlags == true) then
             setFlag(hfa.parent, flag)
@@ -811,20 +813,19 @@ end
 -- done: sets the "done" flag in the HFA's parent, and transitions to "start"
 done = makeBehavior("done", nil, nil,
     function(behavior, targets) 
-        print("heavior and parent are: " .. tostring(behavior.name))
-	if (not behavior == nil and (not behavior.parent == nil)) then
-            print("parent behavior name " .. behavior.parent.name)
-	    k = nil;
-	    n = 1/k;
-	    behavior.parent.current = start
-            setFlag(behavior.parent, "done")
-        end
-    end)
+    print(behavior.name)
+    print(behavior.parent.name)
+	if (not (behavior == nil) and not (behavior.parent == nil)) then
+		behavior.parent.current = start
+        setFlag(behavior.parent, "done")
+        behavior.parent = nil
+    end
+ end)
 
 -- sayDone: sets the "done" flag in the HFA's parent
 sayDone = makeBehavior("sayDone", 
     function(behavior, targets)
-        if (not behavior == nil and (not behavior.parent == nil)) then
+        if (not (behavior == nil) and not (behavior.parent == nil)) then
             setFlag(behavior.parent, "done")
         end
     end, nil, nil)
@@ -838,16 +839,17 @@ isFailed = function(hfa) return hfa.failed end
 -- failed: sets the "failed" flag in the HFA's parent, and transitions to "start"
 failed = makeBehavior("failed", nil, nil,
     function(behavior, targets) 
-        if (not behavior == nil and (not behavior.parent == nil)) then
+        if (not (behavior == nil) and not (behavior.parent == nil)) then
             behavior.current = start
             setFlag(behavior.parent, "failed")
+            behavior.parent = nil
         end
     end)
 
 -- sayFailed: sets the "failed" flag in the HFA's parent
 sayFailed = makeBehavior("sayFailed", 
     function(behavior, targets)
-        if (not behavior == nil and (not behavior.parent == nil)) then
+        if (not (behavior == nil) and not (behavior.parent == nil)) then
             setFlag(behavior.parent, "failed")
         end
     end, nil, nil)
