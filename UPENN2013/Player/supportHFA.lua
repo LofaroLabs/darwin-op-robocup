@@ -382,7 +382,7 @@ connectionThread = function ()
 		startSending = {}
         startSending.action="StartSending";
         startSending.args = "";
-		startSending.ackNumber = 0;
+	startSending.ackNumber = 0;
         print("to send " .. tostring(json.encode(startSending)) .. " \n ");
         client:send(json.encode(startSending) .. "\n");
 
