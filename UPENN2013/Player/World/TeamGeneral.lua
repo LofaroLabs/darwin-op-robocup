@@ -232,6 +232,8 @@ function update()
   ddefend = {};
   roles = {};
   t = Body.get_time();
+  smallest = math.huge;
+  smallest_id = 0;
   for id = 1,5 do 
     if not states[id] or not states[id].ball.x then  -- no info from player, ignore him
       eta[id] = math.huge;
@@ -279,6 +281,11 @@ function update()
         wcm.set_team_my_eta(eta[id]);
       end
 
+      if eta[id] < smallest then
+	smallest_id = id
+	smallest = eta[id];
+      end
+
       --Ignore goalie, reserver, penalized player, confused player
       --[[if (states[id].penalty > 0) or 
         (t - states[id].tReceive > msgTimeout) or
@@ -291,6 +298,11 @@ function update()
     end
   end
 
+  if smallest_id == playerID then
+	wcm.set_team_is_smallest_eta(1);
+  else
+        wcm.set_team_is_smallest_eta(0);
+  end
 
   --For defender behavior testing
   force_defender = Config.team.force_defender or 0;

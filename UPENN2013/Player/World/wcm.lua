@@ -38,6 +38,9 @@ shared.ball.dodge = vector.zeros(1);
 shared.ball.locked_on = vector.zeros(1);
 shared.ball.p = vector.zeros(1);
 
+shared.ballGlobal = {};
+shared.ballGlobal.x = vector.zeros(1);
+shared.ballGlobal.y = vector.zeros(1);
 
 shared.ball.v_inf = vector.zeros(2);
 shared.ball.t_locked_on = vector.zeros(1);
@@ -51,6 +54,7 @@ shared.horde.doneApproach = vector.zeros(1); ---
 shared.horde.gotoPose = vector.zeros(3); -- the x,y,a that horde told it to go to on the field in the world frame
 shared.horde.facing = vector.zeros(3);
 shared.horde.kickToPose = vector.zeros(3);
+shared.horde.doneKick = vector.zeros(1);
 --horizontally passed+connection
 shared.horde.yelledReady = vector.zeros(1);
 shared.horde.yelledKick = vector.zeros(1);
@@ -62,7 +66,7 @@ shared.horde.kickToPose = vector.zeros(3);
 -- wcm.get_horde_doneFrontApproach();
 shared.team = {};
 
-
+shared.team.is_smallest_eta = vector.zeros(1);-- 1 if I have the smallest eta 0 otherwise
 shared.team.my_eta = vector.zeros(1);
 shared.team.attacker_eta = vector.zeros(1);
 shared.team.defender_eta = vector.zeros(1);

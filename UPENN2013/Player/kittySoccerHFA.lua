@@ -45,7 +45,7 @@ local hoard_functions = require "hoard_functions"
 json = require("json")
 unix.usleep(2*1E6);
 --gcm.say_id();
-Speak.talk("My Player ID Is defiantly the number " .. Config.game.playerID);
+--Speak.talk("My Player ID Is defiantly the number " .. Config.game.playerID);
 darwin = true;
 
 ready = true;
@@ -73,7 +73,9 @@ end
 walkForwardStart = function(hfa) 
   			action  = {}
                         action["action"] = "walkForward";
-                        action["args"] = "nan";      
+                        action["args"] = {}
+			action.counter = countReceives;
+			print(json.encode(action) .. "\n");      
                         client:send(json.encode(action) .. "\n");
 end	
 walkForwardGo = function(hfa)
@@ -85,7 +87,9 @@ end
 stopStart = function(hfa)
 	action  = {}
         action["action"] = "stop";
-        action["args"] = "nan";
+        action["args"] = {}
+        action.counter = countReceives;
+	print(json.encode(action) .. "\n");  
         client:send(json.encode(action) .. "\n");
 end
 stopGo = function(hfa)
@@ -94,20 +98,25 @@ stopStop = function(hfa)
 end
 
 locateBallStart = function(hfa)
-	print("locating ball") 
-action  = {}
+	print("locating ball Start") 
+	action  = {}
         action["action"] = "moveTheta";
-        action["args"] = "nan";
+        action["args"] = {}
+        action.args.counter = countReceives;
+	print(json.encode(action) .. "\n");  
         client:send(json.encode(action) .. "\n");
+	print("Locating ball Start done");
 end
-locateBallStop = function()end
-locateBallGo = function()end
+locateBallStop = function() print("Locate Ball stop");  end
+locateBallGo = function()   print("Locate Ball Go");  end
 gotoBallGo = function()end
 gotoBallStart = function()
 	print("going to ball")
  	action  = {}
         action["action"] = "gotoBall";
-        action["args"] = "nan";
+        action["args"] = {}
+        action.args.counter = countReceives;
+	print(json.encode(action) .. "\n");  
         client:send(json.encode(action) .. "\n");
 end
 gotoBallStop = function()end
@@ -116,7 +125,9 @@ approachTargetStart = function()
 	print("approach target")
 	 action  = {}
         action["action"] = "approachBall";
-        action["args"] = "nan";
+        action["args"] = {}
+        action.args.counter = countReceives;
+	print(json.encode(action) .. "\n");  
         client:send(json.encode(action) .. "\n");
 end
 approachTargetStop = function()end
@@ -125,40 +136,45 @@ kickBallStart = function()
 	print("kicking ball");
  	action  = {}
         action["action"] = "kickBall";
-        action["args"] = "nan";
+        action["args"] = {}
+        action.args.counter = countReceives;
+	print(json.encode(action) .. "\n");  
         client:send(json.encode(action) .. "\n");
 end
 kickBallStop = function()end
 kickBallgo = function()end
 
-walkForward = makeBehavior("walkForward", walkForwardStart, walkForwardStop, walkForwardGo);
-stop = makeBehavior("stop", stopStart, stopStop, stopGo);
-locateBall = makeBehavior("locateBall", locateBallStart, locateBallStop, locateBallGo);
-gotoBall = makeBehavior("gotoBall", gotoBallStart, gotoBallStop, gotoBallGo);
-approachTarget = makeBehavior("approachTarget", approachTargetStart, approachTargetStop, approachTargetGo);
-kickBall = makeBehavior("kickBall", kickBallStart, kickBallStop, kickBallGo);
+walkForward = makeBehavior("walkForward", nil, walkForwardStop, walkForwardStart);
+stop = makeBehavior("stop", nil, stopStop, stopStart);
+locateBall = makeBehavior("locateBall", nil, locateBallStop, locateBallStart);
+gotoBall = makeBehavior("gotoBall", nil, gotoBallStop, gotoBallStart);
+approachTarget = makeBehavior("approachTarget", nil, approachTargetStop, approachTargetStart);
+kickBall = makeBehavior("kickBall", nil, kickBallStop, kickBallStart);
 
-
-myMachine = makeHFA("myMachine", makeTransition({
-	[start] = locateBall,
+kittyMachine = makeHFA("myMachine", makeTransition({
+	[start] = function()  print("transitoin for start to locate ball " .. tostring(countReceives));  return locateBall; end,
 	[locateBall] = function() if ballLost  then return locateBall else return gotoBall end end,
 	[gotoBall] = function() if ballLost then return locateBall elseif (math.abs(wcm.get_ball_x())+math.abs(wcm.get_ball_y())) < .2 then return approachTarget else  return gotoBall  end end,
-	[approachTarget] = function() if ballLost then return locateBall elseif wcm.get_horde_doneApproach()~= 0 then return kickBall else return approachTarget end end, 
-	[kickBall] = function() unix.usleep(1 * 1E6); return locateBall; end
+	[approachTarget] = function() if ballLost then return locateBall elseif wcm.get_horde_doneApproach()~= 0 then print("We are done done approach? " .. tostring(wcm.get_horde_doneApproach())); return kickBall else return approachTarget end end, 
+	[kickBall] = function() return done; end
 	--[done] = start;	
 --[done] = done;
 	}),false);
+
+--myMachine = makeHFA("myMachine", makeTransition({
+--	[start] = locateBall,
+--	[locateBall] = kickBall}), false);
 ballLost = true;
 lastTimeFound = Body.get_time();
 function isBallLost()
-	--print("got into ball lost")
+	print("got into ball lost")
 	if vcm.get_ball_detect() ~= 0 then
 		ballLost = false;
 		lastTimeFound = Body.get_time();
 	elseif(Body.get_time() - lastTimeFound > 5) then
 		ballLost = true;
 	end
-	--print("got out of ball lost");
+	print("got out of ball lost" .. tostring(ballLost));
 end
 connectionThread = function ()
         print("got into con thread");
@@ -166,28 +182,56 @@ connectionThread = function ()
                 local tDelay = 0.005 * 1E6; -- Loop every 5ms
 
 
+
+
+		
+
+
+
+
+
+
+
  -- setup the server
                client = connectToHorde(4009);--initialize connection, wait for it.....
                connected = true;
 --               darwinComm = setupUDPDarwins();
-                     
+                --client:send("wer\n")    
 		print("connected")
-  
+ 		countReceives = 0 
                 while connected do
 --[[                	action  = {}
 			action["action"] = "walkForward";
 			action["args"] = "nan";      
 			client:send(json.encode(action) .. "\n");
 		]]--
+		--	isBallLost();
+		--	print("Going to receive something")
+			recval = client:receive()
+		--	print("received " .. tostring(recval));
+			
+			while(recval ~= "request") do
+				--print(tostring(recval))
+				recval = client:receive()
+			 end
+		--	print("Got a request!");
 			isBallLost();
 			--print("ball detect? : " .. tostring(vcm.get_ball_detect()));
 			pulse(myMachine);
+			print("cur rec number " .. tostring(countReceives) .. "..........................................")
+			countReceives = countReceives + 1;
+		--	print("Pulsed! going to wait until i get an ack");
+			while(recval ~= "ack") do
+		--		print(tostring(recval))
+				recval = client:receive()
+			end
+		--	print("got an ack");
 		end
         end
 end
 
 --start "main"
-if(darwin) then 
+--[[if(darwin) then 
 		--        hoard_functions.hordeFunctions["murder all humans"](nil,nil);
 	--Motion.event("standup");	
       	print("starting connection thread\n");
@@ -195,6 +239,6 @@ if(darwin) then
 	connectionThread()
 	print("connection lost")
 --	wcm.set_horde_state("gotoBall");
-end
+end]]--
 --connection drew stuff, seriously i'm ruining this beautiful code
 
