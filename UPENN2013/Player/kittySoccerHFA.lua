@@ -45,7 +45,7 @@ local hoard_functions = require "hoard_functions"
 json = require("json")
 unix.usleep(2*1E6);
 --gcm.say_id();
-Speak.talk("My Player ID Is defiantly the number " .. Config.game.playerID);
+--Speak.talk("My Player ID Is defiantly the number " .. Config.game.playerID);
 darwin = true;
 
 ready = true;
@@ -202,6 +202,7 @@ connectionThread = function ()
 				print("cur rec number " .. tostring(ackNumber) .. "..........................................")
 				ackNumber = ackNumber + 1;
 			end
+		--	print("got an ack");
 		end
 	end
 end
