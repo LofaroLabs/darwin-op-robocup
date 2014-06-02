@@ -195,8 +195,12 @@ connectionThread = function ()
  		ackNumber = 1
         while connected do
 			recval = client:receive()
-			recJson = json.decode(recval);
-			if (recJson.ackNumber == ackNumber) then
+			
+
+			recJson, err = pcall(json.decode(recval));
+			
+
+			if (err ~= true and recJson.ackNumber == ackNumber) then
 				isBallLost();
 				pulse(kittyMachine)
 				print("cur rec number " .. tostring(ackNumber) .. "..........................................")
