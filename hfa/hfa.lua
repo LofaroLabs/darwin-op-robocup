@@ -810,7 +810,7 @@ end
 done = makeBehavior("done", nil, nil,
     function(behavior, targets) 
         if (not behavior == nil and (not behavior.parent == nil)) then
-            behavior.current = start
+            behavior.parent.current = start
             setFlag(behavior.parent, "done")
         end
     end)
@@ -833,7 +833,7 @@ isFailed = function(hfa) return hfa.failed end
 failed = makeBehavior("failed", nil, nil,
     function(behavior, targets) 
         if (not behavior == nil and (not behavior.parent == nil)) then
-            behavior.current = start
+            behavior.parent.current = start
             setFlag(behavior.parent, "failed")
         end
     end)
