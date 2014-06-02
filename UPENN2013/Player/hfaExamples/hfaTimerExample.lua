@@ -869,21 +869,23 @@ foo = makeHFA("foo", makeTransition(
         {
 		[start] = printA,
 		[printA] = printB, 
-		[printB] = done,
+		[printB] = function() print("counter is " .. tostring(foo.counter)); return resetTimer end,
+		[resetTimer] = function() if(currentTimer(foo) > 5) then return done else return printA end end;
 	}))
 bar = makeHFA("bar", makeTransition(
 	{
 		[start] = foo,
 		[foo] = function() 
-			print("coming out of foo?"); 
+			print("coming out of foo? " .. tostring(bar.counter)); 
 			if(bar.done) then 
 				print("yes") 
-				return start
+				return bumpCounter
 			else 
 				print("no") 
 				return foo 
 			end 
-		end
+		end,
+		[bumpCounter] = done
 	}))
 
 number = 1;
