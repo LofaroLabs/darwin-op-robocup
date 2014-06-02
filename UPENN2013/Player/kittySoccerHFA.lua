@@ -198,7 +198,7 @@ connectionThread = function ()
 			
 
 			status, recJson = pcall(json.decode, recval);
-			print("status " .. tostring(status) .. " recJson " .. tostring(recJson.ackNumber) .. "  " .. ackNumber)
+			--print("status " .. tostring(status) .. " recJson " .. tostring(recJson.ackNumber) .. "  " .. ackNumber)
 
 			if (status == true and recJson.ackNumber == ackNumber) then
 				isBallLost();
