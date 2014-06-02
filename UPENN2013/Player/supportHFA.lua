@@ -232,7 +232,7 @@ myMachine = makeHFA("myMachine", makeTransition({
 					if ballLost then 
 						print("locate ball"); 
 						return locateBall 
-					elseif closestToBall()==0 then 
+					elseif closestToBall()==1 then 
 						print("trans to stop "); 
 						return stopMoving 
 					--elseif distToMidpoint() < 0.3 then
@@ -250,7 +250,7 @@ myMachine = makeHFA("myMachine", makeTransition({
 					end
 					if distToMidpoint() > 0.3 then --- we will want to check the facing angle too... 
 						return gotoPoseFacing 
-					elseif closestToBall() == 0 then 
+					elseif closestToBall() == 1 then 
 						print("go to done from stopPose")
 						return locateBall
 					else 
@@ -260,7 +260,7 @@ myMachine = makeHFA("myMachine", makeTransition({
 	[stopMoving] = function() 
 					if ballLost then 
 						return locateBall 
-					elseif closestToBall() < 1 then 
+					elseif closestToBall() == 0 then 
 						return gotoPoseFacing ; 
 					else
 						print("I stoped moving"); 
