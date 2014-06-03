@@ -67,7 +67,7 @@ end
 
 function sendBehavior(sendInfo)
 	client:send(sendInfo)
-	wcm.set_hoard_sentBehavior(1);
+	wcm.set_horde_sentBehavior(1);
 end
 
 
