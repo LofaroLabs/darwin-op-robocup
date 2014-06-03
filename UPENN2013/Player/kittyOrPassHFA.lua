@@ -197,16 +197,35 @@ gotoBallStart = function()
 end
 gotoBallStop = function()end
 
-approachTargetStart = function()
-	print("approach target")
+approachBallStart = function()
+	print("approach ball")
 	 action  = {}
         action["action"] = "approachBall";
         action["args"] = "";
 		action.ackNumber =  wcm.get_horde_ackNumber();
         sendBehavior(json.encode(action) .. "\n");
 end
-approachTargetStop = function()end
-approachTargetGo = function()end
+approachBallStop = function()end
+approachBallGo = function()end
+
+
+approachTargetStart = function(behavior, targets)
+
+	print("approachTargetStart to target")
+	action = {}
+	action["action"] = "approachTarget";
+	action["args"] = {}
+	action.args.x = targets["openSpot"].x
+	action.args.y = targets["openSpot"].y
+	action.args.a = targets["openSpot"].a
+	action.ackNumber = wcm.get_horde_ackNumber();
+	sendBehavior(json.encode(action) .. "\n")	
+
+end
+
+
+
+
 kickBallStart = function() 
 	print("kicking ball");
  	action  = {}
@@ -234,61 +253,35 @@ walkForward = makeBehavior("walkForward", nil, walkForwardStop, walkForwardStart
 stopMoving = makeBehavior("stopMoving", nil, nil, stopPoseStart);
 gotoPoseFacing = makeBehavior("gotoPoseFacing", nil, gotoPoseFacingStop, gotoPoseFacingStart);
 gotoBall = makeBehavior("gotoBall", nil, gotoBallStop, gotoBallStart);
-approachTarget = makeBehavior("approachTarget", nil, approachTargetStop, approachTargetStart);
+approachBall = makeBehavior("approachBall", nil, approachBallStop, approachBallStart);
 kickBall = makeBehavior("kickBall", nil, kickBallStop, kickBallStart);
 locateBall = makeBehavior("locateBall",nil,nil,locateBallStart);
+approachTarget = makeBehavior("approachTarget", nil, nil, approachTargetStart);
+
+
 kittyMachine = kitty.kittyMachine
 --kittyMachine
 print(tostring(kittyMachine) .. " ok")
 --super SUPER SUPER SUPER TODO IMPORTANT TODO NOW--- 
 -- IF YOU EXPECT THIS MACHINE TO WORK WITH MORE THAN ONE PLAYER LIKE A REAL GAME CHANGE THE LOGIC FOR CLOSEST BALL, IT'S COMPLETELY BACKWARDS ( ON PURPOSE FOR TESTING--
 myMachine = makeHFA("myMachine", makeTransition({
-	[start] = kittyMachine, --gotoPoseFacing,
-	[locateBall] = function() if wcm.get_horde_ballLost()==1  then return locateBall else return gotoPoseFacing end end,
-	[gotoPoseFacing] = function() print("considering transitioning out of gotoPoseFacing"); 
-					if wcm.get_horde_ballLost()==1 then 
-						print("locate ball"); 
-						return locateBall 
-					elseif closestToBall()==1 then 
-						print("trans to stop "); 
-						return kittyMachine 
-					--elseif distToMidpoint() < 0.3 then
-					elseif wcm.get_horde_yelledReady() == 1  then 
-						print("going to stop pose from goto"); 
-						return stopPose;
-					else 
-						print("going back to myself in gotopose"); 
-						return gotoPoseFacing   
-					end 
-				end,
-	[stopPose] = function()
-					if wcm.get_horde_ballLost() == 1 then
-						return locateBall;
-					end
-					if distToMidpoint() > 0.3 then --- we will want to check the facing angle too... 
-						return gotoPoseFacing 
-					elseif closestToBall() == 1 then 
-						print("go to done from stopPose")
-						return kittyMachine
-					else 
-						print("goto stop pse againin from stop pose") 
-						return stopPose 
-					end end,
+	[start] = kittyMachine,
 	[kittyMachine] = function() 
 					if wcm.get_horde_yelledReady() == 1 then 
-						return approachTarget
+						return {[0] = approachTarget, ["openSpot"] = "openSpot"}
 					else
 						print("just keep kitty"); 
 						return kittyMachine
 					end 
 			end,
-	[approachTarget]
-	
- 	--[gotoBall] = function() if wcm.get_horde_ballLost() then return locateBall elseif (math.abs(wcm.get_ball_x())+math.abs(wcm.get_ball_y())) < .2 then return approachTarget else  return gotoBall  end end,
-	--[approachTarget] = function() if wcm.get_horde_ballLost() then return locateBall elseif wcm.get_horde_doneApproach()~= 0 then return kickBall else return approachTarget end end, 
-	--[kickBall] = function() unix.usleep(1 * 1E6); return locateBall; end
-	--[done] = start;	
---[done] = done;
+	[approachTarget] = function()
+					if wcm.get_horde_doneApproach() == 1 then
+						return kickBall 
+					else
+						return {[0] = approachTarget, ["openSpot"] = "openSpot"}
+					end
+			end,
+	[kickBall] = function() return done; end	
 	}),false);
 wcm.set_horde_ballLost(1)
 lastTimeFound = Body.get_time();
