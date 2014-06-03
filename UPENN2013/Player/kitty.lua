@@ -59,11 +59,17 @@ lcount = 0;
 tUpdate = unix.time();
 connected = false;
 
-
+local client
 
 function inspect(key, value)
 	table.foreach(value,print)
 end
+
+
+function setClient(someClient)
+	client = someClient
+end
+
 
 function sendBehavior(sendInfo)
 	client:send(sendInfo)

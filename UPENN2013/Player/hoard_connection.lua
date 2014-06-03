@@ -104,9 +104,9 @@ function sendFeatures (client)
         	--print("Start sending was false");
 		 	return;
         end
-		print(" difference is : " .. tostring(Body.get_time() - sendFeaturesTimer));
+	--	print(" difference is : " .. tostring(Body.get_time() - sendFeaturesTimer));
 		if(Body.get_time() - sendFeaturesTimer < .5) then 
-			print("is not sending")	
+	--		print("is not sending")	
 			return;
 		end
 		sendFeaturesTimer = Body.get_time();
