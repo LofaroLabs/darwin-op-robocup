@@ -104,7 +104,11 @@ function sendFeatures (client)
         	--print("Start sending was false");
 	 	return;
         end
-	--print("wcm send status was true");
+		if(Body.get_time() - sendFeaturesTimer < .5) then 
+			return;
+		end
+		sendFeaturesTimer = Body.get_time();
+		--print("wcm send status was true");
 		features = {}
         features["playerID"] = Config.game.playerID;
         features["role"] = Config.game.role;
