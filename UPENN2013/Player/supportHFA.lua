@@ -414,7 +414,7 @@ connectionThread = function ()
 			--print(tostring(recJson))
 			if (status == true and recJson.ackNumber == wcm.get_horde_ackNumber()) then
 				isBallLost();
-				
+			    kitty.ballLost = ballLost	
 				while wcm.get_horde_sentBehavior() == 0 do
 					pulse(myMachine);
 				end
