@@ -121,13 +121,12 @@ new current state.
 
 Notice that in goHFA(...) the transition function is called FIRST, followed by 
 the GO function (and possibly START and STOP).  This means that the "start" 
-state never has its GO function called, ever.  This is intentional.  The "start"
+state typically never has its GO function called, ever.  This is intentional.  The "start"
 state is just meant to be a dummy state which provides us with a way to define
 a transition funtion which, in essence, will specify the initial behavior performed
-by the HFA.  That's why the "start" state isn't even a behavior: it's just the
-string "start".  It's defined in the global variable:
+by the HFA.  It's defined in the global variable:
 
-start = "start"
+start = makeBehavior("start", nil, nil, nil)
 
 Also notice that the HFA doesn't actually store any of its sub-behaviors.  They're
 just specified by the transition function based on the current state of the HFA.
@@ -189,7 +188,7 @@ if a behavior is the current state, and that behavior's GO function returns a be
 as its return value, this new behavior will be treated as the next current state.  Though
 you'd never access this, the return value of the GO function is stored here.
 
-myHFA.goReturnValue
+myHFA.goTransitionedTo
 
 This second feature can be convenient, but it has two drawbacks.  First, it means that
 your behavior is no longer necessarily modular: it can no longer be easily used in 
@@ -542,10 +541,18 @@ of behaviors, you'll need to make them.  Keep this in mind.
 
 
 
+-- makebehavior(name, start, stop, go)
+-- Creates a behavior with the given name and start/stop/go functions.  Any
+-- of these functions can be nil.
+makeBehavior = function(name, start, stop, go)
+    return { ["name"] = name, ["start"] = start, ["stop"] = stop, 
+    		 ["go"] = go, ["parent"] = nil, ["pulsed"] = false }
+end
+
+
 -- start
--- This is the start state.  There's no associated behavior,
--- it's just the string "start"
-start = "start"
+-- This is the start state.  It's an empty behavior,
+start = makeBehavior("start", nil, nil, nil)
 
 
 -- translateTargets(targets, mapping)
@@ -585,7 +592,7 @@ startHFA = function(hfa, targets)
     hfa.counter = 0;
     -- maybe this is too costly and we should restrict it to the resetTimer function?
     hfa.timer = os.time()
-    hfa.goReturnValue = nil;
+    hfa.goTransitionedTo = nil;
     hfa.current = start;
 end
 
@@ -595,10 +602,10 @@ stopHFA = function(hfa, targets)
 	hfa.targets = nil
     if (hfa.current == nil) then
     	print("WARNING (stopHFA) current is nil")
-    elseif (not (hfa.current == start)) then
-    	if (not (hfa.current.stop == nil)) then
-        	hfa.current.stop(hfa.current, hfa.behaviorTargets)
-        end
+	else
+		if (not (hfa.current.stop == nil)) then
+   		     hfa.current.stop(hfa.current, hfa.behaviorTargets)
+    	end
     	hfa.current.parent = nil
     end
 end
@@ -615,9 +622,9 @@ goHFA = function(hfa, targets)
         newBehavior = hfa.transition(hfa)
     end
     if (newBehavior == nil) then
-        newBehavior = hfa.goReturnValue
+        newBehavior = hfa.goTransitionedTo
     end
-    hfa.goReturnValue = nil
+    hfa.goTransitionedTo = nil
     
     -- EXTRACT TARGETS
     -- this is the previous subset, we use it in calling stop() if necessary
@@ -636,15 +643,15 @@ goHFA = function(hfa, targets)
     if (not (newBehavior == nil)) then
         if (not (newBehavior == hfa.current)) then
             if (hfa.current == nil)  then
-    			print("WARNING (stopHFA) current is nil")
-    		elseif (not (hfa.current == start)) then
-				if (not (hfa.current.stop == nil)) then
-                    hfa.current.stop(hfa.current, oldBehaviorTargets)
-                 end
+    			print("WARNING (goHFA) current is nil")
+    		else
+    			if (not (hfa.current.stop == nil)) then
+               	  hfa.current.stop(hfa.current, oldBehaviorTargets)
+    			end 
     			hfa.current.parent = nil
-            end
+    		end
             newBehavior.parent = hfa
-            if (not (newBehavior.start == nil)) then
+			if (not (newBehavior.start == nil)) then
                 newBehavior.start(newBehavior, hfa.behaviorTargets)
             end
             hfa.current = newBehavior
@@ -656,12 +663,9 @@ goHFA = function(hfa, targets)
     end
             
     -- EXECUTE
-    if (hfa.current == nil) then
-        print("WARNING (goHFA): nil current behavior")
-    elseif (hfa.current == start) then
-    	print("WARNING (goHFA): start current behavior")
-    elseif (not (hfa.current.go == nil)) then
-        hfa.goReturnValue = hfa.current.go(hfa.current, hfa.behaviorTargets)
+    if ((not (hfa.current == nil)) and
+	    (not (hfa.current.go == nil))) then
+        hfa.goTransitionedTo = hfa.current.go(hfa.current, hfa.behaviorTargets)
     end
 end
 
@@ -677,7 +681,6 @@ end
 makeTransition = function(transitions)
     return function(hfa)
         local transition = nil
-        print("hfa current:" .. tostring(hfa.current.name))
         if (hfa.current == nil) then
         	print("WARNING (makeTransition): current is nil")
         else
@@ -691,21 +694,13 @@ makeTransition = function(transitions)
     end
 end
 
--- makebehavior(name, start, stop, go)
--- Creates a behavior with the given name and start/stop/go functions.  Any
--- of these functions can be nil.
-makeBehavior = function(name, start, stop, go)
-    return { ["name"] = name, ["start"] = start, ["stop"] = stop, 
-    		 ["go"] = go, ["parent"] = nil, ["pulsed"] = false }
-end
-
 -- makeHFA(name, transition)
 -- Creates an HFA with the given name and transition function.
 -- Though the transition function can be nil, it's almost certainlly not appropriate to do so.
 makeHFA = function(name, transition)
     return { ["name"] = name, ["start"] = startHFA, ["stop"] = stopHFA, ["go"] = goHFA, 
              ["transition"] = transition, ["pulsed"] = false,
-             ["parent"] = nil, ["goReturnValue"] = nil, ["counter"] = 0, ["timer"] = 0, 
+             ["parent"] = nil, ["goTransitionedTo"] = nil, ["counter"] = 0, ["timer"] = 0, 
              ["done"] = false, ["failed"] = false, ["current"] = start,
              ["propagateFlags"] = false, ["targets"] = nil, ["behaviorTargets"] = nil }
 end
@@ -818,9 +813,6 @@ sayDone = makeBehavior("sayDone",
 -- isDone(hfa)	returns the current done flag in the HFA
 isDone = function(hfa) return hfa.done end
 
--- isFailed(hfa)	returns the current failed flag in the HFA
-isFailed = function(hfa) return hfa.failed end
-    
 -- failed: sets the "failed" flag in the HFA's parent, and transitions to "start"
 failed = makeBehavior("failed", nil, nil,
     function(behavior, targets) 
@@ -839,6 +831,9 @@ sayFailed = makeBehavior("sayFailed",
         end
     end, nil, nil)
 
+-- isFailed(hfa)	returns the current failed flag in the HFA
+isFailed = function(hfa) return hfa.failed end
+    
 
 
 -- END HFA.LUA
