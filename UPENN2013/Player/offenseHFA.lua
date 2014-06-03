@@ -243,9 +243,9 @@ print(tostring(kittyMachine) .. " ok")
 -- IF YOU EXPECT THIS MACHINE TO WORK WITH MORE THAN ONE PLAYER LIKE A REAL GAME CHANGE THE LOGIC FOR CLOSEST BALL, IT'S COMPLETELY BACKWARDS ( ON PURPOSE FOR TESTING--
 myMachine = makeHFA("myMachine", makeTransition({
 	[start] = {[0] = kittyOrPass, ["openSpot"] = "openSpot" }, --gotoPoseFacing,
-	[kittyOrPass] = function() if not closestToBall() then return {[0] = gotoPosition, ["openSpot"] = "openSpot"} end return kittyOrPass end,
+	[kittyOrPass] = function() if closestToBall()~=1 then return {[0] = gotoPosition, ["openSpot"] = "openSpot"} end return kittyOrPass end,
 	[gotoPosition] = function() 		
-		if(closestToBall()) then return kittyOrPass else return gotoPosition end
+		if(closestToBall()==1) then return kittyOrPass else return gotoPosition end
 	end,
  	--[gotoBall] = function() if wcm.get_horde_ballLost() then return locateBall elseif (math.abs(wcm.get_ball_x())+math.abs(wcm.get_ball_y())) < .2 then return approachTarget else  return gotoBall  end end,
 	--[approachTarget] = function() if wcm.get_horde_ballLost() then return locateBall elseif wcm.get_horde_doneApproach()~= 0 then return kickBall else return approachTarget end end, 
