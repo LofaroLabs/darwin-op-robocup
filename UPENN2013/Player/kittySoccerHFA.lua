@@ -222,10 +222,10 @@ connectionThread = function ()
 			if (status == true and recJson.ackNumber == ackNumber) then
 				isBallLost();
 				-- do this so we can garuntee that we send something over the socket
-				while sendBehavior == false do
+				while sentBehavior == false do
 					pulse(kittyMachine)
 				end
-				sendBehavior = false
+				sentBehavior = false
 				print("cur rec number " .. tostring(ackNumber) .. "..........................................")
 				ackNumber = ackNumber + 1;
 			end
