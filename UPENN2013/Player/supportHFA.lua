@@ -398,8 +398,8 @@ connectionThread = function ()
         client:send(json.encode(startSending) .. "\n");
 
 	-- kitty needs a client
-	kitty.client = client
-
+	--kitty.client = client
+	setClient(client)
         wcm.set_horde_ackNumber(1);
 		print("connected")
         while connected do
