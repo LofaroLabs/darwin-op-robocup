@@ -62,7 +62,7 @@ function update()
   print("about to grab gootPose");
   print("I converted\n");
   if((math.abs(endPoseX)+math.abs(endPoseY))<distanceTolerance and math.abs(endFacingRelative[3]) < angleTolerance) then
- 	Speak.talk("done.");
+ 	Speak.talk("banana.");
 	--walk.set_velocity(0,0,0);
 --	Motion.sm:set_state('standstill');
 	--alreadyDone = true;
