@@ -167,9 +167,9 @@ kickBall = makeBehavior("kickBall", nil, kickBallStop, kickBallStart);
 
 kittyMachine = makeHFA("kittyMachine", makeTransition({
 	[start] = function()  print("transitoin for start to locate ball " .. tostring(countReceives));  return locateBall; end,
-	[locateBall] = function() if ballLost  then return locateBall else return gotoBall end end,
-	[gotoBall] = function() if ballLost then return locateBall elseif (math.abs(wcm.get_ball_x())+math.abs(wcm.get_ball_y())) < .2 then return approachTarget else  return gotoBall  end end,
-	[approachTarget] = function() if ballLost then return locateBall elseif wcm.get_horde_doneApproach()~= 0 then print("We are done done approach? " .. tostring(wcm.get_horde_doneApproach())); return kickBall else return approachTarget end end, 
+	[locateBall] = function() if wcm.get_horde_ballLost()==1  then return locateBall else return gotoBall end end,
+	[gotoBall] = function() if wcm.get_horde_ballLost()==1 then return locateBall elseif (math.abs(wcm.get_ball_x())+math.abs(wcm.get_ball_y())) < .2 then return approachTarget else  return gotoBall  end end,
+	[approachTarget] = function() if wcm.get_horde_ballLost()==1 then return locateBall elseif wcm.get_horde_doneApproach()~= 0 then print("We are done done approach? " .. tostring(wcm.get_horde_doneApproach())); return kickBall else return approachTarget end end, 
 	[kickBall] = function() return done; end
 	--[done] = start;	
 --[done] = done;
@@ -178,17 +178,17 @@ kittyMachine = makeHFA("kittyMachine", makeTransition({
 --myMachine = makeHFA("myMachine", makeTransition({
 --	[start] = locateBall,
 --	[locateBall] = kickBall}), false);
-ballLost = true;
+wcm.set_horde_ballLost(1)
 lastTimeFound = Body.get_time();
 function isBallLost()
 	print("got into ball lost")
 	if vcm.get_ball_detect() ~= 0 then
-		ballLost = false;
+		wcm.set_horde_ballLost(0);
 		lastTimeFound = Body.get_time();
 	elseif(Body.get_time() - lastTimeFound > 5) then
-		ballLost = true;
+		wcm.set_horde_ballLost(1);
 	end
-	print("got out of ball lost" .. tostring(ballLost));
+	print("got out of ball lost" .. tostring(wcm.get_horde_ballLost()));
 end
 connectionThread = function ()
         print("got into con thread");
