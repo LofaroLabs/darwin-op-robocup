@@ -28,6 +28,7 @@ package.path = cwd .. '/Vision/?.lua;' .. package.path;
 package.path = cwd .. '/World/?.lua;' .. package.path;
 package.path = cwd .. '/Lib/json4lua-0.9.50/?/?.lua;' .. package.path
 require('hfa')
+require('kitty')
 require('init')
 require('unix')
 require('Config')
@@ -241,7 +242,7 @@ myMachine = makeHFA("myMachine", makeTransition({
 						return locateBall 
 					elseif closestToBall()==1 then 
 						print("trans to stop "); 
-						return stopMoving 
+						return kittyMachine 
 					--elseif distToMidpoint() < 0.3 then
 					elseif wcm.get_horde_yelledReady() == 1  then 
 						print("going to stop pose from goto"); 
@@ -259,19 +260,19 @@ myMachine = makeHFA("myMachine", makeTransition({
 						return gotoPoseFacing 
 					elseif closestToBall() == 1 then 
 						print("go to done from stopPose")
-						return locateBall
+						return kittyMachine
 					else 
 						print("goto stop pse againin from stop pose") 
 						return stopPose 
 					end end,
-	[stopMoving] = function() 
+	[kittyMachine] = function() 
 					if ballLost then 
 						return locateBall 
 					elseif closestToBall() == 0 then 
 						return gotoPoseFacing ; 
 					else
-						print("I stoped moving"); 
-						return stopMoving 
+						print("just keep kitty"); 
+						return kittyMachine
 					end end,
  	--[gotoBall] = function() if ballLost then return locateBall elseif (math.abs(wcm.get_ball_x())+math.abs(wcm.get_ball_y())) < .2 then return approachTarget else  return gotoBall  end end,
 	--[approachTarget] = function() if ballLost then return locateBall elseif wcm.get_horde_doneApproach()~= 0 then return kickBall else return approachTarget end end, 
