@@ -67,7 +67,7 @@ end
 sentBehavior = false;
 function sendBehavior(sendInfo)
     client:send(sendInfo)
-    sentBehavior = true;
+    wcm.set_horde_sentBehavior(1);
 end
 
 
@@ -415,10 +415,10 @@ connectionThread = function ()
 			if (status == true and recJson.ackNumber == wcm.get_horde_ackNumber()) then
 				isBallLost();
 				
-				while sentBehavior == false do
+				while wcm.get_horde_sentBehavior() == 0 do
 					pulse(myMachine);
 				end
-				sentBehavior = false
+				wcm.set_horde_sentBehavior(0);
 				print("cur rec number " .. tostring(wcm.get_horde_ackNumber()) .. "..........................................")
 				wcm.set_horde_ackNumber(wcm.get_horde_ackNumber()+1)
 			end
