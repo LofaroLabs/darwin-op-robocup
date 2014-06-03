@@ -642,7 +642,7 @@ goHFA = function(hfa, targets)
     -- PERFORM TRANSITION
     if (not (newBehavior == nil)) then
         if (not (newBehavior == hfa.current)) then
-            if (hfa.current == nil)  then
+           if (hfa.current == nil)  then
     			print("WARNING (goHFA) current is nil")
     		else
     			if (not (hfa.current.stop == nil)) then
@@ -651,7 +651,7 @@ goHFA = function(hfa, targets)
     			hfa.current.parent = nil
     		end
             newBehavior.parent = hfa
-			if (not (newBehavior.start == nil)) then
+			if  (not (newBehavior.start == nil)) then
                 newBehavior.start(newBehavior, hfa.behaviorTargets)
             end
             hfa.current = newBehavior
@@ -793,8 +793,6 @@ end
 -- done: sets the "done" flag in the HFA's parent, and transitions to "start"
 done = makeBehavior("done", nil, nil,
     function(behavior, targets) 
-    print(behavior.name)
-    print(behavior.parent.name)
 	if (not (behavior == nil) and not (behavior.parent == nil)) then
 		behavior.parent.current = start
         setFlag(behavior.parent, "done")
