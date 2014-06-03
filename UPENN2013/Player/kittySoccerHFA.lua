@@ -59,9 +59,17 @@ lcount = 0;
 tUpdate = unix.time();
 connected = false;
 
+sentBehavior = false;
+
 function inspect(key, value)
 	table.foreach(value,print)
 end
+
+function sendBehavior(sendInfo)
+	client:send(sendInfo)
+	sentBehavior = true;
+end
+
 
 function connectToHorde(port)
 		local socket = require("socket")
@@ -76,7 +84,7 @@ walkForwardStart = function(hfa)
                         action["args"] = "";
 						action.ackNumber = ackNumber;
 			print(json.encode(action) .. "\n");      
-                        client:send(json.encode(action) .. "\n");
+                        sendBehavior(json.encode(action) .. "\n");
 end	
 walkForwardGo = function(hfa)
 
@@ -90,7 +98,7 @@ stopStart = function(hfa)
         action["args"] = ""
 		action.ackNumber = ackNumber;
 	print(json.encode(action) .. "\n");  
-        client:send(json.encode(action) .. "\n");
+        sendBehavior(json.encode(action) .. "\n");
 end
 stopGo = function(hfa)
 end
@@ -104,7 +112,7 @@ locateBallStart = function(hfa)
         action["args"] = "";
 		action.ackNumber = ackNumber;
 	print(json.encode(action) .. "\n");  
-        client:send(json.encode(action) .. "\n");
+        sendBehavior(json.encode(action) .. "\n");
 	print("Locating ball Start done");
 end
 locateBallStop = function() print("Locate Ball stop");  end
@@ -117,7 +125,7 @@ gotoBallStart = function()
         action["args"] = "";
 		action.ackNumber = ackNumber;
 	print(json.encode(action) .. "\n");  
-        client:send(json.encode(action) .. "\n");
+        sendBehavior(json.encode(action) .. "\n");
 end
 gotoBallStop = function()end
 
@@ -128,7 +136,7 @@ approachTargetStart = function()
         action["args"] = "";
 		action.ackNumber = ackNumber;
 	print(json.encode(action) .. "\n");  
-        client:send(json.encode(action) .. "\n");
+        sendBehavior(json.encode(action) .. "\n");
 end
 approachTargetStop = function()end
 approachTargetGo = function()end
@@ -139,7 +147,7 @@ kickBallStart = function()
         action["args"] = "";
 		action.ackNumber = ackNumber;
 	print(json.encode(action) .. "\n");  
-        client:send(json.encode(action) .. "\n");
+        sendBehavior(json.encode(action) .. "\n");
 end
 kickBallStop = function()end
 kickBallgo = function()end
@@ -213,7 +221,11 @@ connectionThread = function ()
 
 			if (status == true and recJson.ackNumber == ackNumber) then
 				isBallLost();
-				pulse(kittyMachine)
+				-- do this so we can garuntee that we send something over the socket
+				while sendBehavior == false do
+					pulse(kittyMachine)
+				end
+				sendBehavior = false
 				print("cur rec number " .. tostring(ackNumber) .. "..........................................")
 				ackNumber = ackNumber + 1;
 			end
