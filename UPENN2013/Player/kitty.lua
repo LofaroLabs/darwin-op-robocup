@@ -219,7 +219,7 @@ connectionThread = function ()
 			print(Body.get_time())
 			--print("status " .. tostring(status) .. " recJson " .. "  " .. ackNumber)
 
-			if (status == true and recJson.ackNumber == ackNumber) then
+			if (status == true and recJson.ackNumber == wcm.get_horde_ackNumber()) then
 				isBallLost();
 				-- do this so we can garuntee that we send something over the socket
 				while sentBehavior == false do
