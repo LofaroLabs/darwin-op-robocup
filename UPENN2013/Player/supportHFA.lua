@@ -396,6 +396,8 @@ connectionThread = function ()
         print("to send " .. tostring(json.encode(startSending)) .. " \n ");
         client:send(json.encode(startSending) .. "\n");
 
+	-- kitty needs a client
+	kitty.client = client
 
         ackNumber = 1
 		print("connected")
