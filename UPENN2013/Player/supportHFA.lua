@@ -63,6 +63,13 @@ function inspect(key, value)
 	table.foreach(value,print)
 end
 
+sentBehavior = false;
+function sendBehavior(sendInfo)
+    client:send(sendInfo)
+    sentBehavior = true;
+end
+
+
 function connectToHorde(port)
 		local socket = require("socket")
         local client = assert(socket.connect("127.0.0.1", port))
@@ -104,7 +111,7 @@ gotoPoseFacingStart = function(hfa)
 			
 			print(json.encode(action) .. "\n") 
            --if(vcm.get_ball_detect() == 1) then
-                client:send(json.encode(action) .. "\n");
+                sendBehavior(json.encode(action) .. "\n");
            -- end
 end	
 gotoPoseFacingGo = function(hfa)
@@ -142,7 +149,7 @@ gotoPoseFacingGo = function(hfa)
 			print(json.encode(action) .. "\n"); 
             
 		    if(vcm.get_ball_detect() == 1) then		
-				client:send(json.encode(action) .. "\n");
+				sendBehavior(json.encode(action) .. "\n");
 			end
 end
 gotoPoseFacingStop = function (hfa)
@@ -154,7 +161,7 @@ stopStart = function(hfa)
         action["args"] = "";
 		action.ackNumber = ackNumber;
         print(json.encode(action) .. "\n");
-		client:send(json.encode(action) .. "\n");
+		sendBehavior(json.encode(action) .. "\n");
 end
 stopGo = function(hfa)
 end
@@ -167,7 +174,7 @@ action  = {}
         action["action"] = "moveTheta";
         action["args"] = "";
 		action.ackNumber = ackNumber;
-        client:send(json.encode(action) .. "\n");
+		sendBehavior(json.encode(action) .. "\n");
 end
 locateBallStop = function()end
 locateBallGo = function()end
@@ -178,7 +185,7 @@ gotoBallStart = function()
         action["action"] = "gotoBall";
         action["args"] = "";
 		action.ackNumber = ackNumber;
-        client:send(json.encode(action) .. "\n");
+        sendBehavior(json.encode(action) .. "\n");
 end
 gotoBallStop = function()end
 
@@ -188,7 +195,7 @@ approachTargetStart = function()
         action["action"] = "approachBall";
         action["args"] = "";
 		action.ackNumber = ackNumber;
-        client:send(json.encode(action) .. "\n");
+        sendBehavior(json.encode(action) .. "\n");
 end
 approachTargetStop = function()end
 approachTargetGo = function()end
@@ -198,7 +205,7 @@ kickBallStart = function()
         action["action"] = "kickBall";
         action["args"] = "";
 		action.ackNumber = ackNumber;
-        client:send(json.encode(action) .. "\n");
+        sendBehavior(json.encode(action) .. "\n");
 end
 kickBallStop = function()end
 kickBallgo = function()end
@@ -211,7 +218,7 @@ stopPoseStart = function()
 	action["action"] = "stop";
 	action["args"] = "";
 	action.ackNumber = ackNumber;
-	client:send(json.encode(action) .. "\n");
+	sendBehavior(json.encode(action) .. "\n");
 end
 
 stopPose = makeBehavior("stopPose", nil, nil, stopPoseStart);
@@ -393,11 +400,19 @@ connectionThread = function ()
 			client:settimeout(.05);
 			recval = client:receive()
 			-- convert the json to get the ackNumber
-			err, recJson = pcall(json.decode,recval);
+			status, recJson = pcall(json.decode,recval);
+			if status == true then
+                status = string.sub(recval, 1, 1) == "{"
+            end
+
 			--print(tostring(recJson))
-			if (err == true and recJson.ackNumber == ackNumber) then
+			if (status == true and recJson.ackNumber == ackNumber) then
 				isBallLost();
-				pulse(myMachine);
+				
+				while sentBehavior == false do
+					pulse(myMachine);
+				end
+				sentBehavior = false
 				print("cur rec number " .. tostring(ackNumber) .. "..........................................")
 				ackNumber = ackNumber + 1;
 			end
