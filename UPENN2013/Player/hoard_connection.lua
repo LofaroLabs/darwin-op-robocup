@@ -197,7 +197,7 @@ connectionThread = function ()
 			updateAllTimer = Body.get_time()-updateAllTimer;
                         --print("send features");
 			sendFeaturesTimer = Body.get_time();
-			sendFeatures(client);--send all the features to horde
+			--sendFeatures(client);--send all the features to horde
 			sendFeaturesTimer = Body.get_time() - sendFeaturesTimer;
                         --print("checkTimeout");
 			--checkTimeout(); -- very special case for passKick timing out the feature to 0 after a second
@@ -215,6 +215,8 @@ connectionThread = function ()
 				print("Received: " .. tostring(line))
 				if(req.ackNumber ==  ackNumber) then
 					ackNumber = ackNumber+1;
+					print("Sending Features!!!");
+					sendFeatures(client);--send all the features to horde
 				else
 					print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!GOT A BAD ACK NUMBER - " .. ackNumber .. " ~=  " .. req.ackNumber .. "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
 					return;

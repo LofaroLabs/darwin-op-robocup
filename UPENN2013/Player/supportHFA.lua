@@ -390,6 +390,7 @@ connectionThread = function ()
         ackNumber = 1
 		print("connected")
         while connected do
+			client:settimeout(.05);
 			recval = client:receive()
 			-- convert the json to get the ackNumber
 			err, recJson = pcall(json.decode,recval);

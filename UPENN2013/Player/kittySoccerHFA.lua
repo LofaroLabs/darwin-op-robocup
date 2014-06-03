@@ -194,11 +194,22 @@ connectionThread = function ()
 	
  		ackNumber = 1
         while connected do
+
+
+		--	client:settimeout(.05);
 			recval = client:receive()
 			
-
+		    print("I got " .. tostring(recval))	
+			print(Body.get_time())
 			status, recJson = pcall(json.decode, recval);
-			--print("status " .. tostring(status) .. " recJson " .. tostring(recJson.ackNumber) .. "  " .. ackNumber)
+			if status == true then
+				status = string.sub(recval, 1, 1) == "{"
+			end
+			print(tostring(status) .. " json status");
+			print(tostring(recJson) .. " recJson");
+			--print(tostring(pcall(json.decode, recval)) .. " pcall " );
+			print(Body.get_time())
+			--print("status " .. tostring(status) .. " recJson " .. "  " .. ackNumber)
 
 			if (status == true and recJson.ackNumber == ackNumber) then
 				isBallLost();
