@@ -82,7 +82,7 @@ walkForwardStart = function(hfa)
   			action  = {}
                         action["action"] = "walkForward";
                         action["args"] = "";
-						action.ackNumber = ackNumber;
+						action.ackNumber = wcm.get_horde_ackNumber();
 			print(json.encode(action) .. "\n");      
                         sendBehavior(json.encode(action) .. "\n");
 end	
@@ -96,7 +96,7 @@ stopStart = function(hfa)
 	action  = {}
         action["action"] = "stop";
         action["args"] = ""
-		action.ackNumber = ackNumber;
+		action.ackNumber = wcm.get_horde_ackNumber();
 	print(json.encode(action) .. "\n");  
         sendBehavior(json.encode(action) .. "\n");
 end
@@ -110,7 +110,7 @@ locateBallStart = function(hfa)
 	action  = {}
         action["action"] = "moveTheta";
         action["args"] = "";
-		action.ackNumber = ackNumber;
+		action.ackNumber = wcm.get_horde_ackNumber();
 	print(json.encode(action) .. "\n");  
         sendBehavior(json.encode(action) .. "\n");
 	print("Locating ball Start done");
@@ -123,7 +123,7 @@ gotoBallStart = function()
  	action  = {}
         action["action"] = "gotoBall";
         action["args"] = "";
-		action.ackNumber = ackNumber;
+		action.ackNumber = wcm.get_horde_ackNumber();
 	print(json.encode(action) .. "\n");  
         sendBehavior(json.encode(action) .. "\n");
 end
@@ -134,7 +134,7 @@ approachTargetStart = function()
 	 action  = {}
         action["action"] = "approachBall";
         action["args"] = "";
-		action.ackNumber = ackNumber;
+		action.ackNumber = wcm.get_horde_ackNumber();
 	print(json.encode(action) .. "\n");  
         sendBehavior(json.encode(action) .. "\n");
 end
@@ -145,7 +145,7 @@ kickBallStart = function()
  	action  = {}
         action["action"] = "kickBall";
         action["args"] = "";
-		action.ackNumber = ackNumber;
+		action.ackNumber = wcm.get_horde_ackNumber();
 	print(json.encode(action) .. "\n");  
         sendBehavior(json.encode(action) .. "\n");
 end
@@ -159,7 +159,7 @@ gotoBall = makeBehavior("gotoBall", nil, gotoBallStop, gotoBallStart);
 approachTarget = makeBehavior("approachTarget", nil, approachTargetStop, approachTargetStart);
 kickBall = makeBehavior("kickBall", nil, kickBallStop, kickBallStart);
 
-kittyMachine = makeHFA("myMachine", makeTransition({
+kittyMachine = makeHFA("kittyMachine", makeTransition({
 	[start] = function()  print("transitoin for start to locate ball " .. tostring(countReceives));  return locateBall; end,
 	[locateBall] = function() if ballLost  then return locateBall else return gotoBall end end,
 	[gotoBall] = function() if ballLost then return locateBall elseif (math.abs(wcm.get_ball_x())+math.abs(wcm.get_ball_y())) < .2 then return approachTarget else  return gotoBall  end end,
@@ -199,8 +199,8 @@ connectionThread = function ()
 		print("to send " .. tostring(json.encode(startSending)) .. " \n "); 
 		client:send(json.encode(startSending) .. "\n");
 
-	
- 		ackNumber = 1
+		wcm.set_horde_ackNumber(1)	
+ 		
         while connected do
 
 
@@ -226,8 +226,8 @@ connectionThread = function ()
 					pulse(kittyMachine)
 				end
 				sentBehavior = false
-				print("cur rec number " .. tostring(ackNumber) .. "..........................................")
-				ackNumber = ackNumber + 1;
+				print("cur rec number " .. tostring(wcm.get_horde_ackNumber()) .. "..........................................")
+				wcm.set_horde_ackNumber(wcm.get_horde_ackNumber() + 1);
 			end
 		--	print("got an ack");
 		end
