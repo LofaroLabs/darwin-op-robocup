@@ -399,7 +399,7 @@ connectionThread = function ()
 
 	-- kitty needs a client
 	--kitty.client = client
-	setClient(client)
+	kitty.setClient(client)
         wcm.set_horde_ackNumber(1);
 		print("connected")
         while connected do
