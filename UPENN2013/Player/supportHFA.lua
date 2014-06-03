@@ -393,14 +393,14 @@ connectionThread = function ()
 		startSending = {}
         startSending.action="StartSending";
         startSending.args = "";
-		startSending.ackNumber = wcm.get_horde_ackNumber();
+		startSending.ackNumber = 0;
         print("to send " .. tostring(json.encode(startSending)) .. " \n ");
         client:send(json.encode(startSending) .. "\n");
 
 	-- kitty needs a client
 	kitty.client = client
 
-        wcm.set_horde_ackNumber(0);
+        wcm.set_horde_ackNumber(1);
 		print("connected")
         while connected do
 			client:settimeout(.05);
@@ -419,8 +419,8 @@ connectionThread = function ()
 					pulse(myMachine);
 				end
 				sentBehavior = false
-				print("cur rec number " .. tostring(ackNumber) .. "..........................................")
-				wcm.set_horde_ackNumber(wcm.get_horde_ackNumber())
+				print("cur rec number " .. tostring(wcm.get_horde_ackNumber()) .. "..........................................")
+				wcm.set_horde_ackNumber(wcm.get_horde_ackNumber()+1)
 			end
 		end
     end
