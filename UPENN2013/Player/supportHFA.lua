@@ -105,7 +105,7 @@ gotoPoseFacingStart = function(hfa)
             action.args.gotoPose.x = dest.x
             action.args.gotoPose.y = dest.y
             action.args.gotoPose.a = 0
-			action.ackNumber = ackNumber;
+			action.ackNumber = wcm.get_horde_ackNumber();
             print("i am currently at: " .. pose.x .. ", " .. pose.y);
 			print("trying to face " .. ballGlobal.x .. ", " .. ballGlobal.y);
 			print("also moving to around " .. dest.x .. ", " .. dest.y);
@@ -143,7 +143,7 @@ gotoPoseFacingGo = function(hfa)
             action.args.gotoPose.x = dest.x
             action.args.gotoPose.y = dest.y
             action.args.gotoPose.a = 0
-			action.ackNumber = ackNumber;
+			action.ackNumber = wcm.get_horde_ackNumber();
             print("i am currently at: " .. pose.x .. ", " .. pose.y);	
 			print("trying to face " .. ballGlobal.x .. ", " .. ballGlobal.y);
 			print("also moving to around " .. dest.x .. ", " .. dest.y);
@@ -160,7 +160,7 @@ stopStart = function(hfa)
 	action  = {}
         action["action"] = "stop";
         action["args"] = "";
-		action.ackNumber = ackNumber;
+		action.ackNumber = wcm.get_horde_ackNumber();
         print(json.encode(action) .. "\n");
 		sendBehavior(json.encode(action) .. "\n");
 end
@@ -174,7 +174,7 @@ locateBallStart = function(hfa)
 action  = {}
         action["action"] = "moveTheta";
         action["args"] = "";
-		action.ackNumber = ackNumber;
+		action.ackNumber =  wcm.get_horde_ackNumber();
 		sendBehavior(json.encode(action) .. "\n");
 end
 locateBallStop = function()end
@@ -185,7 +185,7 @@ gotoBallStart = function()
  	action  = {}
         action["action"] = "gotoBall";
         action["args"] = "";
-		action.ackNumber = ackNumber;
+		action.ackNumber =  wcm.get_horde_ackNumber();
         sendBehavior(json.encode(action) .. "\n");
 end
 gotoBallStop = function()end
@@ -195,7 +195,7 @@ approachTargetStart = function()
 	 action  = {}
         action["action"] = "approachBall";
         action["args"] = "";
-		action.ackNumber = ackNumber;
+		action.ackNumber =  wcm.get_horde_ackNumber();
         sendBehavior(json.encode(action) .. "\n");
 end
 approachTargetStop = function()end
@@ -205,7 +205,7 @@ kickBallStart = function()
  	action  = {}
         action["action"] = "kickBall";
         action["args"] = "";
-		action.ackNumber = ackNumber;
+		action.ackNumber = wcm.get_horde_ackNumber();
         sendBehavior(json.encode(action) .. "\n");
 end
 kickBallStop = function()end
@@ -218,7 +218,7 @@ stopPoseStart = function()
 	action = {}
 	action["action"] = "stop";
 	action["args"] = "";
-	action.ackNumber = ackNumber;
+	action.ackNumber =  wcm.get_horde_ackNumber();
 	sendBehavior(json.encode(action) .. "\n");
 end
 
@@ -231,6 +231,7 @@ approachTarget = makeBehavior("approachTarget", nil, approachTargetStop, approac
 kickBall = makeBehavior("kickBall", nil, kickBallStop, kickBallStart);
 locateBall = makeBehavior("locateBall",nil,nil,locateBallStart);
 kittyMachine = kitty.kittyMachine
+--kittyMachine
 print(tostring(kittyMachine) .. " ok")
 --super SUPER SUPER SUPER TODO IMPORTANT TODO NOW--- 
 -- IF YOU EXPECT THIS MACHINE TO WORK WITH MORE THAN ONE PLAYER LIKE A REAL GAME CHANGE THE LOGIC FOR CLOSEST BALL, IT'S COMPLETELY BACKWARDS ( ON PURPOSE FOR TESTING--
@@ -392,14 +393,14 @@ connectionThread = function ()
 		startSending = {}
         startSending.action="StartSending";
         startSending.args = "";
-	startSending.ackNumber = 0;
+		startSending.ackNumber = wcm.get_horde_ackNumber();
         print("to send " .. tostring(json.encode(startSending)) .. " \n ");
         client:send(json.encode(startSending) .. "\n");
 
 	-- kitty needs a client
 	kitty.client = client
 
-        ackNumber = 1
+        wcm.set_horde_ackNumber(0);
 		print("connected")
         while connected do
 			client:settimeout(.05);
@@ -411,7 +412,7 @@ connectionThread = function ()
             end
 
 			--print(tostring(recJson))
-			if (status == true and recJson.ackNumber == ackNumber) then
+			if (status == true and recJson.ackNumber == wcm.get_horde_ackNumber()) then
 				isBallLost();
 				
 				while sentBehavior == false do
@@ -419,7 +420,7 @@ connectionThread = function ()
 				end
 				sentBehavior = false
 				print("cur rec number " .. tostring(ackNumber) .. "..........................................")
-				ackNumber = ackNumber + 1;
+				wcm.set_horde_ackNumber(wcm.get_horde_ackNumber())
 			end
 		end
     end

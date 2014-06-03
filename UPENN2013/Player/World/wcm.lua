@@ -52,6 +52,7 @@ shared.horde.state = "nil";
 shared.horde.sendStatus = "nil"
 shared.horde.doneApproach = vector.zeros(1); ---
 shared.horde.gotoPose = vector.zeros(3); -- the x,y,a that horde told it to go to on the field in the world frame
+shared.horde.ackNumber = vector.zeros(1);
 shared.horde.facing = vector.zeros(3);
 shared.horde.kickToPose = vector.zeros(3);
 shared.horde.doneKick = vector.zeros(1);
