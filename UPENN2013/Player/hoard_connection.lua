@@ -102,13 +102,15 @@ count = 0;
 function sendFeatures (client)
         if(wcm.get_horde_sendStatus()~="StartSending") then
         	--print("Start sending was false");
-	 	return;
+		 	return;
         end
+		print(" difference is : " .. tostring(Body.get_time() - sendFeaturesTimer));
 		if(Body.get_time() - sendFeaturesTimer < .5) then 
+			print("is not sending")	
 			return;
 		end
 		sendFeaturesTimer = Body.get_time();
-		--print("wcm send status was true");
+		print("wcm send status was true");
 		features = {}
         features["playerID"] = Config.game.playerID;
         features["role"] = Config.game.role;
@@ -132,10 +134,10 @@ function sendFeatures (client)
         features["ballX"] = wcm.get_ball_x();
         features["ballY"] = wcm.get_ball_y();
         features["doneApproach"] = wcm.get_horde_doneApproach();
-        features["particleX"] = wcm.get_particle_x();
+        --[[features["particleX"] = wcm.get_particle_x();
         features["particleY"] = wcm.get_particle_y();
 		features["particleA"] = wcm.get_particle_a();
-	--print("gonna broadcast my features");
+	]]--print("gonna broadcast my features");
 		features["yelledReady"] = wcm.get_horde_yelledReady();
 		features["yelledKick"] = wcm.get_horde_yelledKick();
     	features["yelledFail"] = wcm.get_horde_yelledFail(); 
@@ -200,9 +202,9 @@ connectionThread = function ()
 			updateAll();--move mah body, update FSM
 			updateAllTimer = Body.get_time()-updateAllTimer;
                         --print("send features");
-			sendFeaturesTimer = Body.get_time();
-			--sendFeatures(client);--send all the features to horde
-			sendFeaturesTimer = Body.get_time() - sendFeaturesTimer;
+			--sendFeaturesTimer = Body.get_time();
+			sendFeatures(client);--send all the features to horde
+			--sendFeaturesTimer = Body.get_time() - sendFeaturesTimer;
                         --print("checkTimeout");
 			--checkTimeout(); -- very special case for passKick timing out the feature to 0 after a second
 			client:settimeout(0);--non blocking read
