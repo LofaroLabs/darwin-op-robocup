@@ -47,7 +47,8 @@ function update()
            rotateVel = 1;
       end
       print("velocity is set to: " .. (endPoseX/scaleFactor/5 + -.005) ); 
-        walk.set_velocity(endPoseX/scaleFactor/5 + -.005, endPoseY/scaleFactor/5,rotateVel/10);
+      walk.stop();
+	 -- walk.set_velocity(endPoseX/scaleFactor/5 + -.005, endPoseY/scaleFactor/5,rotateVel/10);
 	return;
   end
   local t = Body.get_time();
