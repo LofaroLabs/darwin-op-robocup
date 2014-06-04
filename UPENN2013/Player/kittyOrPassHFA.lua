@@ -268,7 +268,7 @@ myMachine2 = makeHFA("myMachine2", makeTransition({
 
 	[start] = kittyMachine,
 	[kittyMachine] = function() 
-					if hasSomeoneYelledReady() == 1 then 
+					if hasSomeoneYelledReady() == 1 and wcm.get_ball_r() < 0.3 then 
 						return {[0] = approachTarget, ["openSpot"] = "openSpot"}
 					else
 						print("just keep kitty"); 
@@ -278,6 +278,8 @@ myMachine2 = makeHFA("myMachine2", makeTransition({
 	[approachTarget] = function()
 					if wcm.get_horde_doneApproach() == 1 then
 						return kickBall 
+					elseif wcm.get_horde_ballLost() == 1 then
+						return kittyMachine
 					else
 						return {[0] = approachTarget, ["openSpot"] = "openSpot"}
 					end
