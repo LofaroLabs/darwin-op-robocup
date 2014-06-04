@@ -220,12 +220,7 @@ connectionThread = function ()
 				print("---------------------------- ACK Number IS " .. ackNumber .. " ----------------------------------")
 				local err, req = pcall(json.decode, line);	
 				action = req.action
-				
-				if(type(req.args) == "string" or req.args == nil) then
-				 	action = tostring(action) .. tostring(req.args)
-				else
-					action = tostring(action) .. tostring(vector.tostring(vector.new(req.args)));
-				end
+				action = string.sub(line, string.find(line, "action") or 0, #line);
 				print("Received: " .. tostring(line))
 				if(req.ackNumber ==  ackNumber) then
 					ackNumber = ackNumber+1;
