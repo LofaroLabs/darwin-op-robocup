@@ -81,7 +81,7 @@ function entry()
   print("Body FSM:".._NAME.." entry");
   t0 = Body.get_time();
   ball = wcm.get_ball();
-  HeadFSM.sm:set_state('headTrackGMU');
+  HeadFSM.sm:set_state('headLookGoalGMU');
 end
 
 function update()
@@ -101,7 +101,7 @@ function update()
 end
 
 function exit()
-  HeadFSM.sm:set_state('headLookGoalGMU');
+  HeadFSM.sm:set_state('headTrackGMU');
 end
 
 function sign(x)
