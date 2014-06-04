@@ -199,7 +199,7 @@ function update()
   state.yelledReady = wcm.get_horde_yelledReady();
   
   state.ballRelative = util.pose_relative({wcm.get_ballGlobal_x(), wcm.get_ballGlobal_y(), 0}, {state.pose.x, state.pose.y, state.pose.a});
-  
+   
   print("yelledReady = " .. tostring(state.yelledReady))
 
   if gcm.in_penalty() then  state.penalty = 1;
@@ -268,7 +268,7 @@ function update()
       ddefend[id] = 	math.sqrt((states[id].pose.x - dgoalPosition[1])^2 +
 		 (states[id].pose.y - dgoalPosition[2])^2);
 
-      if (states[id].role ~= ROLE_ATTACKER ) then       -- Non attacker penalty:
+  --[[    if (states[id].role ~= ROLE_ATTACKER ) then       -- Non attacker penalty:
         eta[id] = eta[id] + nonAttackerPenalty/walkSpeed;
       end
 
@@ -279,13 +279,13 @@ function update()
 
       if (states[id].fall==1) then  --Fallen robot penalty
         eta[id] = eta[id] + fallDownPenalty;
-      end
+      end--]]
 
       --Store this
       if id==playerID then
         wcm.set_team_my_eta(eta[id]);
       end
-
+      print("ETA for id " .. id .. " is " .. eta[id]);
       if eta[id] < smallest then
 	smallest_id = id
 	smallest = eta[id];
