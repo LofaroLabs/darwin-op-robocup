@@ -179,7 +179,7 @@ hordeFunctions["dribbleBall"] = function(args,client)
 end
 
 hordeFunctions["approachTarget"] = function(args,client)
-	dest = json.decode(args)
+	dest = args
         print("Dest " .. dest.x);
         --print("The args more specfied... X" .. args.x .. " Y " .. args.y .. " theta: " .. args.a);
         wcm.set_horde_kickToPose(vector.new({dest.x, dest.y, dest.a}));
