@@ -268,7 +268,7 @@ myMachine2 = makeHFA("myMachine2", makeTransition({
 
 	[start] = kittyMachine,
 	[kittyMachine] = function() 
-					if hasSomeoneYelledReady() == 1 and wcm.get_ball_r() < 0.3 then 
+					if hasSomeoneYelledReady() == 1 and vcm.get_ball_r() < 0.3 then 
 						return {[0] = approachTarget, ["openSpot"] = "openSpot"}
 					else
 						print("just keep kitty"); 
