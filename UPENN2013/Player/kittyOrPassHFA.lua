@@ -267,7 +267,7 @@ print(tostring(kittyMachine) .. " ok")
 myMachine = makeHFA("myMachine", makeTransition({
 	[start] = kittyMachine,
 	[kittyMachine] = function() 
-					if wcm.get_horde_yelledReady() == 1 then 
+					if hasSomeoneYelledReady() == 1 then 
 						return {[0] = approachTarget, ["openSpot"] = "openSpot"}
 					else
 						print("just keep kitty"); 
@@ -296,6 +296,15 @@ function isBallLost()
 	--print("got out of ball lost");
 end
 
+function hasSomeoneYelledReady()
+	readys = wcm.get_team_yelledReady();
+	for id = 1, 5 do
+		if readys[id] == 1 then
+			return 1;
+		end
+	end
+	return 0;
+end
 
 function closestToBall()
 	return wcm.get_team_is_smallest_eta();

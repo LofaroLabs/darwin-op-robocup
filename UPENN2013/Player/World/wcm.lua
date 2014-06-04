@@ -83,7 +83,7 @@ shared.team.defender2_pose = vector.zeros(3);
 shared.team.supporter_pose = vector.zeros(3);
 shared.team.goalie_pose = vector.zeros(3);
 
-
+shared.team.yelledReady = vector.zeros(4);-- for each
 
 shared.goal = {};
 shared.goal.t = vector.zeros(1);

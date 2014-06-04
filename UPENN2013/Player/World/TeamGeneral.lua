@@ -196,6 +196,8 @@ function update()
   state.battery_level = wcm.get_robot_battery_level();
   state.fall=wcm.get_robot_is_fall_down();
   state.bodyState = gcm.get_fsm_body_state();
+  state.yelledReady = wcm.get_horde_yelledReady();
+  print("yelledReady = " .. tostring(state.yelledReady))
 
   if gcm.in_penalty() then  state.penalty = 1;
   else  state.penalty = 0;
@@ -482,6 +484,18 @@ function update_teamdata()
     end
   end
 
+  local teamYellReady = {}
+  for id = 1, 5 do
+    
+    if states[id] and states[id].yelledReady then
+      	 print("Id = ".. id .. " yelledReady = " .. tostring(states[id].yelledReady))
+	teamYellReady[id] = states[id].yelledReady
+    else
+	teamYellReady[id] = 0
+    end
+  end
+  -- all the yelled ready people
+  wcm.set_team_yelledReady(teamYellReady)
 
   wcm.set_robot_team_ball(best_ball);
   wcm.set_robot_team_ball_score(best_scoreBall);
