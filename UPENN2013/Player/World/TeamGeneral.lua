@@ -259,7 +259,7 @@ function update()
       rBall = math.sqrt(states[id].ballRelative[1]^2 + states[id].ballRelative[2]^2);
       tBall = states[id].time - states[id].ball.t;
       eta[id] = rBall/walkSpeed + --Walking time
-        math.abs(states[id].attackBearing)/(2*math.pi)*turnSpeed+ --Turning 
+        --math.abs(states[id].attackBearing)/(2*math.pi)*turnSpeed+ --Turning 
         ballLostPenalty * math.max(tBall-1.0,0);  --Ball uncertainty
 
       roles[id]=states[id].role;
