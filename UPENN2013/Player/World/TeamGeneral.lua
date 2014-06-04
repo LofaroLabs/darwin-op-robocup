@@ -256,7 +256,7 @@ function update()
       --turnSpeed: seconds needed to turn 360 degrees
       --TODO: Consider sidekick
 
-      rBall = math.sqrt(states[id].ballRelative.x^2 + states[id].ballRelative.y^2);
+      rBall = math.sqrt(states[id].ballRelative[1]^2 + states[id].ballRelative[2]^2);
       tBall = states[id].time - states[id].ball.t;
       eta[id] = rBall/walkSpeed + --Walking time
         math.abs(states[id].attackBearing)/(2*math.pi)*turnSpeed+ --Turning 
