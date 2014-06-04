@@ -92,7 +92,7 @@ function exit()
   -- wcm.set_horde_passKick(1);
   --wcm.set_horde_timeMark(Body.get_time());
   walk.start();
-  wak.set_velocity(0,0,0);
+  walk.set_velocity(0,0,0);
   Motion.sm:add_event('walk');
   HeadFSM.sm:set_state('headLookGoalGMU');
 end
