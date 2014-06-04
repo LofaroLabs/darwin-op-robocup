@@ -60,6 +60,7 @@ end
 
 function update()
   local t = Body.get_time();
+  tScan = 2
   local tpassed=t-t0;
   local ph= tpassed/tScan;
   local yawbias = (ph-0.5)* yawSweep;
@@ -70,11 +71,6 @@ function update()
   local yaw, pitch =HeadTransform.ikineCam(
 	dist*math.cos(yaw1),dist*math.sin(yaw1), height);
   Body.set_head_command({yaw, pitch});
-
-  eta = wcm.get_team_my_eta();
-  if eta<min_eta_look and eta>0 then
-    return 'timeout';
-  end
 
   if (t - t0 > tScan) then
     tGoal = wcm.get_goal_t();

@@ -212,12 +212,20 @@ connectionThread = function ()
 			--client:send("request\n");
 	--		print("sending request");
 			local line, err = client:receive() -- read in horde commands
+			
 			if(line~=nil) then
+				
 				--client:send("ack\n")
 				
 				print("---------------------------- ACK Number IS " .. ackNumber .. " ----------------------------------")
 				local err, req = pcall(json.decode, line);	
+				action = req.action
 				
+				if(type(req.args) == "string") then
+				 	action = tostring(action) .. tostring(args)
+				else
+					action = tostring(action) .. tostring(vector.tostring(vector.new(req.args)));
+				end
 				print("Received: " .. tostring(line))
 				if(req.ackNumber ==  ackNumber) then
 					ackNumber = ackNumber+1;
@@ -279,8 +287,8 @@ connectionThread = function ()
 			elseif not err then
 				lastState = 3;
                 --print(line);
-
-                if(line~=nil and (line~=lastReceivedState or string.find(line,"update"))) then -- uf we received somethin:g
+		--lineAction = json.decode(line);
+                if(line~=nil and (action~=lastReceivedState or string.find(action,"update"))) then -- uf we received somethin:g
 					print("last Received was " .. tostring(lastReceivedState));
 					updateAction(line, client);
 					i = 0
@@ -289,7 +297,7 @@ connectionThread = function ()
 						unix.usleep(.005 * 1E6);
 						i=i+1;
 					end	
-					lastReceivedState = line;
+					lastReceivedState = action;
 				end
 				print("update success\n");
                 if err == "closed" then
