@@ -47,6 +47,7 @@ function update()
            rotateVel = 1;
       end
       print("velocity is set to: " .. (endPoseX/scaleFactor/5 + -.005) ); 
+      wcm.set_horde_yelledReady(1);
       walk.stop();
 	 -- walk.set_velocity(endPoseX/scaleFactor/5 + -.005, endPoseY/scaleFactor/5,rotateVel/10);
 	return;
