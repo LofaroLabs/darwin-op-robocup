@@ -226,6 +226,8 @@ gotoPositionStart = function(behavior, targets)
 	action = {}
 	action["action"] = "gotoPose"
 	action["args"]  = targets["openSpot"]
+	action.ackNumber = wcm.get_horde_ackNumber();
+	sendBehavior(json.encode(action) .. "\n");
 end
 gotoPosition = makeBehavior("gotoPosition", nil,nil,gotoPositionStart)
 stopPose = makeBehavior("stopPose", nil, nil, stopPoseStart);
