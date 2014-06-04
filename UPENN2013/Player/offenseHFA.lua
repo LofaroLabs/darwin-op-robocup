@@ -222,7 +222,7 @@ stopPoseStart = function()
 	action.ackNumber =  wcm.get_horde_ackNumber();
 	sendBehavior(json.encode(action) .. "\n");
 end
-gotoPositionStart = function()
+gotoPositionStart = function(behavior, targets)
 	action = {}
 	action["action"] = "gotoPose"
 	action["args"]  = targets["openSpot"]
@@ -236,16 +236,16 @@ gotoBall = makeBehavior("gotoBall", nil, gotoBallStop, gotoBallStart);
 approachTarget = makeBehavior("approachTarget", nil, approachTargetStop, approachTargetStart);
 kickBall = makeBehavior("kickBall", nil, kickBallStop, kickBallStart);
 locateBall = makeBehavior("locateBall",nil,nil,locateBallStart);
-kittyOrPassMachine = kittyOrPass.myMachine
+kittyOrPassMachine = kittyOrPassHFA.myMachine2
 --kittyMachine
 print(tostring(kittyMachine) .. " ok")
 --super SUPER SUPER SUPER TODO IMPORTANT TODO NOW--- 
 -- IF YOU EXPECT THIS MACHINE TO WORK WITH MORE THAN ONE PLAYER LIKE A REAL GAME CHANGE THE LOGIC FOR CLOSEST BALL, IT'S COMPLETELY BACKWARDS ( ON PURPOSE FOR TESTING--
 myMachine = makeHFA("myMachine", makeTransition({
-	[start] = {[0] = kittyOrPass, ["openSpot"] = "openSpot" }, --gotoPoseFacing,
-	[kittyOrPass] = function() if closestToBall()~=1 then return {[0] = gotoPosition, ["openSpot"] = "openSpot"} end return kittyOrPass end,
-	[gotoPosition] = function() 		
-		if(closestToBall()==1) then return kittyOrPass else return gotoPosition end
+	[start] =function() print("well i got into start.... idk where i go from here")  return {[0] = kittyOrPassMachine, ["openSpot"] = "openSpot" } end, --gotoPoseFacing,
+	[kittyOrPassMachine] = function() print("closest to ball value is: " .. tostring(closestToBall())); if closestToBall()~=1 then return {[0] = gotoPosition, ["openSpot"] = "openSpot"} end return {[0] = kittyOrPassMachine, ["openSpot"] = "openSpot"} end,
+	[gotoPosition] = function() print("SHOULD BE IN GOTO POSE") 		
+		if(closestToBall()==1) then return {[0] = kittyOrPassMachine, ["openSpot"] = "openSpot"} else return {[0] = gotoPosition, ["openSpot"] = "openSpot"} end
 	end,
  	--[gotoBall] = function() if wcm.get_horde_ballLost() then return locateBall elseif (math.abs(wcm.get_ball_x())+math.abs(wcm.get_ball_y())) < .2 then return approachTarget else  return gotoBall  end end,
 	--[approachTarget] = function() if wcm.get_horde_ballLost() then return locateBall elseif wcm.get_horde_doneApproach()~= 0 then return kickBall else return approachTarget end end, 

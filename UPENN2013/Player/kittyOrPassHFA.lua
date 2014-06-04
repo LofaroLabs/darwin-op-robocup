@@ -264,7 +264,8 @@ kittyMachine = kitty.kittyMachine
 print(tostring(kittyMachine) .. " ok")
 --super SUPER SUPER SUPER TODO IMPORTANT TODO NOW--- 
 -- IF YOU EXPECT THIS MACHINE TO WORK WITH MORE THAN ONE PLAYER LIKE A REAL GAME CHANGE THE LOGIC FOR CLOSEST BALL, IT'S COMPLETELY BACKWARDS ( ON PURPOSE FOR TESTING--
-myMachine = makeHFA("myMachine", makeTransition({
+myMachine2 = makeHFA("myMachine2", makeTransition({
+
 	[start] = kittyMachine,
 	[kittyMachine] = function() 
 					if hasSomeoneYelledReady() == 1 then 
@@ -425,7 +426,7 @@ connectionThread = function ()
 				isBallLost();
 			    --kitty.wcm.get_horde_ballLost() = wcm.get_horde_ballLost()	
 				while wcm.get_horde_sentBehavior() == 0 do
-					pulse(myMachine);
+					pulse(myMachine2);
 				end
 				wcm.set_horde_sentBehavior(0);
 				print("cur rec number " .. tostring(wcm.get_horde_ackNumber()) .. "..........................................")
@@ -436,7 +437,7 @@ connectionThread = function ()
 end
 
 --start "main"
-if(darwin) then 
+--[[if(darwin) then 
 		--        hoard_functions.hordeFunctions["murder all humans"](nil,nil);
 	--Motion.event("standup");	
       	print("starting connection thread\n");
@@ -444,6 +445,6 @@ if(darwin) then
 	connectionThread()
 	print("connection lost")
 --	wcm.set_horde_state("gotoBall");
-end
+end]]--
 --connection drew stuff, seriously i'm ruining this beautiful code
 
