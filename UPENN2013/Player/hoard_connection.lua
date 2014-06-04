@@ -221,8 +221,8 @@ connectionThread = function ()
 				local err, req = pcall(json.decode, line);	
 				action = req.action
 				
-				if(type(req.args) == "string") then
-				 	action = tostring(action) .. tostring(args)
+				if(type(req.args) == "string" or req.args == nil) then
+				 	action = tostring(action) .. tostring(req.args)
 				else
 					action = tostring(action) .. tostring(vector.tostring(vector.new(req.args)));
 				end
