@@ -226,9 +226,9 @@ hordeFunctions["kickRight"] = function(args,client)
 end
 hordeFunctions["gotoPose"] = function(args, client)
 	-- set the wcm values to the x,y,a from the args
-	print("The args for gotoPose: " .. args .. "\n");
+	print("The args for gotoPose: " .. tostring(args) .. "\n");
 	print("HI");
-	dest = json.decode(args)
+	dest = args
 	print("Dest " .. dest.x);
 	--print("The args more specfied... X" .. args.x .. " Y " .. args.y .. " theta: " .. args.a);
 	wcm.set_horde_gotoPose(vector.new({dest.x, dest.y, dest.a}));
