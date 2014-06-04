@@ -267,7 +267,8 @@ print(tostring(kittyMachine) .. " ok")
 myMachine2 = makeHFA("myMachine2", makeTransition({
 
 	[start] = kittyMachine,
-	[kittyMachine] = function() 
+	[kittyMachine] = function()
+					print("In kitty machine and someoneYelledReady = " .. tostring(hasSomeoneYelledReady()) .. " and ball dist = " .. tostring(vcm.get_ball_r()));
 					if hasSomeoneYelledReady() == 1 and vcm.get_ball_r() < 0.3 then 
 						return {[0] = approachTarget, ["openSpot"] = "openSpot"}
 					else
@@ -276,6 +277,7 @@ myMachine2 = makeHFA("myMachine2", makeTransition({
 					end 
 			end,
 	[approachTarget] = function()
+					print("in ApproachTarget for kitty or pass  anddoneApproach = " .. tostring(wcm.get_horde_doneApproach()));
 					if wcm.get_horde_doneApproach() == 1 then
 						return kickBall 
 					elseif wcm.get_horde_ballLost() == 1 then
