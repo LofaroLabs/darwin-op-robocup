@@ -303,6 +303,13 @@ function update()
     end
   end
 
+  -- set the ball pose of the bot that is closest
+  -- convert the relative ball loc to global loc
+  if smallest_id ~= 0 then
+    closestToBallLoc = util.pose_global(states[smallest_id].ballRelative, {states[smallest_id].pose.x, states[smallest_id].pose.y, states[smallest_id].pose.a})
+    wcm.set_team_closestToBallLoc(closestToBallLoc)
+  end
+
   if smallest_id == playerID then
 	wcm.set_team_is_smallest_eta(1);
   else
