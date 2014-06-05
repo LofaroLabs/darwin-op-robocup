@@ -87,8 +87,9 @@ end
 function update()
 	ballx = wcm.get_ball_x();
 	bally = wcm.get_ball_y();
-	scaleFactor = 20*(math.abs(ballx)+math.abs(bally));
+	scaleFactor = 15*(math.abs(ballx)+math.abs(bally));
 	rotateVel = 0;
+	--util.poseRelative(
 	if(math.abs(bally)/math.abs(ballx)>.25) then
 		if(bally>0) then
 			rotateVel = 1;
@@ -97,7 +98,13 @@ function update()
 		end
 			
 	end
-	walk.set_velocity(ballx/scaleFactor, bally/scaleFactor,rotateVel);
+	dist = math.abs(ballx)+math.abs(bally);
+	if(dist>.5) then
+		walk.set_velocity(ballx/scaleFactor, bally/scaleFactor,rotateVel);
+	else
+		walk.set_velocity(ballx/scaleFactor*(dist-.1), ballx/scaleFactor*(dist-.1), rotateVel)
+	end
+	
 end
 
 function exit()
