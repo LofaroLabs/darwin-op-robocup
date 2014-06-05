@@ -250,7 +250,7 @@ print("support and offense Machine " .. tostring(supportMachine) .. " " .. tostr
 -- IF YOU EXPECT THIS MACHINE TO WORK WITH MORE THAN ONE PLAYER LIKE A REAL GAME CHANGE THE LOGIC FOR CLOSEST BALL, IT'S COMPLETELY BACKWARDS ( ON PURPOSE FOR TESTING--
 myMachine = makeHFA("myMachine", makeTransition({
 	[start] =function() print("im in my START " .. tostring(offenseMachine)) return  {[0] = offenseMachine, ["openSpot"] = "openSpot"} end,
-    [offenseMachine] = function() print("in offense, considering support"); if(wcm.get_team_closestToBallLoc()[1]<-.1) then return supportMachine; end return offenseMachine end,
+    [offenseMachine] = function() print("in offense, considering support"); if(wcm.get_team_closestToBallLoc()[1]<-.1) then return supportMachine; end return {[0] = offenseMachine, ["openSpot"] = "openSpot"} end,
     [supportMachine] =function() print("in support, considering offense");if(wcm.get_team_closestToBallLoc()[1]>.1) then return {[0] = offenseMachine, ["openSpot"] = "openSpot"}; end return supportMachine end
 }),false);
 wcm.set_horde_ballLost(1)
