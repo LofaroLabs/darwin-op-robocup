@@ -169,7 +169,7 @@ kittyMachine = makeHFA("kittyMachine", makeTransition({
 	[start] = function()  print("transitoin for start to locate ball " .. tostring(countReceives));  return locateBall; end,
 	[locateBall] = function() if wcm.get_horde_ballLost()==1  then return locateBall else return gotoBall end end,
 	[gotoBall] = function() if wcm.get_horde_ballLost()==1 then return locateBall elseif (vcm.get_ball_r()  < .3) then return approachTarget else  return gotoBall  end end,
-	[approachTarget] = function() if wcm.get_horde_ballLost()==1 then return locateBall elseif wcm.get_horde_doneApproach()~= 0 then print("We are done done approach? " .. tostring(wcm.get_horde_doneApproach())); return kickBall else return approachTarget end end, 
+	[approachTarget] = function() if wcm.get_horde_ballLost()==1 then return locateBall elseif vcm.get_ball_r() > .3 then return gotoBall; elseif wcm.get_horde_doneApproach()~= 0 then print("We are done done approach? " .. tostring(wcm.get_horde_doneApproach())); return kickBall else return approachTarget end end, 
 	[kickBall] = function() return done; end
 	--[done] = start;	
 --[done] = done;
@@ -241,7 +241,7 @@ connectionThread = function ()
 end
 
 --start "main"
---[[if(darwin) then 
+if(darwin) then 
 		--        hoard_functions.hordeFunctions["murder all humans"](nil,nil);
 	--Motion.event("standup");	
       	print("starting connection thread\n");
@@ -249,6 +249,6 @@ end
 	connectionThread()
 	print("connection lost")
 --	wcm.set_horde_state("gotoBall");
-end]]--
+end
 --connection drew stuff, seriously i'm ruining this beautiful code
 
