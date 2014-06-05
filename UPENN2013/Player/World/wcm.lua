@@ -84,6 +84,7 @@ shared.team.supporter_pose = vector.zeros(3);
 shared.team.goalie_pose = vector.zeros(3);
 
 shared.team.yelledReady = vector.zeros(4);-- for each
+shared.team.closestToBallLoc = vector.zeros(3); -- global location of the ball as seen by the closest robot
 
 shared.goal = {};
 shared.goal.t = vector.zeros(1);
