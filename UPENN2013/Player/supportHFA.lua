@@ -60,6 +60,12 @@ lcount = 0;
 tUpdate = unix.time();
 connected = false;
 
+local client
+
+function setClient(someClient)
+	client = someClient;
+end
+
 function inspect(key, value)
 	table.foreach(value,print)
 end
