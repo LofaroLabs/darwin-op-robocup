@@ -375,7 +375,17 @@ connectionThread = function ()
 		supportHFA.setClient(client)
 		wcm.set_horde_ackNumber(1);
 		print("connected")
-        while connected do
+        goalSideMultiply = 1;
+		if gcm.get_team_color() == 1 then
+
+                -- red attacks cyan goali
+                print(" yellow ")
+        else
+				goalSideMultiply = -1;
+                print("not yellow")
+        end
+            -- global 
+     	while connected do
 			client:settimeout(.05);
 			recval = client:receive()
 			-- convert the json to get the ackNumber
@@ -389,7 +399,7 @@ connectionThread = function ()
 				isBallLost();
 			    --kitty.wcm.get_horde_ballLost() = wcm.get_horde_ballLost()	
 				while wcm.get_horde_sentBehavior() == 0 do
-					pulse(myMachine, {["openSpot"] = {["x"] = -1.8, ["y"] = -1, ["a"]= 1.57}});
+					pulse(myMachine, {["openSpot"] = {["x"] = goalSideMutiply * 1.8, ["y"] = goalSideMultiply * 1, ["a"]= goalSideMultiply* 1.57}});
 				end
 				wcm.set_horde_sentBehavior(0);
 				print("cur rec number " .. tostring(wcm.get_horde_ackNumber()) .. "..........................................")
