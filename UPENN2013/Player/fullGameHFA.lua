@@ -30,6 +30,8 @@ package.path = cwd .. '/Lib/json4lua-0.9.50/?/?.lua;' .. package.path
 require('hfa')
 require('kitty')
 require('kittyOrPassHFA')
+require('supportHFA')
+require('offenseHFA')
 require('init')
 require('unix')
 require('Config')
@@ -239,22 +241,17 @@ approachTarget = makeBehavior("approachTarget", nil, approachTargetStop, approac
 kickBall = makeBehavior("kickBall", nil, kickBallStop, kickBallStart);
 locateBall = makeBehavior("locateBall",nil,nil,locateBallStart);
 kittyOrPassMachine = kittyOrPassHFA.myMachine2
+supportMachine = supportHFA.myMachine
+offenseMachine = offenseHFA.myMachine
 --kittyMachine
 print(tostring(kittyMachine) .. " ok")
 --super SUPER SUPER SUPER TODO IMPORTANT TODO NOW--- 
 -- IF YOU EXPECT THIS MACHINE TO WORK WITH MORE THAN ONE PLAYER LIKE A REAL GAME CHANGE THE LOGIC FOR CLOSEST BALL, IT'S COMPLETELY BACKWARDS ( ON PURPOSE FOR TESTING--
 myMachine = makeHFA("myMachine", makeTransition({
-	[start] =function() print("well i got into start.... idk where i go from here")  return {[0] = kittyOrPassMachine, ["openSpot"] = "openSpot" } end, --gotoPoseFacing,
-	[kittyOrPassMachine] = function() print("closest to ball value is: " .. tostring(closestToBall())); if closestToBall()~=1 then return {[0] = gotoPosition, ["openSpot"] = "openSpot"} end return {[0] = kittyOrPassMachine, ["openSpot"] = "openSpot"} end,
-	[gotoPosition] = function() print("SHOULD BE IN GOTO POSE") 		
-		if(closestToBall()==1) then return {[0] = kittyOrPassMachine, ["openSpot"] = "openSpot"} else return {[0] = gotoPosition, ["openSpot"] = "openSpot"} end
-	end,
- 	--[gotoBall] = function() if wcm.get_horde_ballLost() then return locateBall elseif (math.abs(wcm.get_ball_x())+math.abs(wcm.get_ball_y())) < .2 then return approachTarget else  return gotoBall  end end,
-	--[approachTarget] = function() if wcm.get_horde_ballLost() then return locateBall elseif wcm.get_horde_doneApproach()~= 0 then return kickBall else return approachTarget end end, 
-	--[kickBall] = function() unix.usleep(1 * 1E6); return locateBall; end
-	--[done] = start;	
---[done] = done;
-	}),false);
+	[start] = offenseMachine,
+    [offenseMachine] = function() if(wcm.get_team_closestToBallLoc()[1]<-.1) then return supportMachine; end end,
+    [supportMachine] =function() if(wcm.get_team_closestToBallLoc()[1]>.1) then return offenseMachine; end end
+}),false);
 wcm.set_horde_ballLost(1)
 lastTimeFound = Body.get_time();
 function isBallLost()
@@ -373,7 +370,9 @@ connectionThread = function ()
 	--kitty.client = client
 		kittyOrPassHFA.setClient(client)
 		kitty.setClient(client)
-        wcm.set_horde_ackNumber(1);
+        offenseHFA.setClient(client)
+		supportHFA.setClient(client)
+		wcm.set_horde_ackNumber(1);
 		print("connected")
         while connected do
 			client:settimeout(.05);
