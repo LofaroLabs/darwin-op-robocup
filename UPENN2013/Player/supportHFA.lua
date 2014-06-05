@@ -90,8 +90,8 @@ gotoPoseFacingStart = function(hfa)
                         action["action"] = "gotoPoseFacing";
                         action["args"] = {};
 			ballGlobal= {};
-			ballGlobal.x = wcm.get_ballGlobal_x();
-			ballGlobal.y = wcm.get_ballGlobal_y();
+			ballGlobal.x = wcm.get_team_closestToBallLoc()[1]--wcm.get_ballGlobal_x();
+			ballGlobal.y = wcm.get_team_closestToBallLoc()[2]--wcm.get_ballGlobal_y();
 			print(ballGlobal)
  		    -- my pose global
        		pose=wcm.get_pose();
