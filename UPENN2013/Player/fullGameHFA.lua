@@ -244,13 +244,14 @@ kittyOrPassMachine = kittyOrPassHFA.myMachine2
 supportMachine = supportHFA.myMachine
 offenseMachine = offenseHFA.myMachine
 --kittyMachine
-print(tostring(kittyMachine) .. " ok")
+print(tostring(kittyMachine) .. " ok in full game")
+print("support and offense Machine " .. tostring(supportMachine) .. " " .. tostring(offenseMachine))
 --super SUPER SUPER SUPER TODO IMPORTANT TODO NOW--- 
 -- IF YOU EXPECT THIS MACHINE TO WORK WITH MORE THAN ONE PLAYER LIKE A REAL GAME CHANGE THE LOGIC FOR CLOSEST BALL, IT'S COMPLETELY BACKWARDS ( ON PURPOSE FOR TESTING--
 myMachine = makeHFA("myMachine", makeTransition({
-	[start] = offenseMachine,
-    [offenseMachine] = function() if(wcm.get_team_closestToBallLoc()[1]<-.1) then return supportMachine; end end,
-    [supportMachine] =function() if(wcm.get_team_closestToBallLoc()[1]>.1) then return offenseMachine; end end
+	[start] =function() print("im in my START " .. tostring(offenseMachine)) return  {[0] = offenseMachine, ["openSpot"] = "openSpot"} end,
+    [offenseMachine] = function() print("in offense, considering support"); if(wcm.get_team_closestToBallLoc()[1]<-.1) then return supportMachine; end return offenseMachine end,
+    [supportMachine] =function() print("in support, considering offense");if(wcm.get_team_closestToBallLoc()[1]>.1) then return {[0] = offenseMachine, ["openSpot"] = "openSpot"}; end return supportMachine end
 }),false);
 wcm.set_horde_ballLost(1)
 lastTimeFound = Body.get_time();

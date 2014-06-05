@@ -60,6 +60,12 @@ count = 0;
 lcount = 0;
 tUpdate = unix.time();
 connected = false;
+local client;
+
+function setClient(someClient)
+	client = someClient;
+end
+
 
 function inspect(key, value)
 	table.foreach(value,print)
@@ -240,7 +246,7 @@ kickBall = makeBehavior("kickBall", nil, kickBallStop, kickBallStart);
 locateBall = makeBehavior("locateBall",nil,nil,locateBallStart);
 kittyOrPassMachine = kittyOrPassHFA.myMachine2
 --kittyMachine
-print(tostring(kittyMachine) .. " ok")
+print(tostring(kittyOrPassMachine)  .. " ok in offense")
 --super SUPER SUPER SUPER TODO IMPORTANT TODO NOW--- 
 -- IF YOU EXPECT THIS MACHINE TO WORK WITH MORE THAN ONE PLAYER LIKE A REAL GAME CHANGE THE LOGIC FOR CLOSEST BALL, IT'S COMPLETELY BACKWARDS ( ON PURPOSE FOR TESTING--
 myMachine = makeHFA("myMachine", makeTransition({
