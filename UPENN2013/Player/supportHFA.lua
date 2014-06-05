@@ -238,12 +238,12 @@ kickBall = makeBehavior("kickBall", nil, kickBallStop, kickBallStart);
 locateBall = makeBehavior("locateBall",nil,nil,locateBallStart);
 kittyMachine = kitty.kittyMachine
 --kittyMachine
-print(tostring(kittyMachine) .. " ok")
+print(tostring(kittyMachine) .. " ok in support")
 --super SUPER SUPER SUPER TODO IMPORTANT TODO NOW--- 
 -- IF YOU EXPECT THIS MACHINE TO WORK WITH MORE THAN ONE PLAYER LIKE A REAL GAME CHANGE THE LOGIC FOR CLOSEST BALL, IT'S COMPLETELY BACKWARDS ( ON PURPOSE FOR TESTING--
 myMachine = makeHFA("myMachine", makeTransition({
-	[start] = locateBall, --gotoPoseFacing,
-	[locateBall] = function() if wcm.get_horde_ballLost()==1  then return locateBall else return gotoPoseFacing end end,
+	[start] = function() print (" i got into the start for support "); return locateBall end, --gotoPoseFacing,
+	[locateBall] = function() print(" in support locate ball" ); if wcm.get_horde_ballLost()==1  then return locateBall else return gotoPoseFacing end end,
 	[gotoPoseFacing] = function() print("considering transitioning out of gotoPoseFacing"); 
 					if wcm.get_horde_ballLost()==1 then 
 						print("locate ball"); 
@@ -261,6 +261,7 @@ myMachine = makeHFA("myMachine", makeTransition({
 					end 
 				end,
 	[stopPose] = function()
+					print("stop pose in supprt"); 
 					if wcm.get_horde_ballLost() == 1 then
 						return locateBall;
 					end
@@ -274,6 +275,7 @@ myMachine = makeHFA("myMachine", makeTransition({
 						return stopPose 
 					end end,
 	[kittyMachine] = function() 
+					print("in kitty machine in support")
 					if wcm.get_horde_ballLost()==1 then 
 						return locateBall 
 					elseif closestToBall() == 0 then 
@@ -433,7 +435,7 @@ connectionThread = function ()
 end
 
 --start "main"
-if(darwin) then 
+--[[if(darwin) then 
 		--        hoard_functions.hordeFunctions["murder all humans"](nil,nil);
 	--Motion.event("standup");	
       	print("starting connection thread\n");
@@ -441,6 +443,6 @@ if(darwin) then
 	connectionThread()
 	print("connection lost")
 --	wcm.set_horde_state("gotoBall");
-end
+end]]--
 --connection drew stuff, seriously i'm ruining this beautiful code
 

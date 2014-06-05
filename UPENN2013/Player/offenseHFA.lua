@@ -246,7 +246,7 @@ kickBall = makeBehavior("kickBall", nil, kickBallStop, kickBallStart);
 locateBall = makeBehavior("locateBall",nil,nil,locateBallStart);
 kittyOrPassMachine = kittyOrPassHFA.myMachine2
 --kittyMachine
-print(tostring(kittyMachine) .. " ok")
+print(tostring(kittyOrPassMachine)  .. " ok in offense")
 --super SUPER SUPER SUPER TODO IMPORTANT TODO NOW--- 
 -- IF YOU EXPECT THIS MACHINE TO WORK WITH MORE THAN ONE PLAYER LIKE A REAL GAME CHANGE THE LOGIC FOR CLOSEST BALL, IT'S COMPLETELY BACKWARDS ( ON PURPOSE FOR TESTING--
 myMachine = makeHFA("myMachine", makeTransition({
@@ -406,7 +406,7 @@ connectionThread = function ()
 end
 
 --start "main"
-if(darwin) then 
+--[[if(darwin) then 
 		--        hoard_functions.hordeFunctions["murder all humans"](nil,nil);
 	--Motion.event("standup");	
       	print("starting connection thread\n");
@@ -414,6 +414,6 @@ if(darwin) then
 	connectionThread()
 	print("connection lost")
 --	wcm.set_horde_state("gotoBall");
-end
+end]]--
 --connection drew stuff, seriously i'm ruining this beautiful code
 
