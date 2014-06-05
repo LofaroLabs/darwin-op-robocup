@@ -399,7 +399,7 @@ connectionThread = function ()
 				isBallLost();
 			    --kitty.wcm.get_horde_ballLost() = wcm.get_horde_ballLost()	
 				while wcm.get_horde_sentBehavior() == 0 do
-					pulse(myMachine, {["openSpot"] = {["x"] = goalSideMutiply * 1.8, ["y"] = goalSideMultiply * 1, ["a"]= goalSideMultiply* 1.57}});
+					pulse(myMachine, {["openSpot"] = {["x"] = goalSideMultiply * 1.8, ["y"] = goalSideMultiply * 1, ["a"]= goalSideMultiply* 1.57}});
 				end
 				wcm.set_horde_sentBehavior(0);
 				print("cur rec number " .. tostring(wcm.get_horde_ackNumber()) .. "..........................................")
