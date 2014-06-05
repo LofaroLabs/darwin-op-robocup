@@ -141,6 +141,9 @@ function sendFeatures (client)
 		features["yelledReady"] = wcm.get_horde_yelledReady();
 		features["yelledKick"] = wcm.get_horde_yelledKick();
     	features["yelledFail"] = wcm.get_horde_yelledFail(); 
+	features["isClosestToBall"] = wcm.get_team_is_smallest_eta();
+	features["allYelledReadys"] = wcm.get_team_yelledReady(); -- used to check if someone has yelled ready
+
 	--print("sending some features, yo\n");-- wcm.set_horde_doneFrontApproach("true");
        -- print(json.encode(features) .. "\n");
 		features["ackNumber"] = ackNumber;
