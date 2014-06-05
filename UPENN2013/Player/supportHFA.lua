@@ -319,12 +319,12 @@ function getMidpoint()
 	if gcm.get_team_color() == 1 then
 
     		-- red attacks cyan goali
-		print(" yellow ")
-     		postDefend = PoseFilter.postYellow;
+		print(" not yellow ")
+     		postDefend = PoseFilter.postCyan;
   	else
-		print("not yellow")
+		print(" yellow")
     		-- blue attack yellow goal
-    		postDefend = PoseFilter.postCyan;
+    		postDefend = PoseFilter.postYellow;
   	end
 	
 	-- global 

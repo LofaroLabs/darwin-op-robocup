@@ -375,13 +375,13 @@ connectionThread = function ()
 		supportHFA.setClient(client)
 		wcm.set_horde_ackNumber(1);
 		print("connected")
-        goalSideMultiply = 1;
+        goalSideMultiply = -1;
 		if gcm.get_team_color() == 1 then
 
                 -- red attacks cyan goali
                 print(" yellow ")
         else
-				goalSideMultiply = -1;
+				goalSideMultiply = 1;
                 print("not yellow")
         end
             -- global 
