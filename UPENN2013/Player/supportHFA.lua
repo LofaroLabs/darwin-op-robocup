@@ -327,7 +327,7 @@ myMachine = makeHFA("myMachine", makeTransition({
                 elseif(wcm.get_team_isClosestToGoalDefend()==1) then 
                         return safety
                 end
-                return gotoPosition
+                return gotoPoseFacing
         end,	
  	--[gotoBall] = function() if wcm.get_horde_ballLost() then return locateBall elseif (math.abs(wcm.get_ball_x())+math.abs(wcm.get_ball_y())) < .2 then return approachTarget else  return gotoBall  end end,
 	--[approachTarget] = function() if wcm.get_horde_ballLost() then return locateBall elseif wcm.get_horde_doneApproach()~= 0 then return kickBall else return approachTarget end end, 
