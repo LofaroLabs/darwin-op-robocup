@@ -277,7 +277,7 @@ myMachine = makeHFA("myMachine", makeTransition({
 						print("trans to kitty "); 
 						return kittyMachine 
 					--elseif distToMidpoin() < 0.3 then
-					elseif (wcm.get_team_isClosestToGoalDefend() )then
+					elseif (wcm.get_team_isClosestToGoalDefend() ==1 )then
 						print("trans to safety")
 						return safety
 					elseif wcm.get_horde_yelledReady() == 1  then 
@@ -298,7 +298,7 @@ myMachine = makeHFA("myMachine", makeTransition({
 					elseif closestToBall() == 1 then 
 						print("go to done from stopPose")
 						return kittyMachine
-					elseif (wcm.get_team_isClosestToGoalDefend() )then
+					elseif (wcm.get_team_isClosestToGoalDefend() ==1 )then
 						print("trans to safety")
 						return safety
 					else 
@@ -311,7 +311,7 @@ myMachine = makeHFA("myMachine", makeTransition({
 						return locateBall 
 					elseif closestToBall() == 0 then 
 						return gotoPoseFacing ; 
-					elseif (wcm.get_team_isClosestToGoalDefend() and closestToBall()~=1) then
+					elseif (wcm.get_team_isClosestToGoalDefend()==1 and closestToBall()~=1) then
 						print("trans to safety")
 						return safety
 					else
@@ -324,7 +324,7 @@ myMachine = makeHFA("myMachine", makeTransition({
 	 [safety] = function()
                 if(closestToBall()==1)  then
                         return kittyMachine
-                elseif(wcm.get_team_isClosestToGoalDefend()) then 
+                elseif(wcm.get_team_isClosestToGoalDefend()==1) then 
                         return safety
                 end
                 return gotoPosition

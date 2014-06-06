@@ -17,5 +17,5 @@ while 1 do
 
 	print("my x, y, a is : " .. wcm.get_pose().x .. ", " .. wcm.get_pose().y ..  ", " .. wcm.get_pose().a);
 
-
+	print("am i closest to goal post " .. tostring(wcm.get_team_isClosestToGoalDefend()))
 end
