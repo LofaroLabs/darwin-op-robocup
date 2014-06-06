@@ -323,7 +323,7 @@ myMachine = makeHFA("myMachine", makeTransition({
 	--wcm.get_team_isClosestToGoalOffend()
 	 [safety] = function()
                 if(closestToBall()==1)  then
-                        return kittyOrPassMachine
+                        return kittyMachine
                 elseif(wcm.get_team_isClosestToGoalDefend()) then 
                         return safety
                 end
