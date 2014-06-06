@@ -251,15 +251,29 @@ print(tostring(kittyOrPassMachine)  .. " ok in offense")
 -- IF YOU EXPECT THIS MACHINE TO WORK WITH MORE THAN ONE PLAYER LIKE A REAL GAME CHANGE THE LOGIC FOR CLOSEST BALL, IT'S COMPLETELY BACKWARDS ( ON PURPOSE FOR TESTING--
 myMachine = makeHFA("myMachine", makeTransition({
 	[start] =function() print("well i got into start.... idk where i go from here")  return {[0] = kittyOrPassMachine, ["openSpot"] = "openSpot" } end, --gotoPoseFacing,
-	[kittyOrPassMachine] = function() print("closest to ball value is: " .. tostring(closestToBall())); if closestToBall()~=1 then return {[0] = gotoPosition, ["openSpot"] = "openSpot"} end return {[0] = kittyOrPassMachine, ["openSpot"] = "openSpot"} end,
+	[kittyOrPassMachine] = function() 
+		print("closest to ball value is: " .. tostring(closestToBall())); 
+		if closestToBall()~=1 and not wcm.get_team_isClosestToGoalOffend() then 
+			return {[0] = gotoPosition, ["openSpot"] = "openSpot"}
+		end 
+		return {[0] = kittyOrPassMachine, ["openSpot"] = "openSpot"} end,
 	[gotoPosition] = function() print("SHOULD BE IN GOTO POSE") 		
-		if(closestToBall()==1) then return {[0] = kittyOrPassMachine, ["openSpot"] = "openSpot"} else return {[0] = gotoPosition, ["openSpot"] = "openSpot"} end
+		if(closestToBall()==1) then 
+			return {[0] = kittyOrPassMachine, ["openSpot"] = "openSpot"} 
+		elseif wcm.get_team_isClosestToGoalOffend() then
+			return safety
+		else 
+			return {[0] = gotoPosition, ["openSpot"] = "openSpot"} 
+		end
+	end	
+	[safety] = function()
+		if(closestToBall()==1)	then 
+			return kittyOrPassMachine
+		elseif(wcm.get_team_isClosestToGoalOffend()) then
+			return safety
+		end
+		return gotoPosition
 	end,
- 	--[gotoBall] = function() if wcm.get_horde_ballLost() then return locateBall elseif (math.abs(wcm.get_ball_x())+math.abs(wcm.get_ball_y())) < .2 then return approachTarget else  return gotoBall  end end,
-	--[approachTarget] = function() if wcm.get_horde_ballLost() then return locateBall elseif wcm.get_horde_doneApproach()~= 0 then return kickBall else return approachTarget end end, 
-	--[kickBall] = function() unix.usleep(1 * 1E6); return locateBall; end
-	--[done] = start;	
---[done] = done;
 	}),false);
 wcm.set_horde_ballLost(1)
 lastTimeFound = Body.get_time();
