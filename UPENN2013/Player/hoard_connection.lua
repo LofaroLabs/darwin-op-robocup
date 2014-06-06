@@ -142,7 +142,11 @@ function sendFeatures (client)
 		features["yelledKick"] = wcm.get_horde_yelledKick();
     	features["yelledFail"] = wcm.get_horde_yelledFail(); 
 	features["isClosestToBall"] = wcm.get_team_is_smallest_eta();
-	--print("sending some features, yo\n");-- wcm.set_horde_doneFrontApproach("true");
+	
+		features["isClosestToGoalDefend"] = wcm.get_team_isClosestToGoalDefend();
+		features["isClosestToGoalOffend"] = wcm.get_team_isClosestToGoalOffend();
+
+		--print("sending some features, yo\n");-- wcm.set_horde_doneFrontApproach("true");
        -- print(json.encode(features) .. "\n");
 		features["ackNumber"] = ackNumber;
 		client:settimeout(.01);
