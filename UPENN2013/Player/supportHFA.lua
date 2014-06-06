@@ -268,9 +268,16 @@ print(tostring(kittyMachine) .. " ok in support")
 -- IF YOU EXPECT THIS MACHINE TO WORK WITH MORE THAN ONE PLAYER LIKE A REAL GAME CHANGE THE LOGIC FOR CLOSEST BALL, IT'S COMPLETELY BACKWARDS ( ON PURPOSE FOR TESTING--
 myMachine = makeHFA("myMachine", makeTransition({
 	[start] = function() print (" i got into the start for support "); return locateBall end, --gotoPoseFacing,
-	[locateBall] = function() print(" in support locate ball" ); if wcm.get_horde_ballLost()==1  then return locateBall else return gotoPoseFacing end end,
+	[locateBall] = function() print(" in support locate ball" ); 
+					if( not closestToBall()==1 and wcm.get_team_isClosestToGoalOffend()==1) then 
+						return safety
+					elseif wcm.get_horde_ballLost()==1  then return locateBall else return gotoPoseFacing end end,
 	[gotoPoseFacing] = function() print("considering transitioning out of gotoPoseFacing"); 
-					if wcm.get_horde_ballLost()==1 then 
+					
+					if( not closestToBall()==1 and wcm.get_team_isClosestToGoalOffend()==1) then 
+						return safety
+					
+					elseif wcm.get_horde_ballLost()==1 then 
 						print("locate ball"); 
 						return locateBall 
 					elseif closestToBall()==1 then 
@@ -290,7 +297,11 @@ myMachine = makeHFA("myMachine", makeTransition({
 				end,
 	[stopPose] = function()
 					print("stop pose in supprt"); 
-					if wcm.get_horde_ballLost() == 1 then
+
+					if( not closestToBall()==1 and wcm.get_team_isClosestToGoalOffend()==1) then 
+						return safety
+					
+					elseif wcm.get_horde_ballLost() == 1 then
 						return locateBall;
 					end
 					if distToMidpoint() > 0.3 then --- we will want to check the facing angle too... 
@@ -307,7 +318,10 @@ myMachine = makeHFA("myMachine", makeTransition({
 					end end,
 	[kittyMachine] = function() 
 					print("in kitty machine in support")
-					if wcm.get_horde_ballLost()==1 then 
+					if( not closestToBall()==1 and wcm.get_team_isClosestToGoalOffend()==1) then 
+						return safety
+					
+					elseif wcm.get_horde_ballLost()==1 then 
 						return locateBall 
 					elseif closestToBall() == 0 then 
 						return gotoPoseFacing ; 

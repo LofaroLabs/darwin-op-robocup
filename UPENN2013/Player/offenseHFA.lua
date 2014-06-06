@@ -272,6 +272,7 @@ myMachine = makeHFA("myMachine", makeTransition({
 	[start] =function() print("well i got into start.... idk where i go from here")  return {[0] = kittyOrPassMachine, ["openSpot"] = "openSpot" } end, --gotoPoseFacing,
 	[kittyOrPassMachine] = function() 
 		print("closest to ball value is: " .. tostring(closestToBall())); 
+		
 		if closestToBall()~=1 and not wcm.get_team_isClosestToGoalDefend()==1 then 
 			return {[0] = gotoPosition, ["openSpot"] = "openSpot"}
 		elseif closestToBall()~=1 and wcm.get_team_isClosestToGoalDefend()==1 then
