@@ -294,7 +294,7 @@ myMachine = makeHFA("myMachine", makeTransition({
 		elseif(wcm.get_team_isClosestToGoalDefend()==1) then
 			return safety
 		end
-		return gotoPosition
+		return {[0] = gotoPosition, ["openSpot"] = "openSpot"}
 	end,
 	}),false);
 wcm.set_horde_ballLost(1)
