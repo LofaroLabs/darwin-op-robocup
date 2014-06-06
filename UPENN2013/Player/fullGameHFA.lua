@@ -195,10 +195,10 @@ gotoBallStop = function()end
 
 approachTargetStart = function()
 	print("approach target")
-	 action  = {}
+	action  = {}
         action["action"] = "approachBall";
         action["args"] = "";
-		action.ackNumber =  wcm.get_horde_ackNumber();
+	action.ackNumber =  wcm.get_horde_ackNumber();
         sendBehavior(json.encode(action) .. "\n");
 end
 approachTargetStop = function()end
@@ -376,7 +376,7 @@ connectionThread = function ()
 		wcm.set_horde_ackNumber(1);
 		print("connected")
         goalSideMultiply = -1;
-		if gcm.get_team_color() == 1 then
+	if gcm.get_team_color() == 1 then
 
                 -- red attacks cyan goali
                 print(" yellow ")

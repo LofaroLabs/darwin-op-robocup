@@ -235,6 +235,24 @@ gotoPositionStart = function(behavior, targets)
 	action.ackNumber = wcm.get_horde_ackNumber();
 	sendBehavior(json.encode(action) .. "\n");
 end
+safetyStart = function()
+        print("safety")
+        action = {}
+        action["action"] = "gotoPose"
+         goalSideAngle = 3.14;
+        if gcm.get_team_color() == 1 then
+                --goalSideAngle = 0
+                -- red attacks cyan goali
+                print(" yellow ")
+        else
+                 goalSideAngle = 0;               
+                print("not yellow")
+        end
+
+        action.args = {["x"] = 0, ["y"] = 0, ["a"]= goalSideAngle}
+        action.ackNumber = wcm.get_horde_ackNumber()
+        sendBehavior(json.encode(action) .. "\n")
+end
 gotoPosition = makeBehavior("gotoPosition", nil,nil,gotoPositionStart)
 stopPose = makeBehavior("stopPose", nil, nil, stopPoseStart);
 walkForward = makeBehavior("walkForward", nil, walkForwardStop, walkForwardStart);

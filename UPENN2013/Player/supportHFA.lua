@@ -231,7 +231,17 @@ safetyStart = function()
 	print("safety")
 	action = {}
 	action["action"] = "gotoPose"
-	action.args = {["x"] = 0, ["y"] = 0, ["a"]= 0}
+	 goalSideAngle = 3.14;
+	if gcm.get_team_color() == 1 then
+		goalSideAngle = 0
+                -- red attacks cyan goali
+                print(" yellow ")
+        else
+				
+                print("not yellow")
+        end
+
+	action.args = {["x"] = 0, ["y"] = 0, ["a"]= goalSideAngle}
 	action.ackNumber = wcm.get_horde_ackNumber()
 	sendBehavior(json.encode(action) .. "\n")
 end
