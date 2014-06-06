@@ -253,6 +253,7 @@ safetyStart = function()
         action.ackNumber = wcm.get_horde_ackNumber()
         sendBehavior(json.encode(action) .. "\n")
 end
+safety = makeBehavior("safety", nil,nil,safetyStart)
 gotoPosition = makeBehavior("gotoPosition", nil,nil,gotoPositionStart)
 stopPose = makeBehavior("stopPose", nil, nil, stopPoseStart);
 walkForward = makeBehavior("walkForward", nil, walkForwardStop, walkForwardStart);
@@ -283,7 +284,7 @@ myMachine = makeHFA("myMachine", makeTransition({
 		else 
 			return {[0] = gotoPosition, ["openSpot"] = "openSpot"} 
 		end
-	end	
+	end, 	
 	[safety] = function()
 		if(closestToBall()==1)	then 
 			return kittyOrPassMachine
