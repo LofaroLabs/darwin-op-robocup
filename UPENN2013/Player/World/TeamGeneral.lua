@@ -201,6 +201,35 @@ function update()
   state.ballRelative = util.pose_relative({wcm.get_ballGlobal_x(), wcm.get_ballGlobal_y(), 0}, {state.pose.x, state.pose.y, state.pose.a});
    
   print("yelledReady = " .. tostring(state.yelledReady))
+	
+
+  if gcm.get_team_color() == 1 then
+
+            -- red attacks cyan goali
+        print("  yellow ")
+            postDefend = PoseFilter.postYellow;
+			postAttack = PoseFilter.postCyan;
+    else
+        print("not yellow")
+            -- blue attack yellow goal
+            postDefend = PoseFilter.postCyan;
+			postAttack = PoseFilter.postYellow;
+    end
+
+    -- global 
+    DLPost = postDefend[1];
+    DRPost = postDefend[2];
+	avgDGoal = {(DLPost[1] + DRPost[1]) / 2, (DLPost[2] + DRPost[2]) / 2, 0}
+
+	ALPost = postAttack[1];
+    ARPost = postAttack[2];
+    avgAGoal = {(ALPost[1] + ARPost[1]) / 2, (ALPost[2] + ARPost[2]) / 2, 0}
+
+	-- now calculate the distance the robot is from each of the goals
+
+	state.distToGoalDefend = math.sqrt((avgDGoal[1] - state.pose.x) * (avgDGoal[1] - state.pose.x) + (avgDGoal[2] - state.pose.y)*(avgDGoal[2] - state.pose.y));
+	state.distToGoalOffend = math.sqrt((avgAGoal[1] - state.pose.x) * (avgAGoal[1] - state.pose.x) + (avgAGoal[2] - state.pose.y)*(avgAGoal[2] - state.pose.y));
+
 
   if gcm.in_penalty() then  state.penalty = 1;
   else  state.penalty = 0;
@@ -239,6 +268,12 @@ function update()
   t = Body.get_time();
   smallest = math.huge;
   smallest_id = 0;
+
+  shortestDefendGoalDist = math.huge;
+  shortestAttackGoalDist = math.huge;
+  shortestDefendID = 0;
+  shortestAttackID = 0
+
   for id = 1,5 do 
     if not states[id] or not states[id].ball.x then  -- no info from player, ignore him
       eta[id] = math.huge;
@@ -281,6 +316,17 @@ function update()
         eta[id] = eta[id] + fallDownPenalty;
       end--]]
 
+		if states[id].distToGoalOffend < shortestAttackGoalDist then
+			shortestAttackGoalDist = states[id].distToGoalOffend
+			shortestAttackID = id
+		end
+
+		if states[id].distToGoalDefend < shortestDefendGoalDist then
+			shortestDefendGoalDist = states[id].distToGoalDefend;
+			shortestDefendID = id;
+		end
+
+
       --Store this
       if id==playerID then
         wcm.set_team_my_eta(eta[id]);
@@ -302,6 +348,20 @@ function update()
 
     end
   end
+
+
+	if shortestAttackID == state.id then
+		wcm.set_team_isClosestToGoalOffend(1);
+	else
+		wcm.set_team_isClosestToGoalOffend(0);
+	end
+
+	if shortestDefendID == state.id then
+        wcm.set_team_isClosestToGoalDefend(1);
+    else
+        wcm.set_team_isClosestToGoalDefend(0);
+    end
+
 
   -- set the ball pose of the bot that is closest
   -- convert the relative ball loc to global loc
