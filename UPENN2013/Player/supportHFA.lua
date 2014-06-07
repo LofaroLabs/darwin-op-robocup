@@ -372,64 +372,10 @@ end
 
 
 function getMidpoint()
-
-	
-	if gcm.get_team_color() == 1 then
-
-    		-- red attacks cyan goali
-		print("  yellow ")
-     		postDefend = PoseFilter.postYellow;
-  	else
-		print("not yellow")
-    		-- blue attack yellow goal
-    		postDefend = PoseFilter.postCyan;
-  	end
-	
-	-- global 
-	LPost = postDefend[1];
-	RPost = postDefend[2];
-	--print(tostring(LPost))
-    --print(tostring(RPost))
-    -- relative
-	--ball=wcm.get_ballGlobal();
-	
-	ballGlobal= {};
-    ballGlobal.x = wcm.get_ballGlobal_x();
-    ballGlobal.y = wcm.get_ballGlobal_y();
-    print(ballGlobal)
-
-
-
-	-- my pose global
-  	pose=wcm.get_pose();
-	
-	-- determine which goal post the ball is closest to
-	-- so need its global coords
-	--[[ballGlobal = util.pose_global({ball.x, ball.y, 0}, {pose.x, pose.y, pose.a})
-	ballGlobal.x = ballGlobal[1];
-	ballGlobal.y = ballGlobal[2];
-    ]]--
-	LPost.x = LPost[1]
-	LPost.y = LPost[2]
-	RPost.x = RPost[1]
-	RPost.y = RPost[2]
-    farPost = {}
-	if dist(ballGlobal, LPost) > dist(ballGlobal, RPost) then
-		farPost.x = LPost[1]
-		farPost.y = LPost[2]
-		print("the far post is at coordinates: " .. tostring(farPost.x) .. ", " .. tostring(farPost.y))
-		print("the near post is at coordinates: " .. tostring(RPost.x) .. ", " .. tostring(RPost.y))
-	else
-		farPost.x = RPost[1]
-		farPost.y = RPost[2]
-	
-		print("the far post is at coordinates: " .. tostring(farPost.x) .. ", " .. tostring(farPost.y))
-		print("the near post is at coordinates: " .. tostring(LPost.x) .. ", " .. tostring(LPost.y))
-	end
-	--print("going to the po	
+	themid = wcm.get_horde.midpointBallGoal();
 	midpoint = {}
-	midpoint.x = (ballGlobal.x + farPost.x) / 2
-	midpoint.y = (ballGlobal.y + farPost.y) /2
+	midpoint.x = themid[1]
+	midpoint.y = themid[2]
 	midpoint.a = 0
 		
 	return midpoint
@@ -440,10 +386,6 @@ function distToMidpoint()
 end
 -- simple dist function
 function dist(curA, targetB)
-    --print("curA: " .. tostring(curA));
-    --print("targetB:  " .. tostring(targetB));
-	--print("curA.x: " .. curA.x);
-	--print("targetB.x " .. targetB.x);
 	return math.sqrt(math.pow(curA.x - targetB.x,2) + math.pow(curA.y - targetB.y,2))
 end
 

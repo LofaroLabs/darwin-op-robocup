@@ -64,11 +64,18 @@ shared.horde.yelledKick = vector.zeros(1);
 shared.horde.yelledFail = vector.zeros(1);
 shared.horde.timeMark = vector.zeros(1);
 shared.horde.kickToPose = vector.zeros(3);
+-- x,y location between ball (as seen by bot closest to the ball) and the goal post furthest from the ball.
+shared.horde.midpointBallGoal = vector.zeros(2);
+
+
 --shared.horde.robot1 = "10.0.0.51"
 --shared.horde.poseRobot1 = vector.zeros(3);--purely horizontally passed
 -- wcm.get_horde_doneFrontApproach();
 shared.team = {};
 
+shared.team.teamPoseX = vector.zeros(4)
+shared.team.teamPoseY = vector.zeros(4)
+shared.team.teamPoseA = vector.zeros(4)
 shared.team.is_smallest_eta = vector.zeros(1);-- 1 if I have the smallest eta 0 otherwise
 shared.team.my_eta = vector.zeros(1);
 shared.team.attacker_eta = vector.zeros(1);

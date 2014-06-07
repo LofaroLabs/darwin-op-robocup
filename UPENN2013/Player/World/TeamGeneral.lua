@@ -368,13 +368,19 @@ function update()
   if smallest_id ~= 0 then
     closestToBallLoc = util.pose_global(states[smallest_id].ballRelative, {states[smallest_id].pose.x, states[smallest_id].pose.y, states[smallest_id].pose.a})
     wcm.set_team_closestToBallLoc(closestToBallLoc)
-  end
+
+
+   -- get the midpoint
+  themid = getMidpoint();
+  wcm.set_horde_midpointBallGoal({themid.x, themid.y});
+end
 
   if smallest_id == playerID then
 	wcm.set_team_is_smallest_eta(1);
   else
         wcm.set_team_is_smallest_eta(0);
   end
+
 
   --For defender behavior testing
   force_defender = Config.team.force_defender or 0;
@@ -554,18 +560,33 @@ function update_teamdata()
     end
   end
 
+  local teamPoseX = {}
+  local teamPoseY = {}
+  local teamPoseA = {}
   local teamYellReady = {}
   for id = 1, 5 do
     
     if states[id] and states[id].yelledReady then
       	 print("Id = ".. id .. " yelledReady = " .. tostring(states[id].yelledReady))
 	teamYellReady[id] = states[id].yelledReady
+	teamPoseX[id] = states[id].pose.x;
+	teamPoseY[id] =  states[id].pose.y;
+	teamPoseA[id] =  states[id].pose.a;
     else
 	teamYellReady[id] = 0
+	 -- not here so just put them at the center
+	teamPoseX[id] = 0;
+	teamPoseY[id] = 0;
+	teamPoseA[id] = 0;
     end
   end
   -- all the yelled ready people
   wcm.set_team_yelledReady(teamYellReady)
+
+  wcm.set_team_teamPoseX(teamPoseX);
+  wcm.set_team_teamPoseY(teamPoseY);
+  wcm.set_team_teamPoseA(teamPoseA);
+
 
   wcm.set_robot_team_ball(best_ball);
   wcm.set_robot_team_ball_score(best_scoreBall);
@@ -583,6 +604,69 @@ function update_teamdata()
   wcm.set_team_defender2_pose(defender2_pose);
 
 end
+
+function get_distance(curA, targetB)
+	return math.sqrt(math.pow(curA.x - targetB.x, 2) + math.pow(curA.y - targetB.y, 2))
+end
+
+function getMidpoint()
+ if gcm.get_team_color() == 1 then
+
+                -- red attacks cyan goali
+                print("  yellow ")
+                postDefend = PoseFilter.postYellow;
+        else
+                print("not yellow")
+                -- blue attack yellow goal
+                postDefend = PoseFilter.postCyan;
+        end
+
+        -- global 
+        LPost = postDefend[1];
+        RPost = postDefend[2];
+
+        ballGlobal= {};
+        ballGlobal.x = wcm.get_team_closestToBallLoc()[1]
+        ballGlobal.y = wcm.get_team_closestToBallLoc()[2]
+
+
+        -- my pose global
+        pose=wcm.get_pose();
+
+        LPost.x = LPost[1]
+        LPost.y = LPost[2]
+        RPost.x = RPost[1]
+        RPost.y = RPost[2]
+    farPost = {}
+        if get_distance(ballGlobal, LPost) > get_distance(ballGlobal, RPost) then
+                farPost.x = LPost[1]
+                farPost.y = LPost[2]
+                print("the far post is at coordinates: " .. tostring(farPost.x) .. ", " .. tostring(farPost.y))
+                print("the near post is at coordinates: " .. tostring(RPost.x) .. ", " .. tostring(RPost.y))
+        else 
+		farPost.x = RPost[1]
+                farPost.y = RPost[2]
+
+                print("the far post is at coordinates: " .. tostring(farPost.x) .. ", " .. tostring(farPost.y))
+                print("the near post is at coordinates: " .. tostring(LPost.x) .. ", " .. tostring(LPost.y))
+        end
+        --print("going to the po        
+        midpoint = {}
+        midpoint.x = (ballGlobal.x + farPost.x) / 2
+        midpoint.y = (ballGlobal.y + farPost.y) /2
+        midpoint.a = 0
+
+        return midpoint
+
+
+
+end
+
+
+
+
+
+
 
 function exit() end
 function get_role()   return role; end
