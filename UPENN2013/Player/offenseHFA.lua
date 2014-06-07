@@ -272,14 +272,15 @@ myMachine = makeHFA("myMachine", makeTransition({
 	[start] =function() print("well i got into start.... idk where i go from here")  return {[0] = kittyOrPassMachine, ["openSpot"] = "openSpot" } end, --gotoPoseFacing,
 	[kittyOrPassMachine] = function() 
 		print("closest to ball value is: " .. tostring(closestToBall())); 
-		
-		if closestToBall()~=1 and not wcm.get_team_isClosestToGoalDefend()==1 then 
+		--wcm.set_team_isClosestToGoalDefend(1)	
+		if closestToBall()~=1 and not (wcm.get_team_isClosestToGoalDefend()==1) then 
 			return {[0] = gotoPosition, ["openSpot"] = "openSpot"}
 		elseif closestToBall()~=1 and wcm.get_team_isClosestToGoalDefend()==1 then
 			return safety
 		end 
 		return {[0] = kittyOrPassMachine, ["openSpot"] = "openSpot"} end,
-	[gotoPosition] = function() print("SHOULD BE IN GOTO POSE") 		
+	[gotoPosition] = function() wcm.set_team_isClosestToGoalDefend(0)
+ 		print("SHOULD BE IN GOTO POSE") 		
 		if(closestToBall()==1) then 
 			return {[0] = kittyOrPassMachine, ["openSpot"] = "openSpot"} 
 		elseif wcm.get_team_isClosestToGoalDefend()==1 then
@@ -289,6 +290,8 @@ myMachine = makeHFA("myMachine", makeTransition({
 		end
 	end, 	
 	[safety] = function()
+		--wcm.set_team_isClosestToGoalDefend(0)
+
 		if(closestToBall()==1)	then 
 			return kittyOrPassMachine
 		elseif(wcm.get_team_isClosestToGoalDefend()==1) then
@@ -312,6 +315,7 @@ end
 
 
 function closestToBall()
+	--return 0;
 	return wcm.get_team_is_smallest_eta();
 end
 
@@ -442,7 +446,7 @@ connectionThread = function ()
 end
 
 --start "main"
---[[if(darwin) then 
+if(darwin) then 
 		--        hoard_functions.hordeFunctions["murder all humans"](nil,nil);
 	--Motion.event("standup");	
       	print("starting connection thread\n");
@@ -450,6 +454,6 @@ end
 	connectionThread()
 	print("connection lost")
 --	wcm.set_horde_state("gotoBall");
-end]]--
+end
 --connection drew stuff, seriously i'm ruining this beautiful code
 

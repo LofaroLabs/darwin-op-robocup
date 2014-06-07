@@ -61,6 +61,19 @@ function update()
   local t = Body.get_time();
   print("about to grab gootPose");
   print("I converted\n");
+  if((pose.x-endFacing[1]<0) == ((endFacing[1] - endPosition[1])<0)) then -- far away, just run at the point
+      print("final point far away, must run toward" .. (math.abs(endPoseX)+math.abs(endPoseY)));
+      if(endPoseY>0) then
+           rotateVel = .5;
+      else
+           rotateVel = -.5;
+      end
+	  if(math.abs(endPoseRelative[3]) <.5) then
+			rotateVel = rotateVel*endPoseRelative[3];
+	  end
+      walk.set_velocity(endPoseX/scaleFactor*1.1, endPoseY/scaleFactor*1.1,rotateVel);
+  	  return;
+  end -- check for completion
   if((math.abs(endPoseX)+math.abs(endPoseY))<distanceTolerance and math.abs(endFacingRelative[3]) < angleTolerance) then
  	Speak.talk("banana.");
 	--walk.set_velocity(0,0,0);
@@ -84,7 +97,7 @@ function update()
       end
       walk.set_velocity(0, 0,rotateVel);
   elseif (math.abs(endPoseX)+math.abs(endPoseY)>distanceTolerance) then
---[[      print("walking toward final point " .. (math.abs(endPoseX)+math.abs(endPoseY)));
+--[[  print("walking toward final point " .. (math.abs(endPoseX)+math.abs(endPoseY)));
       if(endPoseY>0) then
            rotateVel = .5;
       else

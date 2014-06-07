@@ -30,13 +30,6 @@ end
 alreadyPrinted = false;
 function update()
 
-  role = gcm.get_team_role();
-  --Force attacker for demo code
-  if Config.fsm.playMode==1 then role=1; end
-  if role==0 and goalie_type>2 then --Escape if diving goalie
-    --return "goalie";
-  end
-
   local t = Body.get_time();
 
   -- update head position based on ball location
@@ -46,26 +39,10 @@ function update()
   local yaw,pitch;
   --top:0 bottom: 1
   
-  if Config.platform.name== 'WebotsNao' or
-     Config.platform.name== 'NaoV4' then
-
-    --Bottom camera check
-    yaw, pitchBottom =
-	HeadTransform.ikineCam(ball.x, ball.y, trackZ, 1);
-
-    --Do we need to look down?
-    if pitchBottom > 10*math.pi/180 then
-      pitch = pitchBottom - 10*math.pi/180;
-    else
-      pitch = 0;
-    end
-
---    print(pitchBottom*180/math.pi, pitch*180/math.pi)
-
-  else --OP: look at the ball
-    yaw, pitch =
+  --OP: look at the ball
+  yaw, pitch =
 	HeadTransform.ikineCam(ball.x, ball.y, trackZ, 0);
-  end
+
   
 
   -- Fix head yaw while approaching (to reduce position error)
@@ -77,27 +54,10 @@ function update()
   if (t - ball.t > tLost and not alreadyPrinted) then
     print('Ball lost!');
     alreadyPrinted = true;
-    --return "lost";
-  end
-
-  eta = wcm.get_team_my_eta();
-  if eta<min_eta_look and eta>0 then
-    --return;
   end
 
   if (t - t0 > timeout) then
-     --if role==0 then
-       --return "sweep"; --Goalie, sweep to localize
-     --else
---	Velocity.update(wcm.get_ball_v_inf()[1],wcm.get_ball_v_inf()[2],Body.get_time())
---	vx, vy, dodge = Velocity.getVelocity();
---	ball =  wcm.get_ball();
---	print("ballx, bally " .. tostring(vx) .. ", " .. tostring(vy));
---	if(vx~=nil and vy~=nil) then
-  --      	if(vx + vy < .1) then  
-        		return "timeout";  --Player, look up to see goalpost
- --       	end
---	end
+       		return "timeout";  --Player, look up to see goalpost
   end
 end
 
