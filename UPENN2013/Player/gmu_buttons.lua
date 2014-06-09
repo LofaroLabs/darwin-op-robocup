@@ -16,20 +16,34 @@ function update()
 	if ((Body.get_time() - tButton) > 0.25) then
 		tButton = Body.get_time();
 		if (Body.get_change_role() == 1) then
+			scriptNumber = scriptNumber + 1;
+			print("Incrementing leftbutton script")
+			if     scriptNumber == 1 then Speak.talk('Vision Calibration Mode')
+			elseif scriptNumber == 2 then Speak.talk('Demo Mode')
+			elseif scriptNumber == 3 then Speak.talk('Reset Internet Mode')
+			elseif scriptNumber == 3 then Speak.talk('Kitty Soccer Mode')
+			elseif scriptNumber == 4 then Speak.talk('Image Calibration')
+			elseif scriptNumber == 5 then Speak.talk('Reset Darwin')
+			elseif scriptNumebr == 6 then Speak.talk('Shall We Play A Game')
+						      scriptNumber = 0
+			else   scriptNumber = 0; -- May be able to remove this and change last elseif to else
+		end
+
 			--if we want to just run main then press the role button
 			--Speak.talk('Changed role is one')
 			-- I need to be able to tell it to stop saying the button has been pressed
-			print("Executing leftbutton script")
-			Speak.talk('Kiddie Soccer')
-			os.execute("sh leftbutton.sh " .. tostring(leftCount % 2))
+			--
+			-- print("Executing leftbutton script")
+			-- Speak.talk('Kiddie Soccer')
+			--os.execute("sh leftbutton.sh " .. tostring(leftCount % 2))
 			leftCount = leftCount + 1;
 					
 		end
 		
 		if (Body.get_change_state() == 1) then
-			Speak.talk('Wireless Internet')
-			print("Executing middle button script")
-			os.execute("sh middlebutton.sh ".. tostring(middleCount % 2))
+			Speak.talk('Execute')
+			print("Executing selected button script")
+			-- os.execute("sh middlebutton.sh ".. tostring(middleCount % 2))
 			middleCount = middleCount + 1;
 		end	
 	end
@@ -39,6 +53,8 @@ end
 tButton = 0;
 middleCount = 0;
 leftCount = 0;
+
+scriptNumber = 0;	-- Default Mode
 
 local tDelay = 0.005 * 1E6;
 while 1 do
