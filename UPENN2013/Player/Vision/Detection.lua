@@ -103,7 +103,7 @@ function update()
   if use_point_goal == 1 then
     ballYellow = detectBall.detect(colorYellow);
   else
-    print("@@@manually setting yellow detect to false because use_point_goal is false")
+    --print("@@@manually setting yellow detect to false because use_point_goal is false")
     goalYellow.detect=0;
     tstart = unix.time();
     goalYellow = detectGoal.detect(colorYellow);
@@ -137,7 +137,7 @@ function update()
 
 
   if vcm.get_vision_enable() ==0 then
-    print("@@@Vision enable is false, so therefore you dont detect anything");
+    --print("@@@Vision enable is false, so therefore you dont detect anything");
     ball.detect = 0;
     ballYellow.detect=0; 
     goalYellow.detect = 0;
@@ -162,7 +162,7 @@ function update_shm()
     vcm.set_ball_dr(ball.dr);
     vcm.set_ball_da(ball.da);
   end
-  print("@@@goalDetect value is: " .. goalYellow.detect)
+  --print("@@@goalDetect value is: " .. goalYellow.detect)
   vcm.set_goal_detect(goalYellow.detect);
   if (goalYellow.detect == 1) then
     vcm.set_goal_color(colorYellow);

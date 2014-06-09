@@ -3,7 +3,7 @@ module(..., package.seeall);
 require('Body')
 require('Config')
 require('vcm')
-
+-- looks at the closest goal in terms of angle the head has to move
 t0 = 0;
 
 yawMax = Config.head.yawMax;

@@ -36,7 +36,7 @@ public class Calibrate extends JFrame
 	/** Height of the BufferedImages being displayed. */
 	public static final int IMAGE_HEIGHT = 240;
 	/** The dimensionality for Y, Cb, and Cr respectively (thus a bit-depth of 6 each, totalling 18) */
-	public static final int NUM_COLORS = 64;  // 2^COLOR_DEPTH
+	public static final int NUM_COLORS = 256;  // 2^COLOR_DEPTH
 	
 	/** The images, loaded and stored as RGB */
 	BufferedImage[] images; // = new BufferedImage[NUM_IMAGES];
@@ -160,6 +160,7 @@ public class Calibrate extends JFrame
 
         public void saveData(OutputStream out) throws IOException
 		{
+			int count = 0;
             for(int x = 0; x < data.length; x++)
 			{
                 int[][] datax = data[x];
@@ -168,10 +169,12 @@ public class Calibrate extends JFrame
                     int[] dataxy = datax[y];
                     for(int z = 0; z < dataxy.length;  z++)
 					{
+						count++;
                         out.write(lookupValuesOut[dataxy[z]]);
 					}
 				}
 			}
+			System.out.println("total count: "+count);
 		}
     
         final static int[] lookupValuesIn = new int[]

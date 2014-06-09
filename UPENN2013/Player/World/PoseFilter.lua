@@ -85,7 +85,7 @@ function initialize_manual_placement(p0, dp)
   p0 = p0 or {0, 0, 0};
   dp = dp or {.5*xLineBoundary, .5*yLineBoundary, 2*math.pi};
 
-  print('re-init partcles for manual placement');
+  --print('re-init partcles for manual placement');
   ap = math.atan2(wcm.get_goal_attack()[2],wcm.get_goal_attack()[1])*vector.ones(n);
   xp = wcm.get_goal_defend()[1]/2*vector.ones(n);
   yp = p0[2]*vector.ones(n) + dp[2]*(vector.new(util.randn(n))-0.5*vector.ones(n));
@@ -93,7 +93,7 @@ function initialize_manual_placement(p0, dp)
 end
 
 function initialize_unified(p0,p1,dp)
-  print("@@@i am reinitializing!!") 
+  --print("@@@i am reinitializing!!") 
   --Particle initialization for the same-colored goalpost
   --Half of the particles at p0
   --Half of the particles at p1
@@ -107,8 +107,8 @@ function initialize_unified(p0,p1,dp)
   dp = dp or {.15*xMax, .15*yMax, math.pi/6};
 
   for i=1,n/2 do
-    print("all the things " .. i .. " was: " .. xp[i])
-    print("i+100: " .. xp[i+n/2])   
+    --print("all the things " .. i .. " was: " .. xp[i])
+    --print("i+100: " .. xp[i+n/2])   
     xp[i]=p0[1]+dp[1]*(math.random()-.5); 
     yp[i]=p0[2]+dp[2]*(math.random()-.5);
     ap[i]=p0[3]+dp[3]*(math.random()-.5);
@@ -124,7 +124,7 @@ function initialize_heading(aGoal)
   --Particle initialization at bodySet 
   --When bodySet, all players should face opponents' goal
   --So reduce weight of  particles that faces our goal
-  print('init_heading particles');
+  --print('init_heading particles');
   dp = dp or {.15*xMax, .15*yMax, math.pi/6};
   ap = aGoal*vector.ones(n) + dp[3]*vector.new(util.randu(n));
   wp = vector.zeros(n);
@@ -474,7 +474,7 @@ function goal_observation_unified(pos1,pos2,v)
 
   --Get pose estimate from two goalpost locations
   if use_new_goalposts==1 then
-    print("~~~new goal posts");
+    --print("~~~new goal posts");
     pose1,dGoal1=triangulate2(pos1,v);
     pose2,dGoal2=triangulate2(pos2,v);
   else
@@ -499,7 +499,7 @@ function goal_observation_unified(pos1,pos2,v)
   end
 
   if dGoal<triangulation_threshold then 
-    print("~~~Goal is close enough to triangulate from");
+    --print("~~~Goal is close enough to triangulate from");
     --Goal close, triangulate
     local x1,y1,a1=pose1.x,pose1.y,pose1.a;
     local x2,y2,a2=pose2.x,pose2.y,pose2.a;
@@ -513,7 +513,7 @@ function goal_observation_unified(pos1,pos2,v)
 
     local rFilter = rGoalFilter;
     local aFilter = aGoalFilter;
-    print("~~~Updating those particles");
+    --print("~~~Updating those particles");
     for ip = 1,n do
       local xErr1 = x1 - xp[ip];
       local yErr1 = y1 - yp[ip];
@@ -546,7 +546,7 @@ function goal_observation_unified(pos1,pos2,v)
   elseif dGoal<position_update_threshold then
     --Goal midrange, use a point update
     --Goal too far, use a point estimate
-    print("~~~Update threshold not reached (i dont know what that means yet)")
+    --print("~~~Update threshold not reached (i dont know what that means yet)")
     goalpos1={(pos1[1][1]+pos1[2][1])/2, (pos1[1][2]+pos1[2][2])/2}
     goalpos2={(pos2[1][1]+pos2[2][1])/2, (pos2[1][2]+pos2[2][2])/2}
     goalv={(v[1][1]+v[2][1])/2, (v[1][2]+v[2][2])/2}
@@ -554,7 +554,7 @@ function goal_observation_unified(pos1,pos2,v)
 	{goalpos1,goalpos2},
 	 goalv , rUnknownPostFilter, aUnknownGoalFilter);
   else --Goal VERY far, just update angle only
-    print("~~~That goal is really far away.... only update angle")
+    --print("~~~That goal is really far away.... only update angle")
     goalpos1={(pos1[1][1]+pos1[2][1])/2, (pos1[1][2]+pos1[2][2])/2}
     goalpos2={(pos2[1][1]+pos2[2][1])/2, (pos2[1][2]+pos2[2][2])/2}
     goalv={(v[1][1]+v[2][1])/2, (v[1][2]+v[2][2])/2}

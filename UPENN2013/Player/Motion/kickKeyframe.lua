@@ -37,7 +37,8 @@ function update()
   if started then
       keyframe.update();
       if (keyframe.get_queue_len() == 0) then
-	  return "done"
+	wcm.set_horde_doneKick(1)  
+	return "done"
       end
   else
 	walk.update();
@@ -46,6 +47,8 @@ end
 
 function exit()
   print("Kick exit");
+--  wcm.set_horde_doneKick(1);
+--  print("also set horde was set to true")
   keyframe.exit();
   active = false;
   walk.active=true;

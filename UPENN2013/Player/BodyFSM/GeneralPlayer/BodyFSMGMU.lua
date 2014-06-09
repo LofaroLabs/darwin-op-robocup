@@ -11,7 +11,7 @@ require('bodyStop')
 require('bodyReady')
 require('bodySearch')
 require('bodyApproachGMU')
-require('bodyDribble')
+require('bodyDribbleGMU')
 require('bodyKick')
 require('bodyWalkKick')
 require('bodyOrbit')
@@ -39,6 +39,8 @@ require('bodyAnticipate')
 require('bodyChase')
 require('bodyDive')
 require('bodyGotoPosition')
+require('bodyGotoWhileFacing')
+
 
 require('bodyUnpenalized')
 require('bodyApproach')
@@ -63,7 +65,7 @@ sm:add_state(bodyGotoCenter);
 sm:add_state(bodyPosition);
 sm:add_state(bodyObstacle);
 sm:add_state(bodyObstacleAvoid);
-sm:add_state(bodyDribble);
+sm:add_state(bodyDribbleGMU);
 sm:add_state(bodyWalkForward);
 sm:add_state(bodyKickGMU);
 sm:add_state(bodyGotoBall);
@@ -78,7 +80,7 @@ sm:add_state(bodyApproachTarget);
 sm:add_state(bodyYellFail);
 sm:add_state(bodyYellReady);
 sm:add_state(bodyYellKick);
-
+sm:add_state(bodyGotoWhileFacing);
 sm:add_state(bodyPositionGoalie);
 sm:add_state(bodyAnticipate);
 sm:add_state(bodyDive);

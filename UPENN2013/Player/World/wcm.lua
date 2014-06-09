@@ -38,6 +38,9 @@ shared.ball.dodge = vector.zeros(1);
 shared.ball.locked_on = vector.zeros(1);
 shared.ball.p = vector.zeros(1);
 
+shared.ballGlobal = {};
+shared.ballGlobal.x = vector.zeros(1);
+shared.ballGlobal.y = vector.zeros(1);
 
 shared.ball.v_inf = vector.zeros(2);
 shared.ball.t_locked_on = vector.zeros(1);
@@ -49,18 +52,31 @@ shared.horde.state = "nil";
 shared.horde.sendStatus = "nil"
 shared.horde.doneApproach = vector.zeros(1); ---
 shared.horde.gotoPose = vector.zeros(3); -- the x,y,a that horde told it to go to on the field in the world frame
+shared.horde.ballLost = vector.zeros(1);
+shared.horde.sentBehavior = vector.zeros(1)
+shared.horde.ackNumber = vector.zeros(1);
+shared.horde.facing = vector.zeros(3);
+shared.horde.kickToPose = vector.zeros(3);
+shared.horde.doneKick = vector.zeros(1);
 --horizontally passed+connection
 shared.horde.yelledReady = vector.zeros(1);
 shared.horde.yelledKick = vector.zeros(1);
 shared.horde.yelledFail = vector.zeros(1);
 shared.horde.timeMark = vector.zeros(1);
 shared.horde.kickToPose = vector.zeros(3);
+-- x,y location between ball (as seen by bot closest to the ball) and the goal post furthest from the ball.
+shared.horde.midpointBallGoal = vector.zeros(2);
+
+
 --shared.horde.robot1 = "10.0.0.51"
 --shared.horde.poseRobot1 = vector.zeros(3);--purely horizontally passed
 -- wcm.get_horde_doneFrontApproach();
 shared.team = {};
 
-
+shared.team.teamPoseX = vector.zeros(4)
+shared.team.teamPoseY = vector.zeros(4)
+shared.team.teamPoseA = vector.zeros(4)
+shared.team.is_smallest_eta = vector.zeros(1);-- 1 if I have the smallest eta 0 otherwise
 shared.team.my_eta = vector.zeros(1);
 shared.team.attacker_eta = vector.zeros(1);
 shared.team.defender_eta = vector.zeros(1);
@@ -74,6 +90,10 @@ shared.team.defender2_pose = vector.zeros(3);
 shared.team.supporter_pose = vector.zeros(3);
 shared.team.goalie_pose = vector.zeros(3);
 
+shared.team.yelledReady = vector.zeros(4);-- for each
+shared.team.closestToBallLoc = vector.zeros(3); -- global location of the ball as seen by the closest robot
+shared.team.isClosestToGoalDefend = vector.zeros(1); -- are you the closest to the defending goal 
+shared.team.isClosestToGoalOffend = vector.zeros(1); -- are you the closest to the goal you are attacking
 
 
 shared.goal = {};

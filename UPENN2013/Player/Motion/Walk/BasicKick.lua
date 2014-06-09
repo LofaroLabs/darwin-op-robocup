@@ -6,7 +6,7 @@ require('walk')
 require('vector')
 require('Config')
 require('util')
-
+--require('wcm')
 local cwd = unix.getcwd();
 if string.find(cwd, "WebotsController") then
   cwd = cwd.."/Player";
@@ -297,7 +297,7 @@ end
 function exit()
   print("Kick exit");
   active = false;
-
+--  wcm.set_horde_doneKick(1);
   Body.set_rleg_slope(0);
   Body.set_lleg_slope(0);
 
