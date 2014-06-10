@@ -30,6 +30,8 @@ package.path = cwd .. '/Lib/json4lua-0.9.50/?/?.lua;' .. package.path
 require('hfa')
 require('kitty')
 require('kittyOrPassHFA')
+require('supportHFA')
+require('offenseHFA')
 require('init')
 require('unix')
 require('Config')
@@ -60,12 +62,6 @@ count = 0;
 lcount = 0;
 tUpdate = unix.time();
 connected = false;
-local client;
-
-function setClient(someClient)
-	client = someClient;
-end
-
 
 function inspect(key, value)
 	table.foreach(value,print)
@@ -199,10 +195,10 @@ gotoBallStop = function()end
 
 approachTargetStart = function()
 	print("approach target")
-	 action  = {}
+	action  = {}
         action["action"] = "approachBall";
         action["args"] = "";
-		action.ackNumber =  wcm.get_horde_ackNumber();
+	action.ackNumber =  wcm.get_horde_ackNumber();
         sendBehavior(json.encode(action) .. "\n");
 end
 approachTargetStop = function()end
@@ -235,25 +231,6 @@ gotoPositionStart = function(behavior, targets)
 	action.ackNumber = wcm.get_horde_ackNumber();
 	sendBehavior(json.encode(action) .. "\n");
 end
-safetyStart = function()
-        print("safety")
-        action = {}
-        action["action"] = "gotoPose"
-         goalSideAngle = 3.14;
-        if gcm.get_team_color() == 1 then
-                --goalSideAngle = 0
-                -- red attacks cyan goali
-                print(" yellow ")
-        else
-                 goalSideAngle = 0;               
-                print("not yellow")
-        end
-
-        action.args = {["x"] = 0, ["y"] = 0, ["a"]= goalSideAngle}
-        action.ackNumber = wcm.get_horde_ackNumber()
-        sendBehavior(json.encode(action) .. "\n")
-end
-safety = makeBehavior("safety", nil,nil,safetyStart)
 gotoPosition = makeBehavior("gotoPosition", nil,nil,gotoPositionStart)
 stopPose = makeBehavior("stopPose", nil, nil, stopPoseStart);
 walkForward = makeBehavior("walkForward", nil, walkForwardStop, walkForwardStart);
@@ -264,42 +241,18 @@ approachTarget = makeBehavior("approachTarget", nil, approachTargetStop, approac
 kickBall = makeBehavior("kickBall", nil, kickBallStop, kickBallStart);
 locateBall = makeBehavior("locateBall",nil,nil,locateBallStart);
 kittyOrPassMachine = kittyOrPassHFA.myMachine2
+supportMachine = supportHFA.myMachine
+offenseMachine = offenseHFA.myMachine
 --kittyMachine
-print(tostring(kittyOrPassMachine)  .. " ok in offense")
+print(tostring(kittyMachine) .. " ok in full game")
+print("support and offense Machine " .. tostring(supportMachine) .. " " .. tostring(offenseMachine))
 --super SUPER SUPER SUPER TODO IMPORTANT TODO NOW--- 
 -- IF YOU EXPECT THIS MACHINE TO WORK WITH MORE THAN ONE PLAYER LIKE A REAL GAME CHANGE THE LOGIC FOR CLOSEST BALL, IT'S COMPLETELY BACKWARDS ( ON PURPOSE FOR TESTING--
 myMachine = makeHFA("myMachine", makeTransition({
-	[start] =function() print("well i got into start.... idk where i go from here")  return {[0] = kittyOrPassMachine, ["openSpot"] = "openSpot" } end, --gotoPoseFacing,
-	[kittyOrPassMachine] = function() 
-		print("closest to ball value is: " .. tostring(closestToBall())); 
-		--wcm.set_team_isClosestToGoalDefend(1)	
-		if closestToBall()~=1 and not (wcm.get_team_isClosestToGoalDefend()==1) then 
-			return {[0] = gotoPosition, ["openSpot"] = "openSpot"}
-		elseif closestToBall()~=1 and wcm.get_team_isClosestToGoalDefend()==1 then
-			return safety
-		end 
-		return {[0] = kittyOrPassMachine, ["openSpot"] = "openSpot"} end,
-	[gotoPosition] = function() wcm.set_team_isClosestToGoalDefend(0)
- 		print("SHOULD BE IN GOTO POSE") 		
-		if(closestToBall()==1) then 
-			return {[0] = kittyOrPassMachine, ["openSpot"] = "openSpot"} 
-		elseif wcm.get_team_isClosestToGoalDefend()==1 then
-			return safety
-		else 
-			return {[0] = gotoPosition, ["openSpot"] = "openSpot"} 
-		end
-	end, 	
-	[safety] = function()
-		--wcm.set_team_isClosestToGoalDefend(0)
-
-		if(closestToBall()==1)	then 
-			return kittyOrPassMachine
-		elseif(wcm.get_team_isClosestToGoalDefend()==1) then
-			return safety
-		end
-		return {[0] = gotoPosition, ["openSpot"] = "openSpot"}
-	end,
-	}),false);
+	[start] =function() print("im in my START " .. tostring(offenseMachine)) return  {[0] = offenseMachine, ["openSpot"] = "openSpot"} end,
+    [offenseMachine] = function() print("in offense, considering support"); if(wcm.get_team_closestToBallLoc()[1]<-.1) then return supportMachine; end return {[0] = offenseMachine, ["openSpot"] = "openSpot"} end,
+    [supportMachine] =function() print("in support, considering offense");if(wcm.get_team_closestToBallLoc()[1]>.1) then return {[0] = offenseMachine, ["openSpot"] = "openSpot"}; end return supportMachine end
+}),false);
 wcm.set_horde_ballLost(1)
 lastTimeFound = Body.get_time();
 function isBallLost()
@@ -315,7 +268,6 @@ end
 
 
 function closestToBall()
-	--return 0;
 	return wcm.get_team_is_smallest_eta();
 end
 
@@ -419,9 +371,21 @@ connectionThread = function ()
 	--kitty.client = client
 		kittyOrPassHFA.setClient(client)
 		kitty.setClient(client)
-        wcm.set_horde_ackNumber(1);
+        offenseHFA.setClient(client)
+		supportHFA.setClient(client)
+		wcm.set_horde_ackNumber(1);
 		print("connected")
-        while connected do
+        goalSideMultiply = -1;
+	if gcm.get_team_color() == 1 then
+
+                -- red attacks cyan goali
+                print(" yellow ")
+        else
+				goalSideMultiply = 1;
+                print("not yellow")
+        end
+            -- global 
+     	while connected do
 			client:settimeout(.05);
 			recval = client:receive()
 			-- convert the json to get the ackNumber
@@ -435,7 +399,7 @@ connectionThread = function ()
 				isBallLost();
 			    --kitty.wcm.get_horde_ballLost() = wcm.get_horde_ballLost()	
 				while wcm.get_horde_sentBehavior() == 0 do
-					pulse(myMachine, {["openSpot"] = {["x"] = -1.8, ["y"] = -1, ["a"]= 1.57}});
+					pulse(myMachine, {["openSpot"] = {["x"] = goalSideMultiply * 1.8, ["y"] = goalSideMultiply * 1, ["a"]= goalSideMultiply* -1.57}});
 				end
 				wcm.set_horde_sentBehavior(0);
 				print("cur rec number " .. tostring(wcm.get_horde_ackNumber()) .. "..........................................")
@@ -446,7 +410,7 @@ connectionThread = function ()
 end
 
 --start "main"
---[[if(darwin) then 
+if(darwin) then 
 		--        hoard_functions.hordeFunctions["murder all humans"](nil,nil);
 	--Motion.event("standup");	
       	print("starting connection thread\n");
@@ -454,6 +418,6 @@ end
 	connectionThread()
 	print("connection lost")
 --	wcm.set_horde_state("gotoBall");
-end]]--
+end
 --connection drew stuff, seriously i'm ruining this beautiful code
 

@@ -114,7 +114,7 @@ function sendFeatures (client)
 		features = {}
         features["playerID"] = Config.game.playerID;
         features["role"] = Config.game.role;
-		xPoseArr = {}
+	--[[	xPoseArr = {}
 		xPoseArr[1] = wcm.get_team_attacker_pose()[1];
 		xPoseArr[2] = wcm.get_team_goalie_pose()[1];
 		yPoseArr = {}
@@ -125,11 +125,12 @@ function sendFeatures (client)
 		aPoseArr[2] = wcm.get_team_goalie_pose()[3];
 	--print("mine: " .. wcm.get_pose().x .. " 1: " .. xPoseArr[1] .. " 2: " .. xPoseArr[2]);
 	--print("role: " .. Config.game.role .. " playerID: " .. Config.game.playerID);
-        features["poseX"] = xPoseArr;
-        features["poseY"] = yPoseArr;
-        features["poseA"] = aPoseArr;
+        ]]--
+	features["poseX"] = wcm.get_team_teamPoseX();
+        features["poseY"] = wcm.get_team_teamPoseY();
+        features["poseA"] = wcm.get_team_teamPoseA();
         features["allYelledReady"] = wcm.get_team_yelledReady(); 
-	
+	features["closestToBallLoc"] = wcm.get_team_closestToBallLoc();	
         features["ballDetect"] = vcm.get_ball_detect();
         features["ballX"] = wcm.get_ball_x();
         features["ballY"] = wcm.get_ball_y();
@@ -141,7 +142,12 @@ function sendFeatures (client)
 		features["yelledReady"] = wcm.get_horde_yelledReady();
 		features["yelledKick"] = wcm.get_horde_yelledKick();
     	features["yelledFail"] = wcm.get_horde_yelledFail(); 
-	--print("sending some features, yo\n");-- wcm.set_horde_doneFrontApproach("true");
+	features["isClosestToBall"] = wcm.get_team_is_smallest_eta();
+	features["midpoint"] = wcm.get_horde_midpointBallGoal();
+		features["isClosestToGoalDefend"] = wcm.get_team_isClosestToGoalDefend();
+		features["isClosestToGoalOffend"] = wcm.get_team_isClosestToGoalOffend();
+
+		--print("sending some features, yo\n");-- wcm.set_horde_doneFrontApproach("true");
        -- print(json.encode(features) .. "\n");
 		features["ackNumber"] = ackNumber;
 		client:settimeout(.01);

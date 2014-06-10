@@ -52,7 +52,7 @@ static int lua_get_image(lua_State *L) {
     lua_pushnumber(L,buf_num);
     return 1;
   }
-
+  printf("!@#$ YOU\n");
   uint32* image = (uint32*)v4l2_get_buffer(buf_num, NULL);
 
   // Increment the count
@@ -82,15 +82,23 @@ static int lua_get_image(lua_State *L) {
 }
 
 static int lua_take_save_images(lua_State *L) {
-	int imageSize = (v4l2_get_height() * v4l2_get_width())*2;
+	int imageSize = (v4l2_get_height() * v4l2_get_width())*3;
     printf("Image width: %d height: %d\n",v4l2_get_width(), v4l2_get_height());
 	static int count = 0;
 	int numPics = 10;
 	uint32 * pics[numPics];
     for (count = 0; count < numPics; count++) {
 		printf("taking image #%d\n",count);
-		int buf_num = v4l2_read_frame();
-		pics[count] = (uint32*)v4l2_get_buffer(buf_num, NULL);
+        int buf_num = v4l2_read_frame();
+  		if( buf_num < 0 ){
+    		printf("RAGE!!!");
+    		count--;
+			//ilua_pushnumber(L,buf_num);
+    		//r;
+  		}else{
+			printf("\n was success\n");
+			pics[count] = (uint32*)v4l2_get_buffer(buf_num, NULL);
+		}
 		sleep(1);
 	}
 	int i = 0;
@@ -106,7 +114,7 @@ static int lua_take_save_images(lua_State *L) {
 		const char* cpath = path;
         ptr_myfile=fopen(cpath, "wb");
 		printf("Opened image file %dtest.ppm\n", i);
-		fprintf(ptr_myfile, "P6\n%d %d\n255\n", width, height);
+	//	fprintf(ptr_myfile, "P6\n%d %d\n255\n", width, height);
 		int j,k;
  		for (j = 0; j < height; ++j)
   		{
@@ -114,10 +122,11 @@ static int lua_take_save_images(lua_State *L) {
   		  {
   		   static unsigned char color[3];
 		   uint32 pixel=pics[i][j*width+k];
-  		   color[2] = (unsigned char)(pixel&0xFF);  /* blue aka V */
   		   color[0] = (unsigned char)(pixel&0xFF00>>8);  /* red aka Y */
   		   color[1] = (unsigned char)(pixel&0xFF0000>>16);  /* green aka U */
-  		   fwrite(color, 1, 3, ptr_myfile);
+  		   color[2] = (unsigned char)(pixel&0xFF);  /* blue aka V */
+  		   
+		   fwrite(color, 1, 3, ptr_myfile);
   		  }
   		}//fwrite(pics[i], 4, imageSize, ptr_myfile);
 		printf("Wrote file");

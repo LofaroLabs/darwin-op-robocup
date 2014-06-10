@@ -60,6 +60,12 @@ lcount = 0;
 tUpdate = unix.time();
 connected = false;
 
+local client
+
+function setClient(someClient)
+	client = someClient;
+end
+
 function inspect(key, value)
 	table.foreach(value,print)
 end
@@ -84,8 +90,8 @@ gotoPoseFacingStart = function(hfa)
                         action["action"] = "gotoPoseFacing";
                         action["args"] = {};
 			ballGlobal= {};
-			ballGlobal.x = wcm.get_ballGlobal_x();
-			ballGlobal.y = wcm.get_ballGlobal_y();
+			ballGlobal.x = wcm.get_team_closestToBallLoc()[1]--wcm.get_ballGlobal_x();
+			ballGlobal.y = wcm.get_team_closestToBallLoc()[2]--wcm.get_ballGlobal_y();
 			print(ballGlobal)
  		    -- my pose global
        		pose=wcm.get_pose();
@@ -189,7 +195,13 @@ gotoBallStart = function()
         sendBehavior(json.encode(action) .. "\n");
 end
 gotoBallStop = function()end
-
+gotoPositionStart = function(behavior, targets)
+        action = {}
+        action["action"] = "gotoPose"
+        action["args"]  = targets["openSpot"]
+        action.ackNumber = wcm.get_horde_ackNumber();
+        sendBehavior(json.encode(action) .. "\n");
+end
 approachTargetStart = function()
 	print("approach target")
 	 action  = {}
@@ -221,7 +233,25 @@ stopPoseStart = function()
 	action.ackNumber =  wcm.get_horde_ackNumber();
 	sendBehavior(json.encode(action) .. "\n");
 end
+safetyStart = function()
+	print("safety")
+	action = {}
+	action["action"] = "gotoPose"
+	 goalSideAngle = 3.14;
+	if gcm.get_team_color() == 1 then
+		goalSideAngle = 0
+                -- red attacks cyan goali
+                print(" yellow ")
+        else
+				
+                print("not yellow")
+        end
 
+	action.args = {["x"] = 0, ["y"] = 0, ["a"]= goalSideAngle}
+	action.ackNumber = wcm.get_horde_ackNumber()
+	sendBehavior(json.encode(action) .. "\n")
+end
+gotoPosition = makeBehavior("gotoPosition", nil,nil,gotoPositionStart)
 stopPose = makeBehavior("stopPose", nil, nil, stopPoseStart);
 walkForward = makeBehavior("walkForward", nil, walkForwardStop, walkForwardStart);
 stopMoving = makeBehavior("stopMoving", nil, nil, stopPoseStart);
@@ -230,22 +260,33 @@ gotoBall = makeBehavior("gotoBall", nil, gotoBallStop, gotoBallStart);
 approachTarget = makeBehavior("approachTarget", nil, approachTargetStop, approachTargetStart);
 kickBall = makeBehavior("kickBall", nil, kickBallStop, kickBallStart);
 locateBall = makeBehavior("locateBall",nil,nil,locateBallStart);
+safety = makeBehavior("safety" , nil, nil,safetyStart);
 kittyMachine = kitty.kittyMachine
 --kittyMachine
-print(tostring(kittyMachine) .. " ok")
+print(tostring(kittyMachine) .. " ok in support")
 --super SUPER SUPER SUPER TODO IMPORTANT TODO NOW--- 
 -- IF YOU EXPECT THIS MACHINE TO WORK WITH MORE THAN ONE PLAYER LIKE A REAL GAME CHANGE THE LOGIC FOR CLOSEST BALL, IT'S COMPLETELY BACKWARDS ( ON PURPOSE FOR TESTING--
 myMachine = makeHFA("myMachine", makeTransition({
-	[start] = locateBall, --gotoPoseFacing,
-	[locateBall] = function() if wcm.get_horde_ballLost()==1  then return locateBall else return gotoPoseFacing end end,
+	[start] = function() print (" i got into the start for support "); return locateBall end, --gotoPoseFacing,
+	[locateBall] = function() print(" in support locate ball" ); 
+					if( not closestToBall()==1 and wcm.get_team_isClosestToGoalOffend()==1) then 
+						return safety
+					elseif wcm.get_horde_ballLost()==1  then return locateBall else return gotoPoseFacing end end,
 	[gotoPoseFacing] = function() print("considering transitioning out of gotoPoseFacing"); 
-					if wcm.get_horde_ballLost()==1 then 
+					
+					if( not closestToBall()==1 and wcm.get_team_isClosestToGoalOffend()==1) then 
+						return safety
+					
+					elseif wcm.get_horde_ballLost()==1 then 
 						print("locate ball"); 
 						return locateBall 
 					elseif closestToBall()==1 then 
-						print("trans to stop "); 
+						print("trans to kitty "); 
 						return kittyMachine 
-					--elseif distToMidpoint() < 0.3 then
+					--elseif distToMidpoin() < 0.3 then
+					elseif (wcm.get_team_isClosestToGoalOffend() ==1 )then
+						print("trans to safety")
+						return safety
 					elseif wcm.get_horde_yelledReady() == 1  then 
 						print("going to stop pose from goto"); 
 						return stopPose;
@@ -255,7 +296,12 @@ myMachine = makeHFA("myMachine", makeTransition({
 					end 
 				end,
 	[stopPose] = function()
-					if wcm.get_horde_ballLost() == 1 then
+					print("stop pose in supprt"); 
+
+					if( not closestToBall()==1 and wcm.get_team_isClosestToGoalOffend()==1) then 
+						return safety
+					
+					elseif wcm.get_horde_ballLost() == 1 then
 						return locateBall;
 					end
 					if distToMidpoint() > 0.3 then --- we will want to check the facing angle too... 
@@ -263,20 +309,40 @@ myMachine = makeHFA("myMachine", makeTransition({
 					elseif closestToBall() == 1 then 
 						print("go to done from stopPose")
 						return kittyMachine
+					elseif (wcm.get_team_isClosestToGoalOffend() ==1 )then
+						print("trans to safety")
+						return safety
 					else 
 						print("goto stop pse againin from stop pose") 
 						return stopPose 
 					end end,
 	[kittyMachine] = function() 
-					if wcm.get_horde_ballLost()==1 then 
+					print("in kitty machine in support")
+					if( not closestToBall()==1 and wcm.get_team_isClosestToGoalOffend()==1) then 
+						return safety
+					
+					elseif wcm.get_horde_ballLost()==1 then 
 						return locateBall 
 					elseif closestToBall() == 0 then 
 						return gotoPoseFacing ; 
+					elseif (wcm.get_team_isClosestToGoalOffend()==1 and closestToBall()~=1) then
+						print("trans to safety")
+						return safety
 					else
 						print("just keep kitty"); 
 						return kittyMachine
 					end 
-	end
+	end,
+	--wcm.get_team_isClosestToGoalDefend()
+	--wcm.get_team_isClosestToGoalOffend()
+	 [safety] = function()
+                if(closestToBall()==1)  then
+                        return kittyMachine
+                elseif(wcm.get_team_isClosestToGoalOffend()==1) then 
+                        return safety
+                end
+                return gotoPoseFacing
+        end,	
  	--[gotoBall] = function() if wcm.get_horde_ballLost() then return locateBall elseif (math.abs(wcm.get_ball_x())+math.abs(wcm.get_ball_y())) < .2 then return approachTarget else  return gotoBall  end end,
 	--[approachTarget] = function() if wcm.get_horde_ballLost() then return locateBall elseif wcm.get_horde_doneApproach()~= 0 then return kickBall else return approachTarget end end, 
 	--[kickBall] = function() unix.usleep(1 * 1E6); return locateBall; end
@@ -306,64 +372,10 @@ end
 
 
 function getMidpoint()
-
-	
-	if gcm.get_team_color() == 1 then
-
-    		-- red attacks cyan goali
-		print(" yellow ")
-     		postDefend = PoseFilter.postYellow;
-  	else
-		print("not yellow")
-    		-- blue attack yellow goal
-    		postDefend = PoseFilter.postCyan;
-  	end
-	
-	-- global 
-	LPost = postDefend[1];
-	RPost = postDefend[2];
-	--print(tostring(LPost))
-    --print(tostring(RPost))
-    -- relative
-	--ball=wcm.get_ballGlobal();
-	
-	ballGlobal= {};
-    ballGlobal.x = wcm.get_ballGlobal_x();
-    ballGlobal.y = wcm.get_ballGlobal_y();
-    print(ballGlobal)
-
-
-
-	-- my pose global
-  	pose=wcm.get_pose();
-	
-	-- determine which goal post the ball is closest to
-	-- so need its global coords
-	--[[ballGlobal = util.pose_global({ball.x, ball.y, 0}, {pose.x, pose.y, pose.a})
-	ballGlobal.x = ballGlobal[1];
-	ballGlobal.y = ballGlobal[2];
-    ]]--
-	LPost.x = LPost[1]
-	LPost.y = LPost[2]
-	RPost.x = RPost[1]
-	RPost.y = RPost[2]
-    farPost = {}
-	if dist(ballGlobal, LPost) > dist(ballGlobal, RPost) then
-		farPost.x = LPost[1]
-		farPost.y = LPost[2]
-		print("the far post is at coordinates: " .. tostring(farPost.x) .. ", " .. tostring(farPost.y))
-		print("the near post is at coordinates: " .. tostring(RPost.x) .. ", " .. tostring(RPost.y))
-	else
-		farPost.x = RPost[1]
-		farPost.y = RPost[2]
-	
-		print("the far post is at coordinates: " .. tostring(farPost.x) .. ", " .. tostring(farPost.y))
-		print("the near post is at coordinates: " .. tostring(LPost.x) .. ", " .. tostring(LPost.y))
-	end
-	--print("going to the po	
+	themid = wcm.get_horde.midpointBallGoal();
 	midpoint = {}
-	midpoint.x = (ballGlobal.x + farPost.x) / 2
-	midpoint.y = (ballGlobal.y + farPost.y) /2
+	midpoint.x = themid[1]
+	midpoint.y = themid[2]
 	midpoint.a = 0
 		
 	return midpoint
@@ -374,10 +386,6 @@ function distToMidpoint()
 end
 -- simple dist function
 function dist(curA, targetB)
-    --print("curA: " .. tostring(curA));
-    --print("targetB:  " .. tostring(targetB));
-	--print("curA.x: " .. curA.x);
-	--print("targetB.x " .. targetB.x);
 	return math.sqrt(math.pow(curA.x - targetB.x,2) + math.pow(curA.y - targetB.y,2))
 end
 
@@ -425,7 +433,7 @@ connectionThread = function ()
 		end
     end
 end
-
+--[[
 --start "main"
 if(darwin) then 
 		--        hoard_functions.hordeFunctions["murder all humans"](nil,nil);
@@ -437,4 +445,4 @@ if(darwin) then
 --	wcm.set_horde_state("gotoBall");
 end
 --connection drew stuff, seriously i'm ruining this beautiful code
-
+]]--
