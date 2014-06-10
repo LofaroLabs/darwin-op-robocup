@@ -467,7 +467,7 @@ public class Calibrate2 extends JFrame
 			sock = new Socket(ip, port); 
 			}
 		catch(UnknownHostException e) { System.err.println("Unknown Host " + ip); return; }
-		catch(IOException e) { System.err.println("IOError on connecting to " + ip); return; }
+		catch(IOException e) { System.err.println("IOError on connecting to " + ip + " on port " + port + "\n\n" + e); return; }
 		
 		InputStream input = null;
 		try
@@ -477,8 +477,12 @@ public class Calibrate2 extends JFrame
 				for(int x = 0; x < IMAGE_WIDTH; x++)
 					{
 					int _y = (byte)(input.read());
+					if (_y < 0) _y += 256;
 					int _cb = (byte)(input.read());
+					if (_cb < 0) _cb += 256;
 					int _cr = (byte)(input.read());
+					if (_cr < 0) _cr += 256;
+	System.err.println("X: " + x + " Y: " + y + " _y: " +  _y + " _cb: " + _cb + " _cr: " + _cr);
 					image.setRGB(x,y, new Color(_y, _cb, _cr, 255).getRGB());
 					}
 			}
@@ -501,8 +505,8 @@ public class Calibrate2 extends JFrame
 		
 		if (args.length > 0)
 			{
-			String ip = args[0];
-			int port = Integer.parseInt(args[1]);
+			ip = args[0];
+			port = Integer.parseInt(args[1]);
 			// we need to connect to a robot to get a feed
 			System.err.println("Connecting to " + ip + " at " + port);
 			ycbcrImage = new int[IMAGE_WIDTH][IMAGE_HEIGHT];
@@ -545,7 +549,6 @@ public class Calibrate2 extends JFrame
 				}
 			});
 			
-		if (ip != null)
 		reload.addActionListener(new ActionListener()
 			{
 			public void actionPerformed(ActionEvent e)
@@ -554,7 +557,7 @@ public class Calibrate2 extends JFrame
 				}
 			});
 			
-		if (ip != null) box.add(reload);
+		box.add(reload);
 		box.add(load);
 		box.add(save);
 		box.add(undo);
@@ -595,8 +598,7 @@ public class Calibrate2 extends JFrame
 		add(box, BorderLayout.SOUTH);
 		pack();
 		setVisible(true);
-		if (ip != null)
-			SwingUtilities.invokeLater(new Runnable() { public void run() { reload(); } });
+		SwingUtilities.invokeLater(new Runnable() { public void run() { reload(); } });
 		}
 		
 		
