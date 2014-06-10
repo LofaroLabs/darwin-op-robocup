@@ -667,6 +667,11 @@ goHFA = function(hfa, targets)
 	    (not (hfa.current.go == nil))) then
         hfa.goTransitionedTo = hfa.current.go(hfa.current, hfa.behaviorTargets)
     end
+    
+    -- PERFORM GOTRANSITION IF ANY
+    if (not (hfa.goTransition == nil))
+    	return hfa.goTransition(hfa, targets)
+    else return nil
 end
 
 
@@ -699,7 +704,7 @@ end
 -- Though the transition function can be nil, it's almost certainlly not appropriate to do so.
 makeHFA = function(name, transition)
     return { ["name"] = name, ["start"] = startHFA, ["stop"] = stopHFA, ["go"] = goHFA, 
-             ["transition"] = transition, ["pulsed"] = false,
+             ["transition"] = transition, ["pulsed"] = false, ["goTransition"] = nil,
              ["parent"] = nil, ["goTransitionedTo"] = nil, ["counter"] = 0, ["timer"] = 0, 
              ["done"] = false, ["failed"] = false, ["current"] = start,
              ["propagateFlags"] = false, ["targets"] = nil, ["behaviorTargets"] = nil }
