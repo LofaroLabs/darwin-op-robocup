@@ -41,7 +41,8 @@ function update()
   endFacingRelative = util.pose_relative(endFacing,{pose.x,pose.y,pose.a})
   endFacingX = endFacingRelative[1];
   endFacingY = endFacingRelative[2];
-  scaleFactor = 15*(math.abs(endPoseX)+math.abs(endPoseY));
+  endFacingRelative[3] = math.atan2(endFacingY, endFacingX);
+   scaleFactor = 15*(math.abs(endPoseX)+math.abs(endPoseY));
 
   print("im currently at " .. pose.x .. ", " .. pose.y );
   print("im trying to face " .. endFacing[1] .. ", " .. endFacing[2])
@@ -63,7 +64,8 @@ function update()
   print("I converted\n");
   if((pose.x-endFacing[1]<0) == ((endFacing[1] - endPosition[1])<0)) then -- far away, just run at the point
       print("final point far away, must run toward" .. (math.abs(endPoseX)+math.abs(endPoseY)));
-      if(endPoseY>0) then
+     print("angle trying to face " .. endFacingRelative[3]); 
+     if(endFacingRelative[3]>0) then
            rotateVel = .5;
       else
            rotateVel = -.5;
@@ -75,7 +77,8 @@ function update()
   	  return;
   end -- check for completion
   if((math.abs(endPoseX)+math.abs(endPoseY))<distanceTolerance and math.abs(endFacingRelative[3]) < angleTolerance) then
- 	Speak.talk("banana.");
+ 	print("i am most certainly ready");
+	--Speak.talk("banana.");
 	--walk.set_velocity(0,0,0);
 --	Motion.sm:set_state('standstill');
 	--alreadyDone = true;
@@ -97,6 +100,7 @@ function update()
       end
       walk.set_velocity(0, 0,rotateVel);
   elseif (math.abs(endPoseX)+math.abs(endPoseY)>distanceTolerance) then
+	print("just adjusting distance now, angle must be good, take a look: " .. tostring(endFacingRelative[3]));
 --[[  print("walking toward final point " .. (math.abs(endPoseX)+math.abs(endPoseY)));
       if(endPoseY>0) then
            rotateVel = .5;
