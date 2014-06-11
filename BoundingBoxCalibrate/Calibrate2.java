@@ -476,13 +476,15 @@ public class Calibrate2 extends JFrame
 			for(int y = 0; y < IMAGE_HEIGHT; y++)
 				for(int x = 0; x < IMAGE_WIDTH; x++)
 					{
-					int _y = (byte)(input.read());
-					if (_y < 0) _y += 256;
+                    int _alpha = (byte)(input.read());
+                    if (_alpha < 0) _alpha += 256;
 					int _cb = (byte)(input.read());
 					if (_cb < 0) _cb += 256;
+                    int _y = (byte)(input.read());
+                    if (_y < 0) _y += 256;
 					int _cr = (byte)(input.read());
 					if (_cr < 0) _cr += 256;
-	System.err.println("X: " + x + " Y: " + y + " _y: " +  _y + " _cb: " + _cb + " _cr: " + _cr);
+	//System.err.println("X: " + x + " Y: " + y + " _y: " +  _y + " _cb: " + _cb + " _cr: " + _cr + " _alpha?: " + _alpha);
 					image.setRGB(x,y, new Color(_y, _cb, _cr, 255).getRGB());
 					}
 			}
