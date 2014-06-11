@@ -18,14 +18,14 @@ function update()
 		if (Body.get_change_role() == 1) then
 			scriptNumber = scriptNumber + 1;
 			print("Incrementing leftbutton script")
-			if     scriptNumber == 1 then Speak.talk('Vision Calibration Mode')
+			if     scriptNumber == 0 then Speak.talk('Ready Aim Fire')
+                        elseif scriptNumber == 1 then Speak.talk('Vision Calibration Mode')
 			elseif scriptNumber == 2 then Speak.talk('Demo Mode')
 			elseif scriptNumber == 3 then Speak.talk('Reset Internet Mode')
-			elseif scriptNumber == 3 then Speak.talk('Kitty Soccer Mode')
-			elseif scriptNumber == 4 then Speak.talk('Image Calibration')
-			elseif scriptNumber == 5 then Speak.talk('Reset Darwin')
-			elseif scriptNumebr == 6 then Speak.talk('Shall We Play A Game')
-						      scriptNumber = 0
+			elseif scriptNumber == 4 then Speak.talk('Kitty Soccer Mode')
+			elseif scriptNumber == 5 then Speak.talk('Image Calibration')
+			elseif scriptNumber == 6 then Speak.talk('Reset Darwin')
+			elseif scriptNumber == 7 then Speak.talk('Shall We Play A Game')
 			else   scriptNumber = 0; -- May be able to remove this and change last elseif to else
 		end
 
@@ -55,6 +55,8 @@ middleCount = 0;
 leftCount = 0;
 
 scriptNumber = 0;	-- Default Mode
+
+Speak.talk('George Mason Awesome Robo Patriots')
 
 local tDelay = 0.005 * 1E6;
 while 1 do

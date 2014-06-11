@@ -80,14 +80,45 @@ static int lua_get_image(lua_State *L) {
   lua_pushlightuserdata(L, image);
   return 1;
 }
+static void turn_on_camera(){
+    int res = 1;
 
-static int lua_take_save_images(lua_State *L) {
-	int imageSize = (v4l2_get_height() * v4l2_get_width())*3;
-    printf("Image width: %d height: %d\n",v4l2_get_width(), v4l2_get_height());
+  if (!init) {
+    if ( v4l2_open(VIDEO_DEVICE) == 0){
+      init = 1;
+      v4l2_init( res );
+      v4l2_stream_on();
+			// Allocate our camera status
+      cameraStatus = (CAMERA_STATUS *)malloc(sizeof(CAMERA_STATUS));
+      /// TODO: free this
+    }
+  }
+}
+static void lua_take_save_images(uint32* pic) {
+   	int imageSize = v4l2_get_width()*v4l2_get_height()*4;
+	printf("Image width: %d height: %d\n",v4l2_get_width(), v4l2_get_height());
 	static int count = 0;
 	int numPics = 10;
-	uint32 * pics[numPics];
-    for (count = 0; count < numPics; count++) {
+	//uint32 * pics[numPics];
+    	bool done = false;
+	while(!done) {
+		int buf_num = v4l2_read_frame();
+		if( buf_num < 0 ){
+            	    printf("RAGE!!!");
+		    done = false;            
+       		}else{
+		    done = true;
+              	    printf("\n was success\n");
+                    uint32* image =(uint32*)v4l2_get_buffer(buf_num, NULL);
+		    memcpy(pic,image,imageSize);
+	//       	    for(int i = 0; i<imageSize; i++){
+//			printf("my pixel is: %d\n", image[i]); 	
+//		    }
+		    printf("\n copy success\n");
+        	}
+	}
+         //sleep(1);
+	/*for (count = 0; count < numPics; count++) {
 		printf("taking image #%d\n",count);
         int buf_num = v4l2_read_frame();
   		if( buf_num < 0 ){
@@ -100,41 +131,38 @@ static int lua_take_save_images(lua_State *L) {
 			pics[count] = (uint32*)v4l2_get_buffer(buf_num, NULL);
 		}
 		sleep(1);
-	}
-	int i = 0;
+	}*/
+//	return pics;
+/*	int i = 0;
 	printf("saving images\n");
 	int width=v4l2_get_width();
 	int height=v4l2_get_height();
-	for (i = 0; i < numPics; i++)
-	{
+	for (i = 0; i < numPics; i++){
 		printf("on image %d\n", i);
-        FILE *ptr_myfile;
+        	FILE *ptr_myfile;
 		char path[100];
 		sprintf(path, "/home/darwin/%dtest.ppm", i);
 		const char* cpath = path;
-        ptr_myfile=fopen(cpath, "wb");
+        	ptr_myfile=fopen(cpath, "wb");
 		printf("Opened image file %dtest.ppm\n", i);
 	//	fprintf(ptr_myfile, "P6\n%d %d\n255\n", width, height);
 		int j,k;
- 		for (j = 0; j < height; ++j)
-  		{
- 		  for (k = 0; k < width; ++k)
-  		  {
-  		   static unsigned char color[3];
-		   uint32 pixel=pics[i][j*width+k];
-  		   color[0] = (unsigned char)(pixel&0xFF00>>8);  /* red aka Y */
-  		   color[1] = (unsigned char)(pixel&0xFF0000>>16);  /* green aka U */
-  		   color[2] = (unsigned char)(pixel&0xFF);  /* blue aka V */
-  		   
-		   fwrite(color, 1, 3, ptr_myfile);
-  		  }
+ 		for (j = 0; j < height; ++j){
+ 	        	for (k = 0; k < width; ++k){
+  				static unsigned char color[3];
+				uint32 pixel=pics[i][j*width+k];
+  				color[0] = (unsigned char)(pixel&0xFF00>>8);  /*  Y */
+  /*				color[1] = (unsigned char)(pixel&0xFF0000>>16);  /*  U */
+  				//color[2] = (unsigned char)(pixel&0xFF);  /* V */
+/*		 		fwrite(color, 1, 3, ptr_myfile);
+  			}
   		}//fwrite(pics[i], 4, imageSize, ptr_myfile);
 		printf("Wrote file");
 		fclose(ptr_myfile);
 		printf("closed file");
         }
 
-
+*/
         // Once our get_image returns, set the camera status
         cameraStatus->count = count;
         cameraStatus->time = time_scalar();
@@ -144,8 +172,8 @@ static int lua_take_save_images(lua_State *L) {
         for (int ji = 0; ji < 20; ji++) {
                 cameraStatus->joint[ji] = 0;
         }
-
-        return 1;
+	return;
+        //return pics;
 }
 
 static int lua_save_image(lua_State *L) {
@@ -281,7 +309,7 @@ static int lua_selected_camera(lua_State *L) {
 static const struct luaL_Reg camera_lib [] = {
   {"get_image", lua_get_image},
   {"save_image", lua_save_image},
-  {"take_save_images", lua_take_save_images}, 
+//  {"take_save_images", lua_take_save_images}, 
   {"init", lua_init},
   {"small_init", lua_small_init},
   {"stop",lua_stop},
