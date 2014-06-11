@@ -50,6 +50,9 @@ public class Calibrate2 extends JFrame
 	
 	/** Should we disregard the Y information in the bounding box, that is, make the box maximal in the Y direction? */
 	boolean disregardY = false;
+        
+    /** Should we only overlay all colors? */
+    boolean allColors = true;
 	
 	/** GUI Widgets */
 	JButton save = new JButton("Save");
@@ -59,6 +62,7 @@ public class Calibrate2 extends JFrame
 	JComboBox labels;
 	JLabel indexLabel = new JLabel("1");
 	JCheckBox displayOverlayCheck = new JCheckBox("Overlay");
+    JCheckBox allColorsCheck = new JCheckBox("All Colors");
 	JCheckBox disregardYCheck = new JCheckBox("No Y");
 	
 	/** Labels for the JComboBox */
@@ -401,28 +405,28 @@ public class Calibrate2 extends JFrame
 			for(int y = 0; y < IMAGE_HEIGHT; y++)
 				{
 				unpack_ycbcr(ycbcrImage[x][y], ycbcr);
+                overlay.setRGB(x,y,C_OTHER);  // clear it
 				switch(data[ycbcr[0]/div][ycbcr[1]/div][ycbcr[2]/div])
 					{
 					case OTHER:
-						overlay.setRGB(x,y,C_OTHER);
 						break;
 					case ORANGE:
-						overlay.setRGB(x,y,C_ORANGE);
+						if (allColors || labels.getSelectedIndex() == ORANGE) overlay.setRGB(x,y,C_ORANGE);
 						break;
 					case YELLOW:
-						overlay.setRGB(x,y,C_YELLOW);
+						if (allColors || labels.getSelectedIndex() == YELLOW) overlay.setRGB(x,y,C_YELLOW);
 						break;
 					case GREEN:
-						overlay.setRGB(x,y,C_GREEN);
+						if (allColors || labels.getSelectedIndex() == GREEN) overlay.setRGB(x,y,C_GREEN);
 						break;
 					case WHITE:
-						overlay.setRGB(x,y,C_WHITE);
+						if (allColors || labels.getSelectedIndex() == WHITE) overlay.setRGB(x,y,C_WHITE);
 						break;
 					case MAGENTA:
-						overlay.setRGB(x,y,C_MAGENTA);
+						if (allColors || labels.getSelectedIndex() == MAGENTA) overlay.setRGB(x,y,C_MAGENTA);
 						break;
 					case CYAN:
-						overlay.setRGB(x,y,C_CYAN);
+						if (allColors || labels.getSelectedIndex() == CYAN) overlay.setRGB(x,y,C_CYAN);
 						break;
 					default:
 						System.err.println("Invalid color label: " + data[ycbcr[0]/div][ycbcr[1]/div][ycbcr[2]/div]);
@@ -476,8 +480,6 @@ public class Calibrate2 extends JFrame
 			for(int y = 0; y < IMAGE_HEIGHT * 2; y++)
 				for(int x = 0; x < IMAGE_WIDTH * 2; x++)
 					{
-					if (x < IMAGE_HEIGHT && y < IMAGE_WIDTH)
-						{
 						int _alpha = (byte)(input.read());  // This is actually y2, but we're ignoring that
 						if (_alpha < 0) _alpha += 256;
 						int _cb = (byte)(input.read());
@@ -486,8 +488,10 @@ public class Calibrate2 extends JFrame
 						if (_y < 0) _y += 256;
 						int _cr = (byte)(input.read());
 						if (_cr < 0) _cr += 256;
-						//image.setRGB(x,y, new Color(_y, _cb, _cr, 255).getRGB());
-						image.setRGB(x,y, new Color(_alpha, _cr, _cb, 255).getRGB());
+
+                    if (x < IMAGE_WIDTH && y < IMAGE_HEIGHT)
+                        {
+                        image.setRGB(x,y, new Color(_alpha, _cb, _cr, 255).getRGB());
 						}
 					else
 						{
@@ -578,6 +582,16 @@ public class Calibrate2 extends JFrame
 		box = new Box(BoxLayout.X_AXIS);
 		
 		labels = new JComboBox(new String[] { other, orange, yellow, green, white, magenta, cyan });
+
+labels.addActionListener(new ActionListener()
+{
+public void actionPerformed(ActionEvent e)
+{
+updateOverlay();
+display.repaint();
+}
+});
+
 		box.add(labels);
 		box.add(new JLabel("  Image "));
 		box.add(indexLabel);
@@ -588,6 +602,7 @@ public class Calibrate2 extends JFrame
 			public void actionPerformed(ActionEvent e)
 				{
 				displayOverlay = displayOverlayCheck.isSelected();
+                updateOverlay();
 				display.repaint();
 				}
 			});
@@ -598,11 +613,24 @@ public class Calibrate2 extends JFrame
 			{
 			public void actionPerformed(ActionEvent e)
 				{
-				disregardY = disregardYCheck.isSelected();
+                disregardY = disregardYCheck.isSelected();
+                updateOverlay();
 				display.repaint();
 				}
 			});
 		
+        box.add(allColorsCheck);
+        allColorsCheck.setSelected(true);
+        allColorsCheck.addActionListener(new ActionListener()
+            {
+            public void actionPerformed(ActionEvent e)
+                {
+                allColors = allColorsCheck.isSelected();
+                updateOverlay();
+                display.repaint();
+                }
+            });
+
 		box.add(Box.createGlue());
 		add(box, BorderLayout.SOUTH);
 		pack();
