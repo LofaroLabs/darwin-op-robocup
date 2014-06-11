@@ -29,9 +29,9 @@ import java.net.*;
 public class Calibrate2 extends JFrame
 	{
 	/** Width of the BufferedImages being displayed. */
-	public static final int IMAGE_WIDTH = 320;
+	public static final int IMAGE_WIDTH = 640;
 	/** Height of the BufferedImages being displayed. */
-	public static final int IMAGE_HEIGHT = 240;
+	public static final int IMAGE_HEIGHT = 480;
 	/** The dimensionality for Y, Cb, and Cr respectively (thus a bit-depth of 6 each, totalling 18) */
 	public static final int NUM_COLORS = 64;  // 2^COLOR_DEPTH
 
@@ -477,8 +477,8 @@ public class Calibrate2 extends JFrame
 		try
 			{
 			input = new BufferedInputStream(sock.getInputStream());
-			for(int y = 0; y < IMAGE_HEIGHT * 2; y++)
-				for(int x = 0; x < IMAGE_WIDTH * 2; x++)
+			for(int y = 0; y < IMAGE_HEIGHT; y++)
+				for(int x = 0; x < IMAGE_WIDTH; x++)
 					{
 						int _alpha = (byte)(input.read());  // This is actually y2, but we're ignoring that
 						if (_alpha < 0) _alpha += 256;
@@ -489,10 +489,19 @@ public class Calibrate2 extends JFrame
 						int _cr = (byte)(input.read());
 						if (_cr < 0) _cr += 256;
 
-                    if (x < IMAGE_WIDTH && y < IMAGE_HEIGHT)
+                    if (y < IMAGE_HEIGHT / 2)
                         {
-                        image.setRGB(x,y, new Color(_alpha, _cb, _cr, 255).getRGB());
-						}
+                        if (x < IMAGE_WIDTH / 2)
+                            {
+                            image.setRGB(x * 2 ,y * 2, new Color(_alpha, _cb, _cr, 255).getRGB());
+                            image.setRGB(x * 2 + 1,y * 2, new Color(_y, _cb, _cr, 255).getRGB());
+                            }
+                        else //  (x >= IMAGE_WIDTH)
+                            {
+                            image.setRGB((x - IMAGE_WIDTH / 2) * 2 , y * 2 + 1, new Color(_alpha, _cb, _cr, 255).getRGB());
+                            image.setRGB((x - IMAGE_WIDTH / 2) * 2 + 1,y * 2 + 1, new Color(_y, _cb, _cr, 255).getRGB());
+                            }
+                        }
 					else
 						{
 						// do nothing, hack to eliminate the weird part of the image
