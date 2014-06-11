@@ -29,9 +29,9 @@ import java.net.*;
 public class Calibrate2 extends JFrame
 	{
 	/** Width of the BufferedImages being displayed. */
-	public static final int IMAGE_WIDTH = 640;
+	public static final int IMAGE_WIDTH = 320;
 	/** Height of the BufferedImages being displayed. */
-	public static final int IMAGE_HEIGHT = 480;
+	public static final int IMAGE_HEIGHT = 240;
 	/** The dimensionality for Y, Cb, and Cr respectively (thus a bit-depth of 6 each, totalling 18) */
 	public static final int NUM_COLORS = 64;  // 2^COLOR_DEPTH
 
@@ -473,18 +473,25 @@ public class Calibrate2 extends JFrame
 		try
 			{
 			input = new BufferedInputStream(sock.getInputStream());
-			for(int y = 0; y < IMAGE_HEIGHT; y++)
-				for(int x = 0; x < IMAGE_WIDTH; x++)
+			for(int y = 0; y < IMAGE_HEIGHT * 2; y++)
+				for(int x = 0; x < IMAGE_WIDTH * 2; x++)
 					{
-                    int _alpha = (byte)(input.read());
-                    if (_alpha < 0) _alpha += 256;
-					int _cb = (byte)(input.read());
-					if (_cb < 0) _cb += 256;
-                    int _y = (byte)(input.read());
-                    if (_y < 0) _y += 256;
-					int _cr = (byte)(input.read());
-					if (_cr < 0) _cr += 256;
-					image.setRGB(x,y, new Color(_y, _cb, _cr, 255).getRGB());
+					if (x < IMAGE_HEIGHT && y < IMAGE_WIDTH)
+						{
+						int _alpha = (byte)(input.read());  // This is actually y2, but we're ignoring that
+						if (_alpha < 0) _alpha += 256;
+						int _cb = (byte)(input.read());
+						if (_cb < 0) _cb += 256;
+						int _y = (byte)(input.read());
+						if (_y < 0) _y += 256;
+						int _cr = (byte)(input.read());
+						if (_cr < 0) _cr += 256;
+						image.setRGB(x,y, new Color(_y, _cb, _cr, 255).getRGB());
+						}
+					else
+						{
+						// do nothing, hack to eliminate the weird part of the image
+						}
 					}
 			}
 		catch(IOException e) { System.err.println("Can't read image from socket."); }
