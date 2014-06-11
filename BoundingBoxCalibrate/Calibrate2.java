@@ -484,7 +484,6 @@ public class Calibrate2 extends JFrame
                     if (_y < 0) _y += 256;
 					int _cr = (byte)(input.read());
 					if (_cr < 0) _cr += 256;
-	//System.err.println("X: " + x + " Y: " + y + " _y: " +  _y + " _cb: " + _cb + " _cr: " + _cr + " _alpha?: " + _alpha);
 					image.setRGB(x,y, new Color(_y, _cb, _cr, 255).getRGB());
 					}
 			}
@@ -503,7 +502,7 @@ public class Calibrate2 extends JFrame
 	/** Builds the GUI, loads the images, and sets things up. */
 	public Calibrate2(String[] args) throws IOException
 		{
-		super("Argh");
+		super("Bleah");
 		
 		if (args.length > 0)
 			{
