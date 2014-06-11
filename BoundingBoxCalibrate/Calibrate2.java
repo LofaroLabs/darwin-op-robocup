@@ -33,7 +33,7 @@ public class Calibrate2 extends JFrame
 	/** Height of the BufferedImages being displayed. */
 	public static final int IMAGE_HEIGHT = 480;
 	/** The dimensionality for Y, Cb, and Cr respectively (thus a bit-depth of 6 each, totalling 18) */
-    public static final int NUM_COLORS = 256;  //64;  // 2^COLOR_DEPTH
+    public static final int NUM_COLORS = 64;  // 2^COLOR_DEPTH
 
 	BufferedImage image = new BufferedImage(IMAGE_WIDTH, IMAGE_HEIGHT, BufferedImage.TYPE_INT_ARGB);
 	int[/*width*/][/*height*/] ycbcrImage; // = new int[IMAGE_WIDTH][IMAGE_HEIGHT];
@@ -53,6 +53,9 @@ public class Calibrate2 extends JFrame
         
     /** Should we only overlay all colors? */
     boolean allColors = true;
+    
+    /** Should we displaying a live feed */
+    boolean liveFeed = false;
 	
 	/** GUI Widgets */
 	JButton save = new JButton("Save");
@@ -62,6 +65,7 @@ public class Calibrate2 extends JFrame
 	JComboBox labels;
 	JLabel indexLabel = new JLabel("1");
 	JCheckBox displayOverlayCheck = new JCheckBox("Overlay");
+	JCheckBox liveFeedCheck = new JCheckBox("Live?");
     JCheckBox allColorsCheck = new JCheckBox("All Colors");
 	JCheckBox disregardYCheck = new JCheckBox("No Y");
 	
@@ -477,7 +481,7 @@ public class Calibrate2 extends JFrame
 		try
 			{
 			input = new BufferedInputStream(sock.getInputStream());
-			for(int y = 0; y < IMAGE_HEIGHT; y++)
+			for(int y = 0; y < IMAGE_HEIGHT / 2; y++)	  // we only grab half the stream
 				for(int x = 0; x < IMAGE_WIDTH; x++)
 					{
 						int _alpha = (byte)(input.read());  // This is actually y2, but we're ignoring that
@@ -579,6 +583,16 @@ public class Calibrate2 extends JFrame
 				}
 			});
 			
+		liveFeedCheck.setSelected(false);
+		liveFeedCheck.addActionListener(new ActionListener()
+			{
+			public void actionPerformed(ActionEvent er)
+				{
+				liveFeed = liveFeedCheck.isSelected();
+				}
+			});
+		
+		box.add(liveFeedCheck);
 		box.add(reload);
 		box.add(load);
 		box.add(save);
@@ -605,6 +619,7 @@ display.repaint();
 		box.add(new JLabel("  Image "));
 		box.add(indexLabel);
 		box.add(displayOverlayCheck);
+		
 		displayOverlayCheck.setSelected(true);
 		displayOverlayCheck.addActionListener(new ActionListener()
 			{
@@ -645,9 +660,22 @@ display.repaint();
 		pack();
 		setVisible(true);
 		SwingUtilities.invokeLater(new Runnable() { public void run() { reload(); } });
+		
+		java.util.TimerTask task = new java.util.TimerTask() 
+			{ 
+				public void run() 
+				{
+				if (liveFeed)
+					try { SwingUtilities.invokeAndWait(new Runnable() { public void run() { reload(); updateOverlay(); display.repaint(); } }); }
+					catch (Exception e) { } // do nothing
+				} 
+			};
+		java.util.Timer timer = new java.util.Timer(true);
+		timer.schedule(task, 0, INTERVAL);		
 		}
 		
-		
+	public static long INTERVAL = 1;
+	
 	/** Loads a new color space. You'll probably need to set up a file dialog. */
 	public void load()
 		{
