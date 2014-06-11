@@ -486,7 +486,8 @@ public class Calibrate2 extends JFrame
 						if (_y < 0) _y += 256;
 						int _cr = (byte)(input.read());
 						if (_cr < 0) _cr += 256;
-						image.setRGB(x,y, new Color(_y, _cb, _cr, 255).getRGB());
+						//image.setRGB(x,y, new Color(_y, _cb, _cr, 255).getRGB());
+						image.setRGB(x,y, new Color(_alpha, _cr, _cb, 255).getRGB());
 						}
 					else
 						{
