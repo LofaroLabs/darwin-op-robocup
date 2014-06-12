@@ -31,7 +31,7 @@ int main()
 
 		
 		
-		writen(fd, (char*)buffer, WIDTH * HEIGHT*4);
+		writen(fd, (char*)buffer, WIDTH * HEIGHT*2); // had to half to make faster
 		//writen(fd, "Sorry, I can't do that, Dave\n", strlen("Sorry, I can't do that, Dave\n"));
 		close(fd);
 		}
