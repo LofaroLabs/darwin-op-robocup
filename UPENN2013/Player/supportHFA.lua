@@ -372,7 +372,7 @@ end
 
 
 function getMidpoint()
-	themid = wcm.get_horde.midpointBallGoal();
+	themid = wcm.get_horde_midpointBallGoal();
 	midpoint = {}
 	midpoint.x = themid[1]
 	midpoint.y = themid[2]
