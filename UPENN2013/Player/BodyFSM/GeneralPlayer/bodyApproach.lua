@@ -301,11 +301,11 @@ function update()
     print("ballLost")
     return "ballLost";
   end
- --[[ if (t - t0 > timeout) then
+  if (t - t0 > timeout) then-- had trouble with gmu machine?
     HeadFSM.sm:set_state('headTrack');
     print("timeout")
     return "timeout";
-  end]]--
+  end
   if (ballR > rFar) then
     HeadFSM.sm:set_state('headTrack');
     print("ballfar, ",ballR,rFar)

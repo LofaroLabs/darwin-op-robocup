@@ -137,7 +137,7 @@ sm:set_transition(bodyPositionGoalie, 'ready', bodyAnticipate);
 sm:set_transition(bodyPositionGoalie, 'ballClose', bodyChase)
 
 -- Timeout should stay in position, not start moving again
-sm:set_transition(bodyAnticipate,'timeout',bodyAnticipate);
+sm:set_transition(bodyAnticipate,'timeout',bodySearch);
 -- Change the ball if it is close enough, since a shot will go in anyway...
 sm:set_transition(bodyAnticipate,'ballClose',bodyChase);
 -- Add a dive when a shot is detected

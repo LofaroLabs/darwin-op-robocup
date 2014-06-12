@@ -38,12 +38,17 @@ rCloseX = Config.fsm.bodyAnticipate.rCloseX;
 timeout = Config.fsm.bodyAnticipate.timeout;
 thFar = Config.fsm.bodyAnticipate.thFar or {0.4,0.4,15*math.pi/180};
 
-
+lastSawBall = 0;
 
 
 function entry()
-  print(_NAME.." entry");
+  
+print(_NAME.." entry");
+  
   t0 = Body.get_time();
+  if(vcm.get_ball_detect() ==1) then
+	lastSawBall = t0;
+  end
   started = false;
   follow = false;
   walk.stop();
@@ -53,6 +58,12 @@ function entry()
 end
 
 function update()
+  if(vcm.get_ball_detect() == 1) then
+	lastSawBall = Body.get_time();
+  end
+  if(Body.get_time()-lastSawBall >= 5.0) then
+	return 'timeout'
+  end
   role = gcm.get_team_role();
   if role~=0 then
     return "player";
