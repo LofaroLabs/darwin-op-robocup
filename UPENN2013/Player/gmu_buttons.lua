@@ -18,14 +18,32 @@ function update()
 		if (Body.get_change_role() == 1) then
 			scriptNumber = scriptNumber + 1;
 			print("Incrementing leftbutton script")
-			if     scriptNumber == 0 then Speak.talk('Ready Aim Fire')
-                        elseif scriptNumber == 1 then Speak.talk('Vision Calibration Mode')
+			if     scriptNumber == 0 then 
+				Speak.talk('Ready Aim Fire')
+				-- this is full soccer
+				os.execute("sh runbasic.sh");
+				os.execute("sh scripts/fullsoccer.sh ");
+                        elseif scriptNumber == 1 then 
+				Speak.talk('Vision Calibration Mode')
+				-- then we call the vision calibration
+				os.execute("sh runbasic.sh");
+				os.execute("echo 111111 | sudo -S sh scripts/startCalibration.sh")
 			elseif scriptNumber == 2 then Speak.talk('Demo Mode')
-			elseif scriptNumber == 3 then Speak.talk('Reset Internet Mode')
-			elseif scriptNumber == 4 then Speak.talk('Kitty Soccer Mode')
-			elseif scriptNumber == 5 then Speak.talk('Image Calibration')
-			elseif scriptNumber == 6 then Speak.talk('Reset Darwin')
-			elseif scriptNumber == 7 then Speak.talk('Shall We Play A Game')
+				os.execute("sh runbasic.sh");
+				os.execute("sh scripts/demomode.sh");
+			elseif scriptNumber == 3 then 
+				Speak.talk('Reset Internet Mode')
+				os.execute("echo 111111 | sudo -S sh scripts/resetInternet.sh")
+			elseif scriptNumber == 4 then 
+				Speak.talk('Kitty Soccer Mode')
+				os.execute("sh scripts/kittyMode.sh");
+			elseif scriptNumber == 5 then 
+				Speak.talk('Reset Camera')
+				os.execute("echo 111111 | sudo -S sh scripts/restartcam.sh")
+			elseif scriptNumber == 6 then 
+				Speak.talk('Reset Darwin')
+				os.execute("sh runbasic.sh")
+			elseif scriptNumber == 7 then Speak.talk('Nothing')
 			else   scriptNumber = 0; -- May be able to remove this and change last elseif to else
 		end
 

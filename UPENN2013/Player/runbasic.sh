@@ -1,4 +1,4 @@
-killall -q naoqi-bin naoqi hal espeak lua luajit luajit2 screen
+killall -q naoqi-bin naoqi hal espeak lua luajit luajit2 screen CalibrationServer
 
 screen -dm -L -s /usr/bin/bash -S dcm  lua ./run_dcm.lua
 sleep 1

@@ -446,7 +446,7 @@ connectionThread = function ()
 end
 
 --start "main"
---[[if(darwin) then 
+if(darwin) then 
 		--        hoard_functions.hordeFunctions["murder all humans"](nil,nil);
 	--Motion.event("standup");	
       	print("starting connection thread\n");
@@ -454,6 +454,6 @@ end
 	connectionThread()
 	print("connection lost")
 --	wcm.set_horde_state("gotoBall");
-end]]--
+end
 --connection drew stuff, seriously i'm ruining this beautiful code
 
