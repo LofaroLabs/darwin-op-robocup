@@ -424,6 +424,9 @@ function update_status()
 	-- i am closest is based off of the global position of the ball
 	
 	local allDist;
+	local ballGlobal= {};
+        ballGlobal.x = wcm.get_team_closestToBallLoc()[1]
+        ballGlobal.y = wcm.get_team_closestToBallLoc()[2]
 	
 	for i = 1,5 do
 		
