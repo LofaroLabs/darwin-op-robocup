@@ -164,6 +164,7 @@ for a real program.
 #include <sys/errno.h>
 #include <string.h>
 #include <unistd.h>
+#include <signal.h>
 
 #define SERV_TCP_PORT 8050                   /*  A default TCP Port */
 #define SERV_HOST_ADDR "localhost"     /*  default server address here */

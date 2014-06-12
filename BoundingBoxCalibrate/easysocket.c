@@ -235,6 +235,7 @@ int wait_on_socket()
         
 	int optval = 1;
 	setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &optval, sizeof(optval));
+	signal(SIGPIPE, SIG_IGN);
 	
     
     /*  bind our local address so that the client can send to us. */

@@ -10,4 +10,4 @@ sleep 5
 
 lua ./gmu_buttons.lua &
 
-touch ./test.txt
+
