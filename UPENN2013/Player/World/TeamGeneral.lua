@@ -274,6 +274,32 @@ function update()
   shortestDefendID = 0;
   shortestAttackID = 0
 
+
+	local numZero = 0
+	local numOne = 0
+	for id = 1,5 do
+		
+		if not states[id] or not states[id].status then
+
+			-- ignore him...
+		else
+			if status[id].status == 1 then
+				numOne = numOne + 1
+			else
+				numZero = numZero + 1
+			end				
+		end
+	end
+	-- zero is the default so originally everyon will be zero so 
+	if numZero > numOne and numOne ~= 0  then
+		wcm.set_horde_declared(1);
+	else
+		wcm.set_horde_declared(0);
+	end
+ 
+
+
+
   for id = 1,5 do 
     if not states[id] or not states[id].ball.x then  -- no info from player, ignore him
       eta[id] = math.huge;
@@ -337,6 +363,7 @@ function update()
 	smallest = eta[id];
       end
 
+
       --Ignore goalie, reserver, penalized player, confused player
       --[[if (states[id].penalty > 0) or 
         (t - states[id].tReceive > msgTimeout) or
@@ -381,121 +408,35 @@ end
         wcm.set_team_is_smallest_eta(0);
   end
 
-
-  --For defender behavior testing
-  force_defender = Config.team.force_defender or 0;
-  if force_defender == 1 then
-    gcm.set_team_role(Config.game.role);
-  elseif force_defender ==2 then
-    gcm.set_team_role(Config.game.role);
-  end
-
-  if role ~= gcm.get_team_role() then
-    set_role(gcm.get_team_role());
-  end
-
-  --Only switch role during gamePlaying state
-  --If role is forced for testing, don't change roles
-
-
---[[
-    print('---------------');
-    for id=1,5 do
-      print(id,roles[id],eta[id],ddefend[id])
-    end
-    print('---------------');
---]]
-
-
-
-  if gcm.get_game_state()==3 and force_defender ==0 then
-    -- goalie, confused player  and reserve player never changes role
-    if role~=ROLE_GOALIE and role<ROLE_CONFUSED then 
-      minETA, minEtaID = util.min(eta);
-      if minEtaID == playerID then --Lowest ETA : attacker
-        set_role(ROLE_ATTACKER);
-      else
-        -- furthest player back is defender
-        maxDDefID = 0;
-        maxDDef = 0;
-
-        minDDefID = 0;
-        minDDef = math.huge;
-
-        --Find the player most away from the defending goal
-        --TODO: 2nd defender 
-        for id = 1,5 do
-          --goalie, current attacker and and reserve don't count
-          if id ~= minEtaID and 	  
-            roles[id]~=ROLE_ATTACKER and 
-            roles[id]<ROLE_CONFUSED then 
-	    --Dead players have infinite ddefend
-            if ddefend[id] > maxDDef and ddefend[id]<20.0 then
-              maxDDefID = id;
-              maxDDef = ddefend[id];
-            end
-            if ddefend[id] < minDDef then
-              minDDefID = id;
-              minDDef = ddefend[id];
-            end
-          end
-        end
---	print("min max",minDDefID, maxDDefID)
-        if maxDDefID == minDDefID then --only one player, go defend
-          set_role(ROLE_DEFENDER)
-        elseif maxDDefID == playerID then --the player most away from our goal
-          set_role(ROLE_SUPPORTER);    -- support
-        else --other players go defend
-          set_role(ROLE_DEFENDER);    -- defense 
-        end
-      end
-    end
-
-    --Switch roles between left and right defender
-    if role==ROLE_DEFENDER then
-      --Are there any other defender?
-      goalDefend =  wcm.get_goal_defend();
-      for id = 1,5 do
-        if id ~= playerID and 	  
-          (roles[id]==ROLE_DEFENDER or roles[id]==ROLE_DEFENDER2) then          
-          --Check if he is on my right side
-          if state.pose.y * goalDefend[1] < 
-							states[id].pose.y * goalDefend[1] then
-					  set_role(ROLE_DEFENDER2);
-          end
-        end
-      end
-    end
-
-
-    --We assign role based on player ID during initial and ready state
-  elseif gcm.get_game_state()<2 then 
-    if role==ROLE_ATTACKER then
-      --Check whether there are any other attacker with smaller playerID
-      role_switch = false;
-      for id=1,5 do
-        if roles[id]==ROLE_ATTACKER and id<playerID then
-          role_switch = true;
-        end
-      end
-      if role_switch then set_role(ROLE_DEFENDER);end --Switch to defender
-    end
-    if role==ROLE_DEFENDER then
-      --Check whether there are any other depender with smaller playerID
-      role_switch = false;
-      for id=1,5 do
-        if roles[id]==ROLE_DEFENDER and id<playerID then
-          role_switch = true;
-        end
-      end
-      if role_switch then set_role(ROLE_SUPPORTER);end --Switch to supporter
-    end
-  end
+  
   update_shm() 
+  update_status();
+  update_goalieCloseEnough();
   update_teamdata();
   update_obstacle();
   check_confused();
   check_flip2();
+end
+
+
+function update_status()
+
+	-- i am closest is based off of the global position of the ball
+	
+	local allDist;
+	
+	for i = 1,5 do
+		
+	
+	end
+
+end
+
+
+function update_goalieCloseEnough()
+
+
+
 end
 
 function update_teamdata()
@@ -567,7 +508,7 @@ function update_teamdata()
   for id = 1, 5 do
     
     if states[id] and states[id].yelledReady then
-      	 print("Id = ".. id .. " yelledReady = " .. tostring(states[id].yelledReady))
+      	 --print("Id = ".. id .. " yelledReady = " .. tostring(states[id].yelledReady))
 	teamYellReady[id] = states[id].yelledReady
 	teamPoseX[id] = states[id].pose.x;
 	teamPoseY[id] =  states[id].pose.y;
