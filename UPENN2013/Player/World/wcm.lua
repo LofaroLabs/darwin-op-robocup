@@ -66,6 +66,14 @@ shared.horde.timeMark = vector.zeros(1);
 shared.horde.kickToPose = vector.zeros(3);
 -- x,y location between ball (as seen by bot closest to the ball) and the goal post furthest from the ball.
 shared.horde.midpointBallGoal = vector.zeros(2);
+-- 0 = i am closest
+-- 1 = i am second closest and within N
+-- 2 = i am second closest
+-- 3 = i am third closest and within N
+-- 4 = i am third closest
+shared.horde.status = vector.zeros(1) -- 0 - 5  
+shared.horde.goalieCloseEnough = vecor.zeros(1); -- 0 if not close enough 1 if close enough
+shared.horde.declared = vector.zeros(1); -- 0 if not declared 1 if declared
 
 
 --shared.horde.robot1 = "10.0.0.51"
