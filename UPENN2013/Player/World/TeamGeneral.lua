@@ -199,7 +199,7 @@ function update()
   state.yelledReady = wcm.get_horde_yelledReady();
   state.status = wcm.get_horde_status();
   state.declared = wcm.get_horde_declared();
-  state.goalieCloseEnough = wcm.get_horde_goalieCloseEnough();
+  state.goalieCloseEnough = wcm.get_horde_goalCloseDist();
   state.ballRelative = util.pose_relative({wcm.get_ballGlobal_x(), wcm.get_ballGlobal_y(), 0}, {state.pose.x, state.pose.y, state.pose.a});
    
   print("yelledReady = " .. tostring(state.yelledReady))
