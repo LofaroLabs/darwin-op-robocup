@@ -198,6 +198,7 @@ function update()
   state.bodyState = gcm.get_fsm_body_state();
   state.yelledReady = wcm.get_horde_yelledReady();
   state.status = wcm.get_horde_status();
+  state.declared = wcm.get_horde_declared();
   state.ballRelative = util.pose_relative({wcm.get_ballGlobal_x(), wcm.get_ballGlobal_y(), 0}, {state.pose.x, state.pose.y, state.pose.a});
    
   print("yelledReady = " .. tostring(state.yelledReady))
@@ -294,11 +295,11 @@ function update()
 	local numOne = 0
 	for id = 1,5 do
 		
-		if not states[id] or not states[id].status then
+		if not states[id] or not states[id].declared then
 
 			-- ignore him...
 		else
-			if status[id].status == 1 then
+			if states[id].declared == 1 then
 				numOne = numOne + 1
 			else
 				numZero = numZero + 1
