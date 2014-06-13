@@ -446,7 +446,7 @@ function update_status()
 	local distIDPairs = {}
 	for id = 1,5 do
 		
-		if states[id] and states[id].pose and states[id].ballRelative then
+		if states[id] and states[id].role ~= GOALIE_ROLE and states[id].pose and states[id].ballRelative then
 			local data = {}
 			data.id = states[id].id
 			data.dist = get_distanceBetween(states[id].ballRelative, {states[id].pose.x, states[id].pose.y});
@@ -461,6 +461,7 @@ function update_status()
 	-- loop
 	
 	for i=1, #distIDPairs do
+		
 		if distIDPairs[i].dist <= wcm.get_horde_distN() or i == 1 then
 			distIDPairs[i].status = i - 1
 		else
