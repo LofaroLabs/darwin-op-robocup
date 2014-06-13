@@ -478,16 +478,10 @@ function update_status()
 	local secondClosestWithin = 0
 	for i=1, #distIDPairs do
 		
-		distIDPairs[i].status = i
+		distIDPairs[i].status = (i-1)*2
 		
-		if i == 2 then
-			distIDPairs[i].status = 3
-		end
-		
-		if (distIDPairs[i].dist <= wcm.get_horde_distN()) then
-			distIDPairs[i].status = distIDPairs[i].status + 1
-		elseif i == 2 then
-			distIDPairs[i].status = 4
+		if (distIDPairs[i].dist > wcm.get_horde_distN() and i~=1) then
+			distIDPairs[i].status = distIDPairs[i].status-1;
 		end
 		
 		
