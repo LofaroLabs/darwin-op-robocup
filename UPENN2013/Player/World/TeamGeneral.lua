@@ -230,6 +230,21 @@ function update()
 	state.distToGoalDefend = math.sqrt((avgDGoal[1] - state.pose.x) * (avgDGoal[1] - state.pose.x) + (avgDGoal[2] - state.pose.y)*(avgDGoal[2] - state.pose.y));
 	state.distToGoalOffend = math.sqrt((avgAGoal[1] - state.pose.x) * (avgAGoal[1] - state.pose.x) + (avgAGoal[2] - state.pose.y)*(avgAGoal[2] - state.pose.y));
 
+	if state.id == ROLE_GOALIE then
+	
+		-- calculate the distance and set the shared memory and the state
+		if get_distanceBetween(state.ballRelative, {state.pose.x, state.pose.y}) <= wcm.getMinGoalieDist then
+			state.goalieCloseEnough = 1
+			wcm.set_horde_goalCloseDist(1)
+		else
+			state.goalieCloseEnough = 0
+			wcm.set_horde_goalCloseDist(0)
+		end
+		
+	end
+
+
+
 
   if gcm.in_penalty() then  state.penalty = 1;
   else  state.penalty = 0;
@@ -418,24 +433,63 @@ end
   check_flip2();
 end
 
-
+-- 0 = i am closest or we are without comm then we are all closest
+-- 1 = i am second closest and within N
+-- 2 = i am second closest
+-- 3 = i am third closest and within N
+-- 4 = i am third closest
 function update_status()
 
-	-- i am closest is based off of the global position of the ball
 	
-	local allDist;
-	
-	for i = 1,5 do
+	local ballDist = state.ballRelative; -- the position of the ball relative to me based off the global pos
+	local myDist = get_distanceBetween(ballDist, {state.pose.x, state.pose.y});
+	local distIDPairs = {}
+	for id = 1,5 do
 		
+		if states[id] and states[id].pose and states[id].ballRelative then
+			local data = {}
+			data.id = states[id].id
+			data.dist = get_distanceBetween(states[id].ballRelative, {states[id].pose.x, states[id].pose.y});
+			data.status = states[id].status
+			distIDPairs[id] = data;
+		end
 	
 	end
+	-- sort everyone
+	table.sort(distIDPairs, function (a, b) return a.dist < b.dist end)
+	
+	-- loop
+	
+	for i=1, #distIDPairs do
+		if distIDPairs[i].dist <= wcm.get_horde_distN() or i == 1 then
+			distIDPairs[i].status = i - 1
+		else
+			distIDPairs[i].status = i + 1
+		end
+		
+		if distIDPairs[i].id == state.id then
+			wcm.set_horde_status(distIDPairs[i].status);
+		end
+	end
+	
+	
 
 end
 
 
 function update_goalieCloseEnough()
 
-
+	-- If i am the goalie then i check otherwise i just get the value that the
+	-- was given to me by the goalie telling me it is close enough or not
+	
+	for id = 1,5 do
+	
+		if states[id] and states[id].role == GOALIE_ROLE and states[id].goalieCloseEnough then
+			wcm.set_horde_goalieCloseEnough(states[id].goalieCloseEnough)
+			return;
+		end
+	
+	end
 
 end
 
@@ -548,6 +602,10 @@ end
 
 function get_distance(curA, targetB)
 	return math.sqrt(math.pow(curA.x - targetB.x, 2) + math.pow(curA.y - targetB.y, 2))
+end
+
+function get_distanceBetween(A, B)
+	return math.sqrt(math.pow(A[1] - B[1], 2) + math.pow(A[2] - B[2], 2))
 end
 
 function getMidpoint()
