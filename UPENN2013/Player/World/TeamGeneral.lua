@@ -488,12 +488,14 @@ function update_status()
 			secondClosestWithin = true
  		elseif secondClosestWithin == false then
 			distIDPairs[i].status = 2
-			secondClosestWithin = true -- since the closest was not close enough
+			secondClosestWithin = true
 		elseif secondclosestWithin == true then
 			distIDPairs[i].status = 4
 		else 
-			print("ERROR no State set!!!");
+			print("ERROR no Status set!!!");
 		end
+		
+		print("status DNW i = " .. tostring(i) .. " id = " .. tostring(distIDPairs[i].id) .. " status = " ..  tostring(distIDPairs[i].status) .. " dist = " .. tostring(distIDPairs[i].dist));
 		
 		if distIDPairs[i].id == state.id then
 			wcm.set_horde_status(distIDPairs[i].status);
