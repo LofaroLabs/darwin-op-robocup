@@ -477,29 +477,25 @@ function update_status()
 	
 	local secondClosestWithin = 0
 	for i=1, #distIDPairs do
-		print("DNW i = " .. i .. " secondClosesteWithin = " .. tostring(secondClosestWithin) .. "  compare = " .. tostring (secondClosestWithin == 0));
-		if i == 1 then
-			distIDPairs[i].status = 0; -- you are the closest since you are first
-		elseif (distIDPairs[i].dist <= wcm.get_horde_distN()) and (secondClosestWithin == 0) then
-			distIDPairs[i].status = 1
-			secondClosestWithin = 1
-		elseif distIDPairs[i].dist <= wcm.get_horde_distN() and (secondClosestWithin == 1) then
+		
+		distIDPairs[i].status = i
+		
+		if i == 2 then
 			distIDPairs[i].status = 3
-			secondClosestWithin = 1
- 		elseif (secondClosestWithin == 1) then
- 			distIDPairs[i].status = 4
-		elseif (secondclosestWithin == 0) then
-			distIDPairs[i].status = 2
-			secondClosestWithin = 1
-		else 
-			print("ERROR no Status set!!!");
 		end
 		
-		print("status DNW i = " .. tostring(i) .. " id = " .. tostring(distIDPairs[i].id) .. " status = " ..  tostring(distIDPairs[i].status) .. " dist = " .. tostring(distIDPairs[i].dist) .. " second closest = " .. tostring(secondClosestWithin));
+		if (distIDPairs[i].dist <= wcm.get_horde_distN()) then
+			distIDPairs[i].status = distIDPairs[i].status + 1
+		else if i == 2 then
+			distIDPairs[i].status = 4
+		end
+		
+		
 		
 		if distIDPairs[i].id == state.id then
 			wcm.set_horde_status(distIDPairs[i].status);
 		end
+		
 	end
 	
 	
