@@ -480,7 +480,7 @@ function update_status()
 		
 		distIDPairs[i].status = (i-1)*2
 		
-		if (distIDPairs[i].dist > wcm.get_horde_distN() and i~=1) then
+		if (distIDPairs[i].dist <= wcm.get_horde_distN() and i~=1) then
 			distIDPairs[i].status = distIDPairs[i].status-1;
 		end
 		
