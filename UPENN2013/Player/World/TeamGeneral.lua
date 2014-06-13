@@ -461,7 +461,6 @@ function update_status()
 	-- loop
 	
 	local secondClosestWithin = false
-	curstat = 0
 	for i=1, #distIDPairs do
 		
 		if i == 1 then
@@ -473,10 +472,10 @@ function update_status()
 		elseif distIDPairs[i].dist <= wcm.get_horde_distN() and secondClosestWithin == true then
 			distIDPairs[i].status = 3
 			secondClosestWithin = true
- 		elseif secondClosestWithin == false
+ 		elseif secondClosestWithin == false then
 			distIDPairs[i].status = 2
 			secondClosestWithin = true -- since the closest was not close enough
-		elseif secondclosestWithin == true
+		elseif secondclosestWithin == true then
 			distIDPairs[i].status = 4
 		end
 		
