@@ -463,6 +463,15 @@ function update_status()
 			return a.id < b.id
 		end
 		return a.dist < b.dist end)
+		
+	prevDis = 0	
+	for i=1,#distIDPairs do
+		if distIDPairs[i].dist >= prevDis then
+			prevDis = distIDPairs[i].dist
+		else
+			print(nil .. "hi")
+		end
+	end	
 	
 	-- loop
 	
