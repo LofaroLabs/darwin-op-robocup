@@ -458,7 +458,11 @@ function update_status()
 	
 	end
 	-- sort everyone
-	table.sort(distIDPairs, function (a, b) return a.dist < b.dist end)
+	table.sort(distIDPairs, function (a, b) 
+		if a.dist == b.dist then
+			return a.id < b.id
+		end
+		return a.dist < b.dist end)
 	
 	-- loop
 	
