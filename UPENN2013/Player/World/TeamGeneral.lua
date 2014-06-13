@@ -480,17 +480,17 @@ function update_status()
 		print("DNW i = " .. i .. " secondClosesteWithin = " .. tostring(secondClosestWithin) .. "  compare = " .. tostring (secondClosestWithin == 0));
 		if i == 1 then
 			distIDPairs[i].status = 0; -- you are the closest since you are first
-		elseif distIDPairs[i].dist <= wcm.get_horde_distN() and secondClosestWithin == 0 then
+		elseif (distIDPairs[i].dist <= wcm.get_horde_distN()) and (secondClosestWithin == 0) then
 			distIDPairs[i].status = 1
 			secondClosestWithin = 1
-		elseif distIDPairs[i].dist <= wcm.get_horde_distN() and secondClosestWithin == 1 then
+		elseif distIDPairs[i].dist <= wcm.get_horde_distN() and (secondClosestWithin == 1) then
 			distIDPairs[i].status = 3
 			secondClosestWithin = 1
- 		elseif secondClosestWithin == 0 then
+ 		elseif (secondClosestWithin == 1) then
+ 			distIDPairs[i].status = 4
+		elseif (secondclosestWithin == 0) then
 			distIDPairs[i].status = 2
 			secondClosestWithin = 1
-		elseif secondclosestWithin == 1 then
-			distIDPairs[i].status = 4
 		else 
 			print("ERROR no Status set!!!");
 		end
