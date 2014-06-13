@@ -464,10 +464,9 @@ function update_status()
 	for i=1, #distIDPairs do
 		
 		if i == 1 then
-			distIDPairs[i].status = 0;
+			distIDPairs[i].status = 0; -- you are the closest since you are first
 		elseif distIDPairs[i].dist <= wcm.get_horde_distN() and secondClosestWithin == false then
 			distIDPairs[i].status = 1
-			curstat = 3
 			secondClosestWithin = true
 		elseif distIDPairs[i].dist <= wcm.get_horde_distN() and secondClosestWithin == true then
 			distIDPairs[i].status = 3
@@ -477,6 +476,8 @@ function update_status()
 			secondClosestWithin = true -- since the closest was not close enough
 		elseif secondclosestWithin == true then
 			distIDPairs[i].status = 4
+		else 
+			print("ERROR no State set!!!");
 		end
 		
 		if distIDPairs[i].id == state.id then
