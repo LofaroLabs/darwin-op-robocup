@@ -477,7 +477,7 @@ function update_status()
 	
 	local secondClosestWithin = 0
 	for i=1, #distIDPairs do
-		
+		print("DNW i = " .. i .. " secondClosesteWithin = " .. tostring(secondClosestWithin));
 		if i == 1 then
 			distIDPairs[i].status = 0; -- you are the closest since you are first
 		elseif distIDPairs[i].dist <= wcm.get_horde_distN() and secondClosestWithin == 0 then
