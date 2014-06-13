@@ -251,6 +251,12 @@ safetyStart = function()
 	action.ackNumber = wcm.get_horde_ackNumber()
 	sendBehavior(json.encode(action) .. "\n")
 end
+declareStart = function()
+	wcm.set_horde_declared(1);
+end
+undeclareStart = function()
+	wcm.set_horde_declared(0);
+end
 gotoPosition = makeBehavior("gotoPosition", nil,nil,gotoPositionStart)
 stopPose = makeBehavior("stopPose", nil, nil, stopPoseStart);
 walkForward = makeBehavior("walkForward", nil, walkForwardStop, walkForwardStart);
@@ -261,6 +267,8 @@ approachTarget = makeBehavior("approachTarget", nil, approachTargetStop, approac
 kickBall = makeBehavior("kickBall", nil, kickBallStop, kickBallStart);
 locateBall = makeBehavior("locateBall",nil,nil,locateBallStart);
 safety = makeBehavior("safety" , nil, nil,safetyStart);
+declare = makeBehavior("declare", nil, nil, declareStart);
+undeclare = makeBehavior("undeclare", nil,nil, undeclareStart);
 kittyMachine = kitty.kittyMachine
 --kittyMachine
 print(tostring(kittyMachine) .. " ok in support")
@@ -271,6 +279,7 @@ defer = "I DONT FUCKING KNOW YET"
 defend = makeHFA("defend", makeTransition({
 	[start] = kittyMachine,
 	[kittyMachine] = function()
+			print("in kitty machine in dkitty")
 			if(wcm.get_horde_goalieCloseEnough() == 1)
 				then return defer;
 			end
@@ -278,15 +287,20 @@ defend = makeHFA("defend", makeTransition({
 			
 		end,
 	[defer] = function()
+		print("in defer kitty");
 		if( not (wcm.get_horde_goalieCloseEnough()==1))
 			then return kittyMachine
 		end
+		return defer;
 	end
 }), false)
 supportGoalie = makeHFA("supportGoalie", makeTransition({
 	[start] = locateBall,
 	[locateBall] = function()
+			print("in support goalie locate ball");
+		print(vcm.get_ball_detect() .. " this is the vaue for ball detect");	
 			if(wcm.get_horde_ballLost()==1)
+				
 				then return locateBall;
 			end
 			return gotoPoseFacing;
@@ -334,12 +348,13 @@ support  = makeHFA("support", makeTransition({
 		if(wcm.get_horde_status()<3) 
 			then return supportGoalie;
 		end
+		return safety
 	   end,
 
 
 }), false)
-declare = "declare"
-undeclare = "undeclare"
+--declare = "declare"
+--undeclare = "undeclare"
 DefenseHFA = makeHFA("DefenseHFA", makeTransition({
 
 	[start] = support,
@@ -359,7 +374,8 @@ DefenseHFA = makeHFA("DefenseHFA", makeTransition({
 	[defend] = function()
                 if(wcm.get_horde_status() >=2)
                         then return undeclare
-		end
+				end
+				return defend;
 	   end,
 	[undeclare] = function()
 		wcm.set_horde_declared(0);
@@ -442,6 +458,7 @@ connectionThread = function ()
 				isBallLost();
 			    --kitty.wcm.get_horde_ballLost() = wcm.get_horde_ballLost()	
 				while wcm.get_horde_sentBehavior() == 0 do
+					isBallLost();
 					pulse(DefenseHFA);
 				end
 				wcm.set_horde_sentBehavior(0);
