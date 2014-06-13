@@ -42,7 +42,7 @@ team_ball_threshold = Config.team.team_ball_threshold or 0;
 
 
 --For NSL, eye LED is not allowed during match
-led_on = 0; --Default is ON
+led_on = 1; --Default is ON
 
 ballFilter = Filter2D.new();
 ball = {};

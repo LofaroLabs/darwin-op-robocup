@@ -338,6 +338,7 @@ support  = makeHFA("support", makeTransition({
 	[start] = supportGoalie,
 
 	[supportGoalie] =  function() 
+			print("in support goalie considering going to safety but status is " .. wcm.get_horde_status());
 			if(wcm.get_horde_status()>=3) then
 				return safety;
 			end
@@ -345,6 +346,7 @@ support  = makeHFA("support", makeTransition({
 
 		  end,
 	[safety] = function()
+		print("in safety support considering support goalie, but status is " .. wcm.get_horde_status())
 		if(wcm.get_horde_status()<3) 
 			then return supportGoalie;
 		end
@@ -360,6 +362,7 @@ DefenseHFA = makeHFA("DefenseHFA", makeTransition({
 	[start] = support,
 
 	[support] = function() 
+				print("in support, checking status and declared " .. wcm.get_horde_status() .. " and " .. wcm.get_horde_declared())
                 if(wcm.get_horde_status() == 0 and not (wcm.get_horde_declared()==1))
                         then return declare
                 end
@@ -367,20 +370,22 @@ DefenseHFA = makeHFA("DefenseHFA", makeTransition({
             end,
 
 	[declare] = function()
-                wcm.set_horde_declared(1);
+                print("in declare")
+				wcm.set_horde_declared(1);
                 return defend
             end,
 
 	[defend] = function()
+				print("status is " .. wcm.get_horde_status().. " in defend transition")
                 if(wcm.get_horde_status() >=2)
                         then return undeclare
 				end
 				return defend;
 	   end,
 	[undeclare] = function()
-		wcm.set_horde_declared(0);
-		return support;
-	      end
+			wcm.set_horde_declared(0);
+			return support;
+	end
 }), false)
 
 wcm.set_horde_ballLost(1)
