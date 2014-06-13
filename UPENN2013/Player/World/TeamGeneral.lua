@@ -197,7 +197,7 @@ function update()
   state.fall=wcm.get_robot_is_fall_down();
   state.bodyState = gcm.get_fsm_body_state();
   state.yelledReady = wcm.get_horde_yelledReady();
-  
+  state.status = wcm.get_horde_status();
   state.ballRelative = util.pose_relative({wcm.get_ballGlobal_x(), wcm.get_ballGlobal_y(), 0}, {state.pose.x, state.pose.y, state.pose.a});
    
   print("yelledReady = " .. tostring(state.yelledReady))
