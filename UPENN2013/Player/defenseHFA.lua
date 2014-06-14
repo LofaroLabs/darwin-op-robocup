@@ -272,6 +272,7 @@ deferStart = function()
                 action.args.gotoPose.x = .2 * (ballGlobal.x/math.abs(ballGlobal.x))
                 action.args.gotoPose.y = .2 * (ballGlobal.y/math.abs(ballGlobal.y))
                 action.args.gotoPose.a = 0
+		sendBehavior(json.encode(action) .. "\n");
 end
 gotoPosition = makeBehavior("gotoPosition", nil,nil,gotoPositionStart)
 stopPose = makeBehavior("stopPose", nil, nil, stopPoseStart);
