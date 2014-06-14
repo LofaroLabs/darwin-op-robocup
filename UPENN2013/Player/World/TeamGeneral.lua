@@ -248,8 +248,9 @@ function update()
 	
 		-- calculate the distance and set the shared memory and the state
 		goalieDist = get_distanceBetween(state.ballRelative, {0, 0});
-		print("DNW goalie dist = " .. tostring(goalieDist));
-		if goalieDist <= wcm.get_horde_goalCloseDist() then
+		print("DNW goalie dist = " .. tostring(goalieDist) .. " closeDist = " .. tostring(wcm.get_horde_goalCloseDist()));
+		-- as long as the ball is close enough and i can see it then I am close enough
+		if goalieDist <= wcm.get_horde_goalCloseDist() and state.ballLost == 0 then
 			state.goalieCloseEnough = 1
 			wcm.set_horde_goalieCloseEnough(1)
 			print("DNW Goalie is close enough state version = " .. tostring(state.goalieCloseEnough) .. " wcm version =" .. tostring(wcm.get_horde_goalCloseDist()));
