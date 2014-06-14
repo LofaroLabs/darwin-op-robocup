@@ -461,12 +461,15 @@ function update_status()
 	for id = 1,5 do
 		
 		if states[id] and states[id].role ~= GOALIE_ROLE and states[id].pose and states[id].ballRelative then
+			print("DNW index = " .. tostring(id) .. " I am role = " .. tostring(states[id].role) .. " and the ballLost feature is = " .. tostring(states[id].ballLost));
 			local data = {}
 			data.id = states[id].id
 			if states[id].ballLost == 0 then
 				data.dist = get_distanceBetween(states[id].ballRelative, {states[id].pose.x, states[id].pose.y});
+				print("DNW index = " .. tostring(id) .. " SEE BALL so dist is " .. data.dist);
 			else
 				data.dist = math.huge;
+				print("DNW index = " .. tostring(id) .. " BALL LOST so dist is " .. data.dist);
 			end
 			data.status = states[id].status
 			distIDPairs[id] = data;
@@ -493,18 +496,22 @@ function update_status()
 	
 	local secondClosestWithin = 0
 	for i=1, #distIDPairs do
-		
+		print("DNW i = " .. tostring(i) .. " ID = " .. tostring(distIDPairs[i].id) .. " dist = " .. tostring(distIDPairs[i].dist) .. " distN = " .. tostring(wcm.get_horde_distN()));
 		distIDPairs[i].status = (i-1)*2
 		
 		if (distIDPairs[i].dist <= wcm.get_horde_distN() and i~=1) then
 			distIDPairs[i].status = distIDPairs[i].status-1;
+			print("DNW i = " .. tostring(i) .. " dist was less than N status = " ..  tostring(distIDPairs[i].status));
 		end
 		
 		
 		
 		if distIDPairs[i].id == state.id then
 			wcm.set_horde_status(distIDPairs[i].status);
+			print("DNW i = " .. tostring(i) .. " My Status = " .. tostring(wcm.get_horde_status()));
 		end
+		
+		print("DNW i = " .. tostring(i) .. " ID = " .. tostring(distIDPairs[i].id) .. " status = " .. wcm.set_horde_status
 		
 	end
 	
