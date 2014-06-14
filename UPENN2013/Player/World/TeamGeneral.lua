@@ -247,7 +247,9 @@ function update()
 	if state.role == ROLE_GOALIE then
 	
 		-- calculate the distance and set the shared memory and the state
-		if get_distanceBetween(state.ballRelative, {state.pose.x, state.pose.y}) <= wcm.get_horde_goalCloseDist() then
+		goalieDist = get_distanceBetween(state.ballRelative, {0, 0});
+
+		if  <= wcm.get_horde_goalCloseDist() then
 			state.goalieCloseEnough = 1
 			wcm.set_horde_goalCloseDist(1)
 		else
@@ -456,7 +458,7 @@ function update_status()
 
 	
 	local ballDist = state.ballRelative; -- the position of the ball relative to me based off the global pos
-	local myDist = get_distanceBetween(ballDist, {state.pose.x, state.pose.y});
+	local myDist = get_distanceBetween(ballDist, {0, 0});
 	local distIDPairs = {}
 	for id = 1,5 do
 		
@@ -465,7 +467,7 @@ function update_status()
 			local data = {}
 			data.id = states[id].id
 			if states[id].ballLost == 0 then
-				data.dist = get_distanceBetween(states[id].ballRelative, {states[id].pose.x, states[id].pose.y});
+				data.dist = get_distanceBetween(states[id].ballRelative, {0, 0});
 				print("DNW index = " .. tostring(id) .. " SEE BALL so dist is " .. data.dist);
 			else
 				data.dist = math.huge;
