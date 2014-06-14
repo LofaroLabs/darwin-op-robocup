@@ -258,6 +258,11 @@ undeclareStart = function()
 	wcm.set_horde_declared(0);
 end
 deferStart = function()
+	 	action  = {}
+                action["action"] = "gotoPoseFacing";
+                action["args"] = {};
+                ballGlobal= {};
+
 		ballGlobal.x = wcm.get_team_closestToBallLoc()[1]--wcm.get_ballGlobal_x();
                 ballGlobal.y = wcm.get_team_closestToBallLoc()[2]--wcm.get_ballGlobal_y();
                 print(ballGlobal)

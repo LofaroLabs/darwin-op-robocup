@@ -514,7 +514,7 @@ function update_status()
 			print("DNW i = " .. tostring(i) .. " dist was less than N status = " ..  tostring(distIDPairs[i].status));
 		end
 		
-		
+		print("status DNW i = " .. tostring(i) .. " id = " .. tostring(distIDPairs[i].id) .. " status = " ..  tostring(distIDPairs[i].status) .. " dist = " .. tostring(distIDPairs[i].dist))
 		
 		if distIDPairs[i].id == state.id then
 			wcm.set_horde_status(distIDPairs[i].status);
