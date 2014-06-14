@@ -79,6 +79,7 @@ state.landmark=0; --0 for non-detect, 1 for yellow, 2 for cyan
 state.landmarkv={0,0};
 state.corner=0; --0 for non-detect, 1 for L, 2 for T
 state.cornerv={0,0};
+state.ballLost = 0
 
 --Game state info
 state.gc_latency=0;
@@ -97,6 +98,17 @@ player_roles=vector.zeros(10);
 t_poses=vector.zeros(10);
 tLastMessage = 0;
 
+
+function isBallLost()
+	--print("got into ball lost")
+	if vcm.get_ball_detect() ~= 0 then
+		state.ballLost = 0
+		lastTimeFound = Body.get_time();
+	elseif(Body.get_time() - lastTimeFound > 5) then
+		state.ballLost = 1
+	end
+	--print("got out of ball lost");
+end
 
 function recv_msgs()
   print("@!@!trying to receive messages");
@@ -203,7 +215,7 @@ function update()
   state.ballRelative = util.pose_relative({wcm.get_ballGlobal_x(), wcm.get_ballGlobal_y(), 0}, {state.pose.x, state.pose.y, state.pose.a});
    
   print("yelledReady = " .. tostring(state.yelledReady))
-	
+	isBallLost();
 
   if gcm.get_team_color() == 1 then
 
@@ -451,7 +463,11 @@ function update_status()
 		if states[id] and states[id].role ~= GOALIE_ROLE and states[id].pose and states[id].ballRelative then
 			local data = {}
 			data.id = states[id].id
-			data.dist = get_distanceBetween(states[id].ballRelative, {states[id].pose.x, states[id].pose.y});
+			if states[id].ballLost == 0 then
+				data.dist = get_distanceBetween(states[id].ballRelative, {states[id].pose.x, states[id].pose.y});
+			else
+				data.dist = math.huge;
+			end
 			data.status = states[id].status
 			distIDPairs[id] = data;
 		end
