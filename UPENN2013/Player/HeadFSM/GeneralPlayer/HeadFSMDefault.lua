@@ -18,8 +18,12 @@ require('headLog')
 require('headTrackGMU')
 require('headLookGoalGMU')
 require('headLookGoalPose')
+require('headInsistLookBackwards')
+require('headLookBehindAndBall')
 
 sm = fsm.new(headIdle);
+sm:add_state(headInsistLookBackwards);
+sm:add_state(headLookBehindAndBall);
 sm:add_state(headStart);
 sm:add_state(headReady);
 sm:add_state(headReadyLookGoal);

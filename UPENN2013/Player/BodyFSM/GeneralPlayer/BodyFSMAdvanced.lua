@@ -20,7 +20,7 @@ require('bodyPosition')
 require('bodyObstacle')
 require('bodyObstacleAvoid')
 require('bodyDribble')
-
+require('bodyGotoWhileFacingGoalie')
 require('bodyPositionGoalie')
 require('bodyAnticipate')
 require('bodyChase')
@@ -36,6 +36,7 @@ require('bodyReadyMove')
 
 
 sm = fsm.new(bodyIdle);
+sm:add_state(bodyGotoWhileFacingGoalie);
 sm:add_state(bodyStart);
 sm:add_state(bodyStop);
 sm:add_state(bodyReady);
