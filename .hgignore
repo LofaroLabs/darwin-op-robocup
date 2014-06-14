@@ -3,3 +3,4 @@ syntax: glob
 *.jpg
 .DS_Store
 UPENN2013/Player/Config/Config_OP.lua
+UPENN2013/Player/Config/Config.lua
