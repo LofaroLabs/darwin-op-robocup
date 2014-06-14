@@ -274,8 +274,8 @@ deferStart = function()
                 action.args.facing.y = ballGlobal.y
                 action.args.facing.a = 0
 		action.args.gotoPose = {};
-                action.args.gotoPose.x = .2 * (ballGlobal.x/math.abs(ballGlobal.x))
-                action.args.gotoPose.y = .2 * (ballGlobal.y/math.abs(ballGlobal.y))
+                action.args.gotoPose.x = .75 * (ballGlobal.x/math.abs(ballGlobal.x))
+                action.args.gotoPose.y = .75 * (ballGlobal.y/math.abs(ballGlobal.y))
                 action.args.gotoPose.a = 0
 		action.ackNumber =  wcm.get_horde_ackNumber();
 		sendBehavior(json.encode(action) .. "\n");
