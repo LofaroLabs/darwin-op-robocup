@@ -257,6 +257,22 @@ end
 undeclareStart = function()
 	wcm.set_horde_declared(0);
 end
+deferStart = function()
+		ballGlobal.x = wcm.get_team_closestToBallLoc()[1]--wcm.get_ballGlobal_x();
+                ballGlobal.y = wcm.get_team_closestToBallLoc()[2]--wcm.get_ballGlobal_y();
+                print(ballGlobal)
+                    -- my pose global
+                pose=wcm.get_pose();
+                dest = getMidpoint()
+                action.args.facing = {};
+                action.args.facing.x = ballGlobal.x
+                action.args.facing.y = ballGlobal.y
+                action.args.facing.a = 0
+		action.args.gotoPose = {};
+                action.args.gotoPose.x = .2 * (ballGlobal.x/math.abs(ballGlobal.x))
+                action.args.gotoPose.y = .2 * (ballGlobal.y/math.abs(ballGlobal.y))
+                action.args.gotoPose.a = 0
+end
 gotoPosition = makeBehavior("gotoPosition", nil,nil,gotoPositionStart)
 stopPose = makeBehavior("stopPose", nil, nil, stopPoseStart);
 walkForward = makeBehavior("walkForward", nil, walkForwardStop, walkForwardStart);
@@ -274,8 +290,8 @@ kittyMachine = kitty.kittyMachine
 print(tostring(kittyMachine) .. " ok in support")
 --super SUPER SUPER SUPER TODO IMPORTANT TODO NOW--- 
 -- IF YOU EXPECT THIS MACHINE TO WORK WITH MORE THAN ONE PLAYER LIKE A REAL GAME CHANGE THE LOGIC FOR CLOSEST BALL, IT'S COMPLETELY BACKWARDS ( ON PURPOSE FOR TESTING--
+defer = makeBehavior("defer",nil,nil,deferStart);
 
-defer = "I DONT FUCKING KNOW YET"
 defend = makeHFA("defend", makeTransition({
 	[start] = kittyMachine,
 	[kittyMachine] = function()
