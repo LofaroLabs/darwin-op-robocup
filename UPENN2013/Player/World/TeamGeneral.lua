@@ -244,7 +244,7 @@ function update()
 	state.distToGoalDefend = math.sqrt((avgDGoal[1] - state.pose.x) * (avgDGoal[1] - state.pose.x) + (avgDGoal[2] - state.pose.y)*(avgDGoal[2] - state.pose.y));
 	state.distToGoalOffend = math.sqrt((avgAGoal[1] - state.pose.x) * (avgAGoal[1] - state.pose.x) + (avgAGoal[2] - state.pose.y)*(avgAGoal[2] - state.pose.y));
 
-	if state.id == ROLE_GOALIE then
+	if state.role == ROLE_GOALIE then
 	
 		-- calculate the distance and set the shared memory and the state
 		if get_distanceBetween(state.ballRelative, {state.pose.x, state.pose.y}) <= wcm.getMinGoalieDist then
