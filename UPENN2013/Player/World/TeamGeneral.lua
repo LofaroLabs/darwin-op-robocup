@@ -25,6 +25,11 @@ walkSpeed = Config.team.walkSpeed;
 turnSpeed = Config.team.turnSpeed;
 
 
+-- setting the distance as defined to be "close" for the goalie to the ball to be 1m
+wcm.set_horde_goalCloseDist(1)
+-- setting the distance that the other players need to be in order to set status to 1 or 3
+wcm.set_horde_distN(1)
+
 
 flip_correction = Config.team.flip_correction or 0;
 
@@ -248,7 +253,7 @@ function update()
 	
 		-- calculate the distance and set the shared memory and the state
 		goalieDist = get_distanceBetween(state.ballRelative, {0, 0});
-		print("DNW goalie dist = " .. tostring(goalieDist) .. " closeDist = " .. tostring(wcm.get_horde_goalCloseDist()));
+		print("DNW goalie dist = " .. tostring(goalieDist) .. " closeDist = " .. tostring(wcm.get_horde_goalCloseDist()) .. " ball lost = " .. tostring(state.ballLost));
 		-- as long as the ball is close enough and i can see it then I am close enough
 		if goalieDist <= wcm.get_horde_goalCloseDist() and state.ballLost == 0 then
 			state.goalieCloseEnough = 1
