@@ -98,7 +98,7 @@ player_roles=vector.zeros(10);
 t_poses=vector.zeros(10);
 tLastMessage = 0;
 
-
+lastTimeFound = Body.get_time();
 function isBallLost()
 	--print("got into ball lost")
 	if vcm.get_ball_detect() ~= 0 then
