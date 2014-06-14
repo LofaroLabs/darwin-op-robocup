@@ -460,7 +460,7 @@ function update_status()
 	local distIDPairs = {}
 	for id = 1,5 do
 		
-		if states[id] and states[id].role ~= GOALIE_ROLE and states[id].pose and states[id].ballRelative then
+		if states[id] and states[id].role ~= ROLE_GOALIE and states[id].pose and states[id].ballRelative then
 			print("DNW index = " .. tostring(id) .. " I am role = " .. tostring(states[id].role) .. " and the ballLost feature is = " .. tostring(states[id].ballLost));
 			local data = {}
 			data.id = states[id].id
@@ -527,7 +527,7 @@ function update_goalieCloseEnough()
 	
 	for id = 1,5 do
 	
-		if states[id] and states[id].role == GOALIE_ROLE and states[id].goalieCloseEnough then
+		if states[id] and states[id].role == ROLE_GOALIE and states[id].goalieCloseEnough then
 			wcm.set_horde_goalieCloseEnough(states[id].goalieCloseEnough)
 			return;
 		end
