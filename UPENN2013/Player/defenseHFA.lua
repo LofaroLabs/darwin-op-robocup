@@ -279,7 +279,7 @@ defer = "I DONT FUCKING KNOW YET"
 defend = makeHFA("defend", makeTransition({
 	[start] = kittyMachine,
 	[kittyMachine] = function()
-			print("in kitty machine in dkitty")
+			print("in kitty machine in dkitty. goalie close? " .. wcm.get_horde_goalieCloseEnough())
 			if(wcm.get_horde_goalieCloseEnough() == 1)
 				then return defer;
 			end
@@ -287,7 +287,7 @@ defend = makeHFA("defend", makeTransition({
 			
 		end,
 	[defer] = function()
-		print("in defer kitty");
+		print("IN DEFER kitty goalie close? " .. wcm.get_horde_goalieCloseEnough());
 		if( not (wcm.get_horde_goalieCloseEnough()==1))
 			then return kittyMachine
 		end
