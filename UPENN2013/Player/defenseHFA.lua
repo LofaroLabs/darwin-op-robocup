@@ -277,6 +277,7 @@ deferStart = function()
                 action.args.gotoPose.x = .2 * (ballGlobal.x/math.abs(ballGlobal.x))
                 action.args.gotoPose.y = .2 * (ballGlobal.y/math.abs(ballGlobal.y))
                 action.args.gotoPose.a = 0
+		action.ackNumber =  wcm.get_horde_ackNumber();
 		sendBehavior(json.encode(action) .. "\n");
 end
 gotoPosition = makeBehavior("gotoPosition", nil,nil,gotoPositionStart)
