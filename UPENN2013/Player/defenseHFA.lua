@@ -476,6 +476,8 @@ end
 
 --start "main"
 if(darwin) then 
+	Speak.talk("my id is " .. Config.game.playerID);
+
 		--        hoard_functions.hordeFunctions["murder all humans"](nil,nil);
 	--Motion.event("standup");	
       	print("starting connection thread\n");
