@@ -247,7 +247,7 @@ function update()
 	if state.role == ROLE_GOALIE then
 	
 		-- calculate the distance and set the shared memory and the state
-		if get_distanceBetween(state.ballRelative, {state.pose.x, state.pose.y}) <= wcm.getMinGoalieDist then
+		if get_distanceBetween(state.ballRelative, {state.pose.x, state.pose.y}) <= wcm.get_horde_goalCloseDist() then
 			state.goalieCloseEnough = 1
 			wcm.set_horde_goalCloseDist(1)
 		else
