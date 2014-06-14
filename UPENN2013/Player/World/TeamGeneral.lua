@@ -251,10 +251,12 @@ function update()
 		print("DNW goalie dist = " .. tostring(goalieDist));
 		if goalieDist <= wcm.get_horde_goalCloseDist() then
 			state.goalieCloseEnough = 1
-			wcm.set_horde_goalCloseDist(1)
+			wcm.set_horde_goalieCloseEnough(1)
+			print("DNW Goalie is close enough state version = " .. tostring(state.goalieCloseEnough) .. " wcm version =" .. tostring(wcm.get_horde_goalCloseDist()));
 		else
 			state.goalieCloseEnough = 0
-			wcm.set_horde_goalCloseDist(0)
+			wcm.set_horde_goalieCloseEnough(0)
+			print("DNW Goalie is NOT close enough state version = " .. tostring(state.goalieCloseEnough) .. " wcm version =" .. tostring(wcm.get_horde_goalCloseDist()));
 		end
 		
 	end
