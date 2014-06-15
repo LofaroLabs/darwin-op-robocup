@@ -441,6 +441,10 @@ function getGoalBallDistance()
 	return distGeneral({ballGlobal.x, ballGlobal.y},goalMidpoint);  
 end
 
+function canSeePost() 
+	return vcm.get_canSeePost()
+end
+
 function getPenaltyBounds()
 	
 	if gcm.get_team_color() == 1 then

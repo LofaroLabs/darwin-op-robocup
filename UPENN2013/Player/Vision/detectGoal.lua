@@ -310,6 +310,12 @@ function detect(color)
     v3 = HeadTransform.coordinatesA(postA[i].centroid, scale3);
     vcm.add_debug_message(string.format("Distance by width : %.1f\n",
 	math.sqrt(v1[1]^2+v1[2]^2) ));
+    if math.sqrt(v1[1]^2+v1[2]^2) < 2 then
+        vcm.set_canSeePost(1)
+    else
+        vcm.set_canSeePost(0)
+    end
+
     vcm.add_debug_message(string.format("Distance by height : %.1f\n",
 	math.sqrt(v2[1]^2+v2[2]^2) ));
     vcm.add_debug_message(string.format("Distance by area : %.1f\n",

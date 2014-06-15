@@ -39,11 +39,11 @@ world.Lcorner[4]={-2.74,-1.80};
 world.Lcorner[5]={0,1.80};
 world.Lcorner[6]={0,-1.80};
 --Penalty box edge --UPDATED SECTION
-world.Lcorner[7]={-2.26,.82};--226cm,82cm
+world.Lcorner[7]={-2.26,.82};--226cm,82cm 2.26 is from center field to penalty box first piece of tape
 world.Lcorner[8]={-2.26,-.82};
 world.Lcorner[9]={2.26,.82};
 world.Lcorner[10]={2.26,-.82};
---Penalty box T edge --UPDATED SECTION
+--Penalty box T edge --UPDATED SECTION -- 2.74 is the field edge
 world.Lcorner[11]={2.74,.82};
 world.Lcorner[12]={2.74,-.82};
 world.Lcorner[13]={-2.74,.82};
@@ -107,6 +107,7 @@ world.initPosition3={
   {1.75,-1.0}, --Defender
   {0.5,1.0}, --Supporter
 }
+
 
 
 
