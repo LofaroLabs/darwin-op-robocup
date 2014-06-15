@@ -286,7 +286,13 @@ deferStart = function()
 		action.ackNumber =  wcm.get_horde_ackNumber();
 		sendBehavior(json.encode(action) .. "\n");
 end
-
+function walkForwardStart()
+                        action  = {}
+                        action["action"] = "walkForward";
+                        action["args"] = "nan";
+			action.ackNumber =  wcm.get_horde_ackNumber();
+                        sendBehavior(json.encode(action) .. "\n");
+end
 
 function gotoPoseWhileLookingBackwardsStart()
          	action = {}
@@ -414,7 +420,7 @@ end
 function relocalizeStart()
 	action  = {}
     action["action"] = "lookBackwards";
-    action["args"] = {};
+    action["args"] = "";
 	action.ackNumber =  wcm.get_horde_ackNumber();
 	sendBehavior(json.encode(action) .. "\n");
 
@@ -422,9 +428,18 @@ function relocalizeStart()
 end
 
 
+function turnThetaLookGoalStart()
+	action  = {}
+        action["action"] = "turnThetaLookGoal";
+        action["args"] = "";
+        action.ackNumber =  wcm.get_horde_ackNumber();
+        sendBehavior(json.encode(action) .. "\n");
+end
+
+
 gotoPosition = makeBehavior("gotoPosition", nil,nil,gotoPositionStart)
 stopPose = makeBehavior("stopPose", nil, nil, stopPoseStart);
-walkForward = makeBehavior("walkForward", nil, walkForwardStop, walkForwardStart);
+walkForward = makeBehavior("walkForward", nil, nil, walkForwardStart);
 stopMoving = makeBehavior("stopMoving", nil, nil, stopPoseStart);
 gotoPoseFacing = makeBehavior("gotoPoseFacing", nil, gotoPoseFacingStop, gotoPoseFacingStart);
 gotoBall = makeBehavior("gotoBall", nil, gotoBallStop, gotoBallStart);
@@ -437,6 +452,8 @@ undeclare = makeBehavior("undeclare", nil,nil, undeclareStart);
 gotoPoseWhileLookingBackwards = makeBehavior("gotoPoseWhileLookingBackwards", gotoPoseWhileLookingBackwardsStart, nil, gotoWhileFacingGoalieGo);
 gotoWhileFacingGoalie = makeBehavior("gotoWhileFacingGoalie", gotoWhileFacingGoalieStart, nil, gotoWhileFacingGoalieGo);
 relocalize = makeBehavior("relocalize", nil, nil, relocalizeStart);
+turnThetaLookGoal = makeBehavior("turnThetaLookGoal", nil, nil, turnThetaLookGoalStart);
+
 kittyMachine = kitty.kittyMachine
 --kittyMachine
 print(tostring(kittyMachine) .. " ok in support")
@@ -446,22 +463,18 @@ defer = makeBehavior("defer",nil,nil,deferStart);
 
 RelocalizeHFA = makeHFA("RelocalizeHFA", makeTransition({
 
-        [start] = relocalize,
-        [relocalize] = function()
-        		if wcm.get_horde_yelledReady() == 1 then
-        			return walkForward;
-        		else
-        			return relocalize;
-        		end
-            end,
-        [walkForward] = function()
-        		if wcm.get_horde_seeTwoPosts() == 1 then
-        			return walkForward;
-        		else
-        			return done;
-        		end
-        
-        	end            
+        [start] = resetTimer,
+	[turnThetaLookGoal] = function()
+			if (currentTimer(RelocalizeHFA) > 5) then
+				return done;
+			else
+				return turnThetaLookGoal;
+			end
+		end,
+
+	[resetTimer] = function()
+			return turnThetaLookGoal;
+		end           
        }), false)
 
 badLocalization = false;
@@ -470,32 +483,15 @@ DefendGoalHFA = makeHFA("DefendGoalHFA", makeTransition({
         [start] = kittyMachine,
 
         [kittyMachine] = function()
-                if(getGoalBallDistance()>1.5  or wcm.get_pose()['x'] > 2.25) then
+                if(getGoalBallDistance()>1.5  or wcm.get_pose()['x'] > 1.0 * wcm.get_horde_goalSign()) then
                  	 --      print("going to backwards " .. tostring(gotoPoseWhileLookingBackwards));
-                 	 badLocalization = true;
-					return gotoPoseWhileLookingBackwards;
+                 	badLocalization = true;
+			return gotoWhileFacingGoalie;
                 end
                 
 				return kittyMachine;
             end,
 
-        [gotoPoseWhileLookingBackwards] = function()
-                --print("in declare")
-		if(vcm.get_ball_r() < .75)
-						then 
-			--gotoPoseWhileLookingBackwards
-		--	print("going to kitty machine " .. tostring(kittyMachine));
-			return kittyMachine
-		end
-
-                if(canSeePost()==1) 
-			print("can see post is 1");
-			then return gotoWhileFacingGoalie;
-                else
-			print("CAN SEE POST IS 0");
-		end
-                return gotoPoseWhileLookingBackwards
-            end,
 
         [gotoWhileFacingGoalie] = function()
                 --print("status is " .. tostring(wcm.get_horde_status()) .. " in defend transition")
@@ -511,22 +507,25 @@ DefendGoalHFA = makeHFA("DefendGoalHFA", makeTransition({
 
 GoalieHFA = makeHFA("GoalieHFA", makeTransition({
 
-        [start] = DefendGoalHFA,
+        [start] = resetTimer,
 
         [DefendGoalHFA] = function()
-                if(getGoalieBallDistance()>1.5 and badLocalization == true) then
+                if(getGoalieBallDistance()>1.5 and currentTimer(GoalieHFA) > 20) then
             		badLocalization = false;
-            		return RelocalizeHFA;
+            		return resetTimer;
                 end
 				return DefendGoalHFA;
             end,
         [RelocalizeHFA] = function()
         		if(getGoalieBallDistance()<1.5 or GoalieHFA.done == true) then
-                  return DefendGoalHFA;
-                end
+                		return DefendGoalHFA;
+                	end
 				return RelocalizeHFA;
         
-        	end
+        	end,
+	[resetTimer] = function()
+			return RelocalizeHFA;
+		end
             
        }), false)
 

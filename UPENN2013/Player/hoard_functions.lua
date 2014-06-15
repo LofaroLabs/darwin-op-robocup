@@ -209,6 +209,12 @@ hordeFunctions["moveTheta"] = function(args,client)
         BodyFSM.sm:set_state('bodyMoveTheta');
       
 end
+hordeFunctions["turnThetaLookGoal"] = function(args,client)
+        BodyFSM.sm:set_state('bodyMoveThetaLookGoal');
+      
+end
+
+
 hordeFunctions["stop"] = function(args,client)
         BodyFSM.sm:set_state('bodyStop');
        
