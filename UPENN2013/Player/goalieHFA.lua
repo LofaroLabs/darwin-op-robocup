@@ -283,6 +283,70 @@ deferStart = function()
 		action.ackNumber =  wcm.get_horde_ackNumber();
 		sendBehavior(json.encode(action) .. "\n");
 end
+
+
+function gotoPoseWhileLookingBackwardsStart()
+         action["action"] = "gotoPoseWhileLookingBackwards";
+                action["args"] = {};
+                ballGlobal= {};
+
+		ballGlobal.x = wcm.get_team_closestToBallLoc()[1]--wcm.get_ballGlobal_x();
+                ballGlobal.y = wcm.get_team_closestToBallLoc()[2]--wcm.get_ballGlobal_y();
+                print(ballGlobal)
+                    -- my pose global
+                pose=wcm.get_pose();
+                
+                action.args.facing = {};
+                action.args.facing.x = ballGlobal.x
+                action.args.facing.y = ballGlobal.y
+                action.args.facing.a = 0
+		action.args.gotoPose = {};
+				penaltyBounds = getPenaltyBounds();
+                action.args.gotoPose.x = penaltyBounds[1]
+                if ballGlobal.y < penaltyBounds[2]  then
+                	action.args.gotoPose.y = ballGlobal.y;
+                else
+                	action.args.gotoPose.y = penaltyBounds[2];
+                end
+                action.args.gotoPose.a = 0
+		action.ackNumber =  wcm.get_horde_ackNumber();
+		sendBehavior(json.encode(action) .. "\n");
+
+end
+
+
+function gotoWhileFacingGoalie()
+
+	action["action"] = "gotoWhileFacingGoalie";
+    action["args"] = {};
+    ballGlobal= {};
+
+	ballGlobal.x = wcm.get_team_closestToBallLoc()[1]--wcm.get_ballGlobal_x();
+    ballGlobal.y = wcm.get_team_closestToBallLoc()[2]--wcm.get_ballGlobal_y();
+    print(ballGlobal)
+    -- my pose global
+	pose=wcm.get_pose();
+                
+    action.args.facing = {};
+    action.args.facing.x = ballGlobal.x
+    action.args.facing.y = ballGlobal.y
+    action.args.facing.a = 0
+	action.args.gotoPose = {};
+	penaltyBounds = getPenaltyBounds();
+    action.args.gotoPose.x = penaltyBounds[1]
+    if ballGlobal.y < penaltyBounds[2]  then
+        action.args.gotoPose.y = ballGlobal.y;
+    else
+        action.args.gotoPose.y = penaltyBounds[2];
+    end
+    action.args.gotoPose.a = 0
+	action.ackNumber =  wcm.get_horde_ackNumber();
+	sendBehavior(json.encode(action) .. "\n");
+
+
+end
+
+
 gotoPosition = makeBehavior("gotoPosition", nil,nil,gotoPositionStart)
 stopPose = makeBehavior("stopPose", nil, nil, stopPoseStart);
 walkForward = makeBehavior("walkForward", nil, walkForwardStop, walkForwardStart);
@@ -295,6 +359,9 @@ locateBall = makeBehavior("locateBall",nil,nil,locateBallStart);
 safety = makeBehavior("safety" , nil, nil,safetyStart);
 declare = makeBehavior("declare", nil, nil, declareStart);
 undeclare = makeBehavior("undeclare", nil,nil, undeclareStart);
+gotoPoseWhileLookingBackwards = makeBehavior("gotoPoseWhileLookingBackwards", nil, nil gotoPoseWhileLookingBackwardsStart);
+gotoWhileFacingGoalie = makeBehavior("gotoWhileFacingGoalie", nil, nil, gotoWhileFacingGoalieStart);
+
 kittyMachine = kitty.kittyMachine
 --kittyMachine
 print(tostring(kittyMachine) .. " ok in support")
@@ -302,117 +369,38 @@ print(tostring(kittyMachine) .. " ok in support")
 -- IF YOU EXPECT THIS MACHINE TO WORK WITH MORE THAN ONE PLAYER LIKE A REAL GAME CHANGE THE LOGIC FOR CLOSEST BALL, IT'S COMPLETELY BACKWARDS ( ON PURPOSE FOR TESTING--
 defer = makeBehavior("defer",nil,nil,deferStart);
 
-defend = makeHFA("defend", makeTransition({
-	[start] = kittyMachine,
-	[kittyMachine] = function()
-			print("in kitty machine in dkitty. goalie close? " .. wcm.get_horde_goalieCloseEnough())
-			if(wcm.get_horde_goalieCloseEnough() == 1)
-				then return defer;
-			end
-			return kittyMachine;
-			
-		end,
-	[defer] = function()
-		print("IN DEFER kitty goalie close? " .. wcm.get_horde_goalieCloseEnough());
-		if( not (wcm.get_horde_goalieCloseEnough()==1))
+
+
+GoalieHFA = makeHFA("GoalieHFA", makeTransition({
+
+        [start] = kittyMachine,
+
+        [kittyMachine] = function()
+                if(getGoalBallDistance()>1.5  or wcm.get_pose()[x] > 2.25) then
+                        return gotoPoseWhileLookingBackwards;
+                end
+		return kittyMachine;
+            end,
+
+        [gotoPoseWhileLookingBackwards] = function()
+                print("in declare")
+		if(vcm.get_ball_r() < .75)
 			then return kittyMachine
 		end
-		return defer;
-	end
-}), false)
-supportGoalie = makeHFA("supportGoalie", makeTransition({
-	[start] = locateBall,
-	[locateBall] = function()
-			print("in support goalie locate ball");
-			print(vcm.get_ball_detect() .. " this is the vaue for ball detect");	
-			if(wcm.get_horde_ballLost()==1)
-				
-				then return locateBall;
-			end
-			return gotoPoseFacing;
-	end,
-	[gotoPoseFacing] = function() print("considering transitioning out of gotoPoseFacing");
-
-                                        if wcm.get_horde_ballLost()==1 then
-                                                print("locate ball");
-                                                return locateBall
-                                        elseif wcm.get_horde_yelledReady() == 1  then
-                                                print("going to stop pose from goto");
-                                                return stopPose;
-                                        else
-                                                print("going back to myself in gotopose");
-                                                return gotoPoseFacing
-                                        end
-                                end,
-        [stopPose] = function()
-                                        print("stop pose in supprt");
-                               		if wcm.get_horde_ballLost() == 1 then
-                                                return locateBall;
-                                        end
-                                        if distToMidpoint() > 0.3 then --- we will want to check the facing angle too... 
-                                                return gotoPoseFacing
-                                        else
-                                                print("goto stop pse againin from stop pose")
-                                                return stopPose
-                                        end 
-				end,
-	
-
-}), false)
-support  = makeHFA("support", makeTransition({
-
-	[start] = supportGoalie,
-
-	[supportGoalie] =  function() 
-			print("in support goalie considering going to safety but status is " .. tostring(wcm.get_horde_status()));
-			if(wcm.get_horde_status()>=3) then
-				return safety;
-			end
-			return supportGoalie;
-
-		  end,
-	[safety] = function()
-		print("in safety support considering support goalie, but status is " .. tostring(wcm.get_horde_status()))
-		if(wcm.get_horde_status()<3) 
-			then return supportGoalie;
-		end
-		return safety
-	   end,
-
-
-}), false)
---declare = "declare"
---undeclare = "undeclare"
-DefenseHFA = makeHFA("DefenseHFA", makeTransition({
-
-	[start] = support,
-
-	[support] = function() 
-				print("in support, checking status and declared " .. tostring(wcm.get_horde_status()) .. " and " .. tostring(wcm.get_horde_declared()))
-                if(wcm.get_horde_status() == 0 and not (wcm.get_horde_declared()==1))
-                        then return declare
+                if(canSeePost()==1) 
+			then return gotoWhileFacingGoalie;
                 end
-                return support;
+                return gotoPoseWhileLookingBackwards
             end,
 
-	[declare] = function()
-                print("in declare")
-				wcm.set_horde_declared(1);
-                return defend
-            end,
-
-	[defend] = function()
-				print("status is " .. tostring(wcm.get_horde_status()) .. " in defend transition")
-                if(wcm.get_horde_status() >=2)
-                        then return undeclare
-				end
-				return defend;
-	   end,
-	[undeclare] = function()
-			wcm.set_horde_declared(0);
-			return support;
-	end
-}), false)
+        [gotoWhileFacingGoalie] = function()
+                print("status is " .. tostring(wcm.get_horde_status()) .. " in defend transition")
+                if(getGoalBallDistance() < 1.5)
+                        then return kittyMachine
+                end
+		return gotoWhileFacingGoalie;
+         end,
+       }), false)
 
 wcm.set_horde_ballLost(1)
 lastTimeFound = Body.get_time();
@@ -513,36 +501,7 @@ end
 function distGeneral(curA, targetB)
         return math.sqrt(math.pow(curA[1] - targetB[1],2) + math.pow(curA[2] - targetB[2],2))
 end
-GoalieHFA = makeHFA("GoalieHFA", makeTransition({
 
-        [start] = kittyMachine,
-
-        [kittyMachine] = function()
-                if(getGoalBallDistance()>1.5  or wcm.get_pose()[x] > 2.25) then
-                        return gotoPoseWhileLookingBackwards;
-                end
-		return kittyMachine;
-            end,
-
-        [gotoPoseWhileLookingBackwards] = function()
-                print("in declare")
-		if(vcm.get_ball_r() < .75)
-			then return kittyMachine
-		end
-                if(canSeePost()==1) 
-			then return gotoWhileFacingGoalie;
-                end
-                return gotoPoseWhileLookingBackwards
-            end,
-
-        [gotoWhileFacingGoalie] = function()
-                print("status is " .. tostring(wcm.get_horde_status()) .. " in defend transition")
-                if(getGoalBallDistance() < 1.5)
-                        then return kittyMachine
-                end
-		return gotoWhileFacingGoalie;
-         end,
-       }), false)
 connectionThread = function ()
         print("got into con thread");
 	if( darwin ) then
