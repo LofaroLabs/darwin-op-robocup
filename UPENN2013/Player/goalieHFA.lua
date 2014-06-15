@@ -411,6 +411,16 @@ function gotoWhileFacingGoalieGo()
 
 end
 
+function relocalizeStart()
+	action  = {}
+    action["action"] = "lookBackwards";
+    action["args"] = {};
+	action.ackNumber =  wcm.get_horde_ackNumber();
+	sendBehavior(json.encode(action) .. "\n");
+
+
+end
+
 
 gotoPosition = makeBehavior("gotoPosition", nil,nil,gotoPositionStart)
 stopPose = makeBehavior("stopPose", nil, nil, stopPoseStart);
@@ -426,7 +436,7 @@ declare = makeBehavior("declare", nil, nil, declareStart);
 undeclare = makeBehavior("undeclare", nil,nil, undeclareStart);
 gotoPoseWhileLookingBackwards = makeBehavior("gotoPoseWhileLookingBackwards", gotoPoseWhileLookingBackwardsStart, nil, gotoWhileFacingGoalieGo);
 gotoWhileFacingGoalie = makeBehavior("gotoWhileFacingGoalie", gotoWhileFacingGoalieStart, nil, gotoWhileFacingGoalieGo);
-
+relocalize = makeBehavior("relocalize", nil, nil, relocalizeStart);
 kittyMachine = kitty.kittyMachine
 --kittyMachine
 print(tostring(kittyMachine) .. " ok in support")
@@ -434,18 +444,39 @@ print(tostring(kittyMachine) .. " ok in support")
 -- IF YOU EXPECT THIS MACHINE TO WORK WITH MORE THAN ONE PLAYER LIKE A REAL GAME CHANGE THE LOGIC FOR CLOSEST BALL, IT'S COMPLETELY BACKWARDS ( ON PURPOSE FOR TESTING--
 defer = makeBehavior("defer",nil,nil,deferStart);
 
+RelocalizeHFA = makeHFA("RelocalizeHFA", makeTransition({
 
+        [start] = relocalize,
+        [relocalize] = function()
+        		if wcm.get_horde_yelledReady() == 1 then
+        			return walkForward;
+        		else
+        			return relocalize;
+        		end
+            end,
+        [walkForward] = function()
+        		if wcm.get_horde_seeTwoPosts() == 1 then
+        			return walkForward;
+        		else
+        			return done;
+        		end
+        
+        	end            
+       }), false)
 
-GoalieHFA = makeHFA("GoalieHFA", makeTransition({
+badLocalization = false;
+DefendGoalHFA = makeHFA("DefendGoalHFA", makeTransition({
 
         [start] = kittyMachine,
 
         [kittyMachine] = function()
                 if(getGoalBallDistance()>1.5  or wcm.get_pose()['x'] > 2.25) then
-                  --      print("going to backwards " .. tostring(gotoPoseWhileLookingBackwards));
-			return gotoPoseWhileLookingBackwards;
+                 	 --      print("going to backwards " .. tostring(gotoPoseWhileLookingBackwards));
+                 	 badLocalization = true;
+					return gotoPoseWhileLookingBackwards;
                 end
-		return kittyMachine;
+                
+				return kittyMachine;
             end,
 
         [gotoPoseWhileLookingBackwards] = function()
@@ -476,6 +507,29 @@ GoalieHFA = makeHFA("GoalieHFA", makeTransition({
          end,
        }), false)
 
+
+
+GoalieHFA = makeHFA("GoalieHFA", makeTransition({
+
+        [start] = DefendGoalHFA,
+
+        [DefendGoalHFA] = function()
+                if(getGoalieBallDistance()>1.5 and badLocalization == true) then
+            		badLocalization = false;
+            		return RelocalizeHFA;
+                end
+				return DefendGoalHFA;
+            end,
+        [RelocalizeHFA] = function()
+        		if(getGoalieBallDistance()<1.5 or GoalieHFA.done == true) then
+                  return DefendGoalHFA;
+                end
+				return RelocalizeHFA;
+        
+        	end
+            
+       }), false)
+
 wcm.set_horde_ballLost(1)
 lastTimeFound = Body.get_time();
 function isBallLost()
@@ -494,6 +548,13 @@ function closestToBall()
 	return wcm.get_team_is_smallest_eta();
 end
 
+function getGoalieBallDistance()
+
+	local ballGlobal = wcm.get_team_closestToBallLoc()
+	local myPose = wcm.get_pose()
+	
+	return distGeneral({ballGlobal[1], ballGlobal[2]},{myPose.x, myPose.y});  
+end
 
 function getGoalBallDistance()
 
