@@ -47,6 +47,11 @@ shared.ball.t_locked_on = vector.zeros(1);
 
 --connection 
 shared.horde = {};
+shared.horde.goalSign = vector.zeros(1);
+shared.horde.penaltyBoundsX = vector.zeros(1);
+shared.horde.penaltyBoundsY = vector.zeros(1);
+shared.horde.seeTwoPosts = vector.zeros(1);
+shared.horde.canSeePost = vector.zeros(1);
 shared.horde.client = "nil";
 shared.horde.state = "nil";
 shared.horde.sendStatus = "nil"

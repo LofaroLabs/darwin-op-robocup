@@ -30,6 +30,11 @@ function update()
 		yawMax = -1*yawMax;
   	end
 	lookBall = (not lookBall)
+	if(lookBall) then
+		print("HEAD: look at ball");
+	else
+		print("HEAD: look over shoulder");
+	end
 	t0 = Body.get_time();
   end
   pitch = -27*math.pi/180;-- 22 is MAX DONOT GO HIGH (thank you chau)
@@ -38,7 +43,8 @@ function update()
 	ballGlobal= {};
         ballGlobal.x = wcm.get_ballGlobal_x();
         ballGlobal.y = wcm.get_ballGlobal_y();
-	ballRelative  = util.pose_relative(endPosition, {pose.x, pose.y, pose.a});
+	pose = wcm.get_pose();
+	ballRelative  = util.pose_relative({ballGlobal.x, ballGlobal.y, 0}, {pose.x, pose.y, pose.a});
 	ballx = ballRelative[1];
   	bally = ballRelative[2];
 

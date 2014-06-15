@@ -295,6 +295,41 @@ hordeFunctions["gotoWhileFacingGoalie"] = function(args, client)
 	-- call the state
 	BodyFSM.sm:set_state('bodyGotoWhileFacingGoalie');
 end
+hordeFunctions["updateGotoPoseWhileLookingBackwards"] = function(args, client)
+	-- set the wcm values to the x,y,a from the args
+	print("update while backwards: The args for gotoPose: " .. tostring(args) .. "\n");
+	print("HI");
+	decodedArgs = args;
+	dest = decodedArgs["gotoPose"];
+	facing = decodedArgs["facing"];
+	print("Dest " .. dest.x);
+	--print("The args more specfied... X" .. args.x .. " Y " .. args.y .. " theta: " .. args.a);
+	wcm.set_horde_gotoPose(vector.new({dest.x, dest.y, dest.a}));
+	wcm.set_horde_facing(vector.new({facing.x,facing.y,facing.a}));
+	-- call the state
+--	BodyFSM.sm:set_state('bodyGotoPoseWhileLookingBackwards');
+end
+
+hordeFunctions["updateGotoWhileFacingGoalie"] = function(args, client)
+	-- set the wcm values to the x,y,a from the args
+	print("update while facing goalie: The args for gotoPose: " .. tostring(args) .. "\n");
+	print("HI");
+	decodedArgs = args;
+	dest = decodedArgs["gotoPose"];
+	facing = decodedArgs["facing"];
+	print("Dest " .. dest.x);
+	--print("The args more specfied... X" .. args.x .. " Y " .. args.y .. " theta: " .. args.a);
+	wcm.set_horde_gotoPose(vector.new({dest.x, dest.y, dest.a}));
+	wcm.set_horde_facing(vector.new({facing.x,facing.y,facing.a}));
+	-- call the state
+--	BodyFSM.sm:set_state('bodyGotoWhileFacingGoalie');
+end
+hordeFunctions["lookBackwards"] = function(args, client)
+	-- set the wcm values to the x,y,a from the args
+-- call the state
+	BodyFSM.sm:set_state('bodyLookBackwards');
+end
+
 
 
 package.path = cwd..'/HeadFSM/'..Config.fsm.head[smindex+1]..'/?.lua;'..package.path;

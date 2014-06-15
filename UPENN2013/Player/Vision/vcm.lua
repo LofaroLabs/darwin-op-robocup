@@ -16,7 +16,6 @@ shsize = {};
 processed_img_width = Config.camera.width;
 processed_img_height = Config.camera.height;
 
-shared.canSeePost = vector.zeros(1);
 
 shared.camera = {};
 shared.camera.select = vector.zeros(1);

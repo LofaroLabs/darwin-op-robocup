@@ -56,7 +56,7 @@ function update()
            rotateVel = 1;
       end
       print("velocity is set to: " .. (endPoseX/scaleFactor/5 + -.005) ); 
-        walk.set_velocity(endPoseX/scaleFactor/5 + -.005, endPoseY/scaleFactor/5,rotateVel/10);
+        walk.set_velocity(endPoseX/scaleFactor/5 + -.005, endPoseY/scaleFactor/5,rotateVel/10 * math.abs(endPoseRelative[3]));
 	return;
   end
   local t = Body.get_time();
@@ -71,7 +71,7 @@ function update()
            rotateVel = -.5;
       end
 	  if(math.abs(endPoseRelative[3]) <.5) then
-			rotateVel = rotateVel*endPoseRelative[3];
+			rotateVel = rotateVel*math.abs(endPoseRelative[3]);
 	  end
       walk.set_velocity(endPoseX/scaleFactor*1.1, endPoseY/scaleFactor*1.1,rotateVel);
   	  return;

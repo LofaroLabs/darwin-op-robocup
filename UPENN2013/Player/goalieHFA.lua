@@ -75,7 +75,10 @@ end
 
 sentBehavior = false;
 function sendBehavior(sendInfo)
-    client:send(sendInfo)
+    if(wcm.get_horde_sentBehavior()==0) then
+    	client:send(sendInfo)
+   	print("sent " .. tostring(sendInfo));  
+    end
     wcm.set_horde_sentBehavior(1);
 end
 
@@ -244,10 +247,10 @@ safetyStart = function()
 	if gcm.get_team_color() == 1 then
 		goalSideAngle = 0
                 -- red attacks cyan goali
-                print(" yellow ")
+                --print(" yellow ")
         else
 				
-                print("not yellow")
+               -- print("not yellow")
         end
 
 	action.args = {["x"] = 0, ["y"] = 0, ["a"]= goalSideAngle}
@@ -286,7 +289,37 @@ end
 
 
 function gotoPoseWhileLookingBackwardsStart()
-         action["action"] = "gotoPoseWhileLookingBackwards";
+         	action = {}
+		action["action"] = "gotoPoseWhileLookingBackwards";
+                action["args"] = {};
+                ballGlobal= {};
+
+		ballGlobal.x = wcm.get_team_closestToBallLoc()[1]--wcm.get_ballGlobal_x();
+                ballGlobal.y = wcm.get_team_closestToBallLoc()[2]--wcm.get_ballGlobal_y();
+                print(ballGlobal)
+                    -- my pose global
+                pose=wcm.get_pose();
+                
+                action.args.facing = {};
+                action.args.facing.x = ballGlobal.x
+                action.args.facing.y = ballGlobal.y
+                action.args.facing.a = 0
+		action.args.gotoPose = {};
+				penaltyBounds = getPenaltyBounds();
+                action.args.gotoPose.x = penaltyBounds[1]
+                if ballGlobal.y < penaltyBounds[2]  then
+                	action.args.gotoPose.y = ballGlobal.y;
+                else
+                	action.args.gotoPose.y = penaltyBounds[2];
+                end
+                action.args.gotoPose.a = 0
+		action.ackNumber =  wcm.get_horde_ackNumber();
+		sendBehavior(json.encode(action) .. "\n");
+
+end
+function gotoPoseWhileLookingBackwardsGo()
+         	action = {}
+		action["action"] = "updateGotoPoseWhileLookingBackwards";
                 action["args"] = {};
                 ballGlobal= {};
 
@@ -315,9 +348,41 @@ function gotoPoseWhileLookingBackwardsStart()
 end
 
 
-function gotoWhileFacingGoalie()
 
+function gotoWhileFacingGoalieStart()
+	action  = {}
 	action["action"] = "gotoWhileFacingGoalie";
+    action["args"] = {};
+    ballGlobal= {};
+
+	ballGlobal.x = wcm.get_team_closestToBallLoc()[1]--wcm.get_ballGlobal_x();
+    ballGlobal.y = wcm.get_team_closestToBallLoc()[2]--wcm.get_ballGlobal_y();
+    print(ballGlobal)
+    -- my pose global
+	pose=wcm.get_pose();
+                
+    action.args.facing = {};
+    action.args.facing.x = ballGlobal.x
+    action.args.facing.y = ballGlobal.y
+    action.args.facing.a = 0
+	action.args.gotoPose = {};
+	penaltyBounds = getPenaltyBounds();
+    action.args.gotoPose.x = penaltyBounds[1]
+    if ballGlobal.y < penaltyBounds[2]  then
+        action.args.gotoPose.y = ballGlobal.y;
+    else
+        action.args.gotoPose.y = penaltyBounds[2];
+    end
+    action.args.gotoPose.a = 0
+	action.ackNumber =  wcm.get_horde_ackNumber();
+	sendBehavior(json.encode(action) .. "\n");
+
+
+end
+
+function gotoWhileFacingGoalieGo()
+    action  = {}
+    action["action"] = "updateGotoWhileFacingGoalie";
     action["args"] = {};
     ballGlobal= {};
 
@@ -359,8 +424,8 @@ locateBall = makeBehavior("locateBall",nil,nil,locateBallStart);
 safety = makeBehavior("safety" , nil, nil,safetyStart);
 declare = makeBehavior("declare", nil, nil, declareStart);
 undeclare = makeBehavior("undeclare", nil,nil, undeclareStart);
-gotoPoseWhileLookingBackwards = makeBehavior("gotoPoseWhileLookingBackwards", nil, nil gotoPoseWhileLookingBackwardsStart);
-gotoWhileFacingGoalie = makeBehavior("gotoWhileFacingGoalie", nil, nil, gotoWhileFacingGoalieStart);
+gotoPoseWhileLookingBackwards = makeBehavior("gotoPoseWhileLookingBackwards", gotoPoseWhileLookingBackwardsStart, nil, gotoWhileFacingGoalieGo);
+gotoWhileFacingGoalie = makeBehavior("gotoWhileFacingGoalie", gotoWhileFacingGoalieStart, nil, gotoWhileFacingGoalieGo);
 
 kittyMachine = kitty.kittyMachine
 --kittyMachine
@@ -376,27 +441,36 @@ GoalieHFA = makeHFA("GoalieHFA", makeTransition({
         [start] = kittyMachine,
 
         [kittyMachine] = function()
-                if(getGoalBallDistance()>1.5  or wcm.get_pose()[x] > 2.25) then
-                        return gotoPoseWhileLookingBackwards;
+                if(getGoalBallDistance()>1.5  or wcm.get_pose()['x'] > 2.25) then
+                  --      print("going to backwards " .. tostring(gotoPoseWhileLookingBackwards));
+			return gotoPoseWhileLookingBackwards;
                 end
 		return kittyMachine;
             end,
 
         [gotoPoseWhileLookingBackwards] = function()
-                print("in declare")
+                --print("in declare")
 		if(vcm.get_ball_r() < .75)
-			then return kittyMachine
+						then 
+			--gotoPoseWhileLookingBackwards
+		--	print("going to kitty machine " .. tostring(kittyMachine));
+			return kittyMachine
 		end
+
                 if(canSeePost()==1) 
+			print("can see post is 1");
 			then return gotoWhileFacingGoalie;
-                end
+                else
+			print("CAN SEE POST IS 0");
+		end
                 return gotoPoseWhileLookingBackwards
             end,
 
         [gotoWhileFacingGoalie] = function()
-                print("status is " .. tostring(wcm.get_horde_status()) .. " in defend transition")
-                if(getGoalBallDistance() < 1.5)
-                        then return kittyMachine
+                --print("status is " .. tostring(wcm.get_horde_status()) .. " in defend transition")
+                if(getGoalBallDistance() < 1.5) then
+			print("going to kittch machine " .. tostring(kittyMachine));
+                        return kittyMachine
                 end
 		return gotoWhileFacingGoalie;
          end,
@@ -423,39 +497,18 @@ end
 
 function getGoalBallDistance()
 
-	local ballGlobal = wcm.get_ballGlobal()
+	local ballGlobal = wcm.get_team_closestToBallLoc()
 	local goalMidpoint = getDefendGoalMidpoint() 
 	
-	return distGeneral({ballGlobal.x, ballGlobal.y},goalMidpoint);  
+	return distGeneral({ballGlobal[1], ballGlobal[2]},goalMidpoint);  
 end
 
 function canSeePost() 
-	return vcm.get_canSeePost()
+	return wcm.get_horde_canSeePost()
 end
 
 function getPenaltyBounds()
-	
-	if gcm.get_team_color() == 1 then
-
-                -- red attacks cyan goali
-                print(" yellow ")
-                postDefend = PoseFilter.postYellow;
-        else
-                print("not yellow")
-                -- blue attack yellow goal
-                postDefend = PoseFilter.postCyan;
-        end
-
-        -- global 
-        LPost = postDefend[1];
-
-	sign = LPost[1] / math.abs(LPost[1])
-	-- so get the x position of the front of the penalty box
-	-- and add midpoint distance between that and the edge of the field
-	-- then multiply by the sign.  note that the Lgoalie_corner should
-	-- be positive but putting abs around just in case
-	local xBound = (math.abs(Lgoalie_corner[7]) + (math.abs(Lgoalie_corner[9]) - math.abs(Lgoalie_corner[7])) / 2) * sign 
-	return {xBound, math.abs(LPost[2])}
+	return {wcm.get_horde_penaltyBoundsX(), wcm.get_horde_penaltyBoundsY()};	
 end
 
 
@@ -501,7 +554,7 @@ end
 function distGeneral(curA, targetB)
         return math.sqrt(math.pow(curA[1] - targetB[1],2) + math.pow(curA[2] - targetB[2],2))
 end
-
+      
 connectionThread = function ()
         print("got into con thread");
 	if( darwin ) then
@@ -537,7 +590,7 @@ connectionThread = function ()
 			    --kitty.wcm.get_horde_ballLost() = wcm.get_horde_ballLost()	
 				while wcm.get_horde_sentBehavior() == 0 do
 					isBallLost();
-					pulse(DefenseHFA);
+					pulse(GoalieHFA);
 				end
 				wcm.set_horde_sentBehavior(0);
 				print("cur rec number " .. tostring(wcm.get_horde_ackNumber()) .. "..........................................")

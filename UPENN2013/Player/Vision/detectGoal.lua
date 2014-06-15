@@ -5,7 +5,7 @@ require('ImageProc');
 require('HeadTransform');	-- For Projection
 require('Body')
 require('Vision');
-
+require('wcm')
 -- Dependency
 require('Detection');
 
@@ -311,9 +311,9 @@ function detect(color)
     vcm.add_debug_message(string.format("Distance by width : %.1f\n",
 	math.sqrt(v1[1]^2+v1[2]^2) ));
     if math.sqrt(v1[1]^2+v1[2]^2) < 2 then
-        vcm.set_canSeePost(1)
+        wcm.set_horde_canSeePost(1)
     else
-        vcm.set_canSeePost(0)
+        wcm.set_horde_canSeePost(0)
     end
 
     vcm.add_debug_message(string.format("Distance by height : %.1f\n",
@@ -338,9 +338,17 @@ function detect(color)
 	 i, goal.v[i][1], goal.v[i][2], goal.v[i][3]));
   end
 
+  -- if I see two posts then set it to true
+  -- otherwise set it to false.  
+  if (npost == 2) then
+    wcm.set_horde_seeTwoPosts(1);
+  else
+    wcm.set_horde_seeTwoPosts(0);
+  end
+
   if (npost == 2) then
     goal.type = 3; --Two posts
-
+	
 --Do we need this? this may hinder detecting goals when robot is facing down...
 --[[
     -- check for valid separation between posts:

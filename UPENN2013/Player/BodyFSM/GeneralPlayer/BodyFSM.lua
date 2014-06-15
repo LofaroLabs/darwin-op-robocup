@@ -1,9 +1,4 @@
 require('gcm')
+BodyFSM = require("BodyFSMGMU");
 
-
-if Config.game.role == 0 then
-	BodyFSM = require("BodyFSMAdvanced");
-else
-	BodyFSM = require("BodyFSMGMU");
-end
 

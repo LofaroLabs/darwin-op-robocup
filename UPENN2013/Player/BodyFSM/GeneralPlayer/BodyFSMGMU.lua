@@ -44,13 +44,14 @@ require('bodyGotoWhileFacingGoalie')
 require('bodyGotoPoseWhileLookingBackwards')
 require('bodyUnpenalized')
 require('bodyApproach')
-
+require('bodyLookBackwards')
 
 require('bodyReadyMove')
 
 
 
 sm = fsm.new(bodyIdle);
+sm:add_state(bodyLookBackwards);
 sm:add_state(bodyGotoWhileFacingGoalie);
 sm:add_state(bodyGotoPoseWhileLookingBackwards);
 sm:add_state(bodyApproach);
