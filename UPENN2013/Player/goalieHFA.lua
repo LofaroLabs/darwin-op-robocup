@@ -532,17 +532,13 @@ GoalieHFA = makeHFA("GoalieHFA", makeTransition({
             end,
 
         [gotoWhileFacingGoalie] = function()
-                                print("status is " .. tostring(wcm.get_horde_status()) .. " in defend transition")
-                if(wcm.get_horde_status() >=2)
-                        then return undeclare
-                                end
-                                return defend;
+                print("status is " .. tostring(wcm.get_horde_status()) .. " in defend transition")
+                if(vcm.get_ball_r() < 1)
+                        then return kittyMachine
+                end
+		return gotoWhileFacingGoalie;
          end,
-        [undeclare] = function()
-                        wcm.set_horde_declared(0);
-                        return support;
-        end
-}), false)
+       }), false)
 connectionThread = function ()
         print("got into con thread");
 	if( darwin ) then
