@@ -324,7 +324,7 @@ supportGoalie = makeHFA("supportGoalie", makeTransition({
 	[start] = locateBall,
 	[locateBall] = function()
 			print("in support goalie locate ball");
-		print(vcm.get_ball_detect() .. " this is the vaue for ball detect");	
+			print(vcm.get_ball_detect() .. " this is the vaue for ball detect");	
 			if(wcm.get_horde_ballLost()==1)
 				
 				then return locateBall;
@@ -518,7 +518,7 @@ GoalieHFA = makeHFA("GoalieHFA", makeTransition({
         [start] = kittyMachine,
 
         [kittyMachine] = function()
-                if(vcm.get_ball_r() > 1 or wcm.get_pose()[x] > 2.25) then
+                if(getGoalBallDistance()>1.5  or wcm.get_pose()[x] > 2.25) then
                         return gotoPoseWhileLookingBackwards;
                 end
 		return kittyMachine;
@@ -529,7 +529,7 @@ GoalieHFA = makeHFA("GoalieHFA", makeTransition({
 		if(vcm.get_ball_r() < .75)
 			then return kittyMachine
 		end
-                if(wcm.get_horde_canSeePost()==1) 
+                if(canSeePost()==1) 
 			then return gotoWhileFacingGoalie;
                 end
                 return gotoPoseWhileLookingBackwards
@@ -537,7 +537,7 @@ GoalieHFA = makeHFA("GoalieHFA", makeTransition({
 
         [gotoWhileFacingGoalie] = function()
                 print("status is " .. tostring(wcm.get_horde_status()) .. " in defend transition")
-                if(vcm.get_ball_r() < 1)
+                if(getGoalBallDistance() < 1.5)
                         then return kittyMachine
                 end
 		return gotoWhileFacingGoalie;
