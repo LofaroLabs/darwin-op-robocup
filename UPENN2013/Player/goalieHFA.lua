@@ -374,10 +374,11 @@ function gotoWhileFacingGoalieStart()
 	action.args.gotoPose = {};
 	penaltyBounds = getPenaltyBounds();
     action.args.gotoPose.x = penaltyBounds[1]
-    if ballGlobal.y < penaltyBounds[2]  then
+    if math.abs(ballGlobal.y) < penaltyBounds[2]  then
         action.args.gotoPose.y = ballGlobal.y;
     else
-        action.args.gotoPose.y = penaltyBounds[2];
+	ysign = ballGlobal.y / math.abs(ballGlobal.y)
+        action.args.gotoPose.y = penaltyBounds[2] * ysign;
     end
     action.args.gotoPose.a = 0
 	action.ackNumber =  wcm.get_horde_ackNumber();
@@ -405,12 +406,13 @@ function gotoWhileFacingGoalieGo()
 	action.args.gotoPose = {};
 	penaltyBounds = getPenaltyBounds();
     action.args.gotoPose.x = penaltyBounds[1]
-    if ballGlobal.y < penaltyBounds[2]  then
+    if math.abs(ballGlobal.y) < penaltyBounds[2]  then
         action.args.gotoPose.y = ballGlobal.y;
     else
-        action.args.gotoPose.y = penaltyBounds[2];
-    end
-    action.args.gotoPose.a = 0
+        ysign = ballGlobal.y / math.abs(ballGlobal.y)
+        action.args.gotoPose.y = penaltyBounds[2] * ysign;
+    end  
+   action.args.gotoPose.a = 0
 	action.ackNumber =  wcm.get_horde_ackNumber();
 	sendBehavior(json.encode(action) .. "\n");
 
@@ -488,7 +490,8 @@ DefendGoalHFA = makeHFA("DefendGoalHFA", makeTransition({
                  	badLocalization = true;
 			return gotoWhileFacingGoalie;
                 end
-		return kittyMachine;
+                
+				return kittyMachine;
             end,
 
 
@@ -513,13 +516,13 @@ GoalieHFA = makeHFA("GoalieHFA", makeTransition({
             		badLocalization = false;
             		return resetTimer;
                 end
-			return DefendGoalHFA;
+				return DefendGoalHFA;
             end,
         [RelocalizeHFA] = function()
         		if(getGoalieBallDistance()<1.5 or GoalieHFA.done == true) then
                 		return DefendGoalHFA;
                 	end
-			return RelocalizeHFA;
+				return RelocalizeHFA;
         
         	end,
 	[resetTimer] = function()
