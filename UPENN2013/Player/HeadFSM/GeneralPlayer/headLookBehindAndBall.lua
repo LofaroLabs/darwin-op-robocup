@@ -27,7 +27,12 @@ lookBall = false
 function update()
   if(Body.get_time()-t0 > 3) then
 	if lookBall then -- only switch which shoulder we look over after we've looked at a ball
-		yawMax = -1*yawMax;
+	        if(wcm.get_pose().a < 0) then
+        	        yawMax = -1*math.abs(yawMax);
+	        else
+               		yawMax = math.abs(yawMax);
+        	end
+	
   	end
 	lookBall = (not lookBall)
 	if(lookBall) then

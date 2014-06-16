@@ -25,7 +25,11 @@ end
 yawMax = Config.head.yawMax;
 function update()
   if(Body.get_time()-t0 > 3) then
-	yawMax = -1*yawMax;
+	if(wcm.get_pose().a < 0) then
+        	yawMax = -1*math.abs(yawMax);
+	else
+		yawMax = math.abs(yawMax);
+	end
   	t0 = Body.get_time();
   end
   local pitch = -27*math.pi/180;-- 22 is MAX DONOT GO HIGH (thank you chau)

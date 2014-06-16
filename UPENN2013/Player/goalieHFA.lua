@@ -548,11 +548,11 @@ function closestToBall()
 end
 
 function getGoalieBallDistance()
-
-	local ballGlobal = wcm.get_team_closestToBallLoc()
-	local myPose = wcm.get_pose()
+	return distGeneral({0,0}, {wcm.get_ball_x(), wcm.get_ball_y()});
+--	local ballGlobal = wcm.get_team_closestToBallLoc()
+--	local myPose = wcm.get_pose()
 	
-	return distGeneral({ballGlobal[1], ballGlobal[2]},{myPose.x, myPose.y});  
+--	return distGeneral({ballGlobal[1], ballGlobal[2]},{myPose.x, myPose.y});  
 end
 
 function getGoalBallDistance()
