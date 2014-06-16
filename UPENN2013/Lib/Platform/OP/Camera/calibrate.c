@@ -44,7 +44,7 @@ int main()
 		else if (bufferin[0] == COMMAND_LOOKUP)
 			{
 			readn(fd, bufferin, LOOKUP_TABLE_SIZE);
-			int fd2 = open("/home/darwin/dev/merc/darwin/UPENN2013/Player/Data/lut_demoOP.raw", O_WRONLY | O_CREAT | O_TRUNC, 666);
+			int fd2 = open("/home/darwin/dev/merc/darwin/UPENN2013/Player/Data/lut_demoOP.raw", O_WRONLY | O_CREAT | O_TRUNC, 0666);
 			writen(fd2, bufferin, LOOKUP_TABLE_SIZE);
 			close(fd2);
 			printf("Lookup Table Written\n");
