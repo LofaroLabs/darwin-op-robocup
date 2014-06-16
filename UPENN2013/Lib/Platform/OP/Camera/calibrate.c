@@ -10,7 +10,7 @@
 #define COMMAND_LOOKUP (1)
 
 // This is strictly less than WIDTH * HEIGHT
-#define LOOKUP_TABLE_SIZE (262144)
+#define LOOKUP_TABLE_SIZE (262144) 
 
 int main()
 	{
