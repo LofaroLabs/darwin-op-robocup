@@ -483,7 +483,7 @@ DefendGoalHFA = makeHFA("DefendGoalHFA", makeTransition({
         [start] = kittyMachine,
 
         [kittyMachine] = function()
-                if(getGoalBallDistance()>1.5  or wcm.get_pose()['x'] > 1.0 * wcm.get_horde_goalSign()) then
+                if(getGoalBallDistance()>1.5  or math.abs(wcm.get_pose()['x']) > 1.0) then -- change to ball x position?
                  	 --      print("going to backwards " .. tostring(gotoPoseWhileLookingBackwards));
                  	badLocalization = true;
 			return gotoWhileFacingGoalie;
