@@ -519,7 +519,10 @@ GoalieHFA = makeHFA("GoalieHFA", makeTransition({
 				return DefendGoalHFA;
             end,
         [RelocalizeHFA] = function()
-        		if(getGoalieBallDistance()<1.5 or GoalieHFA.done == true) then
+        		if(wcm.get_horde_canSeeTwoPosts() == 1 and wcm.get_horde_goalCloseDist() < 1) then
+				wcm.set_horde_moveParticlesToCenter(1);
+			end
+			if(getGoalieBallDistance()<1.5 or GoalieHFA.done == true) then
                 		return DefendGoalHFA;
                 	end
 				return RelocalizeHFA;
