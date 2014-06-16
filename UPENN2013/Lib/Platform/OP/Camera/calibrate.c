@@ -37,7 +37,7 @@ int main()
 		if (bufferin[0] == COMMAND_PICTURE)
 			{	
 			lua_take_save_images(bufferout);	
-		    	lua_take_save_images(bufferout);	
+		    lua_take_save_images(bufferout);	
 			lua_take_save_images(bufferout);	
 			writen(fd, (char*)bufferout, WIDTH * HEIGHT*2); // had to half to make faster
 			}

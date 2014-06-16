@@ -563,9 +563,10 @@ public class Calibrate2 extends JFrame
         {
         super("Bleah");
                 
-        if (args.length > 0)
+        if (args.length > 1)
             {
             ip = args[0];
+            
             port = Integer.parseInt(args[1]);
             // we need to connect to a robot to get a feed
             System.err.println("Connecting to " + ip + " at " + port);
@@ -573,7 +574,7 @@ public class Calibrate2 extends JFrame
             }
         else
             {
-            System.err.println("What the....");
+            System.err.println("Must provide both ip and port");
             }
                         
         for(int x = 0; x < IMAGE_WIDTH; x++)
@@ -728,7 +729,7 @@ public class Calibrate2 extends JFrame
             {
             FileDialog fd = new FileDialog(this, "Load File", FileDialog.LOAD);
             fd.setVisible(true);
-            path = fd.getFile();
+            path = fd.getDirectory() + fd.getFile();
             if (path == null) return;
             input = new BufferedInputStream(new FileInputStream(new File(path)));
                 
@@ -765,7 +766,7 @@ public class Calibrate2 extends JFrame
             {
             FileDialog fd = new FileDialog(this, "Load File", FileDialog.SAVE);
             fd.setVisible(true);
-            path = fd.getFile();
+            path = fd.getDirectory() + fd.getFile();
             if (path == null) return;
             print = new BufferedOutputStream(new FileOutputStream(new File(path)));
                 
