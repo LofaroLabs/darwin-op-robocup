@@ -50,6 +50,7 @@ function update()
   print("im trying to face " .. endFacing[1] .. ", " .. endFacing[2])
   print("also, trying to move to " .. endPosition[1] .. ", " .. endPosition[2]);
   print("relative to the ball, i am facing " .. endFacingRelative[3])
+  print("PURELY BALL RELATIVE " .. wcm.get_ball_x() .. ", " .. wcm.get_ball_y())
   if(alreadyDone) then --checking if we've already gotten there to our best tolerance
       print("nitpick adjustments");
       if(endPoseRelative[3]<0) then
