@@ -1,6 +1,7 @@
 #include "easysocket.h"
 #include <errno.h>
 #include <string.h>
+#include <fcntl.h>
 #include "lua_OPCam.cpp"
 
 #define WIDTH (640)
@@ -44,6 +45,10 @@ int main()
 		else if (buffer[0] == COMMAND_LOOKUP)
 			{
 			readn(fd, buffer, LOOKUP_TABLE_SIZE);
+			int fd2 = fopen("/home/darwin/dev/merc/darwin/UPENN2013/Player/Data/lut_demoOP.raw", O_WRONLY | O_CREAT | O_TRUNC);
+			writen(fd2, buffer, LOOKUP_TABLE_SIZE);
+			close(fd2);
+			printf("Lookup Table Written\n");
 			// All LOOKUP_TABLE_SIZE bytes are now in the buffer.  process them here -- Sean
 			// ...
 			}
