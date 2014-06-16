@@ -2,8 +2,15 @@
 #include <errno.h>
 #include <string.h>
 #include "lua_OPCam.cpp"
-#define WIDTH 640
-#define HEIGHT 480
+
+#define WIDTH (640)
+#define HEIGHT (480)
+
+#define COMMAND_PICTURE (0)
+#define COMMAND_LOOKUP (1)
+
+// This is strictly less than WIDTH * HEIGHT
+#define LOOKUP_TABLE_SIZE (262144)
 
 int main()
 	{
@@ -22,17 +29,28 @@ int main()
 			printf("Can't connect: %s\n", strerror(errno));
 			exit(1);
 			}
-		
-		// do the call
-		// callDavesFunction(buffer, WIDTH * HEIGHT);
-		lua_take_save_images(buffer);	
-	        lua_take_save_images(buffer);	
-		lua_take_save_images(buffer);	
 
-		
-		
-		writen(fd, (char*)buffer, WIDTH * HEIGHT*2); // had to half to make faster
-		//writen(fd, "Sorry, I can't do that, Dave\n", strlen("Sorry, I can't do that, Dave\n"));
+		// get the command
+		readn(fd, buffer, 1);
+		if (buffer[0] == COMMAND_PICTURE)
+			{	
+			// do the call
+			// callDavesFunction(buffer, WIDTH * HEIGHT);
+			lua_take_save_images(buffer);	
+		    lua_take_save_images(buffer);	
+			lua_take_save_images(buffer);	
+			writen(fd, (char*)buffer, WIDTH * HEIGHT*2); // had to half to make faster
+			}
+		else if (buffer[0] == COMMAND_LOOKUP)
+			{
+			readn(fd, buffer, LOOKUP_TABLE_SIZE);
+			// All LOOKUP_TABLE_SIZE bytes are now in the buffer.  process them here -- Sean
+			// ...
+			}
+		else
+			{
+			printf("Unknown byte received: %d\n", (int)buffer[0]);
+			}
 		close(fd);
 		}
 	}

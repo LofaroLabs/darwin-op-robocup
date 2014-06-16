@@ -248,10 +248,10 @@ transitions to a new current state.
 
 There are four flag behaviors available:
 
-done        raises the "done" flag and immediately transitions to the "start" state
+done          raises the "done" flag and immediately transitions to the "start" state
 failed        raises the "failed" flag and immediately transitions to the "start" state
-sayDone        raises the "done" flag
-sayFailed    raises the "failed" flag
+sayDone       raises the "done" flag
+sayFailed     raises the "failed" flag
 
 The first two are the most common, since once you're done (or have failed) you probably
 have no further actions you want to do and might as well start over from the top if for
@@ -262,7 +262,7 @@ of some kind, typically a unilateral one.  These second two are much less common
 
 The flags themselves are stored in the parent here (you'll rarely touch this):
 
-myHFA.done            (false by default)
+myHFA.done          (false by default)
 myHFA.failed        (false by default)
 
 Flags may be PROPAGATED.  It's a common pattern in building HFA that you see transition
@@ -295,7 +295,7 @@ called) and may be increased or reset to zero by certain behaviors which the HFA
 transition to as its current state.  These behaviors are:
 
 bumpCounter            increments the counter by 1
-resetCounter        sets the counter to 0
+resetCounter           sets the counter to 0
 
 The current counter value is stored here:
 
