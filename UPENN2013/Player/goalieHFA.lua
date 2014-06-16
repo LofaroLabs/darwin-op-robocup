@@ -488,7 +488,8 @@ DefendGoalHFA = makeHFA("DefendGoalHFA", makeTransition({
                  	badLocalization = true;
 			return gotoWhileFacingGoalie;
                 end
-		return kittyMachine;
+                
+				return kittyMachine;
             end,
 
 
@@ -513,13 +514,13 @@ GoalieHFA = makeHFA("GoalieHFA", makeTransition({
             		badLocalization = false;
             		return resetTimer;
                 end
-			return DefendGoalHFA;
+				return DefendGoalHFA;
             end,
         [RelocalizeHFA] = function()
         		if(getGoalieBallDistance()<1.5 or GoalieHFA.done == true) then
                 		return DefendGoalHFA;
                 	end
-			return RelocalizeHFA;
+				return RelocalizeHFA;
         
         	end,
 	[resetTimer] = function()
