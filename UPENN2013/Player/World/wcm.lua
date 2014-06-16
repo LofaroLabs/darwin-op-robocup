@@ -81,7 +81,7 @@ shared.horde.goalieCloseEnough = vector.zeros(1); -- 0 if not close enough 1 if 
 shared.horde.declared = vector.zeros(1); -- 0 if not declared 1 if declared
 shared.horde.goalCloseDist = vector.ones(1) -- should change this is a place holder.
 shared.horde.distN = vector.ones(1) -- within a meter?
-
+shared.horde.confused = vector.zeros(1);
 
 --shared.horde.robot1 = "10.0.0.51"
 --shared.horde.poseRobot1 = vector.zeros(3);--purely horizontally passed

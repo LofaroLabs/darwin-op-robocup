@@ -1,4 +1,4 @@
-module(..., package.seeall);
+mdule(..., package.seeall);
 
 require('Body')
 require('walk')
@@ -6,7 +6,7 @@ require('vector')
 require('Config')
 require('wcm')
 require('gcm')
-
+--require('PoseFilter')
 t0 = 0;
 
 maxStep = Config.fsm.bodyGotoCenter.maxStep;
@@ -40,9 +40,14 @@ function update()
   endPoseRelative  = util.pose_relative(endPosition, {pose.x, pose.y, pose.a});
   endPoseX = endPoseRelative[1];
   endPoseY = endPoseRelative[2];
+  if(math.abs(pose.x - endPoseX) > 3) then
+--	PoseFilter.flip_particle_angle();
+  	wcm.set_horde_confused(1);	
+  end 
   endFacingRelative = util.pose_relative(endFacing,{pose.x,pose.y,pose.a})
   endFacingX = endFacingRelative[1];
   endFacingY = endFacingRelative[2];
+  
   endFacingRelative[3] = math.atan2(endFacingY, endFacingX);
   scaleFactor = 15*(math.abs(endPoseX)+math.abs(endPoseY));
 	
@@ -83,11 +88,11 @@ function update()
  	print("i am most certainly ready");
 	--Speak.talk("banana.");
 	--walk.set_velocity(0,0,0);
---	Motion.sm:set_state('standstill');
+	--Motion.sm:set_state('standstill');
 	--alreadyDone = true;
 	wcm.set_horde_yelledReady(1);
-     --	wcm.set_horde_passKick(1);
---	wcm.set_horde_timeMark(Body.get_time());
+     	--wcm.set_horde_passKick(1);
+	--wcm.set_horde_timeMark(Body.get_time());
 	return;
   end
   print("X " .. endPoseX .. " Y: " .. endPoseY);

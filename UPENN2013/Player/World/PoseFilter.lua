@@ -140,7 +140,15 @@ function reset_heading()
 
   end
 end
-
+function flip_particle_angle()
+    for i = 1, n do
+      if ap[i] <= math.pi then
+        ap[i] = ap[i] + math.pi;
+      else
+        ap[i] = ap[i] - math.pi;
+      end
+    end
+end
 function flip_particles()
   xp = -xp;
   yp = -yp;
