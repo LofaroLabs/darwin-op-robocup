@@ -185,6 +185,15 @@ function update_vision()
   	wcm.set_horde_confused(0);
   end
 
+
+  -- drew added to
+  -- if I can see both the goal posts then I should move my particles to 0,0
+  if (wcm.get_horde_moveParticlesToCenter() == 1) then
+	PoseFilter.setCloserToCenter();
+	wcm.set_horde_moveParticlesToCenter(0);
+  end
+
+
   --added by David to re initialize particles in initial game state
   local state = gcm.get_game_state();
   if(state==0) then -- if in initial

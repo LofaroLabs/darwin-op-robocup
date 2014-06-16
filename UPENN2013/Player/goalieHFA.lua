@@ -363,7 +363,7 @@ function gotoWhileFacingGoalieStart()
 
 	ballGlobal.x = wcm.get_team_closestToBallLoc()[1]--wcm.get_ballGlobal_x();
     ballGlobal.y = wcm.get_team_closestToBallLoc()[2]--wcm.get_ballGlobal_y();
-    print(ballGlobal)
+    print("Ball Global x = " .. tostring(ballGlobal.x) .. " y = " .. tostring(ballGlobal.y))
     -- my pose global
 	pose=wcm.get_pose();
                 
@@ -374,11 +374,11 @@ function gotoWhileFacingGoalieStart()
 	action.args.gotoPose = {};
 	penaltyBounds = getPenaltyBounds();
     action.args.gotoPose.x = penaltyBounds[1]
-    if math.abs(ballGlobal.y) < penaltyBounds[2]  then
+    if math.abs(ballGlobal.y) < penaltyBounds[2] * .5  then
         action.args.gotoPose.y = ballGlobal.y;
     else
 	ysign = ballGlobal.y / math.abs(ballGlobal.y)
-        action.args.gotoPose.y = penaltyBounds[2] * ysign;
+        action.args.gotoPose.y = penaltyBounds[2] * ysign * .5;
     end
     action.args.gotoPose.a = 0
 	action.ackNumber =  wcm.get_horde_ackNumber();
@@ -406,11 +406,11 @@ function gotoWhileFacingGoalieGo()
 	action.args.gotoPose = {};
 	penaltyBounds = getPenaltyBounds();
     action.args.gotoPose.x = penaltyBounds[1]
-    if math.abs(ballGlobal.y) < penaltyBounds[2]  then
+    if math.abs(ballGlobal.y) < penaltyBounds[2] * .5  then
         action.args.gotoPose.y = ballGlobal.y;
     else
         ysign = ballGlobal.y / math.abs(ballGlobal.y)
-        action.args.gotoPose.y = penaltyBounds[2] * ysign;
+        action.args.gotoPose.y = penaltyBounds[2] * ysign * .5;
     end  
    action.args.gotoPose.a = 0
 	action.ackNumber =  wcm.get_horde_ackNumber();
@@ -485,7 +485,7 @@ DefendGoalHFA = makeHFA("DefendGoalHFA", makeTransition({
         [start] = kittyMachine,
 
         [kittyMachine] = function()
-                if(getGoalBallDistance()>1.5) then -- or math.abs(wcm.get_pose()['x']) < 1.0) then -- change to ball x position?
+                if(getGoalBallDistance()>1.0) then -- or math.abs(wcm.get_pose()['x']) < 1.0) then -- change to ball x position?
                  	 --      print("going to backwards " .. tostring(gotoPoseWhileLookingBackwards));
                  	badLocalization = true;
 			return gotoWhileFacingGoalie;
@@ -497,7 +497,7 @@ DefendGoalHFA = makeHFA("DefendGoalHFA", makeTransition({
 
         [gotoWhileFacingGoalie] = function()
                 --print("status is " .. tostring(wcm.get_horde_status()) .. " in defend transition")
-                if(getGoalBallDistance() < 1.5) then
+                if(getGoalBallDistance() < 1.0) then
 			print("going to kittch machine " .. tostring(kittyMachine));
                         return kittyMachine
                 end
@@ -512,17 +512,17 @@ GoalieHFA = makeHFA("GoalieHFA", makeTransition({
         [start] = resetTimer,
 
         [DefendGoalHFA] = function()
-                if(getGoalieBallDistance()>1.5 and currentTimer(GoalieHFA) > 20) then
+                if(getGoalieBallDistance()>1.0 and currentTimer(GoalieHFA) > 20) then
             		badLocalization = false;
             		return resetTimer;
                 end
 				return DefendGoalHFA;
             end,
         [RelocalizeHFA] = function()
-        		if(wcm.get_horde_canSeeTwoPosts() == 1 and wcm.get_horde_goalCloseDist() < 1) then
+        		if(wcm.get_horde_seeTwoPosts() == 1 and wcm.get_horde_goalCloseDist() < 1) then
 				wcm.set_horde_moveParticlesToCenter(1);
 			end
-			if(getGoalieBallDistance()<1.5 or GoalieHFA.done == true) then
+			if(getGoalieBallDistance()<1.0 or GoalieHFA.done == true) then
                 		return DefendGoalHFA;
                 	end
 				return RelocalizeHFA;

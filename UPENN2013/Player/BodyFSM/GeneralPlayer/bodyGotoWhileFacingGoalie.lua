@@ -1,4 +1,4 @@
-mdule(..., package.seeall);
+module(..., package.seeall);
 
 require('Body')
 require('walk')
