@@ -498,9 +498,10 @@ connectionThread = function ()
 end
 
 --start "main"
-if(darwin) then 
-	Speak.talk("my id is " .. Config.game.playerID);
-
+if(darwin) then
+	for i = 1, 3000 do
+		print("My id = ".. gcm.get_team_player_id());
+	end 
 		--        hoard_functions.hordeFunctions["murder all humans"](nil,nil);
 	--Motion.event("standup");	
       	print("starting connection thread\n");

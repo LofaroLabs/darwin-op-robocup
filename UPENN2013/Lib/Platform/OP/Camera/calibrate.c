@@ -10,12 +10,13 @@
 #define COMMAND_PICTURE (0)
 #define COMMAND_LOOKUP (1)
 
-// This is strictly less than WIDTH * HEIGHT
+// defined as 2^32
 #define LOOKUP_TABLE_SIZE (262144) 
 
 int main()
 	{
-	uint32 buffer[WIDTH * HEIGHT];
+	uint32 bufferout[WIDTH * HEIGHT];
+	char bufferin[LOOKUP_TABLE_SIZE];
 	
 	server_type = SERVER_TYPE_SERIAL;
 	int fd;
@@ -32,21 +33,19 @@ int main()
 			}
 
 		// get the command
-		readn(fd, buffer, 1);
-		if (buffer[0] == COMMAND_PICTURE)
+		readn(fd, bufferin, 1);
+		if (bufferin[0] == COMMAND_PICTURE)
 			{	
-			// do the call
-			// callDavesFunction(buffer, WIDTH * HEIGHT);
-			lua_take_save_images(buffer);	
-		    lua_take_save_images(buffer);	
-			lua_take_save_images(buffer);	
-			writen(fd, (char*)buffer, WIDTH * HEIGHT*2); // had to half to make faster
+			lua_take_save_images(bufferout);	
+		    	lua_take_save_images(bufferout);	
+			lua_take_save_images(bufferout);	
+			writen(fd, (char*)bufferout, WIDTH * HEIGHT*2); // had to half to make faster
 			}
-		else if (buffer[0] == COMMAND_LOOKUP)
+		else if (bufferin[0] == COMMAND_LOOKUP)
 			{
-			readn(fd, buffer, LOOKUP_TABLE_SIZE);
-			int fd2 = fopen("/home/darwin/dev/merc/darwin/UPENN2013/Player/Data/lut_demoOP.raw", O_WRONLY | O_CREAT | O_TRUNC);
-			writen(fd2, buffer, LOOKUP_TABLE_SIZE);
+			readn(fd, bufferin, LOOKUP_TABLE_SIZE);
+			int fd2 = open("/home/darwin/dev/merc/darwin/UPENN2013/Player/Data/lut_demoOP.raw", O_WRONLY | O_CREAT | O_TRUNC, 666);
+			writen(fd2, bufferin, LOOKUP_TABLE_SIZE);
 			close(fd2);
 			printf("Lookup Table Written\n");
 			// All LOOKUP_TABLE_SIZE bytes are now in the buffer.  process them here -- Sean
@@ -54,7 +53,7 @@ int main()
 			}
 		else
 			{
-			printf("Unknown byte received: %d\n", (int)buffer[0]);
+			printf("Unknown byte received: %d\n", (int)bufferin[0]);
 			}
 		close(fd);
 		}
