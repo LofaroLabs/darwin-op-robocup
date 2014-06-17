@@ -73,5 +73,6 @@ function update()
 end
 
 function exit()
+  vcm.set_vision_enable(1);
   keyframe.exit();
 end

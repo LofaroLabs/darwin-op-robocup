@@ -53,6 +53,7 @@ function update()
 end
 
 function exit()
+  vcm.set_vision_enable(1);
   local qSensor = Body.get_sensor_position();
   Body.set_actuator_command(qSensor);
 end

@@ -136,14 +136,14 @@ function update()
   end
 
 
- --[[ if vcm.get_vision_enable() ==0 then
+  if vcm.get_vision_enable() ==0 then
     print("@@@Vision enable is false, so therefore you dont detect anything");
     ball.detect = 0;
     ballYellow.detect=0; 
     goalYellow.detect = 0;
     line.detect = 0;
     corner.detect = 0;
-  end--]]
+  end
 
 
   update_shm();
