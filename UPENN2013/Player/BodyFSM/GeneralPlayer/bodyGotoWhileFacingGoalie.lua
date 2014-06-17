@@ -14,7 +14,7 @@ rClose = Config.fsm.bodyGotoCenter.rClose;
 timeout = Config.fsm.bodyGotoCenter.timeout;
 --TODO: Goalie handling, velocity limit 
 alreadyDone = false;
-distanceTolerance = .4;
+distanceTolerance = .2;
 angleTolerance = .3;
 function entry()
   print(_NAME.." entry");
@@ -87,8 +87,8 @@ function update()
   if((math.abs(endPoseX)+math.abs(endPoseY))<distanceTolerance and math.abs(endFacingRelative[3]) < angleTolerance) then
  	print("i am most certainly ready");
 	--Speak.talk("banana.");
-	--walk.set_velocity(0,0,0);
-	--Motion.sm:set_state('standstill');
+	walk.set_velocity(0,0,0);
+	Motion.sm:set_state('standstill');
 	--alreadyDone = true;
 	wcm.set_horde_yelledReady(1);
      	--wcm.set_horde_passKick(1);
@@ -124,6 +124,8 @@ function exit()
   -- wcm.set_horde_passKick(1);
   --wcm.set_horde_timeMark(Body.get_time());
   Motion.sm:add_event('walk');
+  walk.set_velocity(0,0,0);
+  walk.start();
   HeadFSM.sm:set_state('headLookGoalGMU');
 end
 

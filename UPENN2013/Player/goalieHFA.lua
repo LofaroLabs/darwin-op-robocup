@@ -522,7 +522,9 @@ GoalieHFA = makeHFA("GoalieHFA", makeTransition({
         		if(wcm.get_horde_seeTwoPosts() == 1 and wcm.get_horde_goalCloseDist() < 1) then
 				wcm.set_horde_moveParticlesToCenter(1);
 			end
-			if(getGoalieBallDistance()<1.0 or GoalieHFA.done == true) then
+			
+
+			if(getGoalieBallDistance()<1.0 or GoalieHFA.done == true or getOnOffense() == 0) then
                 		return DefendGoalHFA;
                 	end
 				return RelocalizeHFA;
@@ -558,6 +560,11 @@ function getGoalieBallDistance()
 --	local myPose = wcm.get_pose()
 	
 --	return distGeneral({ballGlobal[1], ballGlobal[2]},{myPose.x, myPose.y});  
+end
+
+function getOnOffense()
+	local ballGlobal = wcm.get_team_closestToBallLoc()
+	return wcm.get_horde_goalSign() ~= (ballGlobal[1] / math.abs(ballGlobal[1]));
 end
 
 function getGoalBallDistance()
