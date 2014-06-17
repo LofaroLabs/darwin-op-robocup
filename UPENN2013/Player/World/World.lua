@@ -180,10 +180,10 @@ end
 
 function update_vision()
  --Added by david to flip angle if we find the goalie having the urge to travel more than 3 meters in the X direction
-  if(wcm.get_horde_confused()==1) then
-	PoseFilter.flip_particle_angle();
-  	wcm.set_horde_confused(0);
-  end
+ -- if(wcm.get_horde_confused()==1) then
+--	PoseFilter.flip_particle_angle();
+  --	wcm.set_horde_confused(0);
+  --end
 
 
   -- drew added to

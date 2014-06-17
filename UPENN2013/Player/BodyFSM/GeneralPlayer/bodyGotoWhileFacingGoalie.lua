@@ -42,7 +42,10 @@ function update()
   endPoseY = endPoseRelative[2];
   if(math.abs(pose.x - endPoseX) > 3) then
 --	PoseFilter.flip_particle_angle();
-  	wcm.set_horde_confused(1);	
+  	file = io.open("didIFlip.txt", "w")
+        file:write("yup i flipped " .. Body.get_time() .. "\n")
+        file:close()
+	wcm.set_horde_confused(1);	
   end 
   endFacingRelative = util.pose_relative(endFacing,{pose.x,pose.y,pose.a})
   endFacingX = endFacingRelative[1];
@@ -88,7 +91,8 @@ function update()
  	print("i am most certainly ready");
 	--Speak.talk("banana.");
 	walk.set_velocity(0,0,0);
-	Motion.sm:set_state('standstill');
+--	Motion.sm:set_state('standstill');
+	walk.stop();
 	--alreadyDone = true;
 	wcm.set_horde_yelledReady(1);
      	--wcm.set_horde_passKick(1);

@@ -34,7 +34,12 @@ function entry()
   ball = wcm.get_ball();
  
   HeadFSM.sm:set_state('headTrackGMU');
-
+  file = io.open("kickOutput.txt", "w")
+  file:write("KICK START\n");
+  pose = wcm.get_pose();
+  file:write("pose x,y,a: " ..pose.x .. ", " .. pose.y .. ", " .. ", " pose.a.. " \n");
+  file:write(" time is : " .. Body.get_time() .. "\n");
+  file:close()
 --  HeadFSM.sm:set_state('headIdle');
 end
 
