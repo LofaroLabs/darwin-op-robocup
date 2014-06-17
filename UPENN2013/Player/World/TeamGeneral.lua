@@ -524,7 +524,7 @@ function update_status()
 			print("DNW i = " .. tostring(i) .. " My Status = " .. tostring(wcm.get_horde_status()));
 		end
 		
-		print("DNW i = " .. tostring(i) .. " ID = " .. tostring(distIDPairs[i].id) .. " status = " .. tostring(wcm.set_horde_status))
+		print("DNW i = " .. tostring(i) .. " ID = " .. tostring(distIDPairs[i].id) .. " status = " .. tostring(wcm.get_horde_status()))
 		
 	end
 	
