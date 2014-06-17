@@ -105,7 +105,7 @@ tLastMessage = 0;
 
 lastTimeFound = Body.get_time();
 function isBallLost()
-	--print("got into ball lost")
+	print("got into ball lost, get ball detect:  ".. vcm.get_ball_detect())
 	if vcm.get_ball_detect() ~= 0 then
 		state.ballLost = 0
 		lastTimeFound = Body.get_time();

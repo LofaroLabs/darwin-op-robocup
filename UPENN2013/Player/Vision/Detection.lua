@@ -136,14 +136,14 @@ function update()
   end
 
 
-  if vcm.get_vision_enable() ==0 then
-    --print("@@@Vision enable is false, so therefore you dont detect anything");
+ --[[ if vcm.get_vision_enable() ==0 then
+    print("@@@Vision enable is false, so therefore you dont detect anything");
     ball.detect = 0;
     ballYellow.detect=0; 
     goalYellow.detect = 0;
     line.detect = 0;
     corner.detect = 0;
-  end
+  end--]]
 
 
   update_shm();
@@ -151,7 +151,7 @@ end
 
 function update_shm()
 
---  print(ball.detect .. "******************************** ball detect was set");
+  print(ball.detect .. "******************************** ball detect was set");
   vcm.set_ball_detect(ball.detect);
   if (ball.detect == 1) then
     vcm.set_ball_centroid(ball.propsA.centroid);
