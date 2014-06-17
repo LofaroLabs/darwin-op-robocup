@@ -112,6 +112,7 @@ function update()
 end
   while (true) do
     -- update motion process
+   unix.usleep(.5 * 1E6);
     update();
    if(ballDistToggle == 0) then
 	ballDist = .582259821
