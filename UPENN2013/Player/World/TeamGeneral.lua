@@ -471,8 +471,7 @@ function update_status()
 	local ballDist = state.ballRelative; -- the position of the ball relative to me based off the global pos
 	local myDist = get_distanceBetween(ballDist, {0, 0});
 	local distIDPairs = {}
-	for id = 1,5 do
-		
+	for id = 1,5 do	
 		if states[id] and states[id].role ~= ROLE_GOALIE and states[id].pose and states[id].ballRelative then
 			print("DNW index = " .. tostring(id) .. " I am role = " .. tostring(states[id].role) .. " and the ballLost feature is = " .. tostring(states[id].ballLost));
 			local data = {}
@@ -508,6 +507,7 @@ function update_status()
 	-- loop
 	
 	local secondClosestWithin = 0
+	print("DNW number of distIDPairs is " .. tostring(#distIDPairs))
 	for i=1, #distIDPairs do
 		print("DNW i = " .. tostring(i) .. " ID = " .. tostring(distIDPairs[i].id) .. " dist = " .. tostring(distIDPairs[i].dist) .. " distN = " .. tostring(wcm.get_horde_distN()));
 		distIDPairs[i].status = (i-1)*2
