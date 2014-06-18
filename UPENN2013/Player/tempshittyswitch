@@ -1,4 +1,4 @@
-module(... or '', package.seeall)
+module((... or '', package.seeall))
 
 -- Get Platform for package path
 cwd = '.';
