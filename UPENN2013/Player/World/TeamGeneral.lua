@@ -459,7 +459,6 @@ end
   check_confused();
   check_flip2();
 end
-
 -- 0 = i am closest or we are without comm then we are all closest
 -- 1 = i am second closest and within N
 -- 2 = i am second closest
@@ -478,22 +477,35 @@ function update_status()
 			data.id = states[id].id
 			if states[id].ballLost == 0 then
 				data.dist = get_distanceBetween(states[id].ballRelative, {0, 0});
-			--	print("DNW index = " .. tostring(id) .. " SEE BALL so dist is " .. data.dist);
+				print("DNW index = " .. tostring(id) .. " SEE BALL so dist is " .. data.dist);
 			else
 				data.dist = math.huge;
-			--	print("DNW index = " .. tostring(id) .. " BALL LOST so dist is " .. data.dist);
+				print("DNW index = " .. tostring(id) .. " BALL LOST so dist is " .. data.dist);
 			end
 			print("DNW HEY I ADDED A DIST PAIR AT " .. id );
 			data.status = states[id].status
 			distIDPairs[id] = data;
-		end
-		local placeHolderData = {}
-		placeHolderData.dist = math.huge;
-		placeHolderData.id = id
-		distIDPairs[id] = placeHolderData;
-	
+		else
+			local placeHolderData = {}
+			placeHolderData.dist = math.huge;
+			placeHolderData.id = id
+			distIDPairs[id] = placeHolderData;
+		end	
 	end
+	local prevDis = 0;
+	for i=1,#distIDPairs do
+		print("no sort DNW list: " .. distIDPairs[i].dist) 
+		if distIDPairs[i].dist >= prevDis then
+			prevDis = distIDPairs[i].dist
+--		else
+--			print(nil .. "hi")
+--		end
+
+		end	
+	end
+
 	-- sort everyone
+
 	table.sort(distIDPairs, function (a, b) 
 		if a.dist == b.dist then
 			return a.id < b.id
@@ -502,6 +514,7 @@ function update_status()
 		
 	prevDis = 0	
 	for i=1,#distIDPairs do
+		print("DNW list: " .. distIDPairs[i].dist) 
 		if distIDPairs[i].dist >= prevDis then
 			prevDis = distIDPairs[i].dist
 		else
