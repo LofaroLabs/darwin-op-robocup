@@ -487,6 +487,9 @@ function update_status()
 			data.status = states[id].status
 			distIDPairs[id] = data;
 		end
+		local placeHolderData = {}
+		placeHolderData.dist = math.huge;
+		distIDPairs[id] = placeHolderData;
 	
 	end
 	-- sort everyone
