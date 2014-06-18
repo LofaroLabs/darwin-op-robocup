@@ -489,6 +489,7 @@ function update_status()
 		end
 		local placeHolderData = {}
 		placeHolderData.dist = math.huge;
+		placeHolderData.id = id
 		distIDPairs[id] = placeHolderData;
 	
 	end
