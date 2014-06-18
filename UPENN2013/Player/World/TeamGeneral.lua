@@ -473,16 +473,17 @@ function update_status()
 	local distIDPairs = {}
 	for id = 1,5 do	
 		if states[id] and states[id].role ~= ROLE_GOALIE and states[id].pose and states[id].ballRelative then
-			print("DNW index = " .. tostring(id) .. " I am role = " .. tostring(states[id].role) .. " and the ballLost feature is = " .. tostring(states[id].ballLost));
+			--print("DNW index = " .. tostring(id) .. " I am role = " .. tostring(states[id].role) .. " and the ballLost feature is = " .. tostring(states[id].ballLost));
 			local data = {}
 			data.id = states[id].id
 			if states[id].ballLost == 0 then
 				data.dist = get_distanceBetween(states[id].ballRelative, {0, 0});
-				print("DNW index = " .. tostring(id) .. " SEE BALL so dist is " .. data.dist);
+			--	print("DNW index = " .. tostring(id) .. " SEE BALL so dist is " .. data.dist);
 			else
 				data.dist = math.huge;
-				print("DNW index = " .. tostring(id) .. " BALL LOST so dist is " .. data.dist);
+			--	print("DNW index = " .. tostring(id) .. " BALL LOST so dist is " .. data.dist);
 			end
+			print("DNW HEY I ADDED A DIST PAIR AT " .. id );
 			data.status = states[id].status
 			distIDPairs[id] = data;
 		end
