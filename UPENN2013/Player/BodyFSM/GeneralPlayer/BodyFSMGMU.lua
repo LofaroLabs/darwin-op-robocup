@@ -4,7 +4,7 @@ require('Body')
 require('fsm')
 require('gcm')
 require('Config')
-
+require('bodyMoveThetaLookGoal')
 require('bodyIdle')
 require('bodyStart')
 require('bodyStop')
@@ -40,17 +40,21 @@ require('bodyChase')
 require('bodyDive')
 require('bodyGotoPosition')
 require('bodyGotoWhileFacing')
-
-
+require('bodyGotoWhileFacingGoalie')
+require('bodyGotoPoseWhileLookingBackwards')
 require('bodyUnpenalized')
 require('bodyApproach')
-
+require('bodyLookBackwards')
 
 require('bodyReadyMove')
 
 
 
 sm = fsm.new(bodyIdle);
+sm:add_state(bodyMoveThetaLookGoal);
+sm:add_state(bodyLookBackwards);
+sm:add_state(bodyGotoWhileFacingGoalie);
+sm:add_state(bodyGotoPoseWhileLookingBackwards);
 sm:add_state(bodyApproach);
 sm:add_state(bodyStart);
 sm:add_state(bodyStop);

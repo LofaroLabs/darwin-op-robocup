@@ -47,6 +47,12 @@ shared.ball.t_locked_on = vector.zeros(1);
 
 --connection 
 shared.horde = {};
+shared.horde.moveParticlesToCenter = vector.zeros(1);
+shared.horde.goalSign = vector.zeros(1);
+shared.horde.penaltyBoundsX = vector.zeros(1);
+shared.horde.penaltyBoundsY = vector.zeros(1);
+shared.horde.seeTwoPosts = vector.zeros(1);
+shared.horde.canSeePost = vector.zeros(1);
 shared.horde.client = "nil";
 shared.horde.state = "nil";
 shared.horde.sendStatus = "nil"
@@ -76,7 +82,7 @@ shared.horde.goalieCloseEnough = vector.zeros(1); -- 0 if not close enough 1 if 
 shared.horde.declared = vector.zeros(1); -- 0 if not declared 1 if declared
 shared.horde.goalCloseDist = vector.ones(1) -- should change this is a place holder.
 shared.horde.distN = vector.ones(1) -- within a meter?
-
+shared.horde.confused = vector.zeros(1);
 
 --shared.horde.robot1 = "10.0.0.51"
 --shared.horde.poseRobot1 = vector.zeros(3);--purely horizontally passed

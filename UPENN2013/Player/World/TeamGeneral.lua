@@ -104,7 +104,7 @@ tLastMessage = 0;
 
 lastTimeFound = Body.get_time();
 function isBallLost()
-	--print("got into ball lost")
+	print("got into ball lost, get ball detect:  ".. vcm.get_ball_detect())
 	if vcm.get_ball_detect() ~= 0 then
 		state.ballLost = 0
 		lastTimeFound = Body.get_time();
@@ -217,6 +217,7 @@ function update()
   state.declared = wcm.get_horde_declared();
   state.goalieCloseEnough = wcm.get_horde_goalCloseDist();
   state.ballRelative = util.pose_relative({wcm.get_ballGlobal_x(), wcm.get_ballGlobal_y(), 0}, {state.pose.x, state.pose.y, state.pose.a});
+  state.ballRelative[3] = 0;
    
   print("yelledReady = " .. tostring(state.yelledReady))
 	isBallLost();
@@ -431,7 +432,9 @@ function update()
   -- set the ball pose of the bot that is closest
   -- convert the relative ball loc to global loc
   if smallest_id ~= 0 then
-    closestToBallLoc = util.pose_global(states[smallest_id].ballRelative, {states[smallest_id].pose.x, states[smallest_id].pose.y, states[smallest_id].pose.a})
+    
+	print("DNW ballRelative a = " .. states[smallest_id].ballRelative[3] .. " x = " .. states[smallest_id].ballRelative[1] .. " y = " .. states[smallest_id].ballRelative[2]);
+	closestToBallLoc = util.pose_global(states[smallest_id].ballRelative, {states[smallest_id].pose.x, states[smallest_id].pose.y, states[smallest_id].pose.a})
     wcm.set_team_closestToBallLoc(closestToBallLoc)
 
 
@@ -521,7 +524,7 @@ function update_status()
 			print("DNW i = " .. tostring(i) .. " My Status = " .. tostring(wcm.get_horde_status()));
 		end
 		
-		print("DNW i = " .. tostring(i) .. " ID = " .. tostring(distIDPairs[i].id) .. " status = " .. tostring(wcm.set_horde_status))
+		print("DNW i = " .. tostring(i) .. " ID = " .. tostring(distIDPairs[i].id) .. " status = " .. tostring(wcm.get_horde_status()))
 		
 	end
 	

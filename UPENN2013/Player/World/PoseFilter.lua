@@ -140,7 +140,21 @@ function reset_heading()
 
   end
 end
-
+-- drew added
+function setCloserToCenter()
+	for i = 1, n do
+		xp[i] = xp[i] - 1 * xp[i] / math.abs(xp[i])
+	end
+end
+function flip_particle_angle()
+    for i = 1, n do
+      if ap[i] <= math.pi then
+        ap[i] = ap[i] + math.pi;
+      else
+        ap[i] = ap[i] - math.pi;
+      end
+    end
+end
 function flip_particles()
   xp = -xp;
   yp = -yp;

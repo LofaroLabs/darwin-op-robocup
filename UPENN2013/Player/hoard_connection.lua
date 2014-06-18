@@ -40,6 +40,7 @@ require('Speak')
 require('getch')
 require('Body')
 require('Motion')
+require('World')
 local hoard_functions = require "hoard_functions"
 json = require("json")
 unix.usleep(2*1E6);
@@ -76,7 +77,7 @@ leftArmMotion = math.pi/180*vector.new({60,30,-30});
 function inspect(key, value)
 	table.foreach(value,print)
 end
-
+Lgoalie_corner = Config.world.Lgoalie_corner; -- we need the goalie stuff
 --table.foreach(Body.get_sensor_data(),inspect)
 
 --my stuff, ugly
@@ -146,7 +147,8 @@ function sendFeatures (client)
 	features["midpoint"] = wcm.get_horde_midpointBallGoal();
 		features["isClosestToGoalDefend"] = wcm.get_team_isClosestToGoalDefend();
 		features["isClosestToGoalOffend"] = wcm.get_team_isClosestToGoalOffend();
-
+	features["penaltyBounds"] = getPenaltyBounds()
+	getGoalSign(); -- not a feature but may become one... also it sets the value in the wcm
 		--print("sending some features, yo\n");-- wcm.set_horde_doneFrontApproach("true");
        -- print(json.encode(features) .. "\n");
 		features["ackNumber"] = ackNumber;
@@ -167,6 +169,58 @@ end
    local udp = assert(socket.udp())
    return udp
 end]]--
+
+function getGoalSign() 
+
+	if gcm.get_team_color() == 1 then
+                -- red attacks cyan goali
+                print(" yellow ")
+                postDefend = PoseFilter.postYellow;
+        else
+                print("not yellow")
+                -- blue attack yellow goal
+                postDefend = PoseFilter.postCyan;
+        end
+
+        -- global 
+        LPost = postDefend[1];
+
+        sign = LPost[1] / math.abs(LPost[1])
+	wcm.set_horde_goalSign(sign);
+	return sign
+end
+
+
+function getPenaltyBounds()
+	if gcm.get_team_color() == 1 then
+                -- red attacks cyan goali
+                print(" yellow ")
+                postDefend = PoseFilter.postYellow;
+        else
+                print("not yellow")
+                -- blue attack yellow goal
+                postDefend = PoseFilter.postCyan;
+        end
+
+        -- global 
+        LPost = postDefend[1];
+
+        sign = LPost[1] / math.abs(LPost[1])
+        -- so get the x position of the front of the penalty box
+        -- and add midpoint distance between that and the edge of the field
+        -- then multiply by the sign.  note that the Lgoalie_corner should
+        -- be positive but putting abs around just in case
+        print(tostring(Lgoalie_corner[7][1]) .. " " .. tostring(Lgoalie_corner[9][1]))
+        local xBound = (math.abs(Lgoalie_corner[7][1]) + (math.abs(Lgoalie_corner[9][1]) - math.abs(Lgoalie_corner[7][1])) / 2) * sign
+	
+	wcm.set_horde_penaltyBoundsX(xBound);
+	wcm.set_horde_penaltyBoundsY(math.abs(LPost[2]));
+	return {xBound, math.abs(LPost[2])}
+end
+
+
+
+
 
 lastState = 100;
 function checkTimeout()

@@ -217,7 +217,7 @@ function detect(color)
   ball.da = 10*math.pi/180;
 
   vcm.add_debug_message(string.format(
-	"Ball detected\nv: %.2f %.2f %.2f\n",v[1],v[2],v[3]));
+	"Ball REALLY detected\nv: %.2f %.2f %.2f\n",v[1],v[2],v[3]));
 --[[
   print(string.format(
 	"Ball detected\nv: %.2f %.2f %.2f\n",v[1],v[2],v[3]));
