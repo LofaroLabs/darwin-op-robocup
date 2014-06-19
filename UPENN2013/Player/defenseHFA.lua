@@ -302,6 +302,8 @@ defer = makeBehavior("defer",nil,nil,deferStart);
 defend = makeHFA("defend", makeTransition({
 	[start] = kittyMachine,
 	[kittyMachine] = function()
+			wcm.set_horde_declared(1);
+
 			print("in kitty machine in dkitty. goalie close? " .. wcm.get_horde_goalieCloseEnough())
 			if(wcm.get_horde_goalieCloseEnough() == 1)
 				then return defer;
@@ -310,6 +312,8 @@ defend = makeHFA("defend", makeTransition({
 			
 		end,
 	[defer] = function()
+		wcm.set_horde_declared(1);
+
 		print("IN DEFER kitty goalie close? " .. wcm.get_horde_goalieCloseEnough());
 		if( not (wcm.get_horde_goalieCloseEnough()==1))
 			then return kittyMachine
