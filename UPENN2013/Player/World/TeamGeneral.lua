@@ -333,7 +333,7 @@ function update()
 	-- zero is the default so originally everyon will be zero so 
 	if numZero > numOne and numOne ~= 0  then
 		wcm.set_horde_declared(1);
-	else
+	elseif numZero~=0 then
 		wcm.set_horde_declared(0);
 	end
  

@@ -6,7 +6,7 @@ maxFPS = Config.vision.maxFPS;
 tperiod = 1.0/maxFPS;
 
 cognition.entry();
-
+vcm.set_vision_enable(vector.ones(1));
 while (true) do
   tstart = unix.time();
 
