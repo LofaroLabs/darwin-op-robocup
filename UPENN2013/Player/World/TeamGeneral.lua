@@ -215,7 +215,7 @@ function update()
   state.bodyState = gcm.get_fsm_body_state();
   state.yelledReady = wcm.get_horde_yelledReady();
   state.status = wcm.get_horde_status();
-  state.declared = wcm.get_horde_declared();
+  state.declared = wcm.get_horde_doDeclare();
   state.goalieCloseEnough = wcm.get_horde_goalCloseDist();
   state.ballRelative = util.pose_relative({wcm.get_ballGlobal_x(), wcm.get_ballGlobal_y(), 0}, {state.pose.x, state.pose.y, state.pose.a});
   state.ballRelative[3] = 0;
@@ -324,18 +324,13 @@ function update()
 			-- ignore him...
 		else
 			if states[id].declared == 1 then
-				numOne = numOne + 1
-			else
-				numZero = numZero + 1
-			end				
+				wcm.get_horde_declared(1); -- somebody has declared
+				break;
+
+			end			
 		end
 	end
 	-- zero is the default so originally everyon will be zero so 
-	if numZero > numOne and numOne ~= 0  then
-		wcm.set_horde_declared(1);
-	elseif numZero~=0 then
-		wcm.set_horde_declared(0);
-	end
  
 
 

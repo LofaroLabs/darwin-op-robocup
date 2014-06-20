@@ -252,10 +252,10 @@ safetyStart = function()
 	sendBehavior(json.encode(action) .. "\n")
 end
 declareStart = function()
-	wcm.set_horde_declared(1);
+	wcm.set_horde_doDeclare(1);
 end
 undeclareStart = function()
-	wcm.set_horde_declared(0);
+	wcm.set_horde_doDeclare(0);
 end
 deferStart = function()
 	 	action  = {}
@@ -302,7 +302,7 @@ defer = makeBehavior("defer",nil,nil,deferStart);
 defend = makeHFA("defend", makeTransition({
 	[start] = kittyMachine,
 	[kittyMachine] = function()
-			wcm.set_horde_declared(1);
+			wcm.set_horde_doDeclare(1);
 
 			print("in kitty machine in dkitty. goalie close? " .. wcm.get_horde_goalieCloseEnough())
 			if(wcm.get_horde_goalieCloseEnough() == 1)
@@ -312,7 +312,7 @@ defend = makeHFA("defend", makeTransition({
 			
 		end,
 	[defer] = function()
-		wcm.set_horde_declared(1);
+		wcm.set_horde_doDeclare(1);
 
 		print("IN DEFER kitty goalie close? " .. wcm.get_horde_goalieCloseEnough());
 		if( not (wcm.get_horde_goalieCloseEnough()==1))
@@ -398,7 +398,7 @@ DefenseHFA = makeHFA("DefenseHFA", makeTransition({
 
 	[declare] = function()
                 print("in declare")
-				wcm.set_horde_declared(1);
+				wcm.set_horde_doDeclare(1);
                 return defend
             end,
 
@@ -410,7 +410,7 @@ DefenseHFA = makeHFA("DefenseHFA", makeTransition({
 				return defend;
 	   end,
 	[undeclare] = function()
-			wcm.set_horde_declared(0);
+			wcm.set_horde_doDeclare(0);
 			return support;
 	end
 }), false)

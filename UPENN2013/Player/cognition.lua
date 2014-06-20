@@ -12,6 +12,35 @@ require('Vision')
 require('World')
 require('Detection') 
 
+
+--~ print a table
+function printTable(list, i)
+
+    local listString = ''
+--~ begin of the list so write the {
+    if not i then
+        listString = listString .. '{'
+    end
+
+    i = i or 1
+    local element = list[i]
+
+--~ it may be the end of the list
+    if not element then
+        return listString .. '}'
+    end
+--~ if the element is a list too call it recursively
+    if(type(element) == 'table') then
+        listString = listString .. printTable(element)
+    else
+        listString = listString .. element
+    end
+
+    return listString .. ', ' .. printTable(list, i + 1)
+
+end
+
+
 comm_inited = false;
 enable_team = Config.vision.enable_team_broadcast or 0;
 vcm.set_camera_teambroadcast(1);  -- changed from enable_team to 1
@@ -122,9 +151,12 @@ function update()
     (vcm.get_camera_broadcast()>0 or
      vcm.get_camera_teambroadcast()>0) then
     if vcm.get_camera_teambroadcast()>0 then
-       
+      
+print("Sean"); 
+    print(printTable(package.loaded,nil));
       require('Team');
       require('GameControl');
+      print("team is returned as " .. tostring(Team));
       Team.entry();
       GameControl.entry();
       print("Starting to send wireless team message..");
