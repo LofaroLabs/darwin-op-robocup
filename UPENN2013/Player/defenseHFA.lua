@@ -305,7 +305,7 @@ gotoPosition = makeBehavior("gotoPosition", nil,nil,gotoPositionStart)
 stopPose = makeBehavior("stopPose", nil, nil, stopPoseStart);
 walkForward = makeBehavior("walkForward", nil, walkForwardStop, walkForwardStart);
 stopMoving = makeBehavior("stopMoving", nil, nil, stopPoseStart);
-gotoPoseFacing = makeBehavior("gotoPoseFacing", nil, gotoPoseFacingStop, gotoPoseFacingStart);
+gotoPoseFacing = makeBehavior("gotoPoseFacing", gotoPoseFacingStart, gotoPoseFacingStop, gotoPoseFacingGo);
 gotoBall = makeBehavior("gotoBall", nil, gotoBallStop, gotoBallStart);
 approachTarget = makeBehavior("approachTarget", nil, approachTargetStop, approachTargetStart);
 kickBall = makeBehavior("kickBall", nil, kickBallStop, kickBallStart);
@@ -435,7 +435,11 @@ DefenseHFA = makeHFA("DefenseHFA", makeTransition({
 			return support;
 	end
 }), false)
+facingHFA = makeHFA("facingHFA", makeTransition({
+	[start] = gotoPoseFacing,
+	[gotoPoseFacing] = gotoPoseFacing
 
+}),false)
 wcm.set_horde_ballLost(1)
 lastTimeFound = Body.get_time();
 function isBallLost()
@@ -512,7 +516,7 @@ connectionThread = function ()
 			    --kitty.wcm.get_horde_ballLost() = wcm.get_horde_ballLost()	
 				while wcm.get_horde_sentBehavior() == 0 do
 					isBallLost();
-					pulse(DefenseHFA);
+					pulse(facingHFA);
 				end
 				wcm.set_horde_sentBehavior(0);
 				print("cur rec number " .. tostring(wcm.get_horde_ackNumber()) .. "..........................................")

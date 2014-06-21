@@ -49,13 +49,13 @@ function update()
   print("relative to the ball, i am facing " .. endFacingRelative[3])
   if(alreadyDone) then --checking if we've already gotten there to our best tolerance
       print("nitpick adjustments");
-      if(endPoseRelative[3]<0) then
+      if(endFacingRelative[3]<0) then
            rotateVel = -1;
       else
            rotateVel = 1;
       end
       print("velocity is set to: " .. (endPoseX/scaleFactor/5 + -.005) ); 
-        walk.set_velocity(endPoseX/scaleFactor/5 + -.005, endPoseY/scaleFactor/5,rotateVel/10 * math.abs(endPoseRelative[3]));
+        walk.set_velocity(endPoseX/scaleFactor/5 + -.005, endPoseY/scaleFactor/5,rotateVel/10 * math.abs(endFacingRelative[3]));
 	return;
   end
   local t = Body.get_time();
@@ -75,7 +75,7 @@ function update()
   	  return;
   end -- check for completion
   if((math.abs(endPoseX)+math.abs(endPoseY))<distanceTolerance and math.abs(endFacingRelative[3]) < angleTolerance) then
- 	Speak.talk("banana.");
+ 	--Speak.talk("banana.");
 	--walk.set_velocity(0,0,0);
 --	Motion.sm:set_state('standstill');
 	--alreadyDone = true;
@@ -95,7 +95,7 @@ function update()
       else
            rotateVel = 1;
       end
-      walk.set_velocity(0, 0,rotateVel);
+      walk.set_velocity(0, 0,rotateVel * math.abs(endFacingRelative[3]));
   elseif (math.abs(endPoseX)+math.abs(endPoseY)>distanceTolerance) then
 --[[  print("walking toward final point " .. (math.abs(endPoseX)+math.abs(endPoseY)));
       if(endPoseY>0) then
