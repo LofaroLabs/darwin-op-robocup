@@ -41,6 +41,7 @@ function update()
   endFacingRelative = util.pose_relative(endFacing,{pose.x,pose.y,pose.a})
   endFacingX = endFacingRelative[1];
   endFacingY = endFacingRelative[2];
+  endFacingRelative[3] = math.atan2(endFacingX-endPoseX, endFacingY-endPoseY);
   scaleFactor = 15*(math.abs(endPoseX)+math.abs(endPoseY));
 
   print("im currently at " .. pose.x .. ", " .. pose.y );
