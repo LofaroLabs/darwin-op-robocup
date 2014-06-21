@@ -251,7 +251,8 @@ safetyStart = function()
 	action = {}
 	action["action"] = "gotoPose"
 	
-	 goalSideAngle = 3.14;
+	 goalSideAngle = -0.01;
+	 
 	if gcm.get_team_color() == 1 then
 		goalSideAngle = -3.14
                 -- red attacks cyan goali
@@ -260,8 +261,11 @@ safetyStart = function()
 				
                 print("not yellow")
         end
+        
+        
+        
 
-	action.args = {["x"] = 0, ["y"] = 0, ["a"]= goalSideAngle}
+	action.args = {["x"] = 0.01, ["y"] = 0.1, ["a"]= goalSideAngle}
 	
 	
 	
