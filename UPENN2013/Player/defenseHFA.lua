@@ -295,8 +295,6 @@ undeclare = makeBehavior("undeclare", nil,nil, undeclareStart);
 kittyMachine = kitty.kittyMachine
 --kittyMachine
 print(tostring(kittyMachine) .. " ok in support")
---super SUPER SUPER SUPER TODO IMPORTANT TODO NOW--- 
--- IF YOU EXPECT THIS MACHINE TO WORK WITH MORE THAN ONE PLAYER LIKE A REAL GAME CHANGE THE LOGIC FOR CLOSEST BALL, IT'S COMPLETELY BACKWARDS ( ON PURPOSE FOR TESTING--
 defer = makeBehavior("defer",nil,nil,deferStart);
 
 defend = makeHFA("defend", makeTransition({
