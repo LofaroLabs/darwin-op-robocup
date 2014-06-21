@@ -134,8 +134,8 @@ end
 --@usage For when robot falls down
 function reset_heading()
   if dont_reset_orientation == 0 then
-    ap = 2*math.pi*vector.new(util.randu(n));
-    wp = vector.zeros(n);
+    --ap = 2*math.pi*vector.new(util.randu(n));
+    --wp = vector.zeros(n);
   else
 
   end
@@ -156,6 +156,7 @@ function flip_particle_angle()
     end
 end
 function flip_particles()
+  
   xp = -xp;
   yp = -yp;
     for i = 1, n do

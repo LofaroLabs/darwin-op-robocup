@@ -833,9 +833,10 @@ function check_flip2()
   if t-ball.t<flip_threshold_t	and goalie_ball[3]<flip_threshold_t then
      --Check X position
      if ((math.abs(ball_global[1])>flip_threshold_x) and
-        (math.abs(goalie_ball[1])>flip_threshold_x)) or
-	(math.abs(goalie_ball[1]-ball_global[1])>.75) then
-       if ball_global[1]*goalie_ball[1]<0 then
+        (math.abs(goalie_ball[1])>flip_threshold_x)) --or
+--	(math.abs(goalie_ball[1]-ball_global[1])>.75) then
+       then
+	if ball_global[1]*goalie_ball[1]<0 then
          wcm.set_robot_flipped(1);
        end
        --Now we are sure about our position
@@ -846,8 +847,9 @@ function check_flip2()
 
      --Check Y position
      elseif ((math.abs(ball_global[2])>flip_threshold_y) and
-            (math.abs(goalie_ball[2])>flip_threshold_y)) or
-	    (math.abs(goalie_ball[2]-ball_global[2])>.75) then
+            (math.abs(goalie_ball[2])>flip_threshold_y))-- or
+	    --(math.abs(goalie_ball[2]-ball_global[2])>.75) then
+	then
        if ball_global[2]*goalie_ball[2]<0 then
          wcm.set_robot_flipped(1);
        end
