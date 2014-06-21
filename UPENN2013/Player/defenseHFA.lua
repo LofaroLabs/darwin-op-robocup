@@ -250,7 +250,8 @@ safetyStart = function()
 	print("safety")
 	action = {}
 	action["action"] = "gotoPose"
-	 goalSideAngle = 0;
+	
+	 goalSideAngle = -3.14;
 	if gcm.get_team_color() == 1 then
 		goalSideAngle = 3.14
                 -- red attacks cyan goali
@@ -261,6 +262,9 @@ safetyStart = function()
         end
 
 	action.args = {["x"] = 0, ["y"] = 0, ["a"]= goalSideAngle}
+	
+	
+	
 	action.ackNumber = wcm.get_horde_ackNumber()
 	sendBehavior(json.encode(action) .. "\n")
 end
@@ -393,6 +397,13 @@ support  = makeHFA("support", makeTransition({
 
 
 }), false)
+
+
+TestSafety = makeHFA("TestSafety",  makeTransition({
+	[start] = safety,
+	[safety] = safety
+
+}), false)
 --declare = "declare"
 --undeclare = "undeclare"
 DefenseHFA = makeHFA("DefenseHFA", makeTransition({
@@ -502,7 +513,8 @@ connectionThread = function ()
 			    --kitty.wcm.get_horde_ballLost() = wcm.get_horde_ballLost()	
 				while wcm.get_horde_sentBehavior() == 0 do
 					isBallLost();
-					pulse(DefenseHFA);
+					--pulse(DefenseHFA);
+					pulse(TestSafety);
 				end
 				wcm.set_horde_sentBehavior(0);
 				print("cur rec number " .. tostring(wcm.get_horde_ackNumber()) .. "..........................................")
