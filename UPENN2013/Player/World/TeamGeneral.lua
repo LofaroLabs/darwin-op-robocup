@@ -324,7 +324,7 @@ function update()
 			-- ignore him...
 		else
 			if states[id].declared == 1 then
-				wcm.get_horde_declared(1); -- somebody has declared
+				wcm.set_horde_declared(1); -- somebody has declared
 				break;
 
 			end			
