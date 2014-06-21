@@ -403,11 +403,6 @@ support  = makeHFA("support", makeTransition({
 }), false)
 
 
-TestSafety = makeHFA("TestSafety",  makeTransition({
-	[start] = safety,
-	[safety] = safety
-
-}), false)
 --declare = "declare"
 --undeclare = "undeclare"
 DefenseHFA = makeHFA("DefenseHFA", makeTransition({
@@ -517,8 +512,7 @@ connectionThread = function ()
 			    --kitty.wcm.get_horde_ballLost() = wcm.get_horde_ballLost()	
 				while wcm.get_horde_sentBehavior() == 0 do
 					isBallLost();
-					--pulse(DefenseHFA);
-					pulse(TestSafety);
+					pulse(DefenseHFA);
 				end
 				wcm.set_horde_sentBehavior(0);
 				print("cur rec number " .. tostring(wcm.get_horde_ackNumber()) .. "..........................................")
