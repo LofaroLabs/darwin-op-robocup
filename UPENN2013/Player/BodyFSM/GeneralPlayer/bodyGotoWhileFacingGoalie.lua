@@ -40,13 +40,13 @@ function update()
   endPoseRelative  = util.pose_relative(endPosition, {pose.x, pose.y, pose.a});
   endPoseX = endPoseRelative[1];
   endPoseY = endPoseRelative[2];
-  if(math.abs(pose.x - endPoseX) > 3) then
+  --[[if(math.abs(pose.x - endPoseX) > 3) then
 --	PoseFilter.flip_particle_angle();
   	file = io.open("didIFlip.txt", "w")
         file:write("yup i flipped " .. Body.get_time() .. "\n")
         file:close()
 	wcm.set_horde_confused(1);	
-  end 
+  end --]]
   endFacingRelative = util.pose_relative(endFacing,{pose.x,pose.y,pose.a})
   endFacingX = endFacingRelative[1];
   endFacingY = endFacingRelative[2];
