@@ -167,9 +167,36 @@ kickBall = makeBehavior("kickBall", nil, kickBallStop, kickBallStart);
 
 kittyMachine = makeHFA("kittyMachine", makeTransition({
 	[start] = function()  print("transitoin for start to locate ball " .. tostring(countReceives));  return locateBall; end,
-	[locateBall] = function() if wcm.get_horde_ballLost()==1  then return locateBall else return gotoBall end end,
-	[gotoBall] = function() print("in kitty gotoBall is the ball Lost? " .. tostring(wcm.get_horde_ballLost())) if wcm.get_horde_ballLost()==1 then return locateBall elseif (vcm.get_ball_r()  < .3) then return approachTarget else  return gotoBall  end end,
-	[approachTarget] = function() if wcm.get_horde_ballLost()==1 then return locateBall elseif vcm.get_ball_r() > .3 then return gotoBall; elseif wcm.get_horde_doneApproach()~= 0 then print("We are done done approach? " .. tostring(wcm.get_horde_doneApproach())); return kickBall else return approachTarget end end, 
+	[locateBall] = function() 
+							if wcm.get_horde_ballLost()==1  then 
+									return locateBall 
+							else 
+									return gotoBall 
+							end 
+					end,
+	[gotoBall] = function() 
+						print("in kitty gotoBall is the ball Lost? " .. tostring(wcm.get_horde_ballLost())) 
+						if wcm.get_horde_ballLost()==1 then 
+							return locateBall 
+						elseif (vcm.get_ball_r()  < .3) then 
+							return approachTarget 
+						else  
+							return gotoBall  
+						end 
+				end,
+	[approachTarget] = function() 
+						print("In Approach ball " .. tostring(wcm.get_horde_doneApproach()));
+						if wcm.get_horde_ballLost()==1 then 
+							return locateBall 
+						elseif vcm.get_ball_r() > .3 then 
+							return gotoBall; 
+						elseif wcm.get_horde_doneApproach()~= 0 then 
+							print("We are done done approach? " .. tostring(wcm.get_horde_doneApproach())); 
+							return kickBall 
+						else 
+							return approachTarget 
+						end 
+					end, 
 	[kickBall] = function() return done; end
 	--[done] = start;	
 --[done] = done;
