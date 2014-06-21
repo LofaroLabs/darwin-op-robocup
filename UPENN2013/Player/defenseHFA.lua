@@ -251,10 +251,10 @@ safetyStart = function()
 	action = {}
 	action["action"] = "gotoPose"
 	
-	 goalSideAngle = -0.01;
+	 goalSideAngle = -3.14;
 	 
 	if gcm.get_team_color() == 1 then
-		goalSideAngle = -3.14
+		goalSideAngle = -0.01
                 -- red attacks cyan goali
                 print(" yellow ")
         else
