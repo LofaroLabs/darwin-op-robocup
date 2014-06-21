@@ -134,7 +134,7 @@ gotoBallStart = function()
         sendBehavior(json.encode(action) .. "\n");
 end
 gotoBallStop = function()end
-
+--[[
 approachTargetStart = function()
 	print("approach target")
 	 action  = {}
@@ -144,6 +144,23 @@ approachTargetStart = function()
 	print(json.encode(action) .. "\n");  
         sendBehavior(json.encode(action) .. "\n");
 end
+]]--
+
+approachTargetStart = function(behavior, targets)
+
+	print("approachTargetStart to target")
+	action = {}
+	action["action"] = "approachTarget";
+	action["args"] = {}
+	action.args.x = wcm.get_horde_penaltyBoundsX() * -1; -- multiply by -1 to get attacking side
+	action.args.y = wcm.get_horde_penaltyBoundsY()
+	action.args.a = 0
+	action.ackNumber = wcm.get_horde_ackNumber();
+	sendBehavior(json.encode(action) .. "\n")	
+
+end
+
+
 approachTargetStop = function()end
 approachTargetGo = function()end
 kickBallStart = function() 

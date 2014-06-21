@@ -48,9 +48,9 @@ shared.ball.t_locked_on = vector.zeros(1);
 --connection 
 shared.horde = {};
 shared.horde.moveParticlesToCenter = vector.zeros(1);
-shared.horde.goalSign = vector.zeros(1);
-shared.horde.penaltyBoundsX = vector.zeros(1);
-shared.horde.penaltyBoundsY = vector.zeros(1);
+shared.horde.goalSign = vector.zeros(1); -- this is the sign of the defending goal posts
+shared.horde.penaltyBoundsX = vector.zeros(1); -- defending goal side
+shared.horde.penaltyBoundsY = vector.zeros(1); -- defending goal side
 shared.horde.seeTwoPosts = vector.zeros(1);
 shared.horde.canSeePost = vector.zeros(1);
 shared.horde.client = "nil";
