@@ -153,7 +153,7 @@ approachTargetStart = function(behavior, targets)
 	action["action"] = "approachTarget";
 	action["args"] = {}
 	action.args.x = wcm.get_horde_penaltyBoundsX() * -1; -- multiply by -1 to get attacking side
-	action.args.y = wcm.get_horde_penaltyBoundsY()
+	action.args.y = 0
 	action.args.a = 0
 	action.ackNumber = wcm.get_horde_ackNumber();
 	sendBehavior(json.encode(action) .. "\n")	
