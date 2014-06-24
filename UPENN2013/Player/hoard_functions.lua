@@ -221,8 +221,17 @@ hordeFunctions["stop"] = function(args,client)
 end
 hordeFunctions["StartSending"] = function (args, client)
 	print("i got here ")
+	
+
 --      coroutine.resume(co,args, client);
         wcm.set_horde_sendStatus("StartSending");
+	--[[if args and args[1] ~= nil then
+		wcm.set_horde_dummyTraining(args[1]);
+	else
+		wcm.set_horde_dummyTraining(0);
+	end
+]]--
+
 end
 hordeFunctions["kickLeft"] = function(args,client)
         BodyFSM.sm:set_state('bodyKickLeftGMU');

@@ -418,13 +418,13 @@ function update()
 		wcm.set_team_isClosestToGoalOffend(0);
 	end
 
+ -- if wcm.get_horde_dummyTraining() == 0 then
 	if shortestDefendID == state.id then
         wcm.set_team_isClosestToGoalDefend(1);
     else
         wcm.set_team_isClosestToGoalDefend(0);
     end
-
-
+ -- end
   -- set the ball pose of the bot that is closest
   -- convert the relative ball loc to global loc
   if smallest_id ~= 0 then
@@ -439,12 +439,13 @@ function update()
   wcm.set_horde_midpointBallGoal({themid.x, themid.y});
 end
 
+--if wcm.get_horde_dummyTraining() == 0 then
   if smallest_id == playerID then
 	wcm.set_team_is_smallest_eta(1);
   else
         wcm.set_team_is_smallest_eta(0);
   end
-
+--end
   
   update_shm() 
   update_status();
