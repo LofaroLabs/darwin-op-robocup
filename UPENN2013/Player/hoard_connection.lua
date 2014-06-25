@@ -1,5 +1,5 @@
 module(... or '', package.seeall)
-setDebugFalse();
+--setDebugFalse();
 -- Get Platform for package path
 cwd = '.';
 local platform = os.getenv('PLATFORM') or '';
