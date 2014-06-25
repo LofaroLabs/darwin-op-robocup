@@ -12,7 +12,7 @@ require('Vision')
 require('World')
 require('Detection') 
 
-
+function print() end
 --~ print a table
 function printTable(list, i)
 
