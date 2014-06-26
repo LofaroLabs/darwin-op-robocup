@@ -7,7 +7,7 @@ tperiod = 1.0/maxFPS;
 --print = function()end
 function print() 
 end
-
+setDebugFalse();
 cognition.entry();
 vcm.set_vision_enable(vector.ones(1));
 while (true) do
