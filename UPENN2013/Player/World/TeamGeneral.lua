@@ -102,7 +102,7 @@ poses={};
 player_roles=vector.zeros(10);
 t_poses=vector.zeros(10);
 tLastMessage = 0;
-
+tLastReceivedMessage = 0;
 
 
 lastTimeFound = Body.get_time();
@@ -147,6 +147,7 @@ function recv_msgs()
         --Is the message from our team?
         if (t.teamNumber == state.teamNumber) and (t.id ~= playerID) then
           t.tReceive = Body.get_time();
+          tLastReceivedMessage = t.tReceive;
           print("@!@!deciding if message is from my team")
           t.labelB = {}; --Kill labelB information
           states[t.id] = t;
@@ -280,8 +281,10 @@ function update()
   state.gc_latency=gcm.get_game_gc_latency();
   state.tm_latency=Body.get_time()-tLastMessage;
   
+  teamLatency = Body.get_time() - tLastReceivedMessage;
+  
   -- If I haven't received things from anyone in the last 3 seconds then I'm not connected
-  if state.tm_latency > 3 then
+  if teamLatency > 3 then
   	wcm.set_team_connected(0);
   else
   	wcm.set_team_connected(1);
