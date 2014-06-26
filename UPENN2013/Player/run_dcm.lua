@@ -1,6 +1,6 @@
 cwd = os.getenv('PWD')
 require('init')
-
+setDebugFalse();
 require('unix');
 require('shm');
 dcm = require('OPCommManager');
