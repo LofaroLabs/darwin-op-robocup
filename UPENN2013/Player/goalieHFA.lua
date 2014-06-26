@@ -498,22 +498,26 @@ DefendGoalHFA = makeHFA("DefendGoalHFA", makeTransition({
         [start] = kittyMachine,
 
         [kittyMachine] = function()
-                if(getGoalBallDistance()>1.0) then -- or math.abs(wcm.get_pose()['x']) < 1.0) then -- change to ball x position?
+		print("I am in kitty start " )
+                if(getGoalieBallDistance()>1.0) then -- or math.abs(wcm.get_pose()['x']) < 1.0) then -- change to ball x position?
                  	 --      print("going to backwards " .. tostring(gotoPoseWhileLookingBackwards));
                  	badLocalization = true;
+			print("in kitty returning gotowhilefacingGoalie")
 			return gotoWhileFacingGoalie;
                 end
-                
+                print("in kitty returning kitty machine".. tostring (kittyMachine));
 				return kittyMachine;
             end,
 
 
         [gotoWhileFacingGoalie] = function()
                 --print("status is " .. tostring(wcm.get_horde_status()) .. " in defend transition")
-                if(getGoalBallDistance() < 1.0) then
+                print("I am in gotoWhileFacingGoalie start and getGoalieBallDistance() == " ..getGoalieBallDistance());
+		if(getGoalieBallDistance() < 1.0) then
 			print("going to kittch machine " .. tostring(kittyMachine));
                         return kittyMachine
                 end
+		print("Wasn't  small enough still in gotoWhileFacingGoalie");
 		return gotoWhileFacingGoalie;
          end,
        }), false)
@@ -525,10 +529,14 @@ GoalieHFA = makeHFA("GoalieHFA", makeTransition({
         [start] = resetTimer,
 
         [DefendGoalHFA] = function()
-                if(getGoalieBallDistance()>1.0 and currentTimer(GoalieHFA) > 20) then
+               
+			print("Going to defend hfa goalie ball distance = ".. getGoalieBallDistance() .. " current time " .. currentTimer(GoalieHFA));
+			print("My pose = " .. wcm.get_pose().x .. " y = "  .. wcm.get_pose().y);
+		 if(getGoalieBallDistance()>1.0 and currentTimer(GoalieHFA) > 20) then
             		badLocalization = false;
             		return resetTimer;
                 end
+			
 				return DefendGoalHFA;
             end,
         [RelocalizeHFA] = function()
@@ -581,11 +589,12 @@ function getOnOffense()
 end
 
 function getGoalBallDistance()
-
+--[[
 	local ballGlobal = wcm.get_team_closestToBallLoc()
 	local goalMidpoint = getDefendGoalMidpoint() 
-	
+	print("Ball global = " .. ballGlobal[1] .. " y = " .. ballGlobal[2] .. " goalMidpoint " .. goalMidpoint[1] .. " y = " .. goalMidpoint[2])	
 	return distGeneral({ballGlobal[1], ballGlobal[2]},goalMidpoint);  
+--]]
 end
 
 function canSeePost() 

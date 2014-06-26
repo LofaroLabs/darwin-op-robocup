@@ -11,8 +11,8 @@ require('Body')
 require('Vision')
 require('World')
 require('Detection') 
-setDebugFalse();
 
+function print() end
 --~ print a table
 function printTable(list, i)
 

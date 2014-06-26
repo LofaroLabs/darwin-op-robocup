@@ -481,7 +481,10 @@ function dist(curA, targetB)
 	return math.sqrt(math.pow(curA.x - targetB.x,2) + math.pow(curA.y - targetB.y,2))
 end
 
-
+          function json:onDecodeError(message, text, location, etc)
+            -- LrErrors.throwUserError("Internal Error: invalid JSON data")
+        	print("lol, decode eror");  
+	end
 connectionThread = function ()
         print("got into con thread");
 	if( darwin ) then
@@ -506,8 +509,9 @@ connectionThread = function ()
 			client:settimeout(.05);
 			recval = client:receive()
 			-- convert the json to get the ackNumber
-			status, recJson = pcall(json.decode,recval);
-			if status == true then
+			recJson = json.decode(recval);	
+			status = true;
+			if recJson~=nil then
                 status = string.sub(recval, 1, 1) == "{"
             end
 

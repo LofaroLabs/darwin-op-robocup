@@ -114,7 +114,7 @@ function process_keyinput()
         end
     end
     if(byte==string.byte("b")) then
-	ballDistToggle = (ballDistToggle +1) % 4;
+	ballDistToggle = (ballDistToggle +1) % 5;
     end
 
   end
@@ -139,10 +139,12 @@ wcm.set_horde_dummyTraining(1);
    	ballDist = .2711234985
    elseif(ballDistToggle==2) then
 	ballDist = .15;
+   elseif(ballDistToggle == 3) then
+	ballDist = 1.01
    else
         ballDist = 0.0;
    end
-   if(ballDistToggle~=3) then
+   if(ballDistToggle~=4) then
    	wcm.set_ball_x(ballDist);
    end
    wcm.set_ball_y(0);
