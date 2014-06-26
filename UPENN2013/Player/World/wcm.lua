@@ -90,7 +90,7 @@ shared.horde.confused = vector.zeros(1);
 --shared.horde.poseRobot1 = vector.zeros(3);--purely horizontally passed
 -- wcm.get_horde_doneFrontApproach();
 shared.team = {};
-
+shared.team.connected = vector.zeros(1)
 shared.team.teamPoseX = vector.zeros(4)
 shared.team.teamPoseY = vector.zeros(4)
 shared.team.teamPoseA = vector.zeros(4)
