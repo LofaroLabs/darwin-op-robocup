@@ -148,8 +148,9 @@ function sendFeatures (client)
 		features["isClosestToGoalDefend"] = wcm.get_team_isClosestToGoalDefend();
 		features["isClosestToGoalOffend"] = wcm.get_team_isClosestToGoalOffend();
 	features["penaltyBounds"] = getPenaltyBounds()
+
 	features["goalSign"] = getGoalSign(); -- not a feature but may become one... also it sets the value in the wcm
-		--print("sending some features, yo\n");-- wcm.set_horde_doneFrontApproach("true");
+	--print("sending some features, yo\n");-- wcm.set_horde_doneFrontApproach("true");
        -- print(json.encode(features) .. "\n");
 		features["ackNumber"] = ackNumber;
 		client:settimeout(.01);
