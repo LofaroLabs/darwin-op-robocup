@@ -103,6 +103,8 @@ player_roles=vector.zeros(10);
 t_poses=vector.zeros(10);
 tLastMessage = 0;
 
+
+
 lastTimeFound = Body.get_time();
 function isBallLost()
 	print("got into ball lost, get ball detect:  ".. vcm.get_ball_detect())
@@ -131,7 +133,6 @@ function recv_msgs()
       --    t = unpack_msg(msg);
       if t and (t.teamNumber) and (t.id) then
         tLastMessage = Body.get_time();
-        
         --Messages from upenn code
         --Keep all pose data for collison avoidance 
         if t.teamNumber ~= state.teamNumber then
@@ -278,6 +279,13 @@ function update()
   --Set gamecontroller latency info
   state.gc_latency=gcm.get_game_gc_latency();
   state.tm_latency=Body.get_time()-tLastMessage;
+  
+  -- If I haven't received things from anyone in the last 3 seconds then I'm not connected
+  if state.tm_latency > 3 then
+  	wcm.set_team_connected(0);
+  else
+  	wcm.set_team_connected(1);
+  end
 
   pack_vision_info(); --Vision info
 
@@ -294,7 +302,6 @@ function update()
     msg=serialization.serialize(state);
     print("@!@!1 trying to send message now");
     sendStatus = Comm.send(msg, #msg);
-    wcm.set_team_connected(sendStatus);
     state.tReceive = Body.get_time();
     states[playerID] = state;
   end
