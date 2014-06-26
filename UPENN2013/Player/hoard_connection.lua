@@ -105,6 +105,9 @@ function sendFeatures (client)
         	--print("Start sending was false");
 		 	return;
         end
+        
+       
+        
 	--	print(" difference is : " .. tostring(Body.get_time() - sendFeaturesTimer));
 		if(Body.get_time() - sendFeaturesTimer < .5) then 
 	--		print("is not sending")	
@@ -115,6 +118,9 @@ function sendFeatures (client)
 		features = {}
         features["playerID"] = Config.game.playerID;
         features["role"] = Config.game.role;
+        -- when I am disconnected from the team and I need to play kiddie soccer
+        -- so send the features that say kiddie soccer
+        features["connected"] = wcm.get_team_connected();
 	--[[	xPoseArr = {}
 		xPoseArr[1] = wcm.get_team_attacker_pose()[1];
 		xPoseArr[2] = wcm.get_team_goalie_pose()[1];
@@ -127,7 +133,7 @@ function sendFeatures (client)
 	--print("mine: " .. wcm.get_pose().x .. " 1: " .. xPoseArr[1] .. " 2: " .. xPoseArr[2]);
 	--print("role: " .. Config.game.role .. " playerID: " .. Config.game.playerID);
         ]]--
-	features["poseX"] = wcm.get_team_teamPoseX();
+		features["poseX"] = wcm.get_team_teamPoseX();
         features["poseY"] = wcm.get_team_teamPoseY();
         features["poseA"] = wcm.get_team_teamPoseA();
         features["allYelledReady"] = wcm.get_team_yelledReady(); 
@@ -148,8 +154,9 @@ function sendFeatures (client)
 		features["isClosestToGoalDefend"] = wcm.get_team_isClosestToGoalDefend();
 		features["isClosestToGoalOffend"] = wcm.get_team_isClosestToGoalOffend();
 	features["penaltyBounds"] = getPenaltyBounds()
+
 	features["goalSign"] = getGoalSign(); -- not a feature but may become one... also it sets the value in the wcm
-		--print("sending some features, yo\n");-- wcm.set_horde_doneFrontApproach("true");
+	--print("sending some features, yo\n");-- wcm.set_horde_doneFrontApproach("true");
        -- print(json.encode(features) .. "\n");
 		features["ackNumber"] = ackNumber;
 		client:settimeout(.01);

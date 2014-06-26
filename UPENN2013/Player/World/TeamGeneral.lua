@@ -293,7 +293,8 @@ function update()
   if (math.mod(count, 1) == 0) then --TODO: How often can we send team message?
     msg=serialization.serialize(state);
     print("@!@!1 trying to send message now");
-    Comm.send(msg, #msg);
+    sendStatus = Comm.send(msg, #msg);
+    wcm.set_team_connected(sendStatus);
     state.tReceive = Body.get_time();
     states[playerID] = state;
   end
