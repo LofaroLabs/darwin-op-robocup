@@ -157,6 +157,7 @@ function sendFeatures (client)
 	features["penaltyBounds"] = getPenaltyBounds()
 	features["declared"] = wcm.get_horde_declared()
 	features["goalSign"] = getGoalSign(); -- not a feature but may become one... also it sets the value in the wcm
+	features["status"] = wcm.get_horde_status();
 	--print("sending some features, yo\n");-- wcm.set_horde_doneFrontApproach("true");
        -- print(json.encode(features) .. "\n");
 		features["ackNumber"] = ackNumber;
