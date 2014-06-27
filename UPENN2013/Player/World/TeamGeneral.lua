@@ -333,7 +333,7 @@ function update()
 	for id = 1,5 do
 		
 		if not states[id] or not states[id].declared then
-
+			
 			-- ignore him...
 		else
 			if states[id].declared == 1 then
