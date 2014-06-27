@@ -119,6 +119,23 @@ function process_keyinput()
 		wcm.set_team_isClosestToGoalDefend(0); 
         end
     end
+    
+    if byte==string.byte("l") then
+        if (wcm.get_team_closestToBallLoc()[1]==.1) then
+          	wcm.set_team_closestToBallLoc({-0.1,0,0});
+        else
+        	wcm.set_team_closestToBallLoc({0.1,0,0});
+        end
+    end
+
+
+	if byte==string.byte("v") then
+        if (wcm.get_horde_goalSign()> 0) then
+          	wcm.set_horde_goalSign(-1)
+        else
+        	wcm.set_horde_goalSign(1)
+        end
+    end
 
 
 	if byte==string.byte("u") then
@@ -198,5 +215,5 @@ wcm.set_horde_dummyTraining(1);
    end
   
    io.stdout:flush();
-	print("Yellfailed :".. wcm.get_horde_yelledFail() ..  "detect ball: " .. vcm.get_ball_detect() ..  " ball dist:" .. wcm.get_ball_x().. " frontApproach: " .. tostring(wcm.get_horde_doneApproach()) .. " ready: " .. tostring(wcm.get_horde_yelledReady()) .. " passkick: " .. tostring(wcm.get_horde_yelledKick()) .. " (c)ClosestToGoalDefend: " .. tostring(wcm.get_team_isClosestToGoalDefend()) .. " (k)ClosestToBall: " .. tostring(wcm.get_team_is_smallest_eta()) .. " (g)GoalieCloseEnough " .. tostring(wcm.get_horde_goalieCloseEnough()) .. " (s)Status " .. tostring(wcm.get_horde_status()) .. " (q)dummyTraining " .. tostring(wcm.get_horde_dummyTraining()) .. " (u)DoDeclared " .. tostring(wcm.get_horde_doDeclare()) .. " declared " .. tostring(wcm.get_horde_declared()) );
+	print("Yellfailed :".. wcm.get_horde_yelledFail() ..  "detect ball: " .. vcm.get_ball_detect() ..  " ball dist:" .. wcm.get_ball_x().. " frontApproach: " .. tostring(wcm.get_horde_doneApproach()) .. " ready: " .. tostring(wcm.get_horde_yelledReady()) .. " passkick: " .. tostring(wcm.get_horde_yelledKick()) .. " (c)ClosestToGoalDefend: " .. tostring(wcm.get_team_isClosestToGoalDefend()) .. " (k)ClosestToBall: " .. tostring(wcm.get_team_is_smallest_eta()) .. " (g)GoalieCloseEnough " .. tostring(wcm.get_horde_goalieCloseEnough()) .. " (s)Status " .. tostring(wcm.get_horde_status()) .. " (q)dummyTraining " .. tostring(wcm.get_horde_dummyTraining()) .. " (u)DoDeclared " .. tostring(wcm.get_horde_doDeclare()) .. " (l)ClosestBallX " .. tostring(wcm.get_team_closestToBallLoc()[1]) .. " (v)GoalDefendSign " .. tostring(wcm.get_horde_goalSign()) .. " declared " .. tostring(wcm.get_horde_declared()) );
  end

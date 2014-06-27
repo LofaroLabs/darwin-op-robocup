@@ -156,7 +156,10 @@ function sendFeatures (client)
 		features["isClosestToGoalOffend"] = wcm.get_team_isClosestToGoalOffend();
 	features["penaltyBounds"] = getPenaltyBounds()
 	features["declared"] = wcm.get_horde_declared()
-	features["goalSign"] = getGoalSign(); -- not a feature but may become one... also it sets the value in the wcm
+	if (wcm.get_horde_dummyTraining == 0) then
+		getGoalSign();
+	end
+	features["goalSign"] = wcm.get_horde_goalSign(); -- not a feature but may become one... also it sets the value in the wcm
 	features["status"] = wcm.get_horde_status();
 	--print("sending some features, yo\n");-- wcm.set_horde_doneFrontApproach("true");
        -- print(json.encode(features) .. "\n");
