@@ -133,6 +133,7 @@ function sendFeatures (client)
 	--print("mine: " .. wcm.get_pose().x .. " 1: " .. xPoseArr[1] .. " 2: " .. xPoseArr[2]);
 	--print("role: " .. Config.game.role .. " playerID: " .. Config.game.playerID);
         ]]--
+        features["goalieCloseEnough"] = wcm.get_horde_goalieCloseEnough();
 		features["poseX"] = wcm.get_team_teamPoseX();
         features["poseY"] = wcm.get_team_teamPoseY();
         features["poseA"] = wcm.get_team_teamPoseA();
