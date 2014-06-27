@@ -126,6 +126,7 @@ function process_keyinput()
           	wcm.set_horde_doDeclare(1);
         else
 		wcm.set_horde_doDeclare(0); 
+		wcm.set_horde_declared(0);
         end
     end
 
