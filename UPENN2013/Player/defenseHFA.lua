@@ -402,11 +402,6 @@ support  = makeHFA("support", makeTransition({
 
 }), false)
 
-DeferHFA = makeHFA("DeferHFA", makeTransition({
-	[start] = defer,
-	[defer] = defer
-}), false);
-
 
 --declare = "declare"
 --undeclare = "undeclare"
@@ -440,7 +435,11 @@ DefenseHFA = makeHFA("DefenseHFA", makeTransition({
 			return support;
 	end
 }), false)
+facingHFA = makeHFA("facingHFA", makeTransition({
+	[start] = gotoPoseFacing,
+	[gotoPoseFacing] = gotoPoseFacing
 
+}),false)
 wcm.set_horde_ballLost(1)
 lastTimeFound = Body.get_time();
 function isBallLost()
@@ -522,7 +521,6 @@ connectionThread = function ()
 				while wcm.get_horde_sentBehavior() == 0 do
 					isBallLost();
 					pulse(DefenseHFA);
-					--pulse(DeferHFA);
 				end
 				wcm.set_horde_sentBehavior(0);
 				print("cur rec number " .. tostring(wcm.get_horde_ackNumber()) .. "..........................................")
