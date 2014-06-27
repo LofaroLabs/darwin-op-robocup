@@ -69,6 +69,10 @@ function process_keyinput()
           wcm.set_horde_yelledKick(0);
         end
     end
+
+
+
+
    if byte==string.byte("y") then
         if (wcm.get_horde_yelledFail()==0) then
           wcm.set_horde_yelledFail(1);
