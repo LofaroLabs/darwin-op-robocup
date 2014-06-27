@@ -283,13 +283,14 @@ function update()
   
   teamLatency = Body.get_time() - tLastReceivedMessage;
   
-  -- If I haven't received things from anyone in the last 3 seconds then I'm not connected
-  if teamLatency > 3 then
-  	wcm.set_team_connected(0);
-  else
-  	wcm.set_team_connected(1);
+  if wcm.get_horde_dummyTraining() == 0 then
+  	-- If I haven't received things from anyone in the last 3 seconds then I'm not connected
+  	if teamLatency > 3 then
+  		wcm.set_team_connected(0);
+  	else
+  		wcm.set_team_connected(1);
+  	end
   end
-
   pack_vision_info(); --Vision info
 
   vision_send_interval = Config.team.vision_send_interval or 10;
