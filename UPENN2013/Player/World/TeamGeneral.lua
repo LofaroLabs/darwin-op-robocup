@@ -461,7 +461,7 @@ if wcm.get_horde_dummyTraining() == 0 then
 end
   
   update_shm() 
-  if (wcm.get_horde_dummyTraining() == 0)
+  if (wcm.get_horde_dummyTraining() == 0) then
   	update_status();
   end
   update_goalieCloseEnough();
