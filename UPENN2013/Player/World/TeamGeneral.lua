@@ -442,7 +442,7 @@ function update()
   -- convert the relative ball loc to global loc
   if smallest_id ~= 0 then
     
-    if (wcm.get_horde_dummyTraining() == 0)
+    if (wcm.get_horde_dummyTraining() == 0) then
 		print("DNW ballRelative a = " .. states[smallest_id].ballRelative[3] .. " x = " .. states[smallest_id].ballRelative[1] .. " y = " .. states[smallest_id].ballRelative[2]);
 		closestToBallLoc = util.pose_global(states[smallest_id].ballRelative, {states[smallest_id].pose.x, states[smallest_id].pose.y, states[smallest_id].pose.a})
     	wcm.set_team_closestToBallLoc(closestToBallLoc)
