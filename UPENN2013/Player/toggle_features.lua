@@ -85,6 +85,14 @@ function process_keyinput()
 			wcm.set_horde_goalieCloseEnough(1);		
 		end
 	end
+	
+	if byte==string.byte("q") then
+		if(wcm.get_horde_dummyTraining ==0) then
+			wcm.set_horde_dummyTraining(1);
+		else
+			wcm.set_horde_dummyTraining(0);		
+		end
+	end
 
    if byte==string.byte("y") then
         if (wcm.get_horde_yelledFail()==0) then
@@ -181,5 +189,5 @@ wcm.set_horde_dummyTraining(1);
    end
   
    io.stdout:flush();
-	print("Yellfailed :".. wcm.get_horde_yelledFail() ..  "detect ball: " .. vcm.get_ball_detect() ..  " ball dist:" .. wcm.get_ball_x().. " frontApproach: " .. tostring(wcm.get_horde_doneApproach()) .. " ready: " .. tostring(wcm.get_horde_yelledReady()) .. " passkick: " .. tostring(wcm.get_horde_yelledKick()) .. " (c)ClosestToGoalDefend: " .. tostring(wcm.get_team_isClosestToGoalDefend()) .. " (k)ClosestToBall: " .. tostring(wcm.get_team_is_smallest_eta()) .. " (g)GoalieCloseEnough " .. tostring(wcm.get_horde_goalieCloseEnough()) .. " (s)Status " .. tostring(wcm.get_horde_status()) .. " declared " .. tostring(wcm.get_horde_declared()) );
+	print("Yellfailed :".. wcm.get_horde_yelledFail() ..  "detect ball: " .. vcm.get_ball_detect() ..  " ball dist:" .. wcm.get_ball_x().. " frontApproach: " .. tostring(wcm.get_horde_doneApproach()) .. " ready: " .. tostring(wcm.get_horde_yelledReady()) .. " passkick: " .. tostring(wcm.get_horde_yelledKick()) .. " (c)ClosestToGoalDefend: " .. tostring(wcm.get_team_isClosestToGoalDefend()) .. " (k)ClosestToBall: " .. tostring(wcm.get_team_is_smallest_eta()) .. " (g)GoalieCloseEnough " .. tostring(wcm.get_horde_goalieCloseEnough()) .. " (s)Status " .. tostring(wcm.get_horde_status()) .. " (q)dummyTraining " .. tostring(wcm.get_horde_dummyTraining()) .. " declared " .. tostring(wcm.get_horde_declared()) );
  end
