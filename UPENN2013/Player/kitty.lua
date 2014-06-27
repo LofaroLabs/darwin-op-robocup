@@ -259,7 +259,8 @@ connectionThread = function ()
 			
 		    print("I got " .. tostring(recval))	
 			print(Body.get_time())
-			status, recJson = pcall(json.decode, recval);
+			recJson = json.decode(recval);
+			status = recJson~=nil;
 			if status == true then
 				status = string.sub(recval, 1, 1) == "{"
 			end

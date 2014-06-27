@@ -448,7 +448,8 @@ do
 			if t == tt_boolean            then return read_bool() end	
 			if t == tt_null               then return read_null() end
 			if t == tt_comment_start      then return read_value(read_comment(fromt)) end
-			error("unexpected termination - "..js_string:sub(math.max(1,pos-10),pos+10))
+			return nil --added by David
+			--error("unexpected termination - "..js_string:sub(math.max(1,pos-10),pos+10))
 		end
 		
 		-- read comments until something noncomment like surfaces, using the token reader which was 
@@ -514,10 +515,10 @@ do
 		
 		-- now let's read data from our string and pretend it's an object value
 		local r = read_object_value()
-		if pos<=#js_string then
+		--if pos<=#js_string then -- commented out by David
 			-- not sure about what to do with dangling characters
 			--error("Dangling characters in JSON code ("..location()..")")
-		end
+		--end
 		
 		return r
 	end

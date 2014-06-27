@@ -330,6 +330,7 @@ function update()
 
 	local numZero = 0
 	local numOne = 0
+	somebodyDeclared = 0;
 	for id = 1,5 do
 		
 		if not states[id] or not states[id].declared then
@@ -337,12 +338,14 @@ function update()
 			-- ignore him...
 		else
 			if states[id].declared == 1 then
-				wcm.set_horde_declared(1); -- somebody has declared
+				somebodyDeclared  = 1;
+				--wcm.set_horde_declared(1); -- somebody has declared
 				break;
 
 			end			
 		end
 	end
+	wcm.set_horde_declared(somebodyDeclared);
 	-- zero is the default so originally everyon will be zero so 
  
 

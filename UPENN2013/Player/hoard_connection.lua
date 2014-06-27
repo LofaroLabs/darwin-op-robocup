@@ -5,7 +5,7 @@ cwd = '.';
 local platform = os.getenv('PLATFORM') or '';
 if (string.find(platform,'webots')) then cwd = cwd .. '/Player';
 end
-
+setDebugFalse()
 -- Get Computer for Lib suffix
 local computer = os.getenv('COMPUTER') or '';
 if (string.find(computer, 'Darwin')) then
@@ -290,7 +290,8 @@ connectionThread = function ()
 				--client:send("ack\n")
 				
 				print("---------------------------- ACK Number IS " .. ackNumber .. " ----------------------------------")
-				local err, req = pcall(json.decode, line);	
+				local req = json.decode(line);	
+				local err = req==nil;
 				action = req.action
 				action = string.sub(line, string.find(line, "action") or 0, #line);
 				print("Received: " .. tostring(line))
@@ -300,11 +301,24 @@ connectionThread = function ()
 					sendFeatures(client);--send all the features to horde
 				else
 					print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!GOT A BAD ACK NUMBER - " .. ackNumber .. " ~=  " .. req.ackNumber .. "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-					return;
+					if(req.ackNumber<ackNumber) then
+						print("maybe no big deal?");
+					else
+						return;
+					end
 				end
 				
 				
-			end	
+			end
+			--setDebugTrue()
+			print("am i in penalty?? " .. tostring(in_penalty()))
+			setDebugFalse()
+			if(not in_penalty() and wasJustInPenalty) then 
+				hoard_functions.initPenalized = false;
+				wasJustInPenalty = false;
+				walk.start()
+				walk.set_velocity(0,0,0);
+			end
 			--print("are we in penalty?")
 			--print("vector of penalites: ", gcm.get_game_penalty())	
 			--print("printing: ".. tostring(in_penalty()));
@@ -312,6 +326,9 @@ connectionThread = function ()
 		        if(line ~=nil and string.find(line, "StartSending")) then
 				updateAction(line, client)		
 			elseif (gcm.get_game_state() ~= 3 or in_penalty()) then
+				if(in_penalty()) then
+					wasJustInPenalty = true;
+				end
 				if(line~=nil and not string.find(line, "update") and not err) then
 					lastCommand = line
 				end

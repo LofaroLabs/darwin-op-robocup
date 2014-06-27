@@ -133,11 +133,14 @@ hordeFunctions["position"] = function(args, client)
 	
 	--print("game fsm set");
 	if (gcm.in_penalty() and initPenalized==false) then
+		setDebugTrue();
 		print("setting game and body state");
+		setDebugFalse();
 		initPenalized = true;
 		--initGamePlaying = false;
 		GameFSM.sm:set_state('gamePenalized');
 		BodyFSM.sm:set_state('bodyIdle');
+		Motion.event('sit');
 	elseif gcm.get_game_state()~=3 and initGamePlaying == false then
 		initGamePlaying = true;
 		initPenalized = false;

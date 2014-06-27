@@ -515,11 +515,12 @@ connectionThread = function ()
             end
 
 			--print(tostring(recJson))
-			if (status == true and recJson.ackNumber == wcm.get_horde_ackNumber()) then
+			if (recJson~=nil and status == true and recJson.ackNumber == wcm.get_horde_ackNumber()) then
 				isBallLost();
 			    --kitty.wcm.get_horde_ballLost() = wcm.get_horde_ballLost()	
 				while wcm.get_horde_sentBehavior() == 0 do
 					isBallLost();
+					unix.usleep(.1*1E6)
 					pulse(DefenseHFA);
 				end
 				wcm.set_horde_sentBehavior(0);
@@ -532,6 +533,8 @@ end
 
 --start "main"
 if(darwin) then
+	wcm.set_horde_doDeclare(0);
+	wcm.set_horde_declared(0);
 	for i = 1, 3000 do
 		print("My id = ".. gcm.get_team_player_id());
 	end 
