@@ -283,14 +283,15 @@ function update()
   
   teamLatency = Body.get_time() - tLastReceivedMessage;
   
+  -- If I haven't received things from anyone in the last 3 seconds then I'm not connected
   if wcm.get_horde_dummyTraining() == 0 then
-  	-- If I haven't received things from anyone in the last 3 seconds then I'm not connected
-  	if teamLatency > 3 then
-  		wcm.set_team_connected(0);
-  	else
-  		wcm.set_team_connected(1);
-  	end
+   if teamLatency > 3 then
+  	wcm.set_team_connected(0);
+  else
+  	wcm.set_team_connected(1);
   end
+ end
+
   pack_vision_info(); --Vision info
 
   vision_send_interval = Config.team.vision_send_interval or 10;
@@ -436,7 +437,7 @@ function update()
     else
         wcm.set_team_isClosestToGoalDefend(0);
     end
- end
+  end
   -- set the ball pose of the bot that is closest
   -- convert the relative ball loc to global loc
   if smallest_id ~= 0 then
@@ -460,9 +461,7 @@ if wcm.get_horde_dummyTraining() == 0 then
 end
   
   update_shm() 
-  if wcm.get_horde_dummyTraining() == 0 then  
-     update_status();
-  end
+  update_status();
   update_goalieCloseEnough();
   update_teamdata();
   update_obstacle();
