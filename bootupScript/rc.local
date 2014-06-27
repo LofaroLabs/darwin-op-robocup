@@ -10,6 +10,7 @@
 # bits.
 #
 # By default this script does nothing.
+amixer set Master 70%
 mplayer /home/darwin/Audio/bite_my_shiny_metal_ass.mp3
 /bin/su darwin -c "/home/darwin/dev/merc/darwin/UPENN2013/Player/buttons.sh"
 
