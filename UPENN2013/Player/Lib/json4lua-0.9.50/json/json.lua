@@ -359,6 +359,9 @@ do
 		
 		-- read the next token, according to the passed token table
 		local function next_token (tok)
+			if(js_string==nil) then -- added by David
+				return nil;
+			end
 			while pos <= #js_string do
 				local b = js_string:byte(pos) 
 				local t = tok[b]
