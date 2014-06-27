@@ -69,6 +69,23 @@ function process_keyinput()
           wcm.set_horde_yelledKick(0);
         end
     end
+
+	if byte==string.byte("s") then
+		if (wcm.get_horde_status() >= 4) then
+			wcm.set_horde_status(0)
+		else
+			wcm.set_horde_status(wcm.get_horde_status() + 1)
+		end
+	end
+	
+	if byte==string.byte("g") then
+		if (wcm.get_horde_goalieCloseEnough() == 1) then
+			wcm.set_horde_goalieCloseEnough(0);
+		else
+			wcm.set_horde_goalieCloseEnough(1);		
+		end
+	end
+
    if byte==string.byte("y") then
         if (wcm.get_horde_yelledFail()==0) then
           wcm.set_horde_yelledFail(1);
@@ -101,6 +118,14 @@ function process_keyinput()
 		wcm.set_team_is_smallest_eta(1);
         else
                 wcm.set_team_is_smallest_eta(0);
+        end
+    end
+    
+    if byte==string.byte("n") then
+        if (wcm.get_team_connected()==0) then 
+			wcm.set_team_connected(1);
+        else
+			wcm.set_team_connected(0);
         end
     end
 
@@ -156,5 +181,5 @@ wcm.set_horde_dummyTraining(1);
    end
   
    io.stdout:flush();
-	print("Yellfailed :".. wcm.get_horde_yelledFail() ..  "detect ball: " .. vcm.get_ball_detect() ..  " ball dist:" .. wcm.get_ball_x().. " frontApproach: " .. tostring(wcm.get_horde_doneApproach()) .. " ready: " .. tostring(wcm.get_horde_yelledReady()) .. " passkick: " .. tostring(wcm.get_horde_yelledKick()) .. " (c)ClosestToGoalDefend: " .. tostring(wcm.get_team_isClosestToGoalDefend()) .. " (k)ClosestToBall: " .. tostring(wcm.get_team_is_smallest_eta()));
+	print("Yellfailed :".. wcm.get_horde_yelledFail() ..  "detect ball: " .. vcm.get_ball_detect() ..  " ball dist:" .. wcm.get_ball_x().. " frontApproach: " .. tostring(wcm.get_horde_doneApproach()) .. " ready: " .. tostring(wcm.get_horde_yelledReady()) .. " passkick: " .. tostring(wcm.get_horde_yelledKick()) .. " (c)ClosestToGoalDefend: " .. tostring(wcm.get_team_isClosestToGoalDefend()) .. " (k)ClosestToBall: " .. tostring(wcm.get_team_is_smallest_eta()) .. " (g)GoalieCloseEnough " .. tostring(wcm.get_horde_goalieCloseEnough()) .. " (s)Status " .. tostring(wcm.get_horde_status()));
  end

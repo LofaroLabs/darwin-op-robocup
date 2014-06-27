@@ -233,6 +233,16 @@ hordeFunctions["StartSending"] = function (args, client)
 ]]--
 
 end
+
+hordeFunctions["declare"] = function(args,client)
+        wcm.set_horde_doDeclare(1);
+end
+
+hordeFunctions["undeclare"] = function(args,client)
+        wcm.set_horde_doDeclare(0);
+end
+
+
 hordeFunctions["kickLeft"] = function(args,client)
         BodyFSM.sm:set_state('bodyKickLeftGMU');
 end

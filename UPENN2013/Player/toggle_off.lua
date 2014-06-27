@@ -20,4 +20,5 @@ webots = false;
 
 
 wcm.set_horde_dummyTraining(0);
+wcm.set_horde_declared(0);
 
