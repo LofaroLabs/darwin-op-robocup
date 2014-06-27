@@ -259,8 +259,7 @@ connectionThread = function ()
 			
 		    print("I got " .. tostring(recval))	
 			print(Body.get_time())
-			recJson = json.decode(recval);
-			status = recJson~=nil;
+			status, recJson = pcall(json.decode, recval);
 			if status == true then
 				status = string.sub(recval, 1, 1) == "{"
 			end
@@ -286,14 +285,14 @@ connectionThread = function ()
 end
 
 --start "main"
---if(darwin) then 
+if(darwin) then 
 		--        hoard_functions.hordeFunctions["murder all humans"](nil,nil);
 	--Motion.event("standup");	
---      	print("starting connection thread\n");
+      	print("starting connection thread\n");
 	--coroutine.resume(connectionThread);
---	connectionThread()
---	print("connection lost")
+	connectionThread()
+	print("connection lost")
 --	wcm.set_horde_state("gotoBall");
---end
+end
 --connection drew stuff, seriously i'm ruining this beautiful code
 
