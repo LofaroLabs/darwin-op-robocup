@@ -122,10 +122,10 @@ function process_keyinput()
 
 
 	if byte==string.byte("u") then
-        if (wcm.get_hoard_doDeclare()==0) then
-          	wcm.set_hoard_doDeclare(1);
+        if (wcm.get_horde_doDeclare()==0) then
+          	wcm.set_horde_doDeclare(1);
         else
-		wcm.set_hoard_doDeclare(0); 
+		wcm.set_horde_doDeclare(0); 
         end
     end
 
