@@ -327,27 +327,33 @@ function update()
   shortestDefendID = 0;
   shortestAttackID = 0
 
+	setDebugTrue()
 
 	local numZero = 0
 	local numOne = 0
 	somebodyDeclared = 0;
+	print("Going to check declared ++++++++++++++++++++++++");
 	for id = 1,5 do
 		
-		if not states[id] or not states[id].declared then
-			
+		if not states[id] or not states[id].declared or states[id].role == 0 then
+			print("Ignoring id = " .. tostring(id) .. " states[id] is nil ? " .. tostring(states[id]) .. " role " .. tostring(states[id].role))
 			-- ignore him...
 		else
 			if states[id].declared == 1 then
+				print("ID " .. tostring(id) .. " declared");
 				somebodyDeclared  = 1;
 				--wcm.set_horde_declared(1); -- somebody has declared
 				break;
+			else
+				print("ID " .. tostring(id) .. " not declared");
 
 			end			
 		end
 	end
 	wcm.set_horde_declared(somebodyDeclared);
 	-- zero is the default so originally everyon will be zero so 
- 
+	print("Done checking declared -------------------------");
+ 	setDebugFalse();
 
 
 
