@@ -338,7 +338,7 @@ function update()
 		if not states[id] or not states[id].declared or states[id].role == 0 then
 			if states[id] == nil then
 				print("id " .. tostring(id) .. " no msg received")
-			elseif stated[id].role == 0 then
+			elseif states[id].role == 0 then
 				print("id " .. tostring(id) .. " is the goalie" )
 			else
 				print("NOT GOOD should not get here")
