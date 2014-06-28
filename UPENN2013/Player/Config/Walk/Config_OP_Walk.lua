@@ -20,7 +20,7 @@ walk.velDelta={0.02,0.02,0.15}
 -- Stance parameters
 ---------------------------------------------
 walk.bodyHeight = 0.295; 
-walk.bodyTilt=20*math.pi/180; 
+walk.bodyTilt=22*math.pi/180; -- orig=20, 30 seems to be too much {spa}
 walk.footX= -0.020; 
 walk.footY = 0.035;
 walk.supportX = 0;

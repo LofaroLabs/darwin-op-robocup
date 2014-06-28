@@ -284,7 +284,7 @@ connectionThread = function ()
 		end
 	end
 end
-
+--[[
 --start "main"
 --if(darwin) then 
 		--        hoard_functions.hordeFunctions["murder all humans"](nil,nil);
@@ -296,4 +296,4 @@ end
 --	wcm.set_horde_state("gotoBall");
 --end
 --connection drew stuff, seriously i'm ruining this beautiful code
-
+]]--
