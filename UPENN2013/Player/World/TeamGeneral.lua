@@ -336,7 +336,16 @@ function update()
 	for id = 1,5 do
 		
 		if not states[id] or not states[id].declared or states[id].role == 0 then
-			print("Ignoring id = " .. tostring(id) .. " states[id] is nil ? " .. tostring(states[id]) .. " role " .. tostring(states[id].role))
+			if states[id] == nil then
+				print("id " .. tostring(id) .. " no msg received")
+			elseif states[id].declared ~= 1 then
+				print("id " .. tostring(id) .. "not declared" )
+			elseif stated[id].role == 0 then
+				print("id " .. tostring(id) .. " is the goalie" )
+			else
+				print("NOT GOOD should not get here")
+			end
+			
 			-- ignore him...
 		else
 			if states[id].declared == 1 then
@@ -345,7 +354,7 @@ function update()
 				--wcm.set_horde_declared(1); -- somebody has declared
 				break;
 			else
-				print("ID " .. tostring(id) .. " not declared");
+				print("ID " .. tostring(id) .. " NOT GOOD should not be here");
 
 			end			
 		end
