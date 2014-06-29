@@ -163,6 +163,7 @@ function soccerMenuExecute()
 		scriptNumber = 0;
         elseif scriptNumber == 4 then
                 Speak.talk('main menu')
+		MenuID = 'main menu'
         else
                 scriptNumber = 0;
         end
