@@ -47,6 +47,7 @@ shared.ball.t_locked_on = vector.zeros(1);
 
 --connection 
 shared.horde = {};
+shared.horde.role = vector.zeros(1);
 shared.horde.dummyTraining = vector.zeros(1);
 shared.horde.moveParticlesToCenter = vector.zeros(1);
 shared.horde.goalSign = vector.zeros(1); -- this is the sign of the defending goal posts
@@ -80,8 +81,13 @@ shared.horde.midpointBallGoal = vector.zeros(2);
 -- 4 = i am third closest
 shared.horde.status = vector.zeros(1) -- 0 - 5  
 shared.horde.goalieCloseEnough = vector.zeros(1); -- 0 if not close enough 1 if close enough
-shared.horde.doDeclare = vector.zeros(1); -- whether I am declaring
-shared.horde.declared = vector.zeros(1); -- if somebody has declared 0 if not declared 1 if declared
+
+--[1] declare kiddie, [2] declare support, [3] declare safety
+shared.horde.doDeclare = vector.zeros(3); -- whether I am declaring
+
+shared.horde.declared = vector.zeros(3); -- if somebody has declared 0 if not declared 1 if declared
+
+
 shared.horde.goalCloseDist = vector.ones(1) -- should change this is a place holder.
 shared.horde.distN = vector.ones(1) -- within a meter?
 shared.horde.confused = vector.zeros(1);

@@ -41,6 +41,7 @@ require('getch')
 require('Body')
 require('Motion')
 require('World')
+setDebugFalse();
 local hoard_functions = require "hoard_functions"
 json = require("json")
 unix.usleep(2*1E6);
@@ -117,24 +118,24 @@ function sendFeatures (client)
 		print("wcm send status was true");
 		features = {}
         features["playerID"] = Config.game.playerID;
-        features["role"] = Config.game.role;
-        -- when I am disconnected from the team and I need to play kiddie soccer
+        if (wcm.get_horde_dummyTraining() == 0) then
+		setDebugTrue();
+		print("SENDING config role");
+		setDebugFalse();
+		features["role"] = Config.game.role;
+        else
+		setDebugTrue();
+		print("sending dummy role");
+		setDebugFalse();
+		features["role"] = wcm.get_horde_role();
+	end
+
+
+	-- when I am disconnected from the team and I need to play kiddie soccer
         -- so send the features that say kiddie soccer
         features["connected"] = wcm.get_team_connected();
-	--[[	xPoseArr = {}
-		xPoseArr[1] = wcm.get_team_attacker_pose()[1];
-		xPoseArr[2] = wcm.get_team_goalie_pose()[1];
-		yPoseArr = {}
-		yPoseArr[1] = wcm.get_team_attacker_pose()[2];
-        yPoseArr[2] = wcm.get_team_goalie_pose()[2];
-		aPoseArr = {}
-		aPoseArr[1] = wcm.get_team_attacker_pose()[3];
-		aPoseArr[2] = wcm.get_team_goalie_pose()[3];
-	--print("mine: " .. wcm.get_pose().x .. " 1: " .. xPoseArr[1] .. " 2: " .. xPoseArr[2]);
-	--print("role: " .. Config.game.role .. " playerID: " .. Config.game.playerID);
-        ]]--
         features["goalieCloseEnough"] = wcm.get_horde_goalieCloseEnough();
-		features["poseX"] = wcm.get_team_teamPoseX();
+	features["poseX"] = wcm.get_team_teamPoseX();
         features["poseY"] = wcm.get_team_teamPoseY();
         features["poseA"] = wcm.get_team_teamPoseA();
         features["allYelledReady"] = wcm.get_team_yelledReady(); 
@@ -147,16 +148,16 @@ function sendFeatures (client)
         features["particleY"] = wcm.get_particle_y();
 		features["particleA"] = wcm.get_particle_a();
 	]]--print("gonna broadcast my features");
-		features["yelledReady"] = wcm.get_horde_yelledReady();
-		features["yelledKick"] = wcm.get_horde_yelledKick();
+	features["yelledReady"] = wcm.get_horde_yelledReady();
+	features["yelledKick"] = wcm.get_horde_yelledKick();
     	features["yelledFail"] = wcm.get_horde_yelledFail(); 
 	features["isClosestToBall"] = wcm.get_team_is_smallest_eta();
 	features["midpoint"] = wcm.get_horde_midpointBallGoal();
-		features["isClosestToGoalDefend"] = wcm.get_team_isClosestToGoalDefend();
-		features["isClosestToGoalOffend"] = wcm.get_team_isClosestToGoalOffend();
+	features["isClosestToGoalDefend"] = wcm.get_team_isClosestToGoalDefend();
+	features["isClosestToGoalOffend"] = wcm.get_team_isClosestToGoalOffend();
 	features["penaltyBounds"] = getPenaltyBounds()
 	features["declared"] = wcm.get_horde_declared()
-	if (wcm.get_horde_dummyTraining == 0) then
+	if (wcm.get_horde_dummyTraining() == 0) then
 		getGoalSign();
 	end
 	features["goalSign"] = wcm.get_horde_goalSign(); -- not a feature but may become one... also it sets the value in the wcm

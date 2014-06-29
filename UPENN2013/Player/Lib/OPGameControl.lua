@@ -176,6 +176,7 @@ function update()
     end
   else
   	gameState = gcm.get_game_state();
+  	teamPenalty = gcm.get_game_penalty()
   end
 
   gcm.set_game_our_score(our_score);

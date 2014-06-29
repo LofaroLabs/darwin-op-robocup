@@ -331,30 +331,35 @@ function update()
 
 	local numZero = 0
 	local numOne = 0
-	somebodyDeclared = 0;
+	somebodyDeclared = {};
+	somebodyDeclared[1] = 0;
+	somebodyDeclared[2] = 0;
+	somebodyDeclared[3] = 0;
 	print("Going to check declared ++++++++++++++++++++++++");
-	for id = 1,5 do
-		
-		if not states[id] or not states[id].declared or states[id].role == 0 then
-			if states[id] == nil then
-				print("id " .. tostring(id) .. " no msg received")
-			elseif states[id].role == 0 then
-				print("id " .. tostring(id) .. " is the goalie" )
-			else
-				print("NOT GOOD should not get here")
-			end
+	for myRole = 1,3 do 
+        	for id = 1,5 do
+			--check if nil, if this is not declared, and make sure this isn't the goalie
+			if not states[id] or not states[id].declared[myRole] or states[id].role == 0 then
+				if states[id] == nil then
+					print("id " .. tostring(id) .. " no msg received")
+				elseif states[id].role == 0 then
+					print("id " .. tostring(id) .. " is the goalie" )
+				else
+					print("NOT GOOD should not get here")
+				end
 			
-			-- ignore him...
-		else
-			if states[id].declared == 1 then
-				print("ID " .. tostring(id) .. " declared");
-				somebodyDeclared  = 1;
+			-- ^^ ignore him...^^
+			else-- don't ignore him, he dclared, so note that somebody declared that role
+				if states[id].declared[myRole] == 1 then
+					print("ID " .. tostring(id) .. " declared");
+					somebodyDeclared[myRole] = 1;
 				--wcm.set_horde_declared(1); -- somebody has declared
-				break;
-			else
-				print("id " .. tostring(id) .. "not declared" )
+					break;-- break out of inner loop, run again for next role
+				else
+					print("id " .. tostring(id) .. "not declared" )
 
-			end			
+				end			
+			end
 		end
 	end
 	wcm.set_horde_declared(somebodyDeclared);

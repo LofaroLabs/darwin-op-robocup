@@ -27,9 +27,10 @@ if(Config.platform.name == 'OP') then
 end
 
 --TODO: enable new nao specific
+declaredOne = 0;
 newnao = false; --Turn this on for new naos (run main code outside naoqi)
 newnao = true;
-
+role = 0
 getch.enableblock(1);
 unix.usleep(1E6*1.0);
 Body.set_body_hardness(0);
@@ -50,9 +51,11 @@ button_pressed = {0,0};
 ballDistToggle = 0;
  insist = false;
 insistBall = false;
+somethingPressed = false
 function process_keyinput()
   local str=getch.get();
   if #str>0 then
+    somethingPressed = true;
     local byte=string.byte(str,1);
     -- Walk velocity setting
     if byte==string.byte("r") then
@@ -87,7 +90,7 @@ function process_keyinput()
 	end
 	
 	if byte==string.byte("q") then
-		if(wcm.get_horde_dummyTraining ==0) then
+		if(wcm.get_horde_dummyTraining() ==0) then
 			wcm.set_horde_dummyTraining(1);
 		else
 			wcm.set_horde_dummyTraining(0);		
@@ -138,13 +141,8 @@ function process_keyinput()
     end
 
 
-	if byte==string.byte("u") then
-        if (wcm.get_horde_doDeclare()==0) then
-          	wcm.set_horde_doDeclare(1);
-        else
-		wcm.set_horde_doDeclare(0); 
-		wcm.set_horde_declared(0);
-        end
+    if byte==string.byte("u") then
+    	declaredOne = (declaredOne+1) % 4 
     end
 
     if byte==string.byte("k") then
@@ -174,6 +172,10 @@ function process_keyinput()
     end
     if(byte==string.byte("b")) then
 	ballDistToggle = (ballDistToggle +1) % 5;
+    end
+    if(byte == string.byte("r")) then
+	role = (role+1)%5
+   	wcm.set_horde_role(role); 	
     end
 
   end
@@ -213,7 +215,26 @@ wcm.set_horde_dummyTraining(1);
    if(insistBall) then
 	vcm.set_ball_detect(1);
    end
-  
+   declared = vector.zeros(3);
+   --print("\n\n declared one is " .. declare
+   if(declaredOne==0) then
+	declared[1] = 1;
+   elseif(declaredOne == 1) then
+	declared[2] = 1;
+   elseif(declaredOne == 2) then 
+	--print("HEY THIS HAPPENED")
+	declared[3] = 1;
+   end  
+   wcm.set_horde_declared(declared);
    io.stdout:flush();
-	print("Yellfailed :".. wcm.get_horde_yelledFail() ..  "detect ball: " .. vcm.get_ball_detect() ..  " ball dist:" .. wcm.get_ball_x().. " frontApproach: " .. tostring(wcm.get_horde_doneApproach()) .. " ready: " .. tostring(wcm.get_horde_yelledReady()) .. " passkick: " .. tostring(wcm.get_horde_yelledKick()) .. " (c)ClosestToGoalDefend: " .. tostring(wcm.get_team_isClosestToGoalDefend()) .. " (k)ClosestToBall: " .. tostring(wcm.get_team_is_smallest_eta()) .. " (g)GoalieCloseEnough " .. tostring(wcm.get_horde_goalieCloseEnough()) .. " (s)Status " .. tostring(wcm.get_horde_status()) .. " (q)dummyTraining " .. tostring(wcm.get_horde_dummyTraining()) .. " (u)DoDeclared " .. tostring(wcm.get_horde_doDeclare()) .. " (l)ClosestBallX " .. tostring(wcm.get_team_closestToBallLoc()[1]) .. " (v)GoalDefendSign " .. tostring(wcm.get_horde_goalSign()) .. " (n)connected " .. tostring(wcm.get_team_connected()) .. " declared " .. tostring(wcm.get_horde_declared()) );
+   if(somethingPressed) then
+	os.execute('clear')
+	print("Yellfailed :".. wcm.get_horde_yelledFail() ..  "\ndetect ball: " .. vcm.get_ball_detect() ..  " ball dist:" .. wcm.get_ball_x().. " frontApproach: " .. tostring(wcm.get_horde_doneApproach()))
+	print("ready: " .. tostring(wcm.get_horde_yelledReady()) .. " passkick: " .. tostring(wcm.get_horde_yelledKick()) .. " (c)ClosestToGoalDefend: " .. tostring(wcm.get_team_isClosestToGoalDefend()) ) 
+	print(" (k)ClosestToBall: " .. tostring(wcm.get_team_is_smallest_eta()) .. "\n (g)GoalieCloseEnough " .. tostring(wcm.get_horde_goalieCloseEnough())) 
+	print(" (s)Status " .. tostring(wcm.get_horde_status()) .. " (q)dummyTraining " .. tostring(wcm.get_horde_dummyTraining()) )
+	print( " (u)DoDeclared " .. tostring(wcm.get_horde_doDeclare()) .. " (l)ClosestBallX " .. tostring(wcm.get_team_closestToBallLoc()[1]) .. " (v)GoalDefendSign " .. tostring(wcm.get_horde_goalSign()))
+	print( " (n)connected " .. tostring(wcm.get_team_connected()) .. " declared " .. tostring(wcm.get_horde_declared()) .. " role " .. wcm.get_horde_role());
+  	somethingPressed = false;
+  end	
  end

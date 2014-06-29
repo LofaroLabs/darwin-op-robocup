@@ -31,6 +31,8 @@ function mainMenuUpdate()
 			elseif scriptNumber == 4 then 
 				Speak.talk('Reset Darwin')
 				--elseif scriptNumber == 5 then Speak.talk('Nothing')
+			elseif(scriptNumber == 5) then
+				Speak.talk("I.D. menu")
 			else   scriptNumber = 0; -- May be able to remove this and change last elseif to else
 			end
 
@@ -43,7 +45,7 @@ function mainMenuUpdate()
 			leftCount = leftCount + 1;
 end
 function mainMenuExecute()
-			Speak.talk('Execute')
+			--Speak.talk('Execute')
 			print("Executing selected button script")
 			-- os.execute("sh middlebutton.sh ".. tostring(middleCount % 2))
 			middleCount = middleCount + 1;
@@ -64,11 +66,32 @@ function mainMenuExecute()
                                 Speak.talk('Reset Darwin')
 				os.execute("sleep 1");				
 				os.execute("echo 111111 | sudo -S reboot")
-                        elseif scriptNumber == 7 then Speak.talk('Nothing')
+                        
+			elseif scriptNumber == 5 then
+				Speak.talk("I.D. menu start")
+				MenuID = "id menu"
+				--file = io.open("kickOutput.txt", "w")
+				--file:write("KICK START\n");
+			elseif scriptNumber == 7 then Speak.talk('Nothing')
                         else   scriptNumber = 0; -- May be able to remove this and change last elseif to else
 
 			end
 
+end
+function idMenuUpdate()
+	if(scriptNumber < 6) then 
+		Speak.talk(tostring(scriptNumber-1))
+	elseif scriptNumber == 6 then
+		Speak.talk("main menu");
+	else
+		scriptNumber = 0;
+	end
+end
+function idMenuExecute()
+	file = io.open("/home/darwin/dev/merc/darwin/UPENN2013/Player/Config/playerNum.lua", "w")
+	file:write("playerID = ".. tostring((scriptNumber-1)) .. "\n");
+	file:close();
+	os.execute("/home/darwin/dev/merc/darwin/UPENN2013/Player/buttons.sh");
 end
 function visionMenuUpdate()
 	if scriptNumber == 1 then
@@ -85,9 +108,8 @@ end
 function visionMenuExecute()
 	if scriptNumber == 1 then
                 Speak.talk("calibration server");
-        	os.execute("kill $(ps aux | grep '[l]ua run_cognition.lua' | awk '{print $2}')")
                 killAll()
-		os.execute("echo 111111 | sudo -S sh scripts/startCalibration.sh")
+		os.execute("echo 111111 | sudo -S sh scripts/startCalibration.sh &")
 	elseif scriptNumber ==2 then
                 Speak.talk("restart camera and settings")
                 killAll();
@@ -114,9 +136,11 @@ function soccerMenuUpdate()
 	end
 end
 function killAll()
-	os.execute("kill $(ps aux | grep '[c]ognition' | awk '{print $2}')")
-	os.execute("kill $(ps aux | grep '[c]onnection' | awk '{print $2}')")
-	os.execute("kill $(ps aux | grep '[C]alibrationServer' | awk '{print $2}')")
+	os.execute("kill $(ps aux | grep '[k]itty' | awk '{print $2}')")
+	os.execute("kill $(ps aux | grep '[hH]orde' | awk '{print $2}')")
+	os.execute("kill $(ps aux | grep '[l]ua run_cognition.lua' | awk '{print $2}')")
+        os.execute("echo 111111| sudo -S kill $(ps aux | grep '[c]onnection' | awk '{print $2}')")
+	os.execute("echo 111111 | sudo -S kill $(ps aux | grep '[C]alibrationServer' | awk '{print $2}')")
 end
 function soccerMenuExecute()
 	if scriptNumber == 1 then
@@ -124,7 +148,7 @@ function soccerMenuExecute()
 		 killAll();
 		 print("just killed all")
 		 os.execute("sh noKillRunBasic.sh")
-		 unix.usleep(3*1E6)
+		 unix.usleep(7*1E6)
 		 print("ran cog")
                  os.execute("sh scripts/kittyMode.sh");     
 		 print("kitty mode running");         
@@ -167,28 +191,11 @@ function gameStateMenuUpdate()
 end
 
 function gameStateMenuExecute()
-
-	if scriptNumber == 1 then
-                Speak.talk('initial')
-		gcm.set_game_state(0);
-        elseif  scriptNumber == 2 then
-                Speak.talk('ready')
-		gcm.set_game_state(1);
-        elseif scriptNumber == 3 then
-                Speak.talk('set')
-		gcm.set_game_state(2);
-        elseif scriptNumber == 4 then
-                Speak.talk('play')
-		gcm.set_game_state(3);
-        elseif scriptNumber == 5 then
-		Speak.talk('finish')
-		gcm.set_game_state(4);
-	elseif scriptNumber == 6 then
-		Speak.talk('main menu')
-	else
-                scriptNumber = 0;
-        end
-
+	Speak.talk("penalty");
+	teamPenalty = gcm.get_game_penalty();
+	teamPenalty[Config.game.playerID] = 1 - teamPenalty[Config.game.playerID];
+	gcm.set_game_penalty(teamPenalty);
+	
 end
 MenuID = "main menu";		
 function update() 
@@ -206,15 +213,17 @@ function update()
 				visionMenuUpdate();
 			elseif(MenuID == "game state menu") then
 				gameStateMenuUpdate()
-
-			end	
+			elseif(MenuID == "id menu") then
+				idMenuUpdate();
+			end
+				
 			
 		end
 	
 	
 		if (Body.get_change_state() == 1) then
 			if(MenuID == "main menu") then
-				Speak.talk("middle pressed");
+				--Speak.talk("middle pressed");
 				mainMenuExecute();
 			elseif(MenuID == "soccer menu") then 
 				soccerMenuExecute();
@@ -222,6 +231,8 @@ function update()
 				visionMenuExecute();
 			elseif(MenuID == "game state menu") then
 				gameStateMenuExecute()
+			 elseif(MenuID == "id menu") then
+                                idMenuExecute();
 			end
 			
 			
@@ -240,10 +251,12 @@ scriptNumber = 0;	-- Default Mode
 Speak.talk('George Mason Awesome Robo Patriots')
 
 local tDelay = 0.005 * 1E6;
-gcm.set_game_state(0);
-
+--gcm.set_game_state(0);
+--Config.game.playerID = 900;
 while 1 do
-	print(tostring(gcm.get_game_state()))
+	--Config.game.playerID = 2;
+	print(Config.game.playerID);
+ 	print(tostring(gcm.get_game_state()))
 	update();
 	unix.usleep(tDelay);
 end

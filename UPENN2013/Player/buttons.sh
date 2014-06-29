@@ -1,4 +1,5 @@
 #!/bin/bash
+killall -9 lua
 GODIR=/home/darwin/dev/merc/darwin/UPENN2013/Player
 cd $GODIR
 #screen -dm -L -s /usr/bin/bash -S dcm  

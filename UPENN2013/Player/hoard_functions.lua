@@ -238,21 +238,23 @@ hordeFunctions["StartSending"] = function (args, client)
 end
 
 hordeFunctions["declare"] = function(args,client)
-        wcm.set_horde_doDeclare(1);
+        wcm.set_horde_doDeclare(args);
 end
 
 hordeFunctions["undeclare"] = function(args,client)
-        wcm.set_horde_doDeclare(0);
-        wcm.set_horde_declared(0); -- since  I was the one that made it true I have to make false
+        wcm.set_horde_doDeclare(vector.zeros(3));
+	--wcm.set_horde_doDeclare(0);
+        --wcm.set_horde_declared(0); -- since  I was the one that made it true I have to make false
 end
-
 
 hordeFunctions["kickLeft"] = function(args,client)
         BodyFSM.sm:set_state('bodyKickLeftGMU');
 end
+
 hordeFunctions["kickRight"] = function(args,client)
         BodyFSM.sm:set_state('bodyKickRightGMU');
 end
+
 hordeFunctions["gotoPose"] = function(args, client)
 	-- set the wcm values to the x,y,a from the args
 	print("The args for gotoPose: " .. tostring(args) .. "\n");

@@ -23,5 +23,5 @@ while 1 do
 	print("using different call, ball x, y, a is " .. wcm.get_ball_x() .. ", " .. wcm.get_ball_y())
 	print("Can See ball " .. vcm.get_ball_detect());
 	print("am i closest to goal post " .. tostring(wcm.get_team_isClosestToGoalDefend()))
-
+	print("player ID " .. tostring(Config.game.playerID))
 end

@@ -261,7 +261,7 @@ function update()
   --  if(receiveRelative[1]<0)then
 --	stepFactor = -1;
  --   end
-    if (math.abs(receiveRelative[3]) >.3) then
+    if (math.abs(receiveRelative[3]) >.15) then
     	if receiveRelative[2] > 0 then
       		print("turn left");
 		vStep[3]=0.2*stepFactor;
