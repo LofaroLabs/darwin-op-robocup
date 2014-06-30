@@ -353,13 +353,15 @@ function update()
 			else-- don't ignore him, he dclared, so note that somebody declared that role
 				if states[id].declared[myRole] == 1 then
 					setDebugTrue();		
-					print("ID " .. tostring(id) .. " declared");
+					print("ID " .. tostring(id) .. " declared the role " .. tostring(myRole));
 					somebodyDeclared[myRole] = 1;
 					setDebugFalse();
 				--wcm.set_horde_declared(1); -- somebody has declared
 					break;-- break out of inner loop, run again for next role
 				else
 					setDebugTrue();	
+					print("ID " .. tostring(id) .. " NOT  declared the role " .. tostring(myRole));
+					
 					print("id " .. tostring(id) .. "not declared" )
 					setDebugFalse();
 				end			
