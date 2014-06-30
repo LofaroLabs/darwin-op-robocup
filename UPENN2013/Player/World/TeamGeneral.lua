@@ -683,8 +683,11 @@ function update_teamdata()
 	teamPoseX[id] = states[id].pose.x;
 	teamPoseY[id] =  states[id].pose.y;
 	teamPoseA[id] =  states[id].pose.a;
-    elseif states[id] and states[id].yelledKick then
-      	 --print("Id = ".. id .. " yelledReady = " .. tostring(states[id].yelledReady))
+    end
+    if states[id] and states[id].yelledKick then
+      	setDebugTrue()
+	print("Id = ".. id .. " yelledReady = " .. tostring(states[id].yelledReady))
+	setDebugFalse()
 	teamYellKick[id] = states[id].yelledKick
 	teamPoseX[id] = states[id].pose.x;
 	teamPoseY[id] =  states[id].pose.y;
