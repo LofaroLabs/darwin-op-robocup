@@ -135,10 +135,22 @@ function sendFeatures (client)
         -- so send the features that say kiddie soccer
         features["connected"] = wcm.get_team_connected();
         features["goalieCloseEnough"] = wcm.get_horde_goalieCloseEnough();
-	features["poseX"] = wcm.get_team_teamPoseX();
-        features["poseY"] = wcm.get_team_teamPoseY();
-        features["poseA"] = wcm.get_team_teamPoseA();
-        features["allYelledReady"] = wcm.get_team_yelledReady(); 
+	if(wcm.get_horde_dummyTraining()==1) then
+		
+		features["poseX"] = wcm.get_team_teamPoseX();
+        	features["poseY"] = wcm.get_team_teamPoseY();
+        	features["poseA"] = wcm.get_team_teamPoseA();
+        	features["poseX"][Config.game.playerID] = wcm.get_horde_pose()[1]
+		features["poseY"][Config.game.playerID] = wcm.get_horde_pose()[2]
+		features["poseA"][Config.game.playerID] = wcm.get_horde_pose()[3]
+	
+	else
+		features["poseX"] = wcm.get_team_teamPoseX();
+        	features["poseY"] = wcm.get_team_teamPoseY();
+        	features["poseA"] = wcm.get_team_teamPoseA();
+		 
+	end
+	features["allYelledReady"] = wcm.get_team_yelledReady(); 
 	features["allYelledKick"] = wcm.get_team_yelledKick();
 	features["closestToBallLoc"] = wcm.get_team_closestToBallLoc();	
         features["ballDetect"] = vcm.get_ball_detect();

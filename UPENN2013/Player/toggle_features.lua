@@ -17,7 +17,7 @@ require('grip')
 Motion.entry();
 darwin = false;
 webots = false;
-
+goalDist = 0;
 -- Enable OP specific 
 if(Config.platform.name == 'OP') then
   darwin = true;
@@ -177,7 +177,9 @@ function process_keyinput()
 	role = (role+1)%5
    	wcm.set_horde_role(role); 	
     end
-
+    if(byte == string.byte('o')) then
+	goalDist = (goalDist +1) %3;
+     end
   end
 end
 
@@ -225,6 +227,26 @@ wcm.set_horde_dummyTraining(1);
 	--print("HEY THIS HAPPENED")
 	declared[3] = 1;
    end  
+   if(goalDist ==0) then
+   --let localization handle
+	vcm.set_vision_enable(1)
+   elseif(goalDist ==1) then
+	vcm.set_vision_enable(0);
+	myNewPose = {}
+	
+	myNewPose[1] = -1*1.6*wcm.get_horde_goalSign();
+	myNewPose[2] = 0;
+	myNewPose[3] = 0;
+wcm.set_horde_pose(myNewPose);	
+
+   elseif goalDist == 2 then
+	vcm.set_vision_enable(0);
+	myNewPose = {}
+        myNewPose[1] = -1*1.4*wcm.get_horde_goalSign();
+        myNewPose[2] = 0;
+        myNewPose[3] = 0;
+	wcm.set_horde_pose(myNewPose);
+   end
    wcm.set_horde_declared(declared);
    io.stdout:flush();
    if(somethingPressed) then
@@ -235,6 +257,7 @@ wcm.set_horde_dummyTraining(1);
 	print(" (s)Status " .. tostring(wcm.get_horde_status()) .. " (q)dummyTraining " .. tostring(wcm.get_horde_dummyTraining()) )
 	print( " (u)DoDeclared " .. tostring(wcm.get_horde_doDeclare()) .. " (l)ClosestBallX " .. tostring(wcm.get_team_closestToBallLoc()[1]) .. " (v)GoalDefendSign " .. tostring(wcm.get_horde_goalSign()))
 	print( " (n)connected " .. tostring(wcm.get_team_connected()) .. " declared " .. tostring(wcm.get_horde_declared()) .. " role " .. wcm.get_horde_role());
-  	somethingPressed = false;
+  	print("goal dist " .. tostring(wcm.get_pose().x))
+	somethingPressed = false;
   end	
  end

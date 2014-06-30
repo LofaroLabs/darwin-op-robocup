@@ -47,6 +47,7 @@ shared.ball.t_locked_on = vector.zeros(1);
 
 --connection 
 shared.horde = {};
+shared.horde.pose = vector.zeros(3)
 shared.horde.role = vector.zeros(1);
 shared.horde.dummyTraining = vector.zeros(1);
 shared.horde.moveParticlesToCenter = vector.zeros(1);
