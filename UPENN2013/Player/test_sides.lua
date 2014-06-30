@@ -24,5 +24,5 @@ while 1 do
 	print("Can See ball " .. vcm.get_ball_detect());
 	print("am i closest to goal post " .. tostring(wcm.get_team_isClosestToGoalDefend()))
 	print("player ID " .. tostring(Config.game.playerID))
-	print("team yelled kick " .. wcm.get_team_yelledKick());
+	print("team yelled kick " .. wcm.get_team_yelledKick()[1]);
 end

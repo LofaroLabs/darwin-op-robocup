@@ -216,6 +216,7 @@ function update()
   state.fall=wcm.get_robot_is_fall_down();
   state.bodyState = gcm.get_fsm_body_state();
   state.yelledReady = wcm.get_horde_yelledReady();
+  state.yelledKick = wcm.get_horde_yelledKick();
   state.status = wcm.get_horde_status();
   state.declared = wcm.get_horde_doDeclare();
   state.goalieCloseEnough = wcm.get_horde_goalCloseDist();
@@ -327,7 +328,7 @@ function update()
   shortestDefendID = 0;
   shortestAttackID = 0
 
-	setDebugTrue()
+	--setDebugTrue()
 
 	local numZero = 0
 	local numOne = 0
@@ -669,7 +670,13 @@ function update_teamdata()
   local teamYellKick = {}
 
   for id = 1, 5 do
-    
+     teamYellReady[id] = 0;
+     teamYellKick[id] = 0; 
+	-- not here so just put them at the center
+     teamPoseX[id] = 0;
+     teamPoseY[id] = 0;
+     teamPoseA[id] = 0;
+ 
     if states[id] and states[id].yelledReady then
       	 --print("Id = ".. id .. " yelledReady = " .. tostring(states[id].yelledReady))
 	teamYellReady[id] = states[id].yelledReady
@@ -682,16 +689,14 @@ function update_teamdata()
 	teamPoseX[id] = states[id].pose.x;
 	teamPoseY[id] =  states[id].pose.y;
 	teamPoseA[id] =  states[id].pose.a;
-    else
-	teamYellReady[id] = 0
-	 -- not here so just put them at the center
-	teamPoseX[id] = 0;
-	teamPoseY[id] = 0;
-	teamPoseA[id] = 0;
+   
     end
   end
   -- all the yelled ready people
   wcm.set_team_yelledReady(teamYellReady)
+  setDebugTrue()
+	print("team Yell kick is .. " .. tostring(teamYellKick));
+  setDebugFalse() 
   wcm.set_team_yelledKick(teamYellKick);
 
   wcm.set_team_teamPoseX(teamPoseX);
