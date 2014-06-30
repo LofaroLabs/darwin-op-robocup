@@ -352,13 +352,16 @@ function update()
 			-- ^^ ignore him...^^
 			else-- don't ignore him, he dclared, so note that somebody declared that role
 				if states[id].declared[myRole] == 1 then
+					setDebugTrue();		
 					print("ID " .. tostring(id) .. " declared");
 					somebodyDeclared[myRole] = 1;
+					setDebugFalse();
 				--wcm.set_horde_declared(1); -- somebody has declared
 					break;-- break out of inner loop, run again for next role
 				else
+					setDebugTrue();	
 					print("id " .. tostring(id) .. "not declared" )
-
+					setDebugFalse();
 				end			
 			end
 		end
@@ -676,7 +679,12 @@ function update_teamdata()
      teamPoseX[id] = 0;
      teamPoseY[id] = 0;
      teamPoseA[id] = 0;
- 
+    if(states[id]) then
+	setDebugTrue()
+	print("Id = ".. id .. " yelledReady = " .. tostring(states[id].yelledKick))
+	setDebugFalse()
+
+    end 
     if states[id] and states[id].yelledReady then
       	 --print("Id = ".. id .. " yelledReady = " .. tostring(states[id].yelledReady))
 	teamYellReady[id] = states[id].yelledReady
@@ -685,10 +693,7 @@ function update_teamdata()
 	teamPoseA[id] =  states[id].pose.a;
     end
     if states[id] and states[id].yelledKick then
-      	setDebugTrue()
-	print("Id = ".. id .. " yelledReady = " .. tostring(states[id].yelledReady))
-	setDebugFalse()
-	teamYellKick[id] = states[id].yelledKick
+      		teamYellKick[id] = states[id].yelledKick
 	teamPoseX[id] = states[id].pose.x;
 	teamPoseY[id] =  states[id].pose.y;
 	teamPoseA[id] =  states[id].pose.a;
