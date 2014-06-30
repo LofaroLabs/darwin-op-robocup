@@ -115,6 +115,7 @@ shared.team.supporter_pose = vector.zeros(3);
 shared.team.goalie_pose = vector.zeros(3);
 
 shared.team.yelledReady = vector.zeros(4);-- for each
+shared.team.yelledKick = vector.zeros(4);
 shared.team.closestToBallLoc = vector.zeros(3); -- global location of the ball as seen by the closest robot
 shared.team.isClosestToGoalDefend = vector.zeros(1); -- are you the closest to the defending goal 
 shared.team.isClosestToGoalOffend = vector.zeros(1); -- are you the closest to the goal you are attacking

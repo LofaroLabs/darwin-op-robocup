@@ -139,6 +139,7 @@ function sendFeatures (client)
         features["poseY"] = wcm.get_team_teamPoseY();
         features["poseA"] = wcm.get_team_teamPoseA();
         features["allYelledReady"] = wcm.get_team_yelledReady(); 
+	features["allYelledKick"] = wcm.get_team_yelledKick();
 	features["closestToBallLoc"] = wcm.get_team_closestToBallLoc();	
         features["ballDetect"] = vcm.get_ball_detect();
         features["ballX"] = wcm.get_ball_x();

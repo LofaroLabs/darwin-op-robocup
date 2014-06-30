@@ -666,11 +666,19 @@ function update_teamdata()
   local teamPoseY = {}
   local teamPoseA = {}
   local teamYellReady = {}
+  local teamYellKick = {}
+
   for id = 1, 5 do
     
     if states[id] and states[id].yelledReady then
       	 --print("Id = ".. id .. " yelledReady = " .. tostring(states[id].yelledReady))
 	teamYellReady[id] = states[id].yelledReady
+	teamPoseX[id] = states[id].pose.x;
+	teamPoseY[id] =  states[id].pose.y;
+	teamPoseA[id] =  states[id].pose.a;
+    elseif states[id] and states[id].yelledKick then
+      	 --print("Id = ".. id .. " yelledReady = " .. tostring(states[id].yelledReady))
+	teamYellKick[id] = states[id].yelledKick
 	teamPoseX[id] = states[id].pose.x;
 	teamPoseY[id] =  states[id].pose.y;
 	teamPoseA[id] =  states[id].pose.a;
@@ -684,6 +692,7 @@ function update_teamdata()
   end
   -- all the yelled ready people
   wcm.set_team_yelledReady(teamYellReady)
+  wcm.set_team_yelledKick(teamYellKick);
 
   wcm.set_team_teamPoseX(teamPoseX);
   wcm.set_team_teamPoseY(teamPoseY);
