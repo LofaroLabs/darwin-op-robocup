@@ -304,7 +304,7 @@ function update()
   --Now pack state name too
   state.body_state = gcm.get_fsm_body_state();
 
-  if (math.mod(count, 100) == 0) then --TODO: How often can we send team message?
+  if (math.mod(count, 10) == 0) then --TODO: How often can we send team message?
     msg=serialization.serialize(state);
     print("@!@!1 trying to send message now");
     sendStatus = Comm.send(msg, #msg);
