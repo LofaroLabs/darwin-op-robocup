@@ -242,7 +242,9 @@ hordeFunctions["declare"] = function(args,client)
 end
 
 hordeFunctions["undeclare"] = function(args,client)
+        
         wcm.set_horde_doDeclare(vector.zeros(3));
+        
 	--wcm.set_horde_doDeclare(0);
         --wcm.set_horde_declared(0); -- since  I was the one that made it true I have to make false
 end

@@ -217,6 +217,8 @@ wcm.set_horde_dummyTraining(1);
    if(insistBall) then
 	vcm.set_ball_detect(1);
    end
+   
+   
    declared = vector.zeros(3);
    --print("\n\n declared one is " .. declare
    if(declaredOne==0) then
@@ -227,6 +229,10 @@ wcm.set_horde_dummyTraining(1);
 	--print("HEY THIS HAPPENED")
 	declared[3] = 1;
    end  
+   
+   
+   
+   
    if(goalDist ==0) then
    --let localization handle
 	vcm.set_vision_enable(1)
@@ -247,7 +253,7 @@ wcm.set_horde_pose(myNewPose);
         myNewPose[3] = 0;
 	wcm.set_horde_pose(myNewPose);
    end
-   wcm.set_horde_declared(declared);
+   wcm.set_horde_doDeclare(declared);
    io.stdout:flush();
    if(somethingPressed) then
 	os.execute('clear')
