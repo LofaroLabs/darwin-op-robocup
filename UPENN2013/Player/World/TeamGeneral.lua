@@ -335,9 +335,9 @@ function update()
 	somebodyDeclared = {};
 	-- assume they're all true first?
 	--somebodyDeclared = wcm.get_horde_declared();
-	somebodyDeclared[1] = 1;
-	somebodyDeclared[2] = 1;
-	somebodyDeclared[3] = 1;
+	somebodyDeclared[1] = 0;
+	somebodyDeclared[2] = 0;
+	somebodyDeclared[3] = 0;
 	print("Going to check declared ++++++++++++++++++++++++");
 	for myRole = 1,3 do 
         	for id = 1,5 do
@@ -356,7 +356,7 @@ function update()
 				if states[id].declared[myRole] == 1 then
 					setDebugTrue();		
 					print("ID " .. tostring(id) .. " declared the role " .. tostring(myRole));
-					somebodyDeclared[myRole] = 1;
+					somebodyDeclared[myRole] = id;
 					setDebugFalse();
 				--wcm.set_horde_declared(1); -- somebody has declared
 					break;-- break out of inner loop, run again for next role
