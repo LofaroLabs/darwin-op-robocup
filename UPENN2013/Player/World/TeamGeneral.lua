@@ -333,7 +333,11 @@ function update()
 	local numZero = 0
 	local numOne = 0
 	somebodyDeclared = {};
-	somebodyDeclared = wcm.get_horde_declared();
+	-- assume they're all true first?
+	--somebodyDeclared = wcm.get_horde_declared();
+	somebodyDeclared[1] = 1;
+	somebodyDeclared[2] = 1;
+	somebodyDeclared[3] = 1;
 	print("Going to check declared ++++++++++++++++++++++++");
 	for myRole = 1,3 do 
         	for id = 1,5 do
@@ -367,6 +371,8 @@ function update()
 			end
 		end
 	end
+
+	--hey put a print here
 	wcm.set_horde_declared(somebodyDeclared);
 	-- zero is the default so originally everyon will be zero so 
 	print("Done checking declared -------------------------");

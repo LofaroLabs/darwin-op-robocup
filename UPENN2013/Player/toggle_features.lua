@@ -257,7 +257,7 @@ wcm.set_horde_pose(myNewPose);
 	print(" (s)Status " .. tostring(wcm.get_horde_status()) .. " (q)dummyTraining " .. tostring(wcm.get_horde_dummyTraining()) )
 	print( " (u)DoDeclared " .. tostring(wcm.get_horde_doDeclare()) .. " (l)ClosestBallX " .. tostring(wcm.get_team_closestToBallLoc()[1]) .. " (v)GoalDefendSign " .. tostring(wcm.get_horde_goalSign()))
 	print( " (n)connected " .. tostring(wcm.get_team_connected()) .. " declared " .. tostring(wcm.get_horde_declared()) .. " role " .. wcm.get_horde_role());
-  	print("goal dist " .. tostring(wcm.get_pose().x))
+  	print("goal dist " .. tostring(wcm.get_horde_pose()[1]))
 	somethingPressed = false;
   end	
  end
