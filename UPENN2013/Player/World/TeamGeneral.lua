@@ -332,6 +332,7 @@ function update()
 
 	local numZero = 0
 	local numOne = 0
+	somebodyDeclared = {};
 	somebodyDeclared = wcm.get_horde_declared();
 	print("Going to check declared ++++++++++++++++++++++++");
 	for myRole = 1,3 do 
@@ -356,7 +357,7 @@ function update()
 				--wcm.set_horde_declared(1); -- somebody has declared
 					break;-- break out of inner loop, run again for next role
 				else
-					somebodyDelcared[myRole] = 0;
+					somebodyDeclared[myRole] = 0;
 					setDebugTrue();	
 					print("ID " .. tostring(id) .. " NOT  declared the role " .. tostring(myRole));
 					
