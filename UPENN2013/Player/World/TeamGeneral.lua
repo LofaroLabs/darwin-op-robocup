@@ -304,7 +304,7 @@ function update()
   --Now pack state name too
   state.body_state = gcm.get_fsm_body_state();
 
-  if (math.mod(count, 1) == 0) then --TODO: How often can we send team message?
+  if (math.mod(count, 100) == 0) then --TODO: How often can we send team message?
     msg=serialization.serialize(state);
     print("@!@!1 trying to send message now");
     sendStatus = Comm.send(msg, #msg);
@@ -333,9 +333,11 @@ function update()
 	local numZero = 0
 	local numOne = 0
 	somebodyDeclared = {};
-	somebodyDeclared[1] = 0;
-	somebodyDeclared[2] = 0;
-	somebodyDeclared[3] = 0;
+	-- assume they're all true first?
+	--somebodyDeclared = wcm.get_horde_declared();
+	somebodyDeclared[1] = 1;
+	somebodyDeclared[2] = 1;
+	somebodyDeclared[3] = 1;
 	print("Going to check declared ++++++++++++++++++++++++");
 	for myRole = 1,3 do 
         	for id = 1,5 do
@@ -348,24 +350,29 @@ function update()
 				else
 					print("NOT GOOD should not get here")
 				end
-			
+				--somebodyDeclared[myRole] = 0;
 			-- ^^ ignore him...^^
 			else-- don't ignore him, he dclared, so note that somebody declared that role
 				if states[id].declared[myRole] == 1 then
 					setDebugTrue();		
-					print("ID " .. tostring(id) .. " declared");
+					print("ID " .. tostring(id) .. " declared the role " .. tostring(myRole));
 					somebodyDeclared[myRole] = 1;
 					setDebugFalse();
 				--wcm.set_horde_declared(1); -- somebody has declared
 					break;-- break out of inner loop, run again for next role
 				else
+					somebodyDeclared[myRole] = 0;
 					setDebugTrue();	
+					print("ID " .. tostring(id) .. " NOT  declared the role " .. tostring(myRole));
+					
 					print("id " .. tostring(id) .. "not declared" )
 					setDebugFalse();
 				end			
 			end
 		end
 	end
+
+	--hey put a print here
 	wcm.set_horde_declared(somebodyDeclared);
 	-- zero is the default so originally everyon will be zero so 
 	print("Done checking declared -------------------------");
