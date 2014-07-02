@@ -191,7 +191,7 @@ tUpdate = unix.time();
 function update()
    process_keyinput();
 end
-wcm.set_horde_dummyTraining(1);
+wcm.set_horde_dummyTraining(0);
   while (true) do
     -- update motion process
  --  unix.usleep(.5 * 1E6);
