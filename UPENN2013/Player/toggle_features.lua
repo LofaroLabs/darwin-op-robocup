@@ -218,7 +218,7 @@ wcm.set_horde_dummyTraining(1);
 	vcm.set_ball_detect(1);
    end
    
-   
+   if(wcm.get_horde_dummyTraining() == 1) then
    declared = vector.zeros(3);
    --print("\n\n declared one is " .. declare
    if(declaredOne==0) then
@@ -228,8 +228,8 @@ wcm.set_horde_dummyTraining(1);
    elseif(declaredOne == 2) then 
 	--print("HEY THIS HAPPENED")
 	declared[3] = 1;
-   end  
-   
+   end 
+   end
    
    
    
@@ -253,7 +253,9 @@ wcm.set_horde_pose(myNewPose);
         myNewPose[3] = 0;
 	wcm.set_horde_pose(myNewPose);
    end
-   wcm.set_horde_doDeclare(declared);
+   if wcm.get_horde_dummyTraining() == 1 then
+   	wcm.set_horde_doDeclare(declared);
+   end
    io.stdout:flush();
    if(somethingPressed) then
 	os.execute('clear')
