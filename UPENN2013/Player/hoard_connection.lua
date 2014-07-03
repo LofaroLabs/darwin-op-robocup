@@ -170,6 +170,12 @@ function sendFeatures (client)
 	features["isClosestToGoalOffend"] = wcm.get_team_isClosestToGoalOffend();
 	features["penaltyBounds"] = getPenaltyBounds()
 	features["declared"] = wcm.get_horde_declared()
+	inPlay = 0;
+	if(gcm.get_game_state()==3) then
+		inPlay = 1;
+		--features["inPlay"] = 1;
+	end
+	features["inPlay"] = inPlay;
 	if (wcm.get_horde_dummyTraining() == 0) then
 		getGoalSign();
 	end
