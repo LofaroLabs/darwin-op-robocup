@@ -109,13 +109,15 @@ function initialize_unified(p0,p1,dp)
   for i=1,n/2 do
     --print("all the things " .. i .. " was: " .. xp[i])
     --print("i+100: " .. xp[i+n/2])   
-    xp[i]=p0[1]+dp[1]*(math.random()-.5); 
-    yp[i]=p0[2]+dp[2]*(math.random()-.5);
-    ap[i]=p0[3]+dp[3]*(math.random()-.5);
-
-    xp[i+n/2]=p1[1]+dp[1]*(math.random()-.5);
-    yp[i+n/2]=p1[2]+dp[2]*(math.random()-.5);
-    ap[i+n/2]=p1[3]+dp[3]*(math.random()-.5);
+    if(Config.game.playerID % 2 == 0) then
+    	xp[i]=p0[1]+dp[1]*(math.random()-.5);
+    	yp[i]=p0[2]+dp[2]*(math.random()-.5);
+    	ap[i]=p0[3]+dp[3]*(math.random()-.5);
+    else
+        xp[i+n/2]=p1[1]+dp[1]*(math.random()-.5);
+        yp[i+n/2]=p1[2]+dp[2]*(math.random()-.5);
+        ap[i+n/2]=p1[3]+dp[3]*(math.random()-.5);
+    end
   end
   wp = vector.zeros(n);
 end
