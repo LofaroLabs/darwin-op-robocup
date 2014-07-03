@@ -48,8 +48,10 @@ initToggle = true;
 targetvel=vector.zeros(3);
 button_pressed = {0,0};
 
+globalBallToggle = 0;
+
 ballDistToggle = 0;
- insist = false;
+insist = false;
 insistBall = false;
 somethingPressed = false
 function process_keyinput()
@@ -124,11 +126,16 @@ function process_keyinput()
     end
     
     if byte==string.byte("l") then
-        if (wcm.get_team_closestToBallLoc()[1]==.1) then
+	globalBallToggle = (globalBallToggle +1) % 4;
+        if (globalBallToggle == 0) then
           	wcm.set_team_closestToBallLoc({-0.1,0,0});
-        else
+        elseif globalBallToggle == 1 then
         	wcm.set_team_closestToBallLoc({0.1,0,0});
-        end
+        elseif globalBallToggle == 2 then
+		wcm.set_team_closestToBallLoc({0.4,0,0});
+	elseif globalBallToggle == 3 then
+		wcm.set_team_closestToBallLoc({-0.4,0,0})
+	end
     end
 
 

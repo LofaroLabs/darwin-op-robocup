@@ -392,8 +392,10 @@ connectionThread = function ()
 				lastState = 3;
                 --print(line);
 		--lineAction = json.decode(line);
-                if(line~=nil and (action~=lastReceivedState or string.find(action,"update"))) then -- uf we received somethin:g
+                if(line~=nil and (action~=lastReceivedState or string.find(action,"update"))) then -- uf we received somethin:
+					setDebugTrue();
 					print("last Received was " .. tostring(lastReceivedState));
+					setDebugFalse();
 					updateAction(line, client);
 					i = 0
 					while i<100 do
