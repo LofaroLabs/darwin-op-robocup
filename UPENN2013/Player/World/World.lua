@@ -93,9 +93,9 @@ function init_penalty_particles()
 
 	local penaltyYLoc = wcm.get_teamdata_penaltyLocation()
 	if penaltyYLoc < 0 then
-		PoseFilter.initialize_penalty({0, penaltyYLoc, math.pi/2});
+		PoseFilter.initialize({0, penaltyYLoc, math.pi/2});
 	else
-		PoseFilter.initialize_penalty({0, penaltyYLoc, -math.pi/2});
+		PoseFilter.initialize({0, penaltyYLoc, -math.pi/2});
 	end
 
 
