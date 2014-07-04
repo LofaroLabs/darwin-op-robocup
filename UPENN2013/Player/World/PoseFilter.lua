@@ -93,15 +93,6 @@ function initialize_manual_placement(p0, dp)
 end
 
 
-function initialize_penalty(p0)
-	p0 = p0 or {0, -1, 0};
-	dp = {.15*xMax, .15*yMax, math.pi/6};
-	
-	xp[i]=p0[1]+dp[1]*(math.random()-.5);
-    yp[i]=p0[2]+dp[2]*(math.random()-.5);
-	ap[i]=p0[3]+dp[3]*(math.random()-.5);
-	
-end
 
 function initialize_unified(p0,p1,dp)
   --print("@@@i am reinitializing!!") 
