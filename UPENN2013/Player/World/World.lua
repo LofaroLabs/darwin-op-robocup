@@ -79,10 +79,15 @@ function init_particles()
   --Now we ALWAYS use the same colored goalposts
   --Init particles to our side
   goalDefend=get_goal_defend();
-  PoseFilter.initialize_unified(
-    vector.new({goalDefend[1]/2, -Config.world.yMax,  math.pi/2}),
-   vector.new({goalDefend[1]/2,  Config.world.yMax, -math.pi/2}));
-
+  
+  if gcm.get_team_player_id() % 2 == 0 then
+  	-- want a low spread so set the second arg manually
+    PoseFilter.initialize(vector.new({goalDefend[1]/2, -Config.world.yMax,  math.pi/2}), {.15*xMax, .15*yMax, math.pi/6})
+  else
+  	-- want a low spread so set the second arg manually
+  	PoseFilter.initialize(vector.new({goalDefend[1]/2,  Config.world.yMax, -math.pi/2}), {.15*xMax, .15*yMax, math.pi/6})
+  end
+  
   if (useSoundLocalization > 0) then
     SoundFilter.reset();
   end
@@ -93,9 +98,9 @@ function init_penalty_particles()
 
 	local penaltyYLoc = wcm.get_teamdata_penaltyLocation()
 	if penaltyYLoc < 0 then
-		PoseFilter.initialize({0, penaltyYLoc, math.pi/2});
+		PoseFilter.initialize(vector.new({0, penaltyYLoc, math.pi/2}), {.15*xMax, .15*yMax, math.pi/6});
 	else
-		PoseFilter.initialize({0, penaltyYLoc, -math.pi/2});
+		PoseFilter.initialize(vector.new({0, penaltyYLoc, -math.pi/2}), {.15*xMax, .15*yMax, math.pi/6});
 	end
 
 
