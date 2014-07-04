@@ -146,6 +146,7 @@ function soccerMenuExecute()
 	if scriptNumber == 1 then
 		 Speak.talk('Kitty Soccer Mode')
 		 killAll();
+                 os.execute("echo 111111 | sudo -S sh scripts/restartcam.sh")
 		 print("just killed all")
 		 os.execute("sh noKillRunBasic.sh")
 		 unix.usleep(7*1E6)
@@ -155,6 +156,8 @@ function soccerMenuExecute()
 	elseif  scriptNumber == 2 then
                 Speak.talk('horde soccer')
 		 killAll();
+                 os.execute("echo 111111 | sudo -S sh scripts/restartcam.sh")
+		 unix.usleep(2*1E6);
 		 os.execute("sh noKillRunBasic.sh")
                  os.execute("sh runhorde.sh");
         elseif scriptNumber == 3 then
