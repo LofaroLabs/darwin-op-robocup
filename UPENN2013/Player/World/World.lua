@@ -89,6 +89,19 @@ function init_particles()
   update_shm();
 end
 
+function init_penalty_particles()
+
+	local penaltyYLoc = wcm.get_teamdata_penaltyLocation()
+	if penaltyYLoc < 0 then
+		PoseFilter.initialize_penalty({0, penaltyYLoc, math.pi/2});
+	else
+		PoseFilter.initialize_penalty({0, penaltyYLoc, -math.pi/2});
+	end
+
+
+	update_shm();
+end
+
 function entry()
   count = 0;
   init_particles();
@@ -199,6 +212,14 @@ function update_vision()
   if(state==0) then -- if in initial
      init_particles();
   end
+  
+  local amPenalized = gcm.in_penalty()
+  --DREW added so that the bot will know where it is at when it is penalized.
+  if amPenalized == true then
+  	-- I should move my particles to penalty location
+  	init_penalty_particles();
+  end
+  
   -- only add noise while robot is moving
   if count % cResample == 0 then
     PoseFilter.resample();

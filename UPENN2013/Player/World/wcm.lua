@@ -226,6 +226,9 @@ if listen_monitor>0 then
   shared.teamdata.landmark=vector.zeros(10);
   shared.teamdata.landmarkv1=vector.zeros(10);
   shared.teamdata.landmarkv2=vector.zeros(10);
+  
+  
+  shared.teamdata.penaltyLocation = vector.zeros(1); -- y location
 
 --Team LabelB monitoring
 
