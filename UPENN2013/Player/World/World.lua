@@ -240,6 +240,13 @@ function update_vision()
   if (mcm.get_walk_isFallDown() == 1) then
     PoseFilter.reset_heading();--DAVID currently commented this out, trying to figure out why things are flipping, probably flipping particles 
   end
+  
+  -- if my ball global does not have the same sign as the goal sign then flip particles
+  if wcm.get_horde_goalieCertainBallOnMySide() == 1 and wcm.get_ballGlobal_x() / math.abs(wcm.get_ballGlobal_x()) ~= wcm.get_horde_goalSign() then
+  	PoseFilter.flip_particles(); -- then flip em
+  end
+  	
+  
 
   --Flip particles if a localization flip is detected and not corrected for
   if wcm.get_robot_flipped() == 1 then
