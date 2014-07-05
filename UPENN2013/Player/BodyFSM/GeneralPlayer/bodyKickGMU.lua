@@ -47,11 +47,12 @@ function update()
       local t = Body.get_time();
       print("am updating kick")
       if(ball.y>0) then
-      	kick.set_kick("kickForwardLeft");
-      	Motion.event("kick");
+	walk.doWalkKickLeft();
+	--walk.doSideKickLeft();       
       else
-        kick.set_kick("kickForwardRight");
-        Motion.event("kick");
+        walk.doWalkKickRight();
+	  --walk.doSideKickRight();
+      
       end
       --[[kick.set_kick("kickSideLeft");
       Motion.event("kick");

@@ -20,7 +20,7 @@ walk.velDelta={0.02,0.02,0.15}
 -- Stance parameters
 ---------------------------------------------
 walk.bodyHeight = 0.295; 
-walk.bodyTilt=20*math.pi/180; -- orig=20, 30 seems to be too much {spa}
+walk.bodyTilt=27*math.pi/180; -- orig=20, 30 seems to be too much {spa}
 walk.footX= -0.020; 
 walk.footY = 0.035;
 walk.supportX = 0;
@@ -544,7 +544,7 @@ walk.walkKickSupportMod = {{0,0},{0,0}}
 zmpstep = {};
 
 zmpstep.bodyHeight = 0.295; 
-zmpstep.bodyTilt = 20*math.pi/180;
+zmpstep.bodyTilt = 27*math.pi/180;-- modified this too, origional was 20
 zmpstep.tZmp = 0.165;
 
 zmpstep.stepHeight = 0.035;

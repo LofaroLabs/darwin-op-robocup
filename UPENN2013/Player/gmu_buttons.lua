@@ -127,9 +127,11 @@ function soccerMenuUpdate()
 		Speak.talk('kitty soccer')
 	elseif  scriptNumber == 2 then
 		Speak.talk('horde soccer')
-	elseif scriptNumber == 3 then
-		Speak.talk('game state menu')
+	elseif scriptNumber == 3 then 
+		Speak.talk("goalie soccer")
 	elseif scriptNumber == 4 then
+		Speak.talk('game state menu')
+	elseif scriptNumber == 5 then
 		Speak.talk('main menu')
 	else
 		scriptNumber = 0;
@@ -160,11 +162,15 @@ function soccerMenuExecute()
 		 unix.usleep(2*1E6);
 		 os.execute("sh noKillRunBasic.sh")
                  os.execute("sh runhorde.sh");
-        elseif scriptNumber == 3 then
+        elseif scriptNumber == 3 then 
+		Speak.talk('imma goalie');
+		os.execute("sh noKillRunBasic.sh");
+		os.execute("lua goalieHFA.lua")
+	elseif scriptNumber == 4 then
                 Speak.talk('game state menu')
 		MenuID = "game state menu"
 		scriptNumber = 0;
-        elseif scriptNumber == 4 then
+        elseif scriptNumber == 5 then
                 Speak.talk('main menu')
 		MenuID = 'main menu'
         else

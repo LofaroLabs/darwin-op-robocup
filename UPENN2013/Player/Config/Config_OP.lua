@@ -44,8 +44,8 @@ game.teamNumber = 16;   --17 at RC12  --16 for GMU robots
 --Default role: 0 for goalie, 1 for attacker, 2 for defender
 ball_shift={0,0};
 require('playerNum')
-require('playerRole')
 game.playerID = playerID;
+require('playerRole')
 game.role = playerRole; 
 
 if (robotName=='lucy') then
