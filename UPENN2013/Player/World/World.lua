@@ -82,13 +82,14 @@ function init_particles()
   --Now we ALWAYS use the same colored goalposts
   --Init particles to our side
   goalDefend=get_goal_defend();
+  local goalDefendSign = goalDefend[1] / math.abs(goalDefend[1]);
   
   if gcm.get_team_player_id() % 2 == 0 then
   	-- want a low spread so set the second arg manually
-    PoseFilter.initializeUniform(vector.new({goalDefend[1]/2, -Config.world.yMax,  math.pi/2}), vector.new({.15*xMax, .15*yMax, math.pi/6}))
+    PoseFilter.initializeUniform(vector.new({goalDefend[1]/2, -1 * goalDefendSign * Config.world.yMax,  math.pi/2}), vector.new({.15*xMax, .15*yMax, math.pi/6}))
   else
   	-- want a low spread so set the second arg manually
-  	PoseFilter.initializeUniform(vector.new({goalDefend[1]/2,  Config.world.yMax, -math.pi/2}), vector.new({.15*xMax, .15*yMax, math.pi/6}))
+  	PoseFilter.initializeUniform(vector.new({goalDefend[1]/2,  goalDefendSign * Config.world.yMax, -math.pi/2}), vector.new({.15*xMax, .15*yMax, math.pi/6}))
   end
   
   if (useSoundLocalization > 0) then
