@@ -105,6 +105,8 @@ function update_box()
   if imageProcessed then
     nProcessedImages = nProcessedImages + 1;
     World.update_vision();
+  elseif gcm.get_game_state() == 0 then
+    World.init_particles();
   end
  
   if not comm_inited and 
