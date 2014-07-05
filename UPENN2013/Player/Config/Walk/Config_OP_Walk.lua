@@ -20,7 +20,7 @@ walk.velDelta={0.02,0.02,0.15}
 -- Stance parameters
 ---------------------------------------------
 walk.bodyHeight = 0.295; 
-walk.bodyTilt=27*math.pi/180; -- orig=20, 30 seems to be too much {spa}
+walk.bodyTilt=23*math.pi/180; -- orig=20, 30 seems to be too much {spa}
 walk.footX= -0.020; 
 walk.footY = 0.035;
 walk.supportX = 0;
@@ -223,8 +223,11 @@ local robotID = 0;
 --Load robot specific calibration value
 require('calibration');
 if calibration.cal and calibration.cal[robotName] then
+  walk.supportCompL = calibration.cal[robotName].supportCompL; -- added by david
+  walk.supportCompR = calibration.cal[robotName].supportCompR; -- added by David
   walk.servoBias = calibration.cal[robotName].servoBias;
   walk.footXComp = calibration.cal[robotName].footXComp;
+  walk.footYComp = calibration.cal[robotName].footYComp; -- added by david
   walk.kickXComp = calibration.cal[robotName].kickXComp;
   walk.kickYComp = calibration.cal[robotName].kickYComp;
   walk.headPitchBiasComp = calibration.cal[robotName].headPitchBiasComp;
@@ -544,7 +547,7 @@ walk.walkKickSupportMod = {{0,0},{0,0}}
 zmpstep = {};
 
 zmpstep.bodyHeight = 0.295; 
-zmpstep.bodyTilt = 27*math.pi/180;-- modified this too, origional was 20
+zmpstep.bodyTilt = 23*math.pi/180;-- modified this too, origional was 20
 zmpstep.tZmp = 0.165;
 
 zmpstep.stepHeight = 0.035;
