@@ -235,6 +235,11 @@ function update()
   state.ballRelative = util.pose_relative({wcm.get_ballGlobal_x(), wcm.get_ballGlobal_y(), 0}, {state.pose.x, state.pose.y, state.pose.a});
   state.ballRelative[3] = 0;
   
+  -- if i am the goalie then set whether we think the ball is on my side.
+  if playerID == GOALIE_ID then
+  	state.goalieCertainBallOnMySide = wcm.get_horde_goalieCertainBallOnMySide();
+  end
+  
   
    
   print("yelledReady = " .. tostring(state.yelledReady))
@@ -397,6 +402,7 @@ function update()
 		for index=1,5 do -- so find the goalie and set my penaltyLocation. -- might not need to loop.
 			if states[index] and states[index].id == GOALIE_ID then
 				wcm.set_teamdata_penaltyLocation(states[index].penaltyLocation);
+				wcm.set_horde_goalieCertainBallOnMySide(states[index].goalieCertainBallOnMySide);
 				break;
 			end
 

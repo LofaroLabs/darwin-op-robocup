@@ -30,6 +30,9 @@ else
   require('Velocity');	
 end
 
+xMax = Config.world.xMax;
+yMax = Config.world.yMax;
+
 --Use ground truth pose and ball information for webots?
 use_gps_only = Config.use_gps_only or 0;
 gps_enable = Body.gps_enable or 0;

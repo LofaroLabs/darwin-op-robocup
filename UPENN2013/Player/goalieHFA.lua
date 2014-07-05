@@ -559,13 +559,23 @@ GoalieHFA = makeHFA("GoalieHFA", makeTransition({
 
 wcm.set_horde_ballLost(1)
 lastTimeFound = Body.get_time();
+lastTimeLost = Body.get_time(); -- initially assume lost
 function isBallLost()
 	--print("got into ball lost")
 	if vcm.get_ball_detect() ~= 0 then
 		wcm.set_horde_ballLost(0);
 		lastTimeFound = Body.get_time();
+		local ballGlobalXSign = wcm.get_ballGlobal_x() / math.abs(wcm.get_ballGlobal_x());
+		local goalSign = wcm.get_horde_goalSign();
+		if lastTimeFound - lastTimeLost >= 5 and ballGlobalXSign == goalSign then
+			wcm.set_horde_goalieCertainBallOnMySide(1);
+		else
+			wcm.set_horde_goalieCertainBallOnMySide(0);
+		end
 	elseif(Body.get_time() - lastTimeFound > 5) then
 		wcm.set_horde_ballLost(1);
+		lastTimeLost = Body.get_time()
+		wcm.set_horde_goalieCertainBallOnMySide(0);
 	end
 	--print("got out of ball lost");
 end
