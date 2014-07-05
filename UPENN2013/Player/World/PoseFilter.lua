@@ -81,6 +81,18 @@ function initialize(p0, dp)
   wp = vector.zeros(n);
 end
 
+
+function initializeUniform(p0, dp)
+  p0 = p0 or {0, 0, 0};
+  dp = dp or {.5*xMax, .5*yMax, 2*math.pi};
+
+  xp = p0[1]*vector.ones(n) + dp[1]*(vector.new(util.randu(n))-0.5*vector.ones(n));
+  yp = p0[2]*vector.ones(n) + dp[2]*(vector.new(util.randu(n))-0.5*vector.ones(n));
+  ap = p0[3]*vector.ones(n) + dp[3]*(vector.new(util.randu(n))-0.5*vector.ones(n));
+  wp = vector.zeros(n);
+end
+
+
 function initialize_manual_placement(p0, dp)
   p0 = p0 or {0, 0, 0};
   dp = dp or {.5*xLineBoundary, .5*yLineBoundary, 2*math.pi};
