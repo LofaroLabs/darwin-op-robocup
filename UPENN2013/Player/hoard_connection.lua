@@ -157,10 +157,10 @@ function sendFeatures (client)
         features["ballX"] = wcm.get_ball_x();
         features["ballY"] = wcm.get_ball_y();
         features["doneApproach"] = wcm.get_horde_doneApproach();
-        --[[features["particleX"] = wcm.get_particle_x();
+        features["particleX"] = wcm.get_particle_x();
         features["particleY"] = wcm.get_particle_y();
-		features["particleA"] = wcm.get_particle_a();
-	]]--print("gonna broadcast my features");
+	features["particleA"] = wcm.get_particle_a();
+	--print("gonna broadcast my features");
 	features["yelledReady"] = wcm.get_horde_yelledReady();
 	features["yelledKick"] = wcm.get_horde_yelledKick();
     	features["yelledFail"] = wcm.get_horde_yelledFail(); 
