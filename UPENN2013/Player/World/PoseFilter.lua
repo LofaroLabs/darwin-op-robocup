@@ -92,6 +92,8 @@ function initialize_manual_placement(p0, dp)
   wp = vector.zeros(n);
 end
 
+
+
 function initialize_unified(p0,p1,dp)
   --print("@@@i am reinitializing!!") 
   --Particle initialization for the same-colored goalpost

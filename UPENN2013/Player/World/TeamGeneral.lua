@@ -25,6 +25,7 @@ walkSpeed = Config.team.walkSpeed;
 turnSpeed = Config.team.turnSpeed;
 
 
+
 -- setting the distance as defined to be "close" for the goalie to the ball to be 1m
 wcm.set_horde_goalCloseDist(1)
 -- setting the distance that the other players need to be in order to set status to 1 or 3
@@ -55,6 +56,8 @@ ROLE_DEFENDER2 = 4;
 ROLE_CONFUSED = 5;
 ROLE_RESERVE_PLAYER = 6;
 ROLE_RESERVE_GOALIE = 7;
+
+GOALIE_ID = 4;
 
 count = 0;
 
@@ -92,6 +95,15 @@ state.tm_latency=0;
 
 --Body state 
 state.bodyState = gcm.get_fsm_body_state();
+
+--- SET THIS AT THE BEGINING OF THE MATCH TO SAY WHICH SIDE OF THE FIELD YOU will be placed for a penalty
+
+	-- need something for everyone we just don't want to have to change it on every robot just change on the Goalie
+	wcm.set_teamdata_penaltyLocation({1,-1});
+if playerID == GOALIE_ID then -- GOALIE
+	state.penaltyLocation = wcm.get_teamdata_penaltyLocation();
+end
+
 
 states = {};
 states[playerID] = state;
@@ -222,6 +234,13 @@ function update()
   state.goalieCloseEnough = wcm.get_horde_goalCloseDist();
   state.ballRelative = util.pose_relative({wcm.get_ballGlobal_x(), wcm.get_ballGlobal_y(), 0}, {state.pose.x, state.pose.y, state.pose.a});
   state.ballRelative[3] = 0;
+  
+  -- if i am the goalie then set whether we think the ball is on my side.
+  if playerID == GOALIE_ID then
+  	state.goalieCertainBallOnMySide = wcm.get_horde_goalieCertainBallOnMySide();
+  end
+  
+  
    
   print("yelledReady = " .. tostring(state.yelledReady))
 	isBallLost();
@@ -377,6 +396,18 @@ function update()
 	-- zero is the default so originally everyon will be zero so 
 	print("Done checking declared -------------------------");
  	setDebugFalse();
+ 	
+ 	-- need to set the penalty location
+ 	if playerID ~= GOALIE_ID then -- if I'm not the goalie then I need to update the penalty {x,y} location
+		for index=1,5 do -- so find the goalie and set my penaltyLocation. -- might not need to loop.
+			if states[index] and states[index].id == GOALIE_ID then
+				wcm.set_teamdata_penaltyLocation(states[index].penaltyLocation);
+				wcm.set_horde_goalieCertainBallOnMySide(states[index].goalieCertainBallOnMySide);
+				break;
+			end
+
+		end
+  	end
 
 
 

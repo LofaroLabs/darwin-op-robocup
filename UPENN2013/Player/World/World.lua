@@ -30,6 +30,9 @@ else
   require('Velocity');	
 end
 
+xMax = Config.world.xMax;
+yMax = Config.world.yMax;
+
 --Use ground truth pose and ball information for webots?
 use_gps_only = Config.use_gps_only or 0;
 gps_enable = Body.gps_enable or 0;
@@ -79,14 +82,32 @@ function init_particles()
   --Now we ALWAYS use the same colored goalposts
   --Init particles to our side
   goalDefend=get_goal_defend();
-  PoseFilter.initialize_unified(
-    vector.new({goalDefend[1]/2, -Config.world.yMax,  math.pi/2}),
-   vector.new({goalDefend[1]/2,  Config.world.yMax, -math.pi/2}));
-
+  
+  if gcm.get_team_player_id() % 2 == 0 then
+  	-- want a low spread so set the second arg manually
+    PoseFilter.initialize(vector.new({goalDefend[1]/2, -Config.world.yMax,  math.pi/2}), {.15*xMax, .15*yMax, math.pi/6})
+  else
+  	-- want a low spread so set the second arg manually
+  	PoseFilter.initialize(vector.new({goalDefend[1]/2,  Config.world.yMax, -math.pi/2}), {.15*xMax, .15*yMax, math.pi/6})
+  end
+  
   if (useSoundLocalization > 0) then
     SoundFilter.reset();
   end
   update_shm();
+end
+
+function init_penalty_particles()
+
+	local penaltyYLoc = wcm.get_teamdata_penaltyLocation()
+	if penaltyYLoc < 0 then
+		PoseFilter.initialize(vector.new({0, penaltyYLoc, math.pi/2}), {.15*xMax, .15*yMax, math.pi/6});
+	else
+		PoseFilter.initialize(vector.new({0, penaltyYLoc, -math.pi/2}), {.15*xMax, .15*yMax, math.pi/6});
+	end
+
+
+	update_shm();
 end
 
 function entry()
@@ -199,6 +220,14 @@ function update_vision()
   if(state==0) then -- if in initial
      init_particles();
   end
+  
+  local amPenalized = gcm.in_penalty()
+  --DREW added so that the bot will know where it is at when it is penalized.
+  if amPenalized == true then
+  	-- I should move my particles to penalty location
+  	init_penalty_particles();
+  end
+  
   -- only add noise while robot is moving
   if count % cResample == 0 then
     PoseFilter.resample();
@@ -211,6 +240,13 @@ function update_vision()
   if (mcm.get_walk_isFallDown() == 1) then
     PoseFilter.reset_heading();--DAVID currently commented this out, trying to figure out why things are flipping, probably flipping particles 
   end
+  
+  -- if my ball global does not have the same sign as the goal sign then flip particles
+  if wcm.get_horde_goalieCertainBallOnMySide() == 1 and wcm.get_ballGlobal_x() / math.abs(wcm.get_ballGlobal_x()) ~= wcm.get_horde_goalSign() then
+  	PoseFilter.flip_particles(); -- then flip em
+  end
+  	
+  
 
   --Flip particles if a localization flip is detected and not corrected for
   if wcm.get_robot_flipped() == 1 then
