@@ -117,18 +117,22 @@ function sendFeatures (client)
 		sendFeaturesTimer = Body.get_time();
 		print("wcm send status was true");
 		features = {}
-        features["playerID"] = Config.game.playerID;
-        if (wcm.get_horde_dummyTraining() == 0) then
+        if(wcm.get_horde_dummyTraining() == 1) then
+			features["playerID"] = wcm.get_horde_playerID();
+		else
+         features["playerID"] = Config.game.playerID;
+        end
+		if (wcm.get_horde_dummyTraining() == 0) then
 		setDebugTrue();
 		--print("SENDING config role");
 		setDebugFalse();
 		features["role"] = Config.game.role;
         else
-		setDebugTrue();
-		print("sending dummy role");
-		setDebugFalse();
-		features["role"] = wcm.get_horde_role();
-	end
+			setDebugTrue();
+			print("sending dummy role");
+			setDebugFalse();
+			features["role"] = wcm.get_horde_role();
+	    end
 
 
 	-- when I am disconnected from the team and I need to play kiddie soccer
@@ -365,7 +369,7 @@ connectionThread = function ()
 						BodyFSM.sm:set_state('bodyStop');
 						HeadFSM.sm:set_state('headIdle')
 						
-					elseif state == 1 and lastState ~= 1 then
+					elseif state == 1 and lastState ~= 1  and Config.game.role == 0 then -- only if you're goalie and in ready 
 						BodyFSM.sm:set_state('bodyReady') -- ready
 						BodyFSM.update();
 						BodyFSM.update();

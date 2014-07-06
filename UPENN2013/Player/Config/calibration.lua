@@ -7,6 +7,16 @@ cal={}
 
 --Initial values for each robots
 
+cal["darwin50"]={
+  servoBias={0,0,0,0,0,0, 0,0,0,0,0,0},
+  footXComp = 0,
+  footYComp = 0,
+  kickXComp = 0,
+  headPitchComp = 0,
+  armBias={0,0,0,0,0,0},
+  pid = 1,
+};
+
 cal["darwin54"]={
   servoBias={0,0,0,0,0,0, 0,0,0,0,0,0},
   footXComp = 0,
@@ -605,3 +615,13 @@ cal["darwin56"].kickXComp=0.000;
 cal["darwin54"].servoBias={-10,-20,50,0,-4,-18,-53,30,-55,0,-3,29,};
 cal["darwin54"].footXComp=0.000;
 cal["darwin54"].kickXComp=0.000;
+
+-- Updated date: Sat Jul  5 23:50:17 2014
+cal["darwin50"].servoBias={0,0,59,0,0,0,-58,0,59,0,0,0,};
+cal["darwin50"].footXComp=0.000;
+cal["darwin50"].kickXComp=0.000;
+
+-- Updated date: Sun Jul  6 00:27:57 2014
+cal["darwin50"].servoBias={59,0,59,0,0,0,0,0,-31,0,0,0,};
+cal["darwin50"].footXComp=0.000;
+cal["darwin50"].kickXComp=0.000;

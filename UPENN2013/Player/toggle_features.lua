@@ -187,6 +187,9 @@ function process_keyinput()
     if(byte == string.byte('o')) then
 	goalDist = (goalDist +1) %3;
      end
+	if(byte == string.byte('z')) then
+		wcm.set_horde_playerID((wcm.get_horde+playerID+1)%5)
+	end
   end
 end
 
@@ -273,6 +276,7 @@ wcm.set_horde_pose(myNewPose);
 	print( " (u)DoDeclared " .. tostring(wcm.get_horde_doDeclare()) .. " (l)ClosestBallX " .. tostring(wcm.get_team_closestToBallLoc()[1]) .. " (v)GoalDefendSign " .. tostring(wcm.get_horde_goalSign()))
 	print( " (n)connected " .. tostring(wcm.get_team_connected()) .. " declared " .. tostring(wcm.get_horde_declared()) .. " role " .. wcm.get_horde_role());
   	print("goal dist " .. tostring(wcm.get_horde_pose()[1]))
+	print("player ID " .. tostring(wcm.get_horde_playerID()));
 	somethingPressed = false;
   end	
  end
