@@ -120,7 +120,7 @@ function sendFeatures (client)
         features["playerID"] = Config.game.playerID;
         if (wcm.get_horde_dummyTraining() == 0) then
 		setDebugTrue();
-		print("SENDING config role");
+		--print("SENDING config role");
 		setDebugFalse();
 		features["role"] = Config.game.role;
         else
