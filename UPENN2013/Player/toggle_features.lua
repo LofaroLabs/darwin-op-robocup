@@ -188,7 +188,7 @@ function process_keyinput()
 	goalDist = (goalDist +1) %3;
      end
 	if(byte == string.byte('z')) then
-		wcm.set_horde_playerID((wcm.get_horde+playerID+1)%5)
+		wcm.set_horde_playerID((wcm.get_horde_playerID()+1)%5)
 	end
 	if(byte == string.byte('x')) then
 		wcm.set_horde_timeOut((wcm.get_horde_timeOut()+1)%2)

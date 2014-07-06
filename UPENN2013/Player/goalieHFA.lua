@@ -665,8 +665,10 @@ connectionThread = function ()
 			recval = client:receive()
 			-- convert the json to get the ackNumber
 			status, recJson = pcall(json.decode,recval);
-			if status == true then
+			if status == true and recval ~= nil then
                 status = string.sub(recval, 1, 1) == "{"
+			elseif recval == nil then
+				status = false;
             end
 
 			--print(tostring(recJson))
