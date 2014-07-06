@@ -120,7 +120,7 @@ function sendFeatures (client)
         if(wcm.get_horde_dummyTraining() == 1) then
 			features["playerID"] = wcm.get_horde_playerID();
 		else
-         features["playerID"] = Config.game.playerID;
+            features["playerID"] = Config.game.playerID;
         end
 		if (wcm.get_horde_dummyTraining() == 0) then
 		setDebugTrue();
@@ -280,7 +280,7 @@ function connectToHorde(port)
 end
 lastReceivedState = nil;
 connectionThread = function ()
-        print("got into con thread");
+   	print("got into con thread");
 	if( darwin ) then
                 local tDelay = 0.005 * 1E6; -- Loop every 5ms
 
@@ -293,7 +293,26 @@ connectionThread = function ()
 		print("connected")
   
         while connected do			
-                        --print("update all")
+             local state = gcm.get_game_state();
+    		 setDebugTrue();
+			if (state == 1 and lastState ~= 1) then 
+				print(" state 1 ")
+				timeReady = Body.get_time();
+				if(Config.game.role ~= 0) then 
+					lastState = 1;
+				end
+    		elseif(state ==1) then
+				print( "state 1, but last state was also 1");
+				if(Body.get_time()- timeReady > 30.0) then
+				wcm.set_horde_timeOut(1);
+				end
+			else	
+				print("reset to zero timer");
+				wcm.set_horde_timeOut(0);
+			end
+	setDebugFalse();
+
+			            --print("update all")
 			updateAllTimer = Body.get_time();
 			updateAll();--move mah body, update FSM
 			updateAllTimer = Body.get_time()-updateAllTimer;
@@ -349,7 +368,7 @@ connectionThread = function ()
 			--print("maybe? doing horde stuff, idk " .. wcm.get_horde_sendStatus() .. " " .. gcm.get_game_state() .. " " .. tostring(in_penalty()));
 		        if(line ~=nil and string.find(line, "StartSending")) then
 				updateAction(line, client)		
-			elseif (gcm.get_game_state() ~= 3 or in_penalty()) then
+			elseif ((gcm.get_game_state() ~= 3 and not (Config.game.role~=0 and gcm.get_game_state() == 1)) or in_penalty()) then
 				if(in_penalty()) then
 					wasJustInPenalty = true;
 				end
@@ -393,7 +412,23 @@ connectionThread = function ()
 					hoard_functions.hordeFunctions["position"](nil,nil); -- if we are not playing, do upenn positions
 				end
 			elseif not err then
-				lastState = 3;
+				if( lastState == 1 ) then
+						BodyFSM.sm:set_state('bodyReady') -- ready
+						BodyFSM.update();
+						BodyFSM.update();
+						BodyFSM.update();
+						BodyFSM.sm:set_state('bodyReadyMove') -- ready
+						HeadFSM.sm:set_state('headLookGoalGMU')
+				
+				 		i = 0
+						while i<100 do
+							updateAll();		
+							unix.usleep(.005 * 1E6);
+							i=i+1;
+						end	
+
+				end
+ 				lastState = 3;
                 --print(line);
 		--lineAction = json.decode(line);
                 if(line~=nil and (action~=lastReceivedState or string.find(action,"update"))) then -- uf we received somethin:

@@ -1,5 +1,5 @@
 module(... or '', package.seeall)
-
+setDebugFalse();
 -- Get Platform for package path
 cwd = '.';
 local platform = os.getenv('PLATFORM') or '';
@@ -273,7 +273,11 @@ connectionThread = function ()
 				isBallLost();
 				-- do this so we can garuntee that we send something over the socket
 				while wcm.get_horde_sentBehavior() == 0 do
-					pulse(kittyMachine)
+					setDebugTrue()
+					print(tostring(wcm.get_horde_timeOut()) .. " that's what timeout is ");
+					setDebugFalse();
+					pulse(kittyMachine);
+				
 				end
 				wcm.set_horde_sentBehavior(0);
 				print("cur rec number " .. tostring(wcm.get_horde_ackNumber()) .. "..........................................")
