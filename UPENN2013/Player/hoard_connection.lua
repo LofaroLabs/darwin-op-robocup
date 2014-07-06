@@ -377,9 +377,15 @@ connectionThread = function ()
 				if(in_penalty()) then
 					wasJustInPenalty = true;
 				end
+				setDebugTrue();
+				if(string.find(line,"gotoPose")) then
+					print("HEY THIS IS IMPORTANT");
+				end
 				if(line~=nil and not string.find(line, "update") and not err) then
+					print("setting last command to " .. tostring(line));
 					lastCommand = line
 				end
+				setDebugFalse();
 				--print("not doing horde stuff, that's for sure " .. wcm.get_horde_sendStatus() .. " " .. gcm.get_game_state() .. " " .. tostring(in_penalty()));
 				--print("not calling horde function");
 				local state = gcm.get_game_state();
