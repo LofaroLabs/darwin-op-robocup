@@ -374,6 +374,8 @@ connectionThread = function ()
 		        if(line ~=nil and string.find(line, "StartSending")) then
 				updateAction(line, client)		
 			elseif ((gcm.get_game_state() ~= 3 and not (Config.game.role~=0 and gcm.get_game_state() == 1)) or in_penalty()) then
+				
+				print("JUST DOING UPENN STUFF")
 				if(in_penalty()) then
 					wasJustInPenalty = true;
 				end
@@ -406,6 +408,10 @@ connectionThread = function ()
 						BodyFSM.update();
 						BodyFSM.sm:set_state('bodyReadyMove') -- ready
 						HeadFSM.sm:set_state('headLookGoalGMU')
+						i = Body.get_time();
+						while(Body.get_time - i < 7.2) do
+							updateAll();
+						end
 					elseif (state == 2 and lastState ~=2 ) then
     						BodyFSM.sm:set_state('bodyStop') --'set';
   						HeadFSM.sm:set_state('headTrack');
