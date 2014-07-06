@@ -24,6 +24,10 @@ function entry()
   print("yellin ready"); 
  wcm.set_horde_yelledReady(0);-- added this need to check.
  print("yelllED ready");
+ walk.start();
+  walk.set_velocity(0,0,0);
+  Motion.sm:add_event('walk');
+
 end
 
 function update()
