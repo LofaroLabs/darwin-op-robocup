@@ -378,7 +378,7 @@ connectionThread = function ()
 					wasJustInPenalty = true;
 				end
 				setDebugTrue();
-				if(string.find(line,"gotoPose")) then
+				if(string.find(tostring(line),"gotoPose")) then
 					print("HEY THIS IS IMPORTANT");
 				end
 				if(line~=nil and not string.find(line, "update") and not err) then
@@ -443,10 +443,13 @@ connectionThread = function ()
                 --print(line);
 		--lineAction = json.decode(line);
                 if(line~=nil and (action~=lastReceivedState or string.find(action,"update"))) then -- uf we received somethin:
-					setDebugTrue();
-					print("last ccommand sent (about to exewcute)" .. lastCommand);
-					setDebugFalse();
+		
 					if lastCommand ~= nil then
+						
+						setDebugTrue();
+						print("last ccommand sent (about to exewcute)" .. tostring(lastCommand));
+						setDebugFalse();
+
 						updateAction(lastCommand,client);
 						lastCommand = nil;
 						while i<100 do
