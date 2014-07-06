@@ -513,7 +513,9 @@ function updateAction(servData, client)
         --print("fuckshit\n")
 	print("unholywords\n");
 	unix.usleep(.04*1E6);
-	print("Received action "..req.action);
+	setDebugTrue()
+	print("MOST IMPORTANT: Received action "..req.action);
+	setDebugFalse()
 	--BodyFSM = require('BodyFSM');
 	hoard_functions.hordeFunctions[req.action](req.args, client)--this is wrong, only here for the send.... TODO
 	--print("after horde function");
