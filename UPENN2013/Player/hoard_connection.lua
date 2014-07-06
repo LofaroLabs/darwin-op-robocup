@@ -123,14 +123,14 @@ function sendFeatures (client)
             features["playerID"] = Config.game.playerID;
         end
 		if (wcm.get_horde_dummyTraining() == 0) then
-		setDebugTrue();
+		--setDebugTrue();
 		--print("SENDING config role");
 		setDebugFalse();
 		features["role"] = Config.game.role;
         else
-			setDebugTrue();
+			--setDebugTrue();
 			print("sending dummy role");
-			setDebugFalse();
+			--setDebugFalse();
 			features["role"] = wcm.get_horde_role();
 	    end
 
@@ -295,7 +295,7 @@ connectionThread = function ()
   
         while connected do			
              local state = gcm.get_game_state();
-    		 setDebugTrue();
+    		 --setDebugTrue();
 			if (state == 1 and lastState ~= 1) then 
 				print(" state 1 ")
 				timeReady = Body.get_time();
@@ -311,7 +311,7 @@ connectionThread = function ()
 				print("reset to zero timer");
 				wcm.set_horde_timeOut(0);
 			end
-	setDebugFalse();
+	--setDebugFalse();
 
 			            --print("update all")
 			updateAllTimer = Body.get_time();
