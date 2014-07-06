@@ -434,6 +434,19 @@ connectionThread = function ()
 		--lineAction = json.decode(line);
                 if(line~=nil and (action~=lastReceivedState or string.find(action,"update"))) then -- uf we received somethin:
 					setDebugTrue();
+					print("last ccommand sent (about to exewcute)" .. lastCommand);
+					setDebugFalse();
+					if lastCommand ~= nil then
+						updateAction(lastCommand,client);
+						lastCommand = nil;
+						while i<100 do
+							updateAll();		
+							unix.usleep(.005 * 1E6);
+							i=i+1;
+						end	
+					else
+
+					setDebugTrue();
 					print("last Received was " .. tostring(lastReceivedState));
 					setDebugFalse();
 					updateAction(line, client);
@@ -449,10 +462,6 @@ connectionThread = function ()
                 if err == "closed" then
                                connected = false;
                 end
-				if lastCommand ~= nil then
-					updateAction(lastCommand,client);
-					lastCommand = nil;
-				end
 			end    
             end
 			 unix.usleep(tDelay);
