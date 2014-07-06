@@ -154,6 +154,7 @@ function sendFeatures (client)
         	features["poseA"] = wcm.get_team_teamPoseA();
 		 
 	end
+	features["timedOut"] = wcm.get_horde_timeOut();
 	features["allYelledReady"] = wcm.get_team_yelledReady(); 
 	features["allYelledKick"] = wcm.get_team_yelledKick();
 	features["closestToBallLoc"] = wcm.get_team_closestToBallLoc();	
