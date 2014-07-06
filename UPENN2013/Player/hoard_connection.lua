@@ -444,7 +444,7 @@ connectionThread = function ()
 							unix.usleep(.005 * 1E6);
 							i=i+1;
 						end	
-					else
+					end
 
 					setDebugTrue();
 					print("last Received was " .. tostring(lastReceivedState));
