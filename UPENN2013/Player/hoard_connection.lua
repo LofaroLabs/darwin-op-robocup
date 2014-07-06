@@ -428,7 +428,7 @@ connectionThread = function ()
 						BodyFSM.update();
 						BodyFSM.update();
 						BodyFSM.update();
-						BodyFSM.sm:set_state('bodyReadyMove') -- ready
+						--BodyFSM.sm:set_state('bodyReadyMove') -- ready
 						HeadFSM.sm:set_state('headLookGoalGMU')
 				
 				 		i = 0
@@ -436,7 +436,8 @@ connectionThread = function ()
 							updateAll();		
 							unix.usleep(.005 * 1E6);
 							i=i+1;
-						end	
+						end
+						unix.usleep(.005*1E6);	
 
 				end
  				lastState = 3;

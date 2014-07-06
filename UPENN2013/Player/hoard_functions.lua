@@ -261,7 +261,9 @@ end
 
 hordeFunctions["gotoPose"] = function(args, client)
 	-- set the wcm values to the x,y,a from the args
+	setDebugTrue()
 	print("The args for gotoPose: " .. tostring(args) .. "\n");
+	setDebugFalse();
 	print("HI");
 	dest = args
 	print("Dest " .. dest.x);
