@@ -338,7 +338,11 @@ connectionThread = function ()
 				local err = req==nil;
 				action = req.action
 				action = string.sub(line, string.find(line, "action") or 0, #line);
-				print("Received: " .. tostring(line))
+				setDebugTrue();
+				if(line~=nil) then
+					print("Received: " .. tostring(line))
+				end
+				setDebugFalse();
 				if(req.ackNumber ==  ackNumber) then
 					ackNumber = ackNumber+1;
 					print("Sending Features!!!");
