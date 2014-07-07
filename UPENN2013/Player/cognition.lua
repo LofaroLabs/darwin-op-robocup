@@ -109,6 +109,12 @@ function update_box()
     World.init_particles();
   end
  
+ 	if imageProcessed == false then
+ 		setDebugTrue();
+ 		print("DNW image not processed! assume camera failure. kill and restart");
+ 		setDebugFalse(); 	
+ 	end 
+ 
   if not comm_inited and 
     (vcm.get_camera_broadcast()>0 or vcm.get_camera_teambroadcast()>0) then
       Config.dev.team = 'TeamBox'; --Force using Team box here 
