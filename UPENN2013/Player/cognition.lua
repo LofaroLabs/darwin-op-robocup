@@ -165,7 +165,9 @@ end
 function update()
   count = count + 1;
   tstart = unix.time();
-  
+  setDebugTrue();
+	print("DNW");
+	setDebugFalse();
   if Config.game.role == 0 then
   	setDebugTrue();
 	print("DNW am goalie so going to do updateGoalieFlip");
