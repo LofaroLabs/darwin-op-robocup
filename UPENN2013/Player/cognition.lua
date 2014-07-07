@@ -164,18 +164,6 @@ end
 
 
 
-
-function isBallLost()
-	--print("got into ball lost")
-	if vcm.get_ball_detect() ~= 0 then
-		wcm.set_horde_ballLost(0);
-		
-	elseif(Body.get_time() - lastTimeFound > 5) then
-		wcm.set_horde_ballLost(1);
-	end
-
-
-
 function update()
   count = count + 1;
   tstart = unix.time();
