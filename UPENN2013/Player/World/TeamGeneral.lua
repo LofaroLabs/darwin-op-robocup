@@ -378,7 +378,7 @@ function update()
 				lastTimeDeclaredReceived[myRole] = Body.get_time();
 				if states[id].declared[myRole] == 1 then
 					
-					setDebugTrue();		
+					--setDebugTrue();		
 					print("ID " .. tostring(id) .. " declared the role " .. tostring(myRole));
 					somebodyDeclared[myRole] = id;
 					setDebugFalse();
@@ -386,7 +386,7 @@ function update()
 					break;-- break out of inner loop, run again for next role
 				else
 					somebodyDeclared[myRole] = 0;
-					setDebugTrue();	
+					--setDebugTrue();	
 					print("ID " .. tostring(id) .. " NOT  declared the role " .. tostring(myRole));
 					
 					print("id " .. tostring(id) .. "not declared" )
@@ -751,7 +751,7 @@ function update_teamdata()
      teamPoseY[id] = 0;
      teamPoseA[id] = 0;
     if(states[id]) then
-	setDebugTrue()
+	--setDebugTrue()
 	print("Id = ".. id .. " yelledReady = " .. tostring(states[id].yelledKick))
 	setDebugFalse()
 
@@ -773,7 +773,7 @@ function update_teamdata()
   end
   -- all the yelled ready people
   wcm.set_team_yelledReady(teamYellReady)
-  setDebugTrue()
+  --setDebugTrue()
 	print("team Yell kick is .. " .. tostring(teamYellKick));
   setDebugFalse() 
   wcm.set_team_yelledKick(teamYellKick);
