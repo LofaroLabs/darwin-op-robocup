@@ -171,6 +171,8 @@ function update()
 	print("DNW am goalie so going to do updateGoalieFlip");
 	setDebugFalse();
 	updateGoalieFlip()
+  else
+  	print("DNW NOT Config " .. tostring(GOALIE.game.role));
   end
   
   -- update vision 
