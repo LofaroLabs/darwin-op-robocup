@@ -49,6 +49,13 @@ get_time = unix.time; --DLC specific
 function update()
 end
 
+function relaxServos()
+	for i=1,20 do
+		set_actuator_hardness(0, i);
+		set_actuator_hardnessChanged(1);
+	end
+end
+
 -- setup convience functions
 function get_head_position()
   local q = get_sensor_position();
