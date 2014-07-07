@@ -1,6 +1,7 @@
 module(... or '', package.seeall)
 --setDebugFalse();
 -- Get Platform for package path
+doneReadyBefore = false;
 cwd = '.';
 local platform = os.getenv('PLATFORM') or '';
 if (string.find(platform,'webots')) then cwd = cwd .. '/Player';
@@ -162,9 +163,9 @@ function sendFeatures (client)
         features["ballX"] = wcm.get_ball_x();
         features["ballY"] = wcm.get_ball_y();
         features["doneApproach"] = wcm.get_horde_doneApproach();
-        features["particleX"] = wcm.get_particle_x();
-        features["particleY"] = wcm.get_particle_y();
-	features["particleA"] = wcm.get_particle_a();
+        --features["particleX"] = wcm.get_particle_x();
+        --features["particleY"] = wcm.get_particle_y();
+	--features["particleA"] = wcm.get_particle_a();
 	--print("gonna broadcast my features");
 	features["yelledReady"] = wcm.get_horde_yelledReady();
 	features["yelledKick"] = wcm.get_horde_yelledKick();
@@ -349,11 +350,11 @@ connectionThread = function ()
 					sendFeatures(client);--send all the features to horde
 				else
 					print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!GOT A BAD ACK NUMBER - " .. ackNumber .. " ~=  " .. req.ackNumber .. "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-					if(req.ackNumber<ackNumber) then
-						print("maybe no big deal?");
-					else
+				--	if(req.ackNumber<ackNumber) then
+				--		print("maybe no big deal?");
+				--	else
 						return;
-					end
+				--	end
 				end
 				
 				
@@ -408,10 +409,6 @@ connectionThread = function ()
 						BodyFSM.update();
 						BodyFSM.sm:set_state('bodyReadyMove') -- ready
 						HeadFSM.sm:set_state('headLookGoalGMU')
-						i = Body.get_time();
-						while(Body.get_time - i < 7.2) do
-							updateAll();
-						end
 					elseif (state == 2 and lastState ~=2 ) then
     						BodyFSM.sm:set_state('bodyStop') --'set';
   						HeadFSM.sm:set_state('headTrack');
@@ -429,7 +426,10 @@ connectionThread = function ()
 					hoard_functions.hordeFunctions["position"](nil,nil); -- if we are not playing, do upenn positions
 				end
 			elseif not err then
-				if( lastState == 1 ) then
+				--local currentState = gcm.get_game_state();
+				state = gcm.get_game_state();
+				if( not doneReadyBefore) then
+						doneReadyBefore = true;
 						BodyFSM.sm:set_state('bodyReady') -- ready
 						BodyFSM.update();
 						BodyFSM.update();
@@ -437,7 +437,14 @@ connectionThread = function ()
 						--BodyFSM.sm:set_state('bodyReadyMove') -- ready
 						HeadFSM.sm:set_state('headLookGoalGMU')
 				
-				 		i = 0
+				 		i = Body.get_time();
+						while(Body.get_time() - i < 7.2) do
+							setDebugTrue()	
+							print("this print statment gets on EVERYBODY's NERVES everybody's nerves EVERYBODY's NERVES");
+							setDebugFalse();
+								updateAll();
+							end
+
 						while i<100 do
 							updateAll();		
 							unix.usleep(.005 * 1E6);
@@ -459,24 +466,35 @@ connectionThread = function ()
 
 						updateAction(lastCommand,client);
 						lastCommand = nil;
+						i=0;
 						while i<100 do
 							updateAll();		
 							unix.usleep(.005 * 1E6);
 							i=i+1;
 						end	
-					end
+						if(gcm.get_game_state() == 1) then
+							i = Body.get_time();
+							while(Body.get_time() - i < 7.2) do
+							setDebugTrue()	
+							print("this print statment gets on EVERYBODY's NERVES everybody's nerves EVERYBODY's NERVES");
+							setDebugFalse();
+								updateAll();
+							end
+						end
+					else
 
-					setDebugTrue();
-					print("last Received was " .. tostring(lastReceivedState));
-					setDebugFalse();
-					updateAction(line, client);
-					i = 0
-					while i<100 do
-						updateAll();		
-						unix.usleep(.005 * 1E6);
-						i=i+1;
-					end	
-					lastReceivedState = action;
+						setDebugTrue();
+						print("last Received was " .. tostring(lastReceivedState));
+						setDebugFalse();
+						updateAction(line, client);
+						i = 0
+						while i<100 do
+							updateAll();		
+							unix.usleep(.005 * 1E6);
+							i=i+1;
+						end	
+						lastReceivedState = action;
+					end
 				end
 				print("update success\n");
                 if err == "closed" then
@@ -521,9 +539,12 @@ function updateAction(servData, client)
 	unix.usleep(.04*1E6);
 	setDebugTrue()
 	print("MOST IMPORTANT: Received action "..req.action);
-	setDebugFalse()
+	
 	--BodyFSM = require('BodyFSM');
+	print("before action is... " .. tostring(BodyFSM.sm.get_current_state(BodyFSM.sm)._NAME))
 	hoard_functions.hordeFunctions[req.action](req.args, client)--this is wrong, only here for the send.... TODO
+	print("after action is... " .. tostring(BodyFSM.sm.get_current_state(BodyFSM.sm)._NAME))
+	setDebugTrue();
 	--print("after horde function");
 	--unix.usleep(1*1E6);	
 --updateAll

@@ -22,7 +22,7 @@ function entry()
   t0 = Body.get_time();
   alreadyDone = false;
   print("yellin ready"); 
- wcm.set_horde_yelledReady(0);-- added this need to check.
+ --wcm.set_horde_yelledReady(0);-- added this need to check.
  print("yelllED ready");
  walk.start();
   walk.set_velocity(0,0,0);
@@ -33,8 +33,10 @@ end
 function update()
   pose = wcm.get_pose();
   endPosition = wcm.get_horde_gotoPose();-- goto an arbitrary pose
+   setDebugFalse();
    print("I'm in update!!\n");
    print(endPosition);
+   setDebugTrue();
    -- centerPosition = {x,y,a} in global coordinates
    -- pose_relative will convert centerPosition to coordinates relative to the robot.
  
