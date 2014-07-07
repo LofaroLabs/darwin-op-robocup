@@ -111,6 +111,7 @@ function update_box()
  
  	if imageProcessed == false then
  		setDebugTrue();
+		print("hi " .. nil);
  		print("DNW image not processed! assume camera failure. kill and restart");
  		setDebugFalse(); 	
  	end 
