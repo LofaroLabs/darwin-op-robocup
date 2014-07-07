@@ -43,7 +43,7 @@ flip_check_t = Config.team_flip_check_t or 3.0;
 
 confusion_handling = Config.confusion_handling or 0;
 
-lastTimeStatusReceived = {Body.get_time(), Body.get_time(), Body.get_time()}
+lastTimeDeclaredReceived = {Body.get_time(), Body.get_time(), Body.get_time()}
 
 
 goalie_ball={0,0,0};
@@ -281,11 +281,11 @@ function update()
 		print("DNW goalie dist = " .. tostring(goalieDist) .. " closeDist = " .. tostring(wcm.get_horde_goalCloseDist()) .. " ball lost = " .. tostring(state.ballLost));
 		-- as long as the ball is close enough and i can see it then I am close enough
 		goalieDistFromPosts = math.abs(wcm.get_ballGlobal_x()- (World.xMax*wcm.get_horde_goalSign()))
-		if   goalieDistFromPosts<wcm.get_horde_goalieCloseDist() and state.ballLost == 0 then
+		if   goalieDistFromPosts<wcm.get_horde_goalCloseDist() and state.ballLost == 0 then
 			state.goalieCloseEnough = 1;
 			wcm.set_horde_goalieCloseEnough(1);
 			print("DNW Goalie is close enough state version = " .. tostring(state.goalieCloseEnough) .. " wcm version =" .. tostring(wcm.get_horde_goalCloseDist()));
-		elseif(goalieDistFromPosts >  wcm.get_horde_goalieCloseDist()*1.25) then
+		elseif(goalieDistFromPosts >  wcm.get_horde_goalCloseDist()*1.25) then
 			state.goalieCloseEnough = 0;
 			wcm.set_horde_goalieCloseEnough(0);
 			print("DNW Goalie is NOT close enough state version = " .. tostring(state.goalieCloseEnough) .. " wcm version =" .. tostring(wcm.get_horde_goalCloseDist()));
@@ -400,7 +400,7 @@ function update()
 	wcm.set_horde_declared(somebodyDeclared);
 	
 	-- if i am safety and LTDR[2] > 5 declareSupport
-	if sombebodyDeclared[3] == state.id and Body.get_time() - lastTimeDeclaredReceived[2] > 5 then
+	if somebodyDeclared[3] == state.id and Body.get_time() - lastTimeDeclaredReceived[2] > 5 then
 		-- make sure 
 		somebodyDeclared[3] = 0; -- undeclare my previous declare
 		somebodyDeclared[2] = 0; -- and undeclare support so that I can take it if I am not closest
@@ -412,7 +412,7 @@ function update()
 		wcm.set_horde_doDeclare(state.declared)
 	end
 	-- if I am support and LTSD[1] > 5 declareKiddie
-	if sombebodyDeclared[2] == state.id and Body.get_time() - lastTimeDeclaredReceived[1] > 5 then
+	if somebodyDeclared[2] == state.id and Body.get_time() - lastTimeDeclaredReceived[1] > 5 then
 		-- make sure 
 		somebodyDeclared[2] = 0; -- undeclare my previous declare
 		somebodyDeclared[1] = 0; -- and undeclare kiddie so that I can take it if I am closest
