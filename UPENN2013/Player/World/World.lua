@@ -77,24 +77,46 @@ yaw0 =0;
 
 --Track gcm state
 gameState = 0;
+function getGoalSign()
 
+        if gcm.get_team_color() == 1 then
+                -- red attacks cyan goali
+                print(" yellow ")
+                postDefend = PoseFilter.postYellow;
+        else
+                print("not yellow")
+                -- blue attack yellow goal
+                postDefend = PoseFilter.postCyan;
+        end
+
+        -- global
+        LPost = postDefend[1];
+
+        sign = LPost[1] / math.abs(LPost[1])
+        wcm.set_horde_goalSign(sign);
+        return sign
+end
 function init_particles()
   --Now we ALWAYS use the same colored goalposts
   --Init particles to our side
+  setDebugTrue();
   goalDefend=get_goal_defend();
-  local goalDefendSign = goalDefend[1] / math.abs(goalDefend[1]);
-  
+  local goalDefendSign = getGoalSign();
+ --print(goalDefend[1] 
+ -- print("goalDefend[1] is " .. goalDefend[1]);
+ -- print("goal defend sign is " .. goalDefendSign)
   if gcm.get_team_player_id() % 2 == 0 then
   	-- want a low spread so set the second arg manually
-    PoseFilter.initializeUniform(vector.new({goalDefend[1]/2,  goalDefendSign * Config.world.yMax,   -1 * goalDefendSign * math.pi/2}), vector.new({.15*xMax, .15*yMax, math.pi/6}))
+    PoseFilter.initializeUniform(vector.new({math.abs(goalDefend[1]/2)*goalDefendSign,  goalDefendSign * Config.world.yMax,   goalDefendSign * math.pi/2}), vector.new({.15*xMax, .15*yMax, math.pi/6}))
   else
   	-- want a low spread so set the second arg manually
-  	PoseFilter.initializeUniform(vector.new({goalDefend[1]/2,  -1 * goalDefendSign * Config.world.yMax, goalDefendSign * math.pi/2}), vector.new({.15*xMax, .15*yMax, math.pi/6}))
+  	PoseFilter.initializeUniform(vector.new({math.abs(goalDefend[1]/2)*goalDefendSign,  -1 * goalDefendSign * Config.world.yMax, goalDefendSign * math.pi/2}), vector.new({.15*xMax, .15*yMax, math.pi/6}))
   end
-  
+   
   if (useSoundLocalization > 0) then
     SoundFilter.reset();
   end
+  setDebugFalse();
   update_shm();
 end
 
@@ -220,6 +242,7 @@ function update_vision()
   local state = gcm.get_game_state();
   if(state==0) then -- if in initial
      init_particles();
+     return;
   end
   
   local amPenalized = gcm.in_penalty()
@@ -246,16 +269,19 @@ function update_vision()
   -- should also be pretty far from center on x axis
 setDebugTrue()
   print(tostring(wcm.get_horde_goalieCertainBallOnMySide()==1) .." ".. tostring(wcm.get_ballGlobal_x() / math.abs(wcm.get_ballGlobal_x()) ~= wcm.get_horde_goalSign() ) .. " " ..tostring(math.abs(wcm.get_ballGlobal_x()) > 1));
-if wcm.get_horde_goalieCertainBallOnMySide() == 1 and wcm.get_ballGlobal_x() / math.abs(wcm.get_ballGlobal_x()) ~= wcm.get_horde_goalSign() and math.abs(wcm.get_ballGlobal_x()) > 1 then
+  if wcm.get_horde_goalieCertainBallOnMySide() == 1 and wcm.get_ballGlobal_x() / math.abs(wcm.get_ballGlobal_x()) ~= wcm.get_horde_goalSign() and math.abs(wcm.get_ballGlobal_x()) > 1 then
   	print("HEY SOMETHING IS WRONG, FLIPPIN THOSE PARTICLES");
 	PoseFilter.flip_particles(); -- then flip em
   elseif wcm.get_robot_flipped() == 1 then
+    print("HEY FLIPPING PARTICLES CAUSE UPENN SAID SO");
     PoseFilter.flip_particles();
     wcm.set_robot_flipped(0);
   end
 -- if goalie thinks he's on offensive side, he's wrong. no way in hell
+--print("YOe ".. tostring(wcm.get_pose().x/math.abs(wcm.get_pose().x)) .. " " .. tostring(wcm.get_horde_goalSign() ))
+	
 if(Config.game.role == 0 and (wcm.get_pose().x/math.abs(wcm.get_pose().x))~= wcm.get_horde_goalSign()) then
-	print("YO, goalie was on wrong side")
+	print("YO, goalie was on wrong side ".. wcm.get_pose().x .. " " .. tostring(wcm.get_horde_goalSign() ))
 	PoseFilter.flip_particles()
 end
 setDebugFalse()
