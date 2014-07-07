@@ -144,7 +144,10 @@ lastTimeNotOnGoalieSide = 0;
 function updateGoalieFlip()
 	if vcm.get_ball_detect() ~= 0 then
 		lastTimeFound = Body.get_time();
-		
+		lastTimeFound = Body.get_time();
+ 		local ballGlobalXSign = wcm.get_ballGlobal_x() / math.abs(wcm.get_ballGlobal_x());
+  		local goalSign = wcm.get_horde_goalSign();
+  		
 		if  ballGlobalXSign == goalSign then
 			lastTimeFoundOnGoalieSide = Body.get_time();
 		else
