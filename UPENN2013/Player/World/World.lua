@@ -243,14 +243,10 @@ function update_vision()
   end
   
   -- if my ball global does not have the same sign as the goal sign then flip particles
-  if wcm.get_horde_goalieCertainBallOnMySide() == 1 and wcm.get_ballGlobal_x() / math.abs(wcm.get_ballGlobal_x()) ~= wcm.get_horde_goalSign() then
+  -- should also be pretty far from center on x axis
+  if wcm.get_horde_goalieCertainBallOnMySide() == 1 and wcm.get_ballGlobal_x() / math.abs(wcm.get_ballGlobal_x()) ~= wcm.get_horde_goalSign() and math.abs(wcm.get_ballGlobal_x()) > 1 then
   	PoseFilter.flip_particles(); -- then flip em
-  end
-  	
-  
-
-  --Flip particles if a localization flip is detected and not corrected for
-  if wcm.get_robot_flipped() == 1 then
+  elseif wcm.get_robot_flipped() == 1 then
     PoseFilter.flip_particles();
     wcm.set_robot_flipped(0);
   end
