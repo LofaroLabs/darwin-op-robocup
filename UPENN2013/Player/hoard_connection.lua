@@ -56,6 +56,7 @@ initToggle = true;
 updateAllTimer=0;
 sendFeaturesTimer =0;
 -- main loop
+wcm.set_horde_timeOut(0);
 count = 0;
 lcount = 0;
 ackNumber = 0;
@@ -281,6 +282,7 @@ function connectToHorde(port)
               	return client;
 end
 lastReceivedState = nil;
+lastStateForTime = 0
 connectionThread = function ()
    	print("got into con thread");
 	if( darwin ) then
@@ -296,14 +298,15 @@ connectionThread = function ()
   
         while connected do			
              local state = gcm.get_game_state();
-    		 --setDebugTrue();
-			if (state == 1 and lastState ~= 1) then 
+    		 setDebugTrue();
+			if (state == 1 and lastStateForTime ~= 1) then 
 				print(" state 1 ")
 				timeReady = Body.get_time();
 				if(Config.game.role ~= 0) then 
 					lastState = 1;
 				end
-    		elseif(state ==1) then
+    			wcm.set_horde_timeOut(0);
+			elseif(state ==1) then
 				print( "state 1, but last state was also 1");
 				if(Body.get_time()- timeReady > 30.0) then
 				wcm.set_horde_timeOut(1);
@@ -312,7 +315,8 @@ connectionThread = function ()
 				print("reset to zero timer");
 				wcm.set_horde_timeOut(0);
 			end
-	--setDebugFalse();
+			lastStateForTime = state;
+			setDebugFalse();
 
 			            --print("update all")
 			updateAllTimer = Body.get_time();
