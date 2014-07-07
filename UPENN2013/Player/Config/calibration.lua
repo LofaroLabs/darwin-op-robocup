@@ -16,7 +16,15 @@ cal["darwin50"]={
   armBias={0,0,0,0,0,0},
   pid = 1,
 };
-
+cal["darwin57"]={
+  servoBias={0,0,0,0,0,0, 0,0,0,0,0,0},
+  footXComp = 0,
+  footYComp = 0,
+  kickXComp = 0,
+  headPitchComp = 0,
+  armBias={0,0,0,0,0,0},
+  pid = 1,
+};
 cal["darwin54"]={
   servoBias={0,0,0,0,0,0, 0,0,0,0,0,0},
   footXComp = 0,
@@ -625,3 +633,8 @@ cal["darwin50"].kickXComp=0.000;
 cal["darwin50"].servoBias={59,0,59,0,0,0,0,0,-31,0,0,0,};
 cal["darwin50"].footXComp=0.000;
 cal["darwin50"].kickXComp=0.000;
+
+-- Updated date: Sun Jul  6 22:38:39 2014
+cal["darwin57"].servoBias={0,-4,-20,0,0,0,0,0,0,0,0,0,};
+cal["darwin57"].footXComp=0.000;
+cal["darwin57"].kickXComp=0.000;
