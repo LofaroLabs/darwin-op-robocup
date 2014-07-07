@@ -49,17 +49,6 @@ get_time = unix.time; --DLC specific
 function update()
 end
 
-function relaxServos()
-
-	set_body_hardness(0)
-	set_head_hardness(0)
-	set_larm_hardness(0)
-	set_rarm_hardness(0)
-	set_lleg_hardness(0)
-	set_rleg_hardness(0)
-	
-end
-
 -- setup convience functions
 function get_head_position()
   local q = get_sensor_position();
