@@ -172,7 +172,9 @@ function update()
 	setDebugFalse();
 	updateGoalieFlip()
   else
+  	setDebugTrue();
   	print("DNW NOT Config " .. tostring(GOALIE.game.role));
+  	setDebugFalse();
   end
   
   -- update vision 
