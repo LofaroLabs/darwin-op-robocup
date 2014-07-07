@@ -136,9 +136,54 @@ function update_box()
   end
 end
 
+
+lastTimeFound = Body.get_time();
+lastTimeFoundOnGoalieSide = Body.get_time();
+lastTimeNotOnGoalieSide = 0;
+-- if I have seen the ball on my side for >3s then I will say ball certain on my side
+function updateGoalieFlip()
+	if vcm.get_ball_detect() ~= 0 then
+		lastTimeFound = Body.get_time();
+		
+		if  ballGlobalXSign == goalSign then
+			lastTimeFoundOnGoalieSide = Body.get_time();
+		else
+			lastTimeNotOnGoalieSide = Body.get_time();
+		end
+		
+		if lastTimeFoundOnGoalieSide - lastTimeNotOnGoalieSide >= 3 then
+			wcm.set_horde_goalieCertainBallOnMySide(1);
+		else
+			wcm.set_horde_goalieCertainBallOnMySide(0);
+		end
+		
+	elseif(Body.get_time() - lastTimeFound > 5) then
+		lastTimeNotOnGoalieSide = Body.get_time();
+	end
+end
+
+
+
+
+function isBallLost()
+	--print("got into ball lost")
+	if vcm.get_ball_detect() ~= 0 then
+		wcm.set_horde_ballLost(0);
+		
+	elseif(Body.get_time() - lastTimeFound > 5) then
+		wcm.set_horde_ballLost(1);
+	end
+
+
+
 function update()
   count = count + 1;
   tstart = unix.time();
+  
+  if Config.game.role == 0 then
+  	updateGoalieFlip()
+  end
+  
   -- update vision 
   imageProcessed = Vision.update();
 
