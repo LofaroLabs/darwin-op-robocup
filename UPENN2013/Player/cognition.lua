@@ -167,16 +167,8 @@ function update()
   tstart = unix.time();
   
   if Config.game.role == 0 then
-  	setDebugTrue();
-	print("DNW am goalie so going to do updateGoalieFlip" .. nil);
-	setDebugFalse();
 	updateGoalieFlip()
-  else
-  	setDebugTrue();
-  	print("DNW NOT Config " .. tostring(GOALIE.game.role) .. nil);
-  	setDebugFalse();
   end
-  print("HJI" .. nil)
   
   -- update vision 
   imageProcessed = Vision.update();
