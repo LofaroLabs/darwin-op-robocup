@@ -43,6 +43,8 @@ flip_check_t = Config.team_flip_check_t or 3.0;
 
 confusion_handling = Config.confusion_handling or 0;
 
+lastTimeStatusReceived = {Body.get_time(), Body.get_time(), Body.get_time()}
+
 
 goalie_ball={0,0,0};
 
@@ -372,7 +374,9 @@ function update()
 				--somebodyDeclared[myRole] = 0;
 			-- ^^ ignore him...^^
 			else-- don't ignore him, he dclared, so note that somebody declared that role
+				lastTimeDeclaredReceived[myRole] = Body.get_time();
 				if states[id].declared[myRole] == 1 then
+					
 					setDebugTrue();		
 					print("ID " .. tostring(id) .. " declared the role " .. tostring(myRole));
 					somebodyDeclared[myRole] = id;
@@ -390,9 +394,37 @@ function update()
 			end
 		end
 	end
+	
 
-	--hey put a print here
 	wcm.set_horde_declared(somebodyDeclared);
+	
+	-- if i am safety and LTDR[2] > 5 declareSupport
+	if sombebodyDeclared[3] == state.id and Body.get_time() - lastTimeDeclaredReceived[2] > 5 then
+		-- make sure 
+		somebodyDeclared[3] = 0; -- undeclare my previous declare
+		somebodyDeclared[2] = 0; -- and undeclare support so that I can take it if I am not closest
+		wcm.set_horde_declared(somebodyDeclared);
+		
+		-- make sure he has set that he is doing it
+		state.declared[3] = 0
+		state.declared[2] = 0
+		wcm.set_horde_doDeclare(state.declared)
+	end
+	-- if I am support and LTSD[1] > 5 declareKiddie
+	if sombebodyDeclared[2] == state.id and Body.get_time() - lastTimeDeclaredReceived[1] > 5 then
+		-- make sure 
+		somebodyDeclared[2] = 0; -- undeclare my previous declare
+		somebodyDeclared[1] = 0; -- and undeclare kiddie so that I can take it if I am closest
+		wcm.set_horde_declared(somebodyDeclared);
+		
+		-- make sure he has set that he is doing it
+		state.declared[2] = 0
+		state.declared[1] = 0
+		wcm.set_horde_doDeclare(state.declared)
+	end
+	
+
+	
 	-- zero is the default so originally everyon will be zero so 
 	print("Done checking declared -------------------------");
  	setDebugFalse();
