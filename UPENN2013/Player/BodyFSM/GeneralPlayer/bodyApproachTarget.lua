@@ -250,6 +250,9 @@ function update()
     pose = wcm.get_pose();
     print("grabbed pose from wcm");
     receiveRelative = util.pose_relative(wcm.get_horde_kickToPose(), {pose.x, pose.y, pose.a});
+    --setDebugTrue()
+    print("kick to " .. vector.tostring(wcm.get_horde_kickToPose()));
+    setDebugFalse();
     receiveRelative[3] = math.atan2(receiveRelative[2], receiveRelative[1]);
     --receiveRelative = util.pose_relative(wcm.get_goal_attack(), {pose.x, pose.y, pose.a});
 

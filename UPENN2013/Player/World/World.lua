@@ -244,12 +244,19 @@ function update_vision()
   
   -- if my ball global does not have the same sign as the goal sign then flip particles
   -- should also be pretty far from center on x axis
-  if wcm.get_horde_goalieCertainBallOnMySide() == 1 and wcm.get_ballGlobal_x() / math.abs(wcm.get_ballGlobal_x()) ~= wcm.get_horde_goalSign() and math.abs(wcm.get_ballGlobal_x()) > 1 then
-  	PoseFilter.flip_particles(); -- then flip em
+
+  print(tostring(wcm.get_horde_goalieCertainBallOnMySide()) .. tostring(wcm.get_ballGlobal_x() / math.abs(wcm.get_ballGlobal_x()) ~= wcm.get_horde_goalSign() ) .. (math.abs(wcm.get_ballGlobal_x()) > 1));
+if wcm.get_horde_goalieCertainBallOnMySide() == 1 and wcm.get_ballGlobal_x() / math.abs(wcm.get_ballGlobal_x()) ~= wcm.get_horde_goalSign() and math.abs(wcm.get_ballGlobal_x()) > 1 then
+  	print("HEY SOMETHING IS WRONG, FLIPPIN THOSE PARTICLES");
+	PoseFilter.flip_particles(); -- then flip em
   elseif wcm.get_robot_flipped() == 1 then
     PoseFilter.flip_particles();
     wcm.set_robot_flipped(0);
   end
+-- if goalie thinks he's on offensive side, he's wrong. no way in hell
+if(Config.player.role == 0 and (wcm.get_pose().x/math.abs(wcm.get_pose().x))~= wcm.get_horde_goalSign()) then
+	PoseFilter.flip_particles()
+end
  ---David: I commented this out because I it looks at gamestate  and re initializes the particles based on that. I dont want it to do that at all for our purposes
   --gameState = gcm.get_game_state();
   --if (gameState == 0) then

@@ -36,7 +36,7 @@ function update()
    setDebugFalse();
    print("I'm in update!!\n");
    print(endPosition);
-   setDebugTrue();
+   --setDebugTrue();
    -- centerPosition = {x,y,a} in global coordinates
    -- pose_relative will convert centerPosition to coordinates relative to the robot.
  
@@ -46,7 +46,7 @@ function update()
   scaleFactor = 15*(math.abs(endPoseX)+math.abs(endPoseY));
   
   if(alreadyDone) then --checking if we've already gotten there to our best tolerance
-      setDebugTrue();
+      --setDebugTrue();
 	  print("nitpick adjustments");
       setDebugFalse();
 		if(endPoseRelative[3]<0) then
@@ -64,7 +64,7 @@ function update()
   print("about to grab gootPose");
   print("I converted\n");
   if(math.abs(endPoseX)+math.abs(endPoseY)<distanceTolerance and math.abs(endPoseRelative[3]) < angleTolerance) then
-	setDebugTrue();
+	--setDebugTrue();
 	print(" guess we're done");
 	setDebugFalse();
 	--walk.set_velocitiy(0,0,0);
@@ -80,7 +80,7 @@ function update()
   --if we are not close enough to our goal position
   --moving back and forth while moving need to fix TODO
   if(math.abs(endPoseX)+math.abs(endPoseY)>distanceTolerance) then
-      setDebugTrue();
+      --setDebugTrue();
 		print("walking toward final point " .. (math.abs(endPoseX)+math.abs(endPoseY)));
       setDebugFalse();
 	   if(endPoseY>0) then
@@ -88,12 +88,12 @@ function update()
       else
            rotateVel = -.5;
       end
-	setDebugTrue();
+	--setDebugTrue();
 		print("walking at speed " .. endPoseX/scaleFactor .. ", " .. endPoseY/scaleFactor .. ", " .. rotateVel)
 	setDebugFalse();
    walk.set_velocity(endPoseX/scaleFactor, endPoseY/scaleFactor,rotateVel);
   elseif(math.abs(endPoseRelative[3]) > angleTolerance) then -- now that our distance is fine, let's look at the angle we need to go to
-      setDebugTrue();
+      --setDebugTrue();
 	  print("adjusting final angle " .. endPoseRelative[3]); 
       setDebugFalse();
 	  if(endPoseRelative[3]<0) then

@@ -298,7 +298,7 @@ connectionThread = function ()
   
         while connected do			
              local state = gcm.get_game_state();
-    		 setDebugTrue();
+    		 --setDebugTrue();
 			if (state == 1 and lastStateForTime ~= 1) then 
 				print(" state 1 ")
 				timeReady = Body.get_time();
