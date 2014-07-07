@@ -197,7 +197,7 @@ gotoBallStart = function()
  	action  = {}
         action["action"] = "gotoBall";
         action["args"] = "";
-		action.ackNumber =  wcm.get_horde_ackNumber();
+	action.ackNumber =  wcm.get_horde_ackNumber();
         sendBehavior(json.encode(action) .. "\n");
 end
 gotoBallStop = function()end
