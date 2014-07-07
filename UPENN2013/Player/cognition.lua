@@ -109,12 +109,7 @@ function update_box()
     World.init_particles();
   end
  
- 	if imageProcessed == false then
- 		setDebugTrue();
-		print("hi " .. nil);
- 		print("DNW image not processed! assume camera failure. kill and restart");
- 		setDebugFalse(); 	
- 	end 
+ 
  
   if not comm_inited and 
     (vcm.get_camera_broadcast()>0 or vcm.get_camera_teambroadcast()>0) then
@@ -172,7 +167,9 @@ function update()
   tstart = unix.time();
   
   if Config.game.role == 0 then
-  	updateGoalieFlip()
+  	setDebugTrue();
+	print("DNW am goalie so going to do updateGoalieFlip");
+	updateGoalieFlip()
   end
   
   -- update vision 
