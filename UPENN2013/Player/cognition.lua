@@ -1,7 +1,7 @@
 module(... or "",package.seeall)
 cwd = os.getenv('PWD')
 require('init')
-
+require('Config');
 require('unix')
 require('vcm')
 require('gcm')
@@ -169,6 +169,7 @@ function update()
   if Config.game.role == 0 then
   	setDebugTrue();
 	print("DNW am goalie so going to do updateGoalieFlip");
+	setDebugFalse();
 	updateGoalieFlip()
   end
   
