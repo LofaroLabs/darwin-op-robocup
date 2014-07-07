@@ -5,15 +5,15 @@ require('wcm')
 require('Body')
 require('unix')
 require('os')
+require('Motion')
+require('OPCommManager')
 
---relax the servos
-Body.relaxServos();
-
+--first kill everything that could stop me from sitting
+os.execute("kill $(ps aux | grep '[l]ua run_cognition.lua' | awk '{print $2}')")
+os.execute("kill $(ps aux | grep '[l]ua hoard_connection.lua' | awk '{print $2}')")
 
 -- Write log
-file = io.open("Camera.txt", "a")
-file:write("Camera died servos relaxed and killing cognition time = " .. tostring(os.date()));
+file = io.open("CameraCleanup.txt", "a")
+file:write("Camera died so standing still and killing cognition time = " .. tostring(os.date()).. "\n");
 file:close()
-
-os.execute("kill $(ps aux | grep '[l]ua run_cognition.lua' | awk '{print $2}')")
 

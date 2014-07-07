@@ -80,7 +80,7 @@ int v4l2_error(const char *error_msg) {
   int x = errno;
   fprintf(stderr, "Err: %d\n", x);
   fprintf(stderr, "V4L2 error: %s\n", error_msg);
-  system("/home/darwin/dev/merc/darwin/UPENN2013/Player/startEverything.sh");
+  system("/home/darwin/dev/merc/darwin/UPENN2013/Player/CameraDied.sh");
   return -2;
 }
 

@@ -50,10 +50,14 @@ function update()
 end
 
 function relaxServos()
-	for i=1,20 do
-		set_actuator_hardness(0, i);
-		set_actuator_hardnessChanged(1);
-	end
+
+	set_body_hardness(0)
+	set_head_hardness(0)
+	set_larm_hardness(0)
+	set_rarm_hardness(0)
+	set_lleg_hardness(0)
+	set_rleg_hardness(0)
+	
 end
 
 -- setup convience functions
