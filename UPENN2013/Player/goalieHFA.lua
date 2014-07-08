@@ -366,6 +366,33 @@ function gotoPoseWhileLookingBackwardsGo()
 
 end
 
+function faceBallStart()
+	action  = {}
+	action["action"] = "gotoPoseFacing";
+    action["args"] = {};
+    ballGlobal= {};
+	setDebugTrue()
+		print("hey im in facebll");
+	
+	ballGlobal.x = wcm.get_team_closestToBallLoc()[1]--wcm.get_ballGlobal_x();
+    ballGlobal.y = wcm.get_team_closestToBallLoc()[2]--wcm.get_ballGlobal_y();
+    print("Ball Global x = " .. tostring(ballGlobal.x) .. " y = " .. tostring(ballGlobal.y))
+    -- my pose global
+	pose=wcm.get_pose();
+                
+    action.args.facing = {};
+    action.args.facing.x = ballGlobal.x
+    action.args.facing.y = ballGlobal.y
+    action.args.facing.a = 0
+    action.args.gotoPose = {};
+     penaltyBounds = getPenaltyBounds();
+    action.args.gotoPose.x = wcm.get_pose().x;
+    action.args.gotoPose.y = wcm.get_pose().y;
+    action.ackNumber =  wcm.get_horde_ackNumber();
+   sendBehavior(json.encode(action) .. "\n");
+   setDebugFalse()
+
+end
 
 
 function gotoWhileFacingGoalieStart()
@@ -451,7 +478,7 @@ function turnThetaLookGoalStart()
         sendBehavior(json.encode(action) .. "\n");
 end
 
-
+faceBall = makeBehavior("faceBall",nil,nil,faceBallStart);
 gotoPosition = makeBehavior("gotoPosition", nil,nil,gotoPositionStart)
 stopPose = makeBehavior("stopPose", nil, nil, stopPoseStart);
 walkForward = makeBehavior("walkForward", nil, nil, walkForwardStart);
@@ -525,10 +552,13 @@ GoalieHFA = makeHFA("GoalieHFA", makeTransition({
         [start] = resetTimer,
 
         [DefendGoalHFA] = function()
-                if(wcm.get_horde_goalieCloseEnough() ~= 1 and currentTimer(GoalieHFA) > 20) then
+                if(getOnOffense() == true and wcm.get_horde_goalieCloseEnough() ~= 1 and currentTimer(GoalieHFA) > 20) then
             		badLocalization = false;
             		return resetTimer;
                 end
+		--if(wcm.get_horde_goalieCloseEnough()== 1 ) then
+		---	return 
+		--end
 				return DefendGoalHFA;
             end,
         [RelocalizeHFA] = function()
@@ -537,12 +567,28 @@ GoalieHFA = makeHFA("GoalieHFA", makeTransition({
 			end
 			
 
-			if(wcm.get_horde_goalieCloseEnough() == 1 or GoalieHFA.done == true or getOnOffense() == 0) then
+			if(wcm.get_horde_goalieCloseEnough() == 1 or GoalieHFA.done) then
                 		return DefendGoalHFA;
                 	end
+			--setDebugTrue()
+			--print("considering transition to faceBall");
+			--setDebugFalse();
+			--if(getOnOffense() == 0 or GoalieHFA.done) then
+			--	return faceBall
+			--end
 				return RelocalizeHFA;
         
         	end,
+	[faceBall] = function()
+		if(wcm.get_horde_goalieCloseEnough()== 1)
+			then return DefendHFA;
+		end
+		if(getOnOffense() == true) then
+			return RelocalizeHFA;
+		end
+		return faceBall;
+	end,
+
 	[resetTimer] = function()
 			return RelocalizeHFA;
 		end
@@ -677,6 +723,9 @@ connectionThread = function ()
 			    --kitty.wcm.get_horde_ballLost() = wcm.get_horde_ballLost()	
 				while wcm.get_horde_sentBehavior() == 0 do
 					isBallLost();
+					setDebugTrue();
+					print("on offense? " .. tostring(getOnOffense()))
+					setDebugFalse();
 					pulse(GoalieHFA);
 				end
 				wcm.set_horde_sentBehavior(0);

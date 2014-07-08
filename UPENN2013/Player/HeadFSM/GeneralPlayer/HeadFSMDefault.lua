@@ -17,6 +17,7 @@ require('headKick')
 require('headLog')
 require('headTrackGMU')
 require('headLookGoalGMU')
+require('headScanGMU')
 require('headLookGoalPose')
 require('headInsistLookBackwards')
 require('headLookBehindAndBall')
@@ -32,6 +33,7 @@ sm:add_state(headTrack);
 sm:add_state(headTrackGoalie);
 sm:add_state(headKickFollow);
 sm:add_state(headLookGoal);
+sm:add_state(headScanGMU);
 sm:add_state(headSweep);
 sm:add_state(headKick);
 sm:add_state(headLog);
@@ -43,9 +45,9 @@ sm:add_state(headLookGoalPose);
 ----
 sm:set_transition(headTrackGMU, 'timeout', headLookGoalGMU);
 sm:set_transition(headLookGoalGMU, 'timeout', headTrackGMU);
-
 sm:set_transition(headLookGoalPose, 'timeout', headLookGoalPose);
-
+sm:set_transition(headLookGoalGMU, "timeoutAndLost", headScanGMU);
+sm:set_transition(headScanGMU, "timeout", headLookGoalGMU);
 ---------------------------------------------
 --Game FSM with looking at the goal
 ---------------------------------------------

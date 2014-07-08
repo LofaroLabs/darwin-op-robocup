@@ -27,7 +27,7 @@ turnSpeed = Config.team.turnSpeed;
 GOALIE_DEAD_THRESHOLD = 3
 
 -- setting the distance as defined to be "close" for the goalie to the ball to be 1m
-wcm.set_horde_goalCloseDist(1)
+wcm.set_horde_goalCloseDist(1.25)
 -- setting the distance that the other players need to be in order to set status to 1 or 3
 wcm.set_horde_distN(1)
 
@@ -233,7 +233,7 @@ function update()
   state.yelledKick = wcm.get_horde_yelledKick();
   state.status = wcm.get_horde_status();
   state.declared = wcm.get_horde_doDeclare();
-  state.goalieCloseEnough = wcm.get_horde_goalCloseDist();
+  state.goalieCloseEnough = wcm.get_horde_goalieCloseEnough();
   state.ballRelative = util.pose_relative({wcm.get_ballGlobal_x(), wcm.get_ballGlobal_y(), 0}, {state.pose.x, state.pose.y, state.pose.a});
   state.ballGlobal = {wcm.get_ballGlobal_x(), wcm.get_ballGlobal_y()};
   state.ballRelative[3] = 0;
@@ -282,7 +282,8 @@ function update()
 		print("DNW goalie dist = " .. tostring(goalieDist) .. " closeDist = " .. tostring(wcm.get_horde_goalCloseDist()) .. " ball lost = " .. tostring(state.ballLost));
 		-- as long as the ball is close enough and i can see it then I am close enough
 		goalieDistFromPosts = math.abs(wcm.get_ballGlobal_x()- (World.xMax*wcm.get_horde_goalSign()))
-		if   goalieDistFromPosts<wcm.get_horde_goalCloseDist() and state.ballLost == 0 then
+		teamGoalieDistFromPosts = math.abs(wcm.get_team_closestToBallLoc()[1] - World.xMax*wcm.get_horde_goalSign())
+		if   goalieDistFromPosts<wcm.get_horde_goalCloseDist() or (state.ballLost == 1 and teamGoalieDistFromPosts < wcm.get_horde_goalCloseDist()) then
 			state.goalieCloseEnough = 1;
 			wcm.set_horde_goalieCloseEnough(1);
 			print("DNW Goalie is close enough state version = " .. tostring(state.goalieCloseEnough) .. " wcm version =" .. tostring(wcm.get_horde_goalCloseDist()));

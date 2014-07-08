@@ -430,7 +430,7 @@ connectionThread = function ()
 				if in_penalty() then
 					hoard_functions.hordeFunctions["position"](nil,nil); -- if we are not playing, do upenn positions
 				end
-			elseif not err then
+			elseif not err and not in_penalty() then
 				--local currentState = gcm.get_game_state();
 				state = gcm.get_game_state();
 				if( not doneReadyBefore) then

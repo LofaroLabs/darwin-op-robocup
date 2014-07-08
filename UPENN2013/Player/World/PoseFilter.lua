@@ -154,7 +154,10 @@ end
 ---Sets headings of all particles to random angles with 0 weight
 --@usage For when robot falls down
 function reset_heading()
-  if dont_reset_orientation == 0 then
+  if dont_reset_orientation == 0 or Config.game.role == 0 then
+    setDebugTrue();
+	print("!!!!!IM RESETITING HEADING");
+    setDebugFalse();
     ap = 2*math.pi*vector.new(util.randu(n));
     wp = vector.zeros(n);
   else
