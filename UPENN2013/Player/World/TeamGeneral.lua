@@ -24,7 +24,7 @@ ballLostPenalty = Config.team.ballLostPenalty;
 walkSpeed = Config.team.walkSpeed;
 turnSpeed = Config.team.turnSpeed;
 
-
+GOALIE_DEAD_THRESHOLD = 3
 
 -- setting the distance as defined to be "close" for the goalie to the ball to be 1m
 wcm.set_horde_goalCloseDist(1)
@@ -44,7 +44,7 @@ flip_check_t = Config.team_flip_check_t or 3.0;
 confusion_handling = Config.confusion_handling or 0;
 
 lastTimeDeclaredReceived = {Body.get_time(), Body.get_time(), Body.get_time()}
-
+lastTimeReceivedFromGoalie = Body.get_time();
 
 goalie_ball={0,0,0};
 
@@ -434,11 +434,16 @@ function update()
  	if playerID ~= GOALIE_ID then -- if I'm not the goalie then I need to update the penalty {x,y} location
 		for index=1,5 do -- so find the goalie and set my penaltyLocation. -- might not need to loop.
 			if states[index] and states[index].id == GOALIE_ID then
-				wcm.set_teamdata_penaltyLocation(states[index].penaltyLocation);
+				wcm.set_teamdata_penaltyLocation(states[index].penaltyLocation); -- only the goalie has the penalty loc data.
 				wcm.set_horde_goalieCertainBallOnMySide(states[index].goalieCertainBallOnMySide);
+				lastTimeReceivedFromGoalie = Body.get_time();
 				break;
 			end
 
+		end
+		
+		if Body.get_time() - lastTimeReceivedFromGoalie > GOALIE_DEAD_THRESHOLD then
+			wcm.set_horde_goalieCertainBallOnMySide(0); -- make sure this is reset so that I don't end up flipping continuously.
 		end
   	end
 
@@ -561,8 +566,9 @@ end
   if (wcm.get_horde_dummyTraining() == 0) then
   	update_status();
   end
-  update_goalieCloseEnough();
+  
   update_teamdata();
+  update_goalieCloseEnough();
   update_obstacle();
   check_confused();
   check_flip2();
@@ -667,10 +673,14 @@ function update_goalieCloseEnough()
 	for id = 1,5 do
 	
 		if states[id] and states[id].role == ROLE_GOALIE and states[id].goalieCloseEnough then
+			lastTimeReceivedFromGoalie = Body.get_time();
 			wcm.set_horde_goalieCloseEnough(states[id].goalieCloseEnough)
 			return;
 		end
 	
+	end
+	if Body.get_time() - lastTimeReceivedFromGoalie > GOALIE_DEAD_THRESHOLD then
+		wcm.set_horde_goalieCloseEnough(0); -- If I didn't get anything from the goalie then I can't assume he is close enought
 	end
 
 end
