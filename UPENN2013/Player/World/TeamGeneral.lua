@@ -235,6 +235,7 @@ function update()
   state.declared = wcm.get_horde_doDeclare();
   state.goalieCloseEnough = wcm.get_horde_goalCloseDist();
   state.ballRelative = util.pose_relative({wcm.get_ballGlobal_x(), wcm.get_ballGlobal_y(), 0}, {state.pose.x, state.pose.y, state.pose.a});
+  state.ballGlobal = {wcm.get_ballGlobal_x(), wcm.get_ballGlobal_y()};
   state.ballRelative[3] = 0;
   
   -- if i am the goalie then set whether we think the ball is on my side.
