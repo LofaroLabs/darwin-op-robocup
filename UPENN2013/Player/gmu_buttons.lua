@@ -148,39 +148,40 @@ function soccerMenuExecute()
 	if scriptNumber == 1 then
 		 Speak.talk('Kitty Soccer Mode')
 		 killAll();
-         os.execute("echo 111111 | sudo -S sh scripts/restartcam.sh")
+		 os.execute("echo 111111 | sudo -S sh scripts/restartcam.sh")
 		 print("just killed all")
 		 os.execute("sh noKillRunBasic.sh")
 		 unix.usleep(7*1E6)
 		 print("ran cog")
-         os.execute("sh scripts/kittyMode.sh");     
+		 os.execute("sh scripts/kittyMode.sh");     
 		 print("kitty mode running");         
 	elseif  scriptNumber == 2 then
-                Speak.talk('horde soccer')
-		 killAll();
-                 os.execute("echo 111111 | sudo -S sh scripts/restartcam.sh")
-		 unix.usleep(2*1E6);
-		 os.execute("sh noKillRunBasic.sh")
-         os.execute("sh runhorde.sh");
-                
-         PLAYING = 1       -- Used to say we want the game state menu at top 
-         scriptNumber = 0  -- to take us to the beginning of the menu
-        elseif scriptNumber == 3 then 
+		Speak.talk('horde soccer')
+		killAll();
+		os.execute("echo 111111 | sudo -S sh scripts/restartcam.sh")
+		unix.usleep(2*1E6);
+		os.execute("sh noKillRunBasic.sh")
+		os.execute("sh runhorde.sh");
+
+		PLAYING = 1       -- Used to say we want the game state menu at top 
+		scriptNumber = 0  -- to take us to the beginning of the menu
+	elseif scriptNumber == 3 then 
 		Speak.talk('imma goalie');
 		os.execute("sh noKillRunBasic.sh");
 		os.execute("lua goalieHFA.lua")
+		
 		PLAYING = 1			-- Used to say we want the game state menu at top
 		scriptNumber = 0 -- to take us to the beginning of the menu
 	elseif scriptNumber == 4 then
-                Speak.talk('game state menu')
+        Speak.talk('game state menu')
 		MenuID = "game state menu"
 		scriptNumber = 0; 
-        elseif scriptNumber == 5 then
-                Speak.talk('main menu')
+	elseif scriptNumber == 5 then
+		Speak.talk('main menu')
 		MenuID = 'main menu'
-        else
-                scriptNumber = 0;
-        end
+	else
+		scriptNumber = 0;
+	end
 end
 function gameStateMenuUpdate()
         if scriptNumber == 1 then
@@ -221,7 +222,7 @@ function update()
 		tButton = Body.get_time();
 		
 		
-		if PLAYING == 0 then
+		if PLAYING == 0 then -- so if we aren't in either horde soccer or goalie do this
 			if (Body.get_change_role() == 1) then
 				scriptNumber = scriptNumber + 1;
 				if(MenuID == "main menu") then
@@ -256,7 +257,7 @@ function update()
 		
 
 			end	
-		else
+		else -- else we will have the 
 			-- we are playing so show the game menu first
 			setDebugTrue();
 			print("PLAYING!!")
@@ -276,6 +277,7 @@ function update()
 					-- reset
 					MenuID = "main menu"
 					scriptNumber = 0
+					WANT_MAIN = 0
 				else
 					-- otherwise if middle button is pressed then penalize
 					gameStateMenuExecute()
