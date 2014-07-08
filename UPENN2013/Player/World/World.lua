@@ -262,7 +262,7 @@ function update_vision()
 
   -- Reset heading if robot is down
   if (mcm.get_walk_isFallDown() == 1) then
-    PoseFilter.reset_heading();--DAVID currently commented this out, trying to figure out why things are flipping, probably flipping particles 
+    PoseFilter.reset_heading(.75);--DAVID currently commented this out, trying to figure out why things are flipping, probably flipping particles 
   end
   
   -- if my ball global does not have the same sign as the goal sign then flip particles

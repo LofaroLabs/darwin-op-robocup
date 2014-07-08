@@ -101,7 +101,7 @@ state.bodyState = gcm.get_fsm_body_state();
 --- SET THIS AT THE BEGINING OF THE MATCH TO SAY WHICH SIDE OF THE FIELD YOU will be placed for a penalty
 
 	-- need something for everyone we just don't want to have to change it on every robot just change on the Goalie
-	wcm.set_teamdata_penaltyLocation({1,-1});
+	wcm.set_teamdata_penaltyLocation(-1.5);
 if playerID == GOALIE_ID then -- GOALIE
 	state.penaltyLocation = wcm.get_teamdata_penaltyLocation();
 end

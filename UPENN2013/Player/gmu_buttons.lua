@@ -14,6 +14,7 @@ require('os')
 require('unix')
 require('init')
 require('gcm')
+setDebugFalse();
 scriptNumber = 0;
 function mainMenuUpdate() 
 			print("Incrementing leftbutton script")
