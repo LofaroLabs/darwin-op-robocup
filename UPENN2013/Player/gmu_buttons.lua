@@ -203,7 +203,9 @@ function gameStateMenuUpdate()
                 gcm.set_game_state(4);
         elseif scriptNumber == 6 then
                 Speak.talk('main menu')
-                WANT_MAIN = 1
+                if PLAYING == 1 then
+                	WANT_MAIN = 1
+                end
         else
                 scriptNumber = 0;
         end
@@ -308,8 +310,10 @@ local tDelay = 0.005 * 1E6;
 --Config.game.playerID = 900;
 while 1 do
 	--Config.game.playerID = 2;
+	setDebugTrue()
 	print(Config.game.playerID);
  	print(tostring(gcm.get_game_state()))
+ 	setDebugFalse();
 	update();
 	unix.usleep(tDelay);
 end
