@@ -198,6 +198,7 @@ function gameStateMenuUpdate()
                 gcm.set_game_state(4);
         elseif scriptNumber == 6 then
                 Speak.talk('main menu')
+                WANT_MAIN = 1
         else
                 scriptNumber = 0;
         end
@@ -210,6 +211,7 @@ function gameStateMenuExecute()
 	gcm.set_game_penalty(teamPenalty);
 	
 end
+WANT_MAIN = 0
 PLAYING = 0
 MenuID = "main menu";		
 function update() 
@@ -217,10 +219,9 @@ function update()
 		tButton = Body.get_time();
 		
 		
-		if PLAYER == 0 then
+		if PLAYING == 0 then
 			if (Body.get_change_role() == 1) then
 				scriptNumber = scriptNumber + 1;
-	
 				if(MenuID == "main menu") then
 					mainMenuUpdate();		
 				elseif(MenuID == "soccer menu") then 
@@ -232,8 +233,7 @@ function update()
 				elseif(MenuID == "id menu") then
 					idMenuUpdate();
 				end
-			
-		
+
 			end
 
 
@@ -254,6 +254,25 @@ function update()
 		
 
 			end	
+		else
+			-- we are playing so show the game menu first
+			
+			if (Body.get_change_role() == 1) then
+				scriptNumber = scriptNumber + 1;
+				gameStateMenuUpdate()
+			end
+			
+			
+			if (Body.get_change_state() == 1) then
+				if WANT_MAIN == 1 then
+					PLAYING = 0
+				else
+					gameStateMenuExecute()
+				end
+			end
+			
+			
+		
 		
 		end
 	end	
