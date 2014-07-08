@@ -399,7 +399,7 @@ connectionThread = function ()
 				
 		        	if state ~= 3 then
   					if (state == 0 and lastState ~= 0) then
-    						
+    						doneReadyBefore = false;
 						BodyFSM.sm:set_state('bodyIdle')-- 'initial';
   						BodyFSM.update();
 						BodyFSM.update();
@@ -421,6 +421,7 @@ connectionThread = function ()
   					elseif (state == 4 and lastState ~=4) then
     						BodyFSM.sm:set_state('bodyIdle')	-- 'finished';
   						HeadFSM.sm:set_state('headIdle');
+						 doneReadyBefore = false;
 					end
 					
 					--GameFSM.update();
