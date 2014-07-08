@@ -44,7 +44,12 @@ public class FieldDraw extends JFrame implements Runnable {
     public ArrayList<Robot> robotArray = new ArrayList<Robot>(NUM_ROBOTS);
 
 	
-    private Color[] botColors = {Color.red, Color.blue, Color.green, Color.orange, Color.cyan, Color.magenta, Color.yellow, Color.white };
+	Color trans(Color c)
+		{
+		return new Color(c.getRed(), c.getGreen(), c.getBlue(), 128);
+		}
+		
+    Color[] botColors = {trans(Color.red), trans(Color.blue), trans(Color.green), trans(Color.orange), trans(Color.cyan), trans(Color.magenta), trans(Color.yellow), trans(Color.white) };
 	public Color botColor(Robot robot)
 		{
 		try { return botColors[Integer.parseInt(robot.id) - 1]; }		
