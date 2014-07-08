@@ -164,12 +164,13 @@ function soccerMenuExecute()
          os.execute("sh runhorde.sh");
                 
          PLAYING = 1       -- Used to say we want the game state menu at top 
-                 
+         scriptNumber = 0  -- to take us to the beginning of the menu
         elseif scriptNumber == 3 then 
 		Speak.talk('imma goalie');
 		os.execute("sh noKillRunBasic.sh");
 		os.execute("lua goalieHFA.lua")
 		PLAYING = 1			-- Used to say we want the game state menu at top
+		scriptNumber = 0 -- to take us to the beginning of the menu
 	elseif scriptNumber == 4 then
                 Speak.talk('game state menu')
 		MenuID = "game state menu"
