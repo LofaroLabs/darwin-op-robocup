@@ -197,7 +197,7 @@ gotoBallStart = function()
  	action  = {}
         action["action"] = "gotoBall";
         action["args"] = "";
-		action.ackNumber =  wcm.get_horde_ackNumber();
+	action.ackNumber =  wcm.get_horde_ackNumber();
         sendBehavior(json.encode(action) .. "\n");
 end
 gotoBallStop = function()end
@@ -386,7 +386,7 @@ function gotoWhileFacingGoalieStart()
     action.args.facing.a = 0
 	action.args.gotoPose = {};
 	penaltyBounds = getPenaltyBounds();
-    action.args.gotoPose.x = penaltyBounds[1]
+    action.args.gotoPose.x = penaltyBounds[1] -(.3*wcm.get_horde_goalSign()) 
     if math.abs(ballGlobal.y) < penaltyBounds[2] * .5  then
         action.args.gotoPose.y = ballGlobal.y;
     else
@@ -418,7 +418,7 @@ function gotoWhileFacingGoalieGo()
     action.args.facing.a = 0
 	action.args.gotoPose = {};
 	penaltyBounds = getPenaltyBounds();
-    action.args.gotoPose.x = penaltyBounds[1]
+    action.args.gotoPose.x = penaltyBounds[1] - (0.3 * wcm.get_horde_goalSign());
     if math.abs(ballGlobal.y) < penaltyBounds[2] * .5  then
         action.args.gotoPose.y = ballGlobal.y;
     else
@@ -498,26 +498,22 @@ DefendGoalHFA = makeHFA("DefendGoalHFA", makeTransition({
         [start] = kittyMachine,
 
         [kittyMachine] = function()
-		print("I am in kitty start " )
-                if(getGoalieBallDistance()>1.0) then -- or math.abs(wcm.get_pose()['x']) < 1.0) then -- change to ball x position?
+                if(wcm.get_horde_goalieCloseEnough()~=1) then -- or math.abs(wcm.get_pose()['x']) < 1.0) then -- change to ball x position?
                  	 --      print("going to backwards " .. tostring(gotoPoseWhileLookingBackwards));
                  	badLocalization = true;
-			print("in kitty returning gotowhilefacingGoalie")
 			return gotoWhileFacingGoalie;
                 end
-                print("in kitty returning kitty machine".. tostring (kittyMachine));
+                
 				return kittyMachine;
             end,
 
 
         [gotoWhileFacingGoalie] = function()
                 --print("status is " .. tostring(wcm.get_horde_status()) .. " in defend transition")
-                print("I am in gotoWhileFacingGoalie start and getGoalieBallDistance() == " ..getGoalieBallDistance());
-		if(getGoalieBallDistance() < 1.0) then
+                if(wcm.get_horde_goalieCloseEnough() == 1.0) then
 			print("going to kittch machine " .. tostring(kittyMachine));
                         return kittyMachine
                 end
-		print("Wasn't  small enough still in gotoWhileFacingGoalie");
 		return gotoWhileFacingGoalie;
          end,
        }), false)
@@ -529,14 +525,10 @@ GoalieHFA = makeHFA("GoalieHFA", makeTransition({
         [start] = resetTimer,
 
         [DefendGoalHFA] = function()
-               
-			print("Going to defend hfa goalie ball distance = ".. getGoalieBallDistance() .. " current time " .. currentTimer(GoalieHFA));
-			print("My pose = " .. wcm.get_pose().x .. " y = "  .. wcm.get_pose().y);
-		 if(getGoalieBallDistance()>1.0 and currentTimer(GoalieHFA) > 20) then
+                if(wcm.get_horde_goalieCloseEnough() ~= 1 and currentTimer(GoalieHFA) > 20) then
             		badLocalization = false;
             		return resetTimer;
                 end
-			
 				return DefendGoalHFA;
             end,
         [RelocalizeHFA] = function()
@@ -545,7 +537,7 @@ GoalieHFA = makeHFA("GoalieHFA", makeTransition({
 			end
 			
 
-			if(getGoalieBallDistance()<1.0 or GoalieHFA.done == true or getOnOffense() == 0) then
+			if(wcm.get_horde_goalieCloseEnough() == 1 or GoalieHFA.done == true or getOnOffense() == 0) then
                 		return DefendGoalHFA;
                 	end
 				return RelocalizeHFA;
@@ -559,34 +551,13 @@ GoalieHFA = makeHFA("GoalieHFA", makeTransition({
 
 wcm.set_horde_ballLost(1)
 lastTimeFound = Body.get_time();
-lastTimeFoundOnGoalieSide = Body.get_time();
-lastTimeNotOnGoalieSide = 0;
-
-
 function isBallLost()
 	--print("got into ball lost")
 	if vcm.get_ball_detect() ~= 0 then
 		wcm.set_horde_ballLost(0);
 		lastTimeFound = Body.get_time();
-		local ballGlobalXSign = wcm.get_ballGlobal_x() / math.abs(wcm.get_ballGlobal_x());
-		local goalSign = wcm.get_horde_goalSign();
-		
-		if  ballGlobalXSign == goalSign then
-			lastTimeFoundOnGoalieSide = Body.get_time();
-		else
-			lastTimeNotOnGoalieSide = Body.get_time();
-		end
-		
-		if lastTimeFoundOnGoalieSide - lastTimeNotOnGoalieSide >= 3 then
-			wcm.set_horde_goalieCertainBallOnMySide(1);
-		else
-			wcm.set_horde_goalieCertainBallOnMySide(0);
-		end
 	elseif(Body.get_time() - lastTimeFound > 5) then
 		wcm.set_horde_ballLost(1);
-		
-		lastTimeNotOnGoalieSide = Body.get_time();
-		wcm.set_horde_goalieCertainBallOnMySide(0);
 	end
 	--print("got out of ball lost");
 end
@@ -610,12 +581,11 @@ function getOnOffense()
 end
 
 function getGoalBallDistance()
---[[
+
 	local ballGlobal = wcm.get_team_closestToBallLoc()
 	local goalMidpoint = getDefendGoalMidpoint() 
-	print("Ball global = " .. ballGlobal[1] .. " y = " .. ballGlobal[2] .. " goalMidpoint " .. goalMidpoint[1] .. " y = " .. goalMidpoint[2])	
+	
 	return distGeneral({ballGlobal[1], ballGlobal[2]},goalMidpoint);  
---]]
 end
 
 function canSeePost() 
@@ -695,11 +665,10 @@ connectionThread = function ()
 			recval = client:receive()
 			-- convert the json to get the ackNumber
 			status, recJson = pcall(json.decode,recval);
-					
-	if status == true and recval ~= nil then
+			if status == true and recval ~= nil then
                 status = string.sub(recval, 1, 1) == "{"
-	else
-		status = false -- seems like recval can be nil.
+			elseif recval == nil then
+				status = false;
             end
 
 			--print(tostring(recJson))

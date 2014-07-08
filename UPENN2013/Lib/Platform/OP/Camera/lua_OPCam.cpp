@@ -48,11 +48,11 @@ static int lua_get_image(lua_State *L) {
   static int count = 0;
   int buf_num = v4l2_read_frame();
   if( buf_num < 0 ){
-    printf("RAGE!!!");
+    //printf("RAGE!!!");
     lua_pushnumber(L,buf_num);
     return 1;
   }
-  printf("!@#$ YOU\n");
+  //printf("!@#$ YOU\n");
   uint32* image = (uint32*)v4l2_get_buffer(buf_num, NULL);
 
   // Increment the count

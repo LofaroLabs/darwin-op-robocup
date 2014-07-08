@@ -1,6 +1,7 @@
 module(... or '', package.seeall)
 --setDebugFalse();
 -- Get Platform for package path
+doneReadyBefore = false;
 cwd = '.';
 local platform = os.getenv('PLATFORM') or '';
 if (string.find(platform,'webots')) then cwd = cwd .. '/Player';
@@ -55,6 +56,7 @@ initToggle = true;
 updateAllTimer=0;
 sendFeaturesTimer =0;
 -- main loop
+wcm.set_horde_timeOut(0);
 count = 0;
 lcount = 0;
 ackNumber = 0;
@@ -117,18 +119,22 @@ function sendFeatures (client)
 		sendFeaturesTimer = Body.get_time();
 		print("wcm send status was true");
 		features = {}
-        features["playerID"] = Config.game.playerID;
-        if (wcm.get_horde_dummyTraining() == 0) then
-		setDebugTrue();
+        if(wcm.get_horde_dummyTraining() == 1) then
+			features["playerID"] = wcm.get_horde_playerID();
+		else
+            features["playerID"] = Config.game.playerID;
+        end
+		if (wcm.get_horde_dummyTraining() == 0) then
+		--setDebugTrue();
 		--print("SENDING config role");
 		setDebugFalse();
 		features["role"] = Config.game.role;
         else
-		setDebugTrue();
-		print("sending dummy role");
-		setDebugFalse();
-		features["role"] = wcm.get_horde_role();
-	end
+			--setDebugTrue();
+			print("sending dummy role");
+			--setDebugFalse();
+			features["role"] = wcm.get_horde_role();
+	    end
 
 
 	-- when I am disconnected from the team and I need to play kiddie soccer
@@ -150,6 +156,7 @@ function sendFeatures (client)
         	features["poseA"] = wcm.get_team_teamPoseA();
 		 
 	end
+	features["timedOut"] = wcm.get_horde_timeOut();
 	features["allYelledReady"] = wcm.get_team_yelledReady(); 
 	features["allYelledKick"] = wcm.get_team_yelledKick();
 	features["closestToBallLoc"] = wcm.get_team_closestToBallLoc();	
@@ -157,9 +164,9 @@ function sendFeatures (client)
         features["ballX"] = wcm.get_ball_x();
         features["ballY"] = wcm.get_ball_y();
         features["doneApproach"] = wcm.get_horde_doneApproach();
-        features["particleX"] = wcm.get_particle_x();
-        features["particleY"] = wcm.get_particle_y();
-	features["particleA"] = wcm.get_particle_a();
+        --features["particleX"] = wcm.get_particle_x();
+        --features["particleY"] = wcm.get_particle_y();
+	--features["particleA"] = wcm.get_particle_a();
 	--print("gonna broadcast my features");
 	features["yelledReady"] = wcm.get_horde_yelledReady();
 	features["yelledKick"] = wcm.get_horde_yelledKick();
@@ -275,8 +282,9 @@ function connectToHorde(port)
               	return client;
 end
 lastReceivedState = nil;
+lastStateForTime = 0
 connectionThread = function ()
-        print("got into con thread");
+   	print("got into con thread");
 	if( darwin ) then
                 local tDelay = 0.005 * 1E6; -- Loop every 5ms
 
@@ -289,7 +297,28 @@ connectionThread = function ()
 		print("connected")
   
         while connected do			
-                        --print("update all")
+             local state = gcm.get_game_state();
+    		 --setDebugTrue();
+			if (state == 1 and lastStateForTime ~= 1) then 
+				print(" state 1 ")
+				timeReady = Body.get_time();
+				if(Config.game.role ~= 0) then 
+					lastState = 1;
+				end
+    			wcm.set_horde_timeOut(0);
+			elseif(state ==1) then
+				print( "state 1, but last state was also 1");
+				if(Body.get_time()- timeReady > 30.0) then
+				wcm.set_horde_timeOut(1);
+				end
+			else	
+				print("reset to zero timer");
+				wcm.set_horde_timeOut(0);
+			end
+			lastStateForTime = state;
+			setDebugFalse();
+
+			            --print("update all")
 			updateAllTimer = Body.get_time();
 			updateAll();--move mah body, update FSM
 			updateAllTimer = Body.get_time()-updateAllTimer;
@@ -314,18 +343,22 @@ connectionThread = function ()
 				local err = req==nil;
 				action = req.action
 				action = string.sub(line, string.find(line, "action") or 0, #line);
-				print("Received: " .. tostring(line))
+				setDebugTrue();
+				if(line~=nil) then
+					print("Received: " .. tostring(line))
+				end
+				setDebugFalse();
 				if(req.ackNumber ==  ackNumber) then
 					ackNumber = ackNumber+1;
 					print("Sending Features!!!");
 					sendFeatures(client);--send all the features to horde
 				else
 					print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!GOT A BAD ACK NUMBER - " .. ackNumber .. " ~=  " .. req.ackNumber .. "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-					if(req.ackNumber<ackNumber) then
-						print("maybe no big deal?");
-					else
+				--	if(req.ackNumber<ackNumber) then
+				--		print("maybe no big deal?");
+				--	else
 						return;
-					end
+				--	end
 				end
 				
 				
@@ -345,13 +378,21 @@ connectionThread = function ()
 			--print("maybe? doing horde stuff, idk " .. wcm.get_horde_sendStatus() .. " " .. gcm.get_game_state() .. " " .. tostring(in_penalty()));
 		        if(line ~=nil and string.find(line, "StartSending")) then
 				updateAction(line, client)		
-			elseif (gcm.get_game_state() ~= 3 or in_penalty()) then
+			elseif ((gcm.get_game_state() ~= 3 and not (Config.game.role~=0 and gcm.get_game_state() == 1)) or in_penalty()) then
+				
+				print("JUST DOING UPENN STUFF")
 				if(in_penalty()) then
 					wasJustInPenalty = true;
 				end
+				setDebugTrue();
+				if(string.find(tostring(line),"gotoPose")) then
+					print("HEY THIS IS IMPORTANT");
+				end
 				if(line~=nil and not string.find(line, "update") and not err) then
+					print("setting last command to " .. tostring(line));
 					lastCommand = line
 				end
+				setDebugFalse();
 				--print("not doing horde stuff, that's for sure " .. wcm.get_horde_sendStatus() .. " " .. gcm.get_game_state() .. " " .. tostring(in_penalty()));
 				--print("not calling horde function");
 				local state = gcm.get_game_state();
@@ -365,7 +406,7 @@ connectionThread = function ()
 						BodyFSM.sm:set_state('bodyStop');
 						HeadFSM.sm:set_state('headIdle')
 						
-					elseif state == 1 and lastState ~= 1 then
+					elseif state == 1 and lastState ~= 1  and Config.game.role == 0 then -- only if you're goalie and in ready 
 						BodyFSM.sm:set_state('bodyReady') -- ready
 						BodyFSM.update();
 						BodyFSM.update();
@@ -389,30 +430,80 @@ connectionThread = function ()
 					hoard_functions.hordeFunctions["position"](nil,nil); -- if we are not playing, do upenn positions
 				end
 			elseif not err then
-				lastState = 3;
+				--local currentState = gcm.get_game_state();
+				state = gcm.get_game_state();
+				if( not doneReadyBefore) then
+						doneReadyBefore = true;
+						BodyFSM.sm:set_state('bodyReady') -- ready
+						BodyFSM.update();
+						BodyFSM.update();
+						BodyFSM.update();
+						--BodyFSM.sm:set_state('bodyReadyMove') -- ready
+						HeadFSM.sm:set_state('headLookGoalGMU')
+				
+				 		i = Body.get_time();
+						while(Body.get_time() - i < 7.2) do
+							setDebugTrue()	
+							print("this print statment gets on EVERYBODY's NERVES everybody's nerves EVERYBODY's NERVES");
+							setDebugFalse();
+								updateAll();
+							end
+
+						while i<100 do
+							updateAll();		
+							unix.usleep(.005 * 1E6);
+							i=i+1;
+						end
+						unix.usleep(.005*1E6);	
+
+				end
+ 				lastState = 3;
                 --print(line);
 		--lineAction = json.decode(line);
                 if(line~=nil and (action~=lastReceivedState or string.find(action,"update"))) then -- uf we received somethin:
-					setDebugTrue();
-					print("last Received was " .. tostring(lastReceivedState));
-					setDebugFalse();
-					updateAction(line, client);
-					i = 0
-					while i<100 do
-						updateAll();		
-						unix.usleep(.005 * 1E6);
-						i=i+1;
-					end	
-					lastReceivedState = action;
+		
+					if lastCommand ~= nil then
+						
+						setDebugTrue();
+						print("last ccommand sent (about to exewcute)" .. tostring(lastCommand));
+						setDebugFalse();
+
+						updateAction(lastCommand,client);
+						lastCommand = nil;
+						i=0;
+						while i<100 do
+							updateAll();		
+							unix.usleep(.005 * 1E6);
+							i=i+1;
+						end	
+						if(gcm.get_game_state() == 1) then
+							i = Body.get_time();
+							while(Body.get_time() - i < 7.2) do
+							setDebugTrue()	
+							print("this print statment gets on EVERYBODY's NERVES everybody's nerves EVERYBODY's NERVES");
+							setDebugFalse();
+								updateAll();
+							end
+						end
+					else
+
+						setDebugTrue();
+						print("last Received was " .. tostring(lastReceivedState));
+						setDebugFalse();
+						updateAction(line, client);
+						i = 0
+						while i<100 do
+							updateAll();		
+							unix.usleep(.005 * 1E6);
+							i=i+1;
+						end	
+						lastReceivedState = action;
+					end
 				end
 				print("update success\n");
                 if err == "closed" then
                                connected = false;
                 end
-				if lastCommand ~= nil then
-					updateAction(lastCommand,client);
-					lastCommand = nil;
-				end
 			end    
             end
 			 unix.usleep(tDelay);
@@ -450,9 +541,14 @@ function updateAction(servData, client)
         --print("fuckshit\n")
 	print("unholywords\n");
 	unix.usleep(.04*1E6);
-	print("Received action "..req.action);
+	setDebugTrue()
+	print("MOST IMPORTANT: Received action "..req.action);
+	
 	--BodyFSM = require('BodyFSM');
+	print("before action is... " .. tostring(BodyFSM.sm.get_current_state(BodyFSM.sm)._NAME))
 	hoard_functions.hordeFunctions[req.action](req.args, client)--this is wrong, only here for the send.... TODO
+	print("after action is... " .. tostring(BodyFSM.sm.get_current_state(BodyFSM.sm)._NAME))
+	setDebugTrue();
 	--print("after horde function");
 	--unix.usleep(1*1E6);	
 --updateAll

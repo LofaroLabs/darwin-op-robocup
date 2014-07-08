@@ -1,7 +1,7 @@
 module(... or "",package.seeall)
 cwd = os.getenv('PWD')
 require('init')
-
+require('Config');
 require('unix')
 require('vcm')
 require('gcm')
@@ -109,6 +109,8 @@ function update_box()
     World.init_particles();
   end
  
+ 
+ 
   if not comm_inited and 
     (vcm.get_camera_broadcast()>0 or vcm.get_camera_teambroadcast()>0) then
       Config.dev.team = 'TeamBox'; --Force using Team box here 
@@ -129,9 +131,45 @@ function update_box()
   end
 end
 
+
+lastTimeFound = Body.get_time();
+lastTimeFoundOnGoalieSide = Body.get_time();
+lastTimeNotOnGoalieSide = 0;
+-- if I have seen the ball on my side for >3s then I will say ball certain on my side
+function updateGoalieFlip()
+	if vcm.get_ball_detect() ~= 0 then
+		lastTimeFound = Body.get_time();
+		lastTimeFound = Body.get_time();
+ 		local ballGlobalXSign = wcm.get_ballGlobal_x() / math.abs(wcm.get_ballGlobal_x());
+  		local goalSign = wcm.get_horde_goalSign();
+  		
+		if  ballGlobalXSign == goalSign then
+			lastTimeFoundOnGoalieSide = Body.get_time();
+		else
+			lastTimeNotOnGoalieSide = Body.get_time();
+		end
+		
+		if lastTimeFoundOnGoalieSide - lastTimeNotOnGoalieSide >= 3 then
+			wcm.set_horde_goalieCertainBallOnMySide(1);
+		else
+			wcm.set_horde_goalieCertainBallOnMySide(0);
+		end
+		
+	elseif(Body.get_time() - lastTimeFound > 5) then
+		lastTimeNotOnGoalieSide = Body.get_time();
+	end
+end
+
+
+
 function update()
   count = count + 1;
   tstart = unix.time();
+  
+  if Config.game.role == 0 then
+	updateGoalieFlip()
+  end
+  
   -- update vision 
   imageProcessed = Vision.update();
 

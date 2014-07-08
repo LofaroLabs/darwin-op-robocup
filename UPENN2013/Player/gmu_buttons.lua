@@ -54,19 +54,18 @@ function mainMenuExecute()
 				Speak.talk('Soccer menu Start')
 				MenuID = "soccer menu"   
 				scriptNumber = 0;                            
-                        elseif scriptNumber == 2 then
-                                Speak.talk('Vision menu start')
-                                -- then we call the vision calibration
+            elseif scriptNumber == 2 then
+				Speak.talk('Vision menu start')
+				-- then we call the vision calibration
 				MenuID = "vision menu"    
 				scriptNumber = 0;                           
-                        elseif scriptNumber == 3 then
-                                Speak.talk('Reset Internet Mode')
-                                os.execute("echo 111111 | sudo -S sh scripts/resetInternet.sh")
-                        elseif scriptNumber == 4 then
-                                Speak.talk('Reset Darwin')
+			elseif scriptNumber == 3 then
+				Speak.talk('Reset Internet Mode')
+				os.execute("echo 111111 | sudo -S sh scripts/resetInternet.sh")
+			elseif scriptNumber == 4 then
+				Speak.talk('Reset Darwin')
 				os.execute("sleep 1");				
 				os.execute("echo 111111 | sudo -S reboot")
-                        
 			elseif scriptNumber == 5 then
 				Speak.talk("I.D. menu start")
 				MenuID = "id menu"
@@ -141,19 +140,19 @@ function killAll()
 	os.execute("kill $(ps aux | grep '[k]itty' | awk '{print $2}')")
 	os.execute("kill $(ps aux | grep '[hH]orde' | awk '{print $2}')")
 	os.execute("kill $(ps aux | grep '[l]ua run_cognition.lua' | awk '{print $2}')")
-        os.execute("echo 111111| sudo -S kill $(ps aux | grep '[c]onnection' | awk '{print $2}')")
+    os.execute("echo 111111| sudo -S kill $(ps aux | grep '[c]onnection' | awk '{print $2}')")
 	os.execute("echo 111111 | sudo -S kill $(ps aux | grep '[C]alibrationServer' | awk '{print $2}')")
 end
 function soccerMenuExecute()
 	if scriptNumber == 1 then
 		 Speak.talk('Kitty Soccer Mode')
 		 killAll();
-                 os.execute("echo 111111 | sudo -S sh scripts/restartcam.sh")
+         os.execute("echo 111111 | sudo -S sh scripts/restartcam.sh")
 		 print("just killed all")
 		 os.execute("sh noKillRunBasic.sh")
 		 unix.usleep(7*1E6)
 		 print("ran cog")
-                 os.execute("sh scripts/kittyMode.sh");     
+         os.execute("sh scripts/kittyMode.sh");     
 		 print("kitty mode running");         
 	elseif  scriptNumber == 2 then
                 Speak.talk('horde soccer')
@@ -161,15 +160,19 @@ function soccerMenuExecute()
                  os.execute("echo 111111 | sudo -S sh scripts/restartcam.sh")
 		 unix.usleep(2*1E6);
 		 os.execute("sh noKillRunBasic.sh")
-                 os.execute("sh runhorde.sh");
+         os.execute("sh runhorde.sh");
+                
+         PLAYING = 1       -- Used to say we want the game state menu at top 
+                 
         elseif scriptNumber == 3 then 
 		Speak.talk('imma goalie');
 		os.execute("sh noKillRunBasic.sh");
 		os.execute("lua goalieHFA.lua")
+		PLAYING = 1			-- Used to say we want the game state menu at top
 	elseif scriptNumber == 4 then
                 Speak.talk('game state menu')
 		MenuID = "game state menu"
-		scriptNumber = 0;
+		scriptNumber = 0; 
         elseif scriptNumber == 5 then
                 Speak.talk('main menu')
 		MenuID = 'main menu'
@@ -207,47 +210,52 @@ function gameStateMenuExecute()
 	gcm.set_game_penalty(teamPenalty);
 	
 end
+PLAYING = 0
 MenuID = "main menu";		
 function update() 
 	if ((Body.get_time() - tButton) > 0.25) then
 		tButton = Body.get_time();
 		
-		if (Body.get_change_role() == 1) then
-			scriptNumber = scriptNumber + 1;
 		
-			if(MenuID == "main menu") then
-				mainMenuUpdate();		
-			elseif(MenuID == "soccer menu") then 
-				soccerMenuUpdate();
-			elseif(MenuID == "vision menu") then
-				visionMenuUpdate();
-			elseif(MenuID == "game state menu") then
-				gameStateMenuUpdate()
-			elseif(MenuID == "id menu") then
-				idMenuUpdate();
-			end
-				
-			
-		end
+		if PLAYER == 0 then
+			if (Body.get_change_role() == 1) then
+				scriptNumber = scriptNumber + 1;
 	
-	
-		if (Body.get_change_state() == 1) then
-			if(MenuID == "main menu") then
-				--Speak.talk("middle pressed");
-				mainMenuExecute();
-			elseif(MenuID == "soccer menu") then 
-				soccerMenuExecute();
-			elseif(MenuID == "vision menu") then
-				visionMenuExecute();
-			elseif(MenuID == "game state menu") then
-				gameStateMenuExecute()
-			 elseif(MenuID == "id menu") then
-                                idMenuExecute();
+				if(MenuID == "main menu") then
+					mainMenuUpdate();		
+				elseif(MenuID == "soccer menu") then 
+					soccerMenuUpdate();
+				elseif(MenuID == "vision menu") then
+					visionMenuUpdate();
+				elseif(MenuID == "game state menu") then
+					gameStateMenuUpdate()
+				elseif(MenuID == "id menu") then
+					idMenuUpdate();
+				end
+			
+		
 			end
-			
-			
 
-		end	
+
+			if (Body.get_change_state() == 1) then
+				if(MenuID == "main menu") then
+					--Speak.talk("middle pressed");
+					mainMenuExecute();
+				elseif(MenuID == "soccer menu") then 
+					soccerMenuExecute();
+				elseif(MenuID == "vision menu") then
+					visionMenuExecute();
+				elseif(MenuID == "game state menu") then
+					gameStateMenuExecute()
+				 elseif(MenuID == "id menu") then
+					idMenuExecute();
+				end
+		
+		
+
+			end	
+		
+		end
 	end	
 
 end

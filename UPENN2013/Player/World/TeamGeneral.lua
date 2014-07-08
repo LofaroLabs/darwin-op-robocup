@@ -24,7 +24,7 @@ ballLostPenalty = Config.team.ballLostPenalty;
 walkSpeed = Config.team.walkSpeed;
 turnSpeed = Config.team.turnSpeed;
 
-
+GOALIE_DEAD_THRESHOLD = 3
 
 -- setting the distance as defined to be "close" for the goalie to the ball to be 1m
 wcm.set_horde_goalCloseDist(1)
@@ -43,6 +43,8 @@ flip_check_t = Config.team_flip_check_t or 3.0;
 
 confusion_handling = Config.confusion_handling or 0;
 
+lastTimeDeclaredReceived = {Body.get_time(), Body.get_time(), Body.get_time()}
+lastTimeReceivedFromGoalie = Body.get_time();
 
 goalie_ball={0,0,0};
 
@@ -233,6 +235,7 @@ function update()
   state.declared = wcm.get_horde_doDeclare();
   state.goalieCloseEnough = wcm.get_horde_goalCloseDist();
   state.ballRelative = util.pose_relative({wcm.get_ballGlobal_x(), wcm.get_ballGlobal_y(), 0}, {state.pose.x, state.pose.y, state.pose.a});
+  state.ballGlobal = {wcm.get_ballGlobal_x(), wcm.get_ballGlobal_y()};
   state.ballRelative[3] = 0;
   
   -- if i am the goalie then set whether we think the ball is on my side.
@@ -278,13 +281,14 @@ function update()
 		goalieDist = get_distanceBetween(state.ballRelative, {0, 0});
 		print("DNW goalie dist = " .. tostring(goalieDist) .. " closeDist = " .. tostring(wcm.get_horde_goalCloseDist()) .. " ball lost = " .. tostring(state.ballLost));
 		-- as long as the ball is close enough and i can see it then I am close enough
-		if goalieDist <= wcm.get_horde_goalCloseDist() and state.ballLost == 0 then
-			state.goalieCloseEnough = 1
-			wcm.set_horde_goalieCloseEnough(1)
+		goalieDistFromPosts = math.abs(wcm.get_ballGlobal_x()- (World.xMax*wcm.get_horde_goalSign()))
+		if   goalieDistFromPosts<wcm.get_horde_goalCloseDist() and state.ballLost == 0 then
+			state.goalieCloseEnough = 1;
+			wcm.set_horde_goalieCloseEnough(1);
 			print("DNW Goalie is close enough state version = " .. tostring(state.goalieCloseEnough) .. " wcm version =" .. tostring(wcm.get_horde_goalCloseDist()));
-		else
-			state.goalieCloseEnough = 0
-			wcm.set_horde_goalieCloseEnough(0)
+		elseif(goalieDistFromPosts >  wcm.get_horde_goalCloseDist()*1.25) then
+			state.goalieCloseEnough = 0;
+			wcm.set_horde_goalieCloseEnough(0);
 			print("DNW Goalie is NOT close enough state version = " .. tostring(state.goalieCloseEnough) .. " wcm version =" .. tostring(wcm.get_horde_goalCloseDist()));
 		end
 		
@@ -372,8 +376,10 @@ function update()
 				--somebodyDeclared[myRole] = 0;
 			-- ^^ ignore him...^^
 			else-- don't ignore him, he dclared, so note that somebody declared that role
+				lastTimeDeclaredReceived[myRole] = Body.get_time();
 				if states[id].declared[myRole] == 1 then
-					setDebugTrue();		
+					
+					--setDebugTrue();		
 					print("ID " .. tostring(id) .. " declared the role " .. tostring(myRole));
 					somebodyDeclared[myRole] = id;
 					setDebugFalse();
@@ -381,7 +387,7 @@ function update()
 					break;-- break out of inner loop, run again for next role
 				else
 					somebodyDeclared[myRole] = 0;
-					setDebugTrue();	
+					--setDebugTrue();	
 					print("ID " .. tostring(id) .. " NOT  declared the role " .. tostring(myRole));
 					
 					print("id " .. tostring(id) .. "not declared" )
@@ -390,9 +396,37 @@ function update()
 			end
 		end
 	end
+	
 
-	--hey put a print here
 	wcm.set_horde_declared(somebodyDeclared);
+	
+	-- if i am safety and LTDR[2] > 5 declareSupport
+	if somebodyDeclared[3] == state.id and Body.get_time() - lastTimeDeclaredReceived[2] > 5 then
+		-- make sure 
+		somebodyDeclared[3] = 0; -- undeclare my previous declare
+		somebodyDeclared[2] = 0; -- and undeclare support so that I can take it if I am not closest
+		wcm.set_horde_declared(somebodyDeclared);
+		
+		-- make sure he has set that he is doing it
+		state.declared[3] = 0
+		state.declared[2] = 0
+		wcm.set_horde_doDeclare(state.declared)
+	end
+	-- if I am support and LTSD[1] > 5 declareKiddie
+	if somebodyDeclared[2] == state.id and Body.get_time() - lastTimeDeclaredReceived[1] > 5 then
+		-- make sure 
+		somebodyDeclared[2] = 0; -- undeclare my previous declare
+		somebodyDeclared[1] = 0; -- and undeclare kiddie so that I can take it if I am closest
+		wcm.set_horde_declared(somebodyDeclared);
+		
+		-- make sure he has set that he is doing it
+		state.declared[2] = 0
+		state.declared[1] = 0
+		wcm.set_horde_doDeclare(state.declared)
+	end
+	
+
+	
 	-- zero is the default so originally everyon will be zero so 
 	print("Done checking declared -------------------------");
  	setDebugFalse();
@@ -401,11 +435,16 @@ function update()
  	if playerID ~= GOALIE_ID then -- if I'm not the goalie then I need to update the penalty {x,y} location
 		for index=1,5 do -- so find the goalie and set my penaltyLocation. -- might not need to loop.
 			if states[index] and states[index].id == GOALIE_ID then
-				wcm.set_teamdata_penaltyLocation(states[index].penaltyLocation);
+				wcm.set_teamdata_penaltyLocation(states[index].penaltyLocation); -- only the goalie has the penalty loc data.
 				wcm.set_horde_goalieCertainBallOnMySide(states[index].goalieCertainBallOnMySide);
+				lastTimeReceivedFromGoalie = Body.get_time();
 				break;
 			end
 
+		end
+		
+		if Body.get_time() - lastTimeReceivedFromGoalie > GOALIE_DEAD_THRESHOLD then
+			wcm.set_horde_goalieCertainBallOnMySide(0); -- make sure this is reset so that I don't end up flipping continuously.
 		end
   	end
 
@@ -528,8 +567,9 @@ end
   if (wcm.get_horde_dummyTraining() == 0) then
   	update_status();
   end
-  update_goalieCloseEnough();
+  
   update_teamdata();
+  update_goalieCloseEnough();
   update_obstacle();
   check_confused();
   check_flip2();
@@ -634,10 +674,14 @@ function update_goalieCloseEnough()
 	for id = 1,5 do
 	
 		if states[id] and states[id].role == ROLE_GOALIE and states[id].goalieCloseEnough then
+			lastTimeReceivedFromGoalie = Body.get_time();
 			wcm.set_horde_goalieCloseEnough(states[id].goalieCloseEnough)
 			return;
 		end
 	
+	end
+	if Body.get_time() - lastTimeReceivedFromGoalie > GOALIE_DEAD_THRESHOLD then
+		wcm.set_horde_goalieCloseEnough(0); -- If I didn't get anything from the goalie then I can't assume he is close enought
 	end
 
 end
@@ -718,7 +762,7 @@ function update_teamdata()
      teamPoseY[id] = 0;
      teamPoseA[id] = 0;
     if(states[id]) then
-	setDebugTrue()
+	--setDebugTrue()
 	print("Id = ".. id .. " yelledReady = " .. tostring(states[id].yelledKick))
 	setDebugFalse()
 
@@ -740,7 +784,7 @@ function update_teamdata()
   end
   -- all the yelled ready people
   wcm.set_team_yelledReady(teamYellReady)
-  setDebugTrue()
+  --setDebugTrue()
 	print("team Yell kick is .. " .. tostring(teamYellKick));
   setDebugFalse() 
   wcm.set_team_yelledKick(teamYellKick);

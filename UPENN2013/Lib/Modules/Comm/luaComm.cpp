@@ -61,7 +61,7 @@ static int lua_comm_init(lua_State *L) {
 static int lua_comm_update(lua_State *L) {
   static sockaddr_in source_addr;
   static char data[MAX_LENGTH];
-  printf("@!@!2\n lua_comm_update called port and ip : %s %d\n",IP.c_str(),PORT);
+  //////printf("@!@!2\n lua_comm_update called port and ip : %s %d\n",IP.c_str(),PORT);
 	// Check whether initiated
   assert(IP.empty()!=1);	
 

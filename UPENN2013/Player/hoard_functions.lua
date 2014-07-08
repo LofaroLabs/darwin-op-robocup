@@ -261,7 +261,9 @@ end
 
 hordeFunctions["gotoPose"] = function(args, client)
 	-- set the wcm values to the x,y,a from the args
+	setDebugTrue()
 	print("The args for gotoPose: " .. tostring(args) .. "\n");
+	setDebugFalse();
 	print("HI");
 	dest = args
 	print("Dest " .. dest.x);
@@ -281,7 +283,6 @@ hordeFunctions["updateGotoPose"] = function(args, client)
 	wcm.set_horde_gotoPose(vector.new({dest.x, dest.y, dest.a}));
 	
 	-- call the state
-	--BodyFSM.sm:set_state('bodyGotoPosition');
 end
 hordeFunctions["updateGotoPoseFacing"] = function(args, client)
 	-- set the wcm values to the x,y,a from the args

@@ -90,6 +90,11 @@ function initializeUniform(p0, dp)
   yp = p0[2]*vector.ones(n) + dp[2]*(vector.new(util.randu(n))-0.5*vector.ones(n));
   ap = p0[3]*vector.ones(n) + dp[3]*(vector.new(util.randu(n))-0.5*vector.ones(n));
   wp = vector.zeros(n);
+  setDebugTrue()
+  for i= 1,n do
+   --print("X[] = " .. tostring(xp[i]));
+  end
+  setDebugFalse()
 end
 
 
