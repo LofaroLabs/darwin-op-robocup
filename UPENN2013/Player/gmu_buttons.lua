@@ -168,8 +168,10 @@ function soccerMenuExecute()
 	elseif scriptNumber == 3 then 
 		Speak.talk('imma goalie');
 		os.execute("sh noKillRunBasic.sh");
-		os.execute("lua goalieHFA.lua")
-		
+		--os.execute("lua goalieHFA.lua")
+		setDebugTrue();
+		print("playing will be true " );
+		setDebugFalse();
 		PLAYING = 1			-- Used to say we want the game state menu at top
 		scriptNumber = 0 -- to take us to the beginning of the menu
 	elseif scriptNumber == 4 then
