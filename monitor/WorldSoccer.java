@@ -160,7 +160,7 @@ public class WorldSoccer implements ActionListener {
 								{
 								sock.receive(pack);
 								Node node = Sean.getNode(new String(pack.getData()), 0);
-								//System.err.println(node);
+								System.err.println(node);
 								if (currentField != null) { currentField.update(node); }
                    				}
                    			}
