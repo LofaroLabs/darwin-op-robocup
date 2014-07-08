@@ -168,7 +168,7 @@ function soccerMenuExecute()
 	elseif scriptNumber == 3 then 
 		Speak.talk('imma goalie');
 		os.execute("sh noKillRunBasic.sh");
-		--os.execute("lua goalieHFA.lua")
+		os.execute("lua goalieHFA.lua")
 		setDebugTrue();
 		print("playing will be true " );
 		setDebugFalse();
