@@ -256,8 +256,13 @@ function update()
 			end	
 		else
 			-- we are playing so show the game menu first
-			
+			setDebugTrue();
+			print("PLAYING!!")
+			setDebugFalse();
 			if (Body.get_change_role() == 1) then
+				setDebugTrue();
+				print("ScriptNumber = " .. tostring(scriptNumber));
+				setDebugFalse();
 				scriptNumber = scriptNumber + 1;
 				gameStateMenuUpdate()
 			end
@@ -266,7 +271,11 @@ function update()
 			if (Body.get_change_state() == 1) then
 				if WANT_MAIN == 1 then
 					PLAYING = 0
+					-- reset
+					MenuID = "main menu"
+					scriptNumber = 0
 				else
+					-- otherwise if middle button is pressed then penalize
 					gameStateMenuExecute()
 				end
 			end
