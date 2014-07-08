@@ -107,10 +107,10 @@ function init_particles()
  -- print("goal defend sign is " .. goalDefendSign)
   if gcm.get_team_player_id() % 2 == 0 then
   	-- want a low spread so set the second arg manually
-    PoseFilter.initializeUniform(vector.new({math.abs(goalDefend[1]/2)*goalDefendSign,  goalDefendSign * Config.world.yMax,   goalDefendSign * math.pi/2}), vector.new({.15*xMax, .15*yMax, math.pi/6}))
+    PoseFilter.initializeUniform(vector.new({math.abs(goalDefend[1]/2)*goalDefendSign,  goalDefendSign * Config.world.yMax,  math.pi/2}), vector.new({.15*xMax, .15*yMax, math.pi/6}))
   else
   	-- want a low spread so set the second arg manually
-  	PoseFilter.initializeUniform(vector.new({math.abs(goalDefend[1]/2)*goalDefendSign,  -1 * goalDefendSign * Config.world.yMax, goalDefendSign * math.pi/2}), vector.new({.15*xMax, .15*yMax, math.pi/6}))
+  	PoseFilter.initializeUniform(vector.new({math.abs(goalDefend[1]/2)*goalDefendSign,  -1 * goalDefendSign * Config.world.yMax, -1*  math.pi/2}), vector.new({.15*xMax, .15*yMax, math.pi/6}))
   end
    
   if (useSoundLocalization > 0) then
