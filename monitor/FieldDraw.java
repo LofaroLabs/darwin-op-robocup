@@ -41,8 +41,16 @@ public class FieldDraw extends JFrame implements Runnable {
     //private String teamid;
     //private String id;
     //private int Robotindex;
-    //private Color[] teamColors = {Color.cyan, Color.green, Color.magenta, Color.yellow, Color.white, Color.red, Color.blue, Color.orange};
     public ArrayList<Robot> robotArray = new ArrayList<Robot>(NUM_ROBOTS);
+
+	
+    private Color[] botColors = {Color.red, Color.blue, Color.green, Color.orange, Color.cyan, Color.magenta, Color.yellow, Color.white };
+	public Color botColor(Robot robot)
+		{
+		try { return botColors[Integer.parseInt(robot.id) - 1]; }		
+		catch (Exception e) { return Color.black; } 
+		}
+		
 
     public FieldDraw(int l, int x, int y, double a, String tid, String i) {
         for (int q = 0; q < 8; q++) {
@@ -67,7 +75,7 @@ public class FieldDraw extends JFrame implements Runnable {
              */
             width = 548; // A
             height = 360; // B
-            penalty_mark_diam = 10;
+            penalty_mark_diam = 6;  // it's actually 10 but we make it 6 to be different from the balls
             goal_width = 144; // D
             penalty_area_length = 48; // E
             penalty_area_width = 200; // F
@@ -76,25 +84,26 @@ public class FieldDraw extends JFrame implements Runnable {
         } else if (l == 1) {
             /*
              Competition :
+             See Page 1 of http://www.informatik.uni-bremen.de/humanoid/pub/Website/Downloads/HumanoidLeagueRules2014-01-10.pdf
              A - 900
              B - 600
-             D - 150
+             D - 225
              E - 60
-             F - 220
+             F - 345
              G - 180
              H - 150
              */
 
-            width = 600; // A
-            height = 400; // B
-            penalty_mark_diam = 10;
-            goal_width = 150; // D
+            width = 900; // A
+            height = 600; // B
+            penalty_mark_diam = 6;  // it's actually 10 but we make it 6 to be different from the balls
+            goal_width = 225; // D
             penalty_area_length = 60; // E
-            penalty_area_width = 220; // F
+            penalty_area_width = 345; // F
             penalty_mark_distance = 180; // G
-            center_circle_diam = 120; // H
+            center_circle_diam = 150; // H
         }
-        setSize(width + 100, height + 100);
+        setSize(width + TRANSFORM_X * 2, height + TRANSFORM_Y * 4);
         setLocationRelativeTo(null);
         setVisible(true);
         th = new Thread(this);
@@ -138,25 +147,33 @@ public class FieldDraw extends JFrame implements Runnable {
         //drawParticles(g);
     }
 
+	public static final int TRANSFORM_X = 50;
+	public static final int TRANSFORM_Y = 50;
+
+
+	public static final int GOAL_DEPTH = 30;
+
     public void drawField(Graphics g) {
         //draw outer field lines
-        g.drawRect(50, 50, width, height);
+        g.drawRect(TRANSFORM_X, TRANSFORM_Y, width, height);
         //draw center circle
-        g.drawOval(((width + 100) / 2) - (center_circle_diam / 2), ((height + 100) / 2) - (center_circle_diam / 2), center_circle_diam, center_circle_diam);
+        g.drawOval( TRANSFORM_X + width / 2 - center_circle_diam / 2, TRANSFORM_Y + height / 2 - center_circle_diam / 2, center_circle_diam, center_circle_diam);
         //draw center line
-        g.drawLine((width + 100) / 2, 50, (width + 100) / 2, (height + 50));
+        g.drawLine(TRANSFORM_X + width / 2, TRANSFORM_Y, TRANSFORM_X + width / 2, TRANSFORM_Y + height);
         //draw penalty box left
-        g.drawRect(50, ((height + 100) / 2) - (penalty_area_width / 2), penalty_area_length, penalty_area_width);
+        g.drawRect(TRANSFORM_X, (TRANSFORM_Y + height / 2) - (penalty_area_width / 2), penalty_area_length, penalty_area_width);
         //draw penalty box right
-        g.drawRect((width + 50) - penalty_area_length, ((height + 100) / 2) - (penalty_area_width / 2), penalty_area_length, penalty_area_width);
+        g.drawRect((width + TRANSFORM_X) - penalty_area_length, (TRANSFORM_Y + height / 2) - (penalty_area_width / 2), penalty_area_length, penalty_area_width);
+        //draw center mark left
+        g.drawOval(width/2 + TRANSFORM_X - penalty_mark_diam / 2, TRANSFORM_Y + height / 2  - penalty_mark_diam / 2, penalty_mark_diam, penalty_mark_diam);
         //draw penalty mark left
-        g.drawOval(penalty_mark_distance + 50, (height + 100) / 2, penalty_mark_diam, penalty_mark_diam);
+        g.drawOval(penalty_mark_distance + TRANSFORM_X - penalty_mark_diam / 2, TRANSFORM_Y + height / 2  - penalty_mark_diam / 2, penalty_mark_diam, penalty_mark_diam);
         //draw penalty mark right
-        g.drawOval((width + 100) - (penalty_mark_distance + 50), (height + 100) / 2, penalty_mark_diam, penalty_mark_diam);
+        g.drawOval((width + TRANSFORM_X * 2) - (penalty_mark_distance + TRANSFORM_Y) - penalty_mark_diam / 2, TRANSFORM_Y + height / 2 - penalty_mark_diam / 2, penalty_mark_diam, penalty_mark_diam);
         //draw goal left
-        g.drawRect(20, ((height + 100) / 2) - (goal_width / 2), 30, goal_width);
+        g.drawRect(TRANSFORM_X - GOAL_DEPTH, (TRANSFORM_Y + height / 2) - (goal_width / 2), GOAL_DEPTH, goal_width);
         //draw goal right
-        g.drawRect((width + 100) - 50, ((height + 100) / 2) - (goal_width / 2), 30, goal_width);
+        g.drawRect(TRANSFORM_X + width, (TRANSFORM_Y + height / 2) - (goal_width / 2), GOAL_DEPTH, goal_width);
     }
 
 /*
@@ -171,12 +188,12 @@ public class FieldDraw extends JFrame implements Runnable {
 					//g.setColor(teamColors[Robotindex]);
                     //System.out.println("Index of Robot:"+Robotindex+" Color of Robot "+ teamColors[Robotindex]);
                     //draw outline of particle to match color of robot
-					drawOrientedCircle(g, myParticle.x, myParticle.y, myParticle.a, 8,false);
+					drawCircle(g, myParticle.x, myParticle.y, myParticle.a, 8,false);
                     //color particle to match prabability between white=0 and black=1
                     int num = 255 - (int)(myParticle.w * 100);
                     Color grayColor = new Color(num,num,num);
                     g.setColor(grayColor);
-                    drawOrientedCircle(g, myParticle.x+1, myParticle.y+1, myParticle.a, 7,true);
+                    drawCircle(g, myParticle.x+1, myParticle.y+1, myParticle.a, 7,true);
 					g.setColor(previousc);
 				}
 			}
@@ -184,48 +201,69 @@ public class FieldDraw extends JFrame implements Runnable {
     }
 */
 
+	public static final int ROBOT_WIDTH = 22;  // roughly
+	public static final int BALL_WIDTH = 11;  // roughly
+
     public void drawRobot(Graphics g) {
 		for(int i = 0; i<robotArray.size(); i++){
                 Robot currentRobot = robotArray.get(i);
 				if (currentRobot.init) {
-					//for (Robot myRobot : robotArray) {
-						    //Robotindex = Integer.parseInt(currentRobot.teamid) - 1;
-							Color previousc = g.getColor();
-							g.setColor(Color.RED);
-							g.fillOval(((width + 100) / 2) + currentRobot.x + 8, ((height + 100) / 2) + currentRobot.y + 8, 24, 24);
-							//g.setColor(teamColors[Robotindex]);
-							g.setColor(Color.BLACK);
-                            //System.out.println("Teamid-1 "+(Integer.parseInt(currentRobot.teamid) - 1)+ "RobotIndex:"+Robotindex+" Color of Robot "+ teamColors[Robotindex]);
-							drawOrientedCircle(g, currentRobot.x, currentRobot.y, currentRobot.angle, 20,false);//draw circle and line orientation 
-							g.setColor(previousc);
-							String s = " ID : " + currentRobot.id; // draw robot id
-							g.drawString(s, ((width + 100) / 2) + currentRobot.x - 30, ((height + 100) / 2) + currentRobot.y - 30);
+							// draw the robot
+							g.setColor(botColor(currentRobot));
+							drawCircle(g, currentRobot.x, currentRobot.y, currentRobot.angle, ROBOT_WIDTH, true, true); 
+							g.setColor(Color.black);
+							
+							// draw the robot label
+							String s = "id " + currentRobot.id + "  role " + currentRobot.role + "  battery " + currentRobot.battery; // draw robot id
+							g.drawString(s, (TRANSFORM_X + width / 2) + currentRobot.x - 30, (TRANSFORM_Y + height / 2) - currentRobot.y + 30);
+							s = "status " + currentRobot.status + "  declared " + currentRobot.declared1 + "  " + currentRobot.declared2 + "  " + currentRobot.declared3;
+							g.drawString(s, (TRANSFORM_X + width / 2) + currentRobot.x - 30, (TRANSFORM_Y + height / 2) - currentRobot.y + 50);
+
+							// draw the robot ball
+							g.setColor(botColor(currentRobot));
+							drawCircle(g, currentRobot.ballx, currentRobot.bally, 0, BALL_WIDTH, currentRobot.ballLost == 0.0, false); 
+							g.setColor(Color.black);
+
 				}
 		}	
     }
 
-    public void drawOrientedCircle(Graphics g, int x_coordinate, int y_coordinate, double angle, int size,boolean fill) {
-        if (fill){ 
-            g.fillOval(((width + 100) / 2) + x_coordinate + (size / 2), ((height + 100) / 2) + y_coordinate + (size / 2), size, size);
-        }
-        else {
-            g.drawOval(((width + 100) / 2) + x_coordinate + (size / 2), ((height + 100) / 2) + y_coordinate + (size / 2), size, size); 
-            //add orientation
-            int x = ((width + 100) / 2) + x_coordinate + size;
-            int y = ((height + 100) / 2) + y_coordinate + size;
-            int endX = x + (int) ((size * 2) * Math.cos(angle));
-            int endY = y + (int) ((size * 2) * -Math.sin(angle));
-            g.drawLine(x, y, endX, endY);
-        }
-        
-    }
-    
+    public void drawCircle(Graphics g, int x_coordinate, int y_coordinate, double angle, int size, boolean fill, boolean orient)
+    	{
+		int x = (TRANSFORM_X + width / 2) + x_coordinate;
+		int y = (TRANSFORM_Y + height / 2) - y_coordinate;
+
+        if (fill)
+            g.fillOval(	x - (size / 2),
+            			y - (size / 2), size, size);
+        else 
+            g.drawOval(	x - (size / 2),
+            			y - (size / 2), size, size);
+             
+        if (orient)
+        	{
+        	g.setColor(Color.BLACK);
+			//add orientation
+			int endX = x + (int) ((size * 2) * Math.cos(angle));
+			int endY = y + (int) ((size * 2) * -Math.sin(angle));
+			g.drawLine(x, y, endX, endY);
+			}
+		}    
     
     public void update(Node node)
     	{
     	Robot robot = robotArray.get((int)(node.get("id").valueD));
-     	robot.x = (int) (100 * node.get("pose").get("x").valueD) - 20;
-        robot.y = (int) (100 * node.get("pose").get("y").valueD) - 20;
+     	robot.x = (int) (100 * node.get("pose").get("x").valueD);
+        robot.y = (int) (100 * node.get("pose").get("y").valueD);
+        robot.ballx = (int) (100 * node.get("ballGlobal").get("1").valueD);  // x = 1
+        robot.bally = (int) (100 * node.get("ballGlobal").get("2").valueD);  // y = 2
+        robot.ballLost = (int) (node.get("ballLost").valueD);
+        robot.role = (int) (node.get("role").valueD);
+        robot.status = (int) (node.get("status").valueD);
+        robot.declared1 = (int) (node.get("declared").get("1").valueD);
+        robot.declared2 = (int) (node.get("declared").get("2").valueD);
+        robot.declared3 = (int) (node.get("declared").get("3").valueD);
+        robot.battery = (node.get("battery_level").valueD);
     	robot.angle = node.get("pose").get("a").valueD;
     	robot.teamid = "" + (int)(node.get("teamNumber").valueD);
     	robot.id = "" + (int)(node.get("id").valueD);
@@ -316,7 +354,15 @@ class Particle {
 
 class Robot {
     int x, y;
+    int ballx, bally;
+    int ballLost;
     Double angle;
+    int role;
+    int status;
+    int declared1;
+    int declared2;
+    int declared3;
+    double battery;
     String teamid, id;
     ArrayList<Particle> particleArray = new ArrayList<Particle>(200);
 	boolean init = false;
