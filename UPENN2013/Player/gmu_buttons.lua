@@ -14,6 +14,7 @@ require('os')
 require('unix')
 require('init')
 require('gcm')
+setDebugFalse();
 scriptNumber = 0;
 function mainMenuUpdate() 
 			print("Incrementing leftbutton script")
@@ -147,38 +148,42 @@ function soccerMenuExecute()
 	if scriptNumber == 1 then
 		 Speak.talk('Kitty Soccer Mode')
 		 killAll();
-         os.execute("echo 111111 | sudo -S sh scripts/restartcam.sh")
+		 os.execute("echo 111111 | sudo -S sh scripts/restartcam.sh")
 		 print("just killed all")
 		 os.execute("sh noKillRunBasic.sh")
 		 unix.usleep(7*1E6)
 		 print("ran cog")
-         os.execute("sh scripts/kittyMode.sh");     
+		 os.execute("sh scripts/kittyMode.sh");     
 		 print("kitty mode running");         
 	elseif  scriptNumber == 2 then
-                Speak.talk('horde soccer')
-		 killAll();
-                 os.execute("echo 111111 | sudo -S sh scripts/restartcam.sh")
-		 unix.usleep(2*1E6);
-		 os.execute("sh noKillRunBasic.sh")
-         os.execute("sh runhorde.sh");
-                
-         PLAYING = 1       -- Used to say we want the game state menu at top 
-                 
-        elseif scriptNumber == 3 then 
+		Speak.talk('horde soccer')
+		killAll();
+		os.execute("echo 111111 | sudo -S sh scripts/restartcam.sh")
+		unix.usleep(2*1E6);
+		os.execute("sh noKillRunBasic.sh")
+		os.execute("sh runhorde.sh");
+
+		PLAYING = 1       -- Used to say we want the game state menu at top 
+		scriptNumber = 0  -- to take us to the beginning of the menu
+	elseif scriptNumber == 3 then 
 		Speak.talk('imma goalie');
 		os.execute("sh noKillRunBasic.sh");
 		os.execute("lua goalieHFA.lua")
+		setDebugTrue();
+		print("playing will be true " );
+		setDebugFalse();
 		PLAYING = 1			-- Used to say we want the game state menu at top
+		scriptNumber = 0 -- to take us to the beginning of the menu
 	elseif scriptNumber == 4 then
-                Speak.talk('game state menu')
+        Speak.talk('game state menu')
 		MenuID = "game state menu"
 		scriptNumber = 0; 
-        elseif scriptNumber == 5 then
-                Speak.talk('main menu')
+	elseif scriptNumber == 5 then
+		Speak.talk('main menu')
 		MenuID = 'main menu'
-        else
-                scriptNumber = 0;
-        end
+	else
+		scriptNumber = 0;
+	end
 end
 function gameStateMenuUpdate()
         if scriptNumber == 1 then
@@ -198,6 +203,9 @@ function gameStateMenuUpdate()
                 gcm.set_game_state(4);
         elseif scriptNumber == 6 then
                 Speak.talk('main menu')
+                if PLAYING == 1 then
+                	WANT_MAIN = 1
+                end
         else
                 scriptNumber = 0;
         end
@@ -207,20 +215,23 @@ function gameStateMenuExecute()
 	Speak.talk("penalty");
 	teamPenalty = gcm.get_game_penalty();
 	teamPenalty[Config.game.playerID] = 1 - teamPenalty[Config.game.playerID];
+	setDebugTrue();
+	print("Team Penalty = " .. teamPenalty[Config.game.playerID]);
+	setDebugFalse();
 	gcm.set_game_penalty(teamPenalty);
 	
 end
+WANT_MAIN = 0
 PLAYING = 0
 MenuID = "main menu";		
 function update() 
-	if ((Body.get_time() - tButton) > 0.25) then
+	if ((Body.get_time() - tButton) > 0.5) then
 		tButton = Body.get_time();
 		
 		
-		if PLAYER == 0 then
+		if PLAYING == 0 then -- so if we aren't in either horde soccer or goalie do this
 			if (Body.get_change_role() == 1) then
 				scriptNumber = scriptNumber + 1;
-	
 				if(MenuID == "main menu") then
 					mainMenuUpdate();		
 				elseif(MenuID == "soccer menu") then 
@@ -232,8 +243,7 @@ function update()
 				elseif(MenuID == "id menu") then
 					idMenuUpdate();
 				end
-			
-		
+
 			end
 
 
@@ -254,6 +264,33 @@ function update()
 		
 
 			end	
+		else -- else we will have the 
+			-- we are playing so show the game menu first
+			setDebugTrue();
+			print("PLAYING!!")
+			setDebugFalse();
+			if (Body.get_change_role() == 1) then
+				setDebugTrue();
+				print("ScriptNumber = " .. tostring(scriptNumber));
+				setDebugFalse();
+				scriptNumber = scriptNumber + 1;
+				gameStateMenuUpdate()
+			end
+			
+			
+			if (Body.get_change_state() == 1) then
+				if WANT_MAIN == 1 then -- reset to get into main menu
+					PLAYING = 0
+					MenuID = "main menu"
+					scriptNumber = 0
+					WANT_MAIN = 0
+				else -- otherwise if middle button is pressed then penalize
+					gameStateMenuExecute()
+				end
+			end
+			
+			
+		
 		
 		end
 	end	
@@ -273,8 +310,10 @@ local tDelay = 0.005 * 1E6;
 --Config.game.playerID = 900;
 while 1 do
 	--Config.game.playerID = 2;
+	setDebugTrue()
 	print(Config.game.playerID);
  	print(tostring(gcm.get_game_state()))
+ 	setDebugFalse();
 	update();
 	unix.usleep(tDelay);
 end
