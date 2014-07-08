@@ -223,7 +223,7 @@ WANT_MAIN = 0
 PLAYING = 0
 MenuID = "main menu";		
 function update() 
-	if ((Body.get_time() - tButton) > 0.25) then
+	if ((Body.get_time() - tButton) > 0.5) then
 		tButton = Body.get_time();
 		
 		
