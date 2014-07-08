@@ -282,7 +282,7 @@ setDebugTrue()
 	
 if(Config.game.role == 0 and (wcm.get_pose().x/math.abs(wcm.get_pose().x))~= wcm.get_horde_goalSign()) then
 	print("YO, goalie was on wrong side ".. wcm.get_pose().x .. " " .. tostring(wcm.get_horde_goalSign() ))
-	PoseFilter.flip_particles()
+	--PoseFilter.flip_particles()
 end
 setDebugFalse()
  ---David: I commented this out because I it looks at gamestate  and re initializes the particles based on that. I dont want it to do that at all for our purposes
