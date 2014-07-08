@@ -14,6 +14,7 @@ require('os')
 require('unix')
 require('init')
 require('gcm')
+setDebugFalse();
 scriptNumber = 0;
 function mainMenuUpdate() 
 			print("Incrementing leftbutton script")
@@ -217,7 +218,7 @@ function update()
 		tButton = Body.get_time();
 		
 		
-		if PLAYER == 0 then
+		if PLAYING == 0 then
 			if (Body.get_change_role() == 1) then
 				scriptNumber = scriptNumber + 1;
 	
