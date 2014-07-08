@@ -365,7 +365,7 @@ function update()
 	for myRole = 1,3 do 
         	for id = 1,5 do
 			--check if nil, if this is not declared, and make sure this isn't the goalie
-			if not states[id] or not states[id].declared[myRole] or states[id].role == 0 then
+			if not states[id] or states[id].declared[myRole] == 0 or states[id].role == 0 then
 				if states[id] == nil then
 					print("id " .. tostring(id) .. " no msg received")
 				elseif states[id].role == 0 then
@@ -376,6 +376,7 @@ function update()
 				--somebodyDeclared[myRole] = 0;
 			-- ^^ ignore him...^^
 			else-- don't ignore him, he dclared, so note that somebody declared that role
+							
 				lastTimeDeclaredReceived[myRole] = Body.get_time();
 				if states[id].declared[myRole] == 1 then
 					
@@ -626,21 +627,23 @@ function update_status()
 			return a.id < b.id
 		end
 		return a.dist < b.dist end)
-		
+		setDebugTrue();
 	prevDis = 0	
 	for i=1,#distIDPairs do
-		print("DNW list: " .. distIDPairs[i].dist) 
+		print("DNW list: " .. distIDPairs[i].dist .. " id = " .. tostring(distIDPairs[i].id)) 
 		if distIDPairs[i].dist >= prevDis then
 			prevDis = distIDPairs[i].dist
 		else
 			print(nil .. "hi")
 		end
 	end	
+	setDebugFalse();
 	
 	-- loop
 	
 	local secondClosestWithin = 0
 	print("DNW number of distIDPairs is " .. tostring(#distIDPairs))
+	
 	for i=1, #distIDPairs do
 		print("DNW i = " .. tostring(i) .. " ID = " .. tostring(distIDPairs[i].id) .. " dist = " .. tostring(distIDPairs[i].dist) .. " distN = " .. tostring(wcm.get_horde_distN()));
 		distIDPairs[i].status = (i-1)*2
@@ -656,9 +659,9 @@ function update_status()
 			wcm.set_horde_status(distIDPairs[i].status);
 			print("DNW i = " .. tostring(i) .. " My Status = " .. tostring(wcm.get_horde_status()));
 		end
-		
+		setDebugTrue();
 		print("DNW i = " .. tostring(i) .. " ID = " .. tostring(distIDPairs[i].id) .. " status = " .. tostring(wcm.get_horde_status()))
-		
+		setDebugFalse();
 	end
 	
 	
