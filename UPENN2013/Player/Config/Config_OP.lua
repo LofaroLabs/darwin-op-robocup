@@ -30,7 +30,7 @@ dev.game_control='OPGameControl';
 dev.team='TeamGeneral';
 dev.walk='AwesomeWalk' -- 'ChauAwesomeWalk' -- if doing pickup
 dev.kick = 'PunchKick'
-dev.gender = 1; -- 1 for boy and 0 for girl 
+dev.gender = 0; -- 1 for boy and 0 for girl 
 largestep_enable = true;
 dev.largestep = 'ZMPStepKick';
 
