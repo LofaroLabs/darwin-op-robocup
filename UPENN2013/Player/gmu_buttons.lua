@@ -272,14 +272,12 @@ function update()
 			
 			
 			if (Body.get_change_state() == 1) then
-				if WANT_MAIN == 1 then
+				if WANT_MAIN == 1 then -- reset to get into main menu
 					PLAYING = 0
-					-- reset
 					MenuID = "main menu"
 					scriptNumber = 0
 					WANT_MAIN = 0
-				else
-					-- otherwise if middle button is pressed then penalize
+				else -- otherwise if middle button is pressed then penalize
 					gameStateMenuExecute()
 				end
 			end
