@@ -213,6 +213,9 @@ function gameStateMenuExecute()
 	Speak.talk("penalty");
 	teamPenalty = gcm.get_game_penalty();
 	teamPenalty[Config.game.playerID] = 1 - teamPenalty[Config.game.playerID];
+	setDebugTrue();
+	print("Team Penalty = " .. teamPenalty[Config.game.playerID]);
+	setDebugFalse();
 	gcm.set_game_penalty(teamPenalty);
 	
 end
@@ -220,7 +223,7 @@ WANT_MAIN = 0
 PLAYING = 0
 MenuID = "main menu";		
 function update() 
-	if ((Body.get_time() - tButton) > 0.25) then
+	if ((Body.get_time() - tButton) > 0.5) then
 		tButton = Body.get_time();
 		
 		
