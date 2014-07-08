@@ -150,8 +150,8 @@ end
 --@usage For when robot falls down
 function reset_heading()
   if dont_reset_orientation == 0 then
-    --ap = 2*math.pi*vector.new(util.randu(n));
-    --wp = vector.zeros(n);
+    ap = 2*math.pi*vector.new(util.randu(n));
+    wp = vector.zeros(n);
   else
 
   end
