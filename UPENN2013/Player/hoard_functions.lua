@@ -53,6 +53,12 @@ ready = true;
 smindex = 0;
 initToggle = true;
 
+
+function setBodyState(behaviorState)
+	BodyFSM.sm:set_state(behaviorState)
+	
+end
+
 -- main loop
 myFunctions = {}
 
@@ -124,7 +130,7 @@ hordeFunctions = {}
 hordeFunctions["headMotion"] = function(args, client)
 end
 hordeFunctions["yellKick"] = function(args, client)
-	BodyFSM.sm:set_state('bodyPassKick');
+	setBodyState('bodyPassKick');
 end
 -- upenn position, should only be used when our game state is set to !3
 hordeFunctions["position"] = function(args, client)
@@ -139,14 +145,14 @@ hordeFunctions["position"] = function(args, client)
 		initPenalized = true;
 		--initGamePlaying = false;
 		GameFSM.sm:set_state('gamePenalized');
-		BodyFSM.sm:set_state('bodyIdle');
+		setBodyState('bodyIdle');
 		Motion.event('sit');
 	elseif gcm.get_game_state()~=3 and initGamePlaying == false then
 		initGamePlaying = true;
 		initPenalized = false;
         	print("setting game and body state in init game playing");
 		GameFSM.sm:set_state('gamePlaying');
- 		BodyFSM.sm:set_state('bodyPosition');
+ 		setBodyState('bodyPosition');
 		BodyFSM.update();
 	--	GameFSM.update();
 		
@@ -162,23 +168,23 @@ hordeFunctions["position"] = function(args, client)
 end
 
 hordeFunctions["yellReady"] = function(args, client)
-	BodyFSM.sm:set_state('bodyYellReady');
+	setBodyState('bodyYellReady');
 end
 hordeFunctions["yellFail"] = function(args, client)
-	BodyFSM.sm:set_state('bodyYellFail');
+	setBodyState('bodyYellFail');
 end
 
 
 
 hordeFunctions["walkForward"] = function(args,client)
-	BodyFSM.sm:set_state('bodyWalkForward');
+	setBodyState('bodyWalkForward');
 end
 
 hordeFunctions["gotoBall"] = function(args,client)
-	BodyFSM.sm:set_state('bodyGotoBall');
+	setBodyState('bodyGotoBall');
 end
 hordeFunctions["dribbleBall"] = function(args,client)
-	BodyFSM.sm:set_state('bodyDribble');
+	setBodyState('bodyDribble');
 end
 
 hordeFunctions["approachTarget"] = function(args,client)
@@ -186,40 +192,40 @@ hordeFunctions["approachTarget"] = function(args,client)
         print("Dest " .. dest.x);
         --print("The args more specfied... X" .. args.x .. " Y " .. args.y .. " theta: " .. args.a);
         wcm.set_horde_kickToPose(vector.new({dest.x, dest.y, dest.a}));
-	BodyFSM.sm:set_state('bodyApproachTarget');
+	setBodyState('bodyApproachTarget');
 
 end
 hordeFunctions["approachBall"] = function(args,client)
         print("Approaching Ball");
-	BodyFSM.sm:set_state('bodyApproach');
+	setBodyState('bodyApproach');
 	print("Set State to bodyApproach for the BodyFSM");
 	--sm.entry();
 end
 hordeFunctions["kickBall"] = function(args,client)
-        BodyFSM.sm:set_state('bodyKickGMU');
+        setBodyState('bodyKickGMU');
 end
 hordeFunctions["moveX"] = function(args,client)
-	BodyFSM.sm:set_state('bodyMoveX');
+	setBodyState('bodyMoveX');
 	--walk.set_velocity(.02,0,0);
 end
 
 hordeFunctions["moveY"] = function(args,client)
-        BodyFSM.sm:set_state('bodyMoveY');
+        setBodyState('bodyMoveY');
         --walk.set_velocity(0.0,1,0);
 end
 
 hordeFunctions["moveTheta"] = function(args,client)
-        BodyFSM.sm:set_state('bodyMoveTheta');
+        setBodyState('bodyMoveTheta');
       
 end
 hordeFunctions["turnThetaLookGoal"] = function(args,client)
-        BodyFSM.sm:set_state('bodyMoveThetaLookGoal');
+        setBodyState('bodyMoveThetaLookGoal');
       
 end
 
 
 hordeFunctions["stop"] = function(args,client)
-        BodyFSM.sm:set_state('bodyStop');
+        setBodyState('bodyStop');
        
 end
 hordeFunctions["StartSending"] = function (args, client)
@@ -251,11 +257,11 @@ end
 
 
 hordeFunctions["kickLeft"] = function(args,client)
-        BodyFSM.sm:set_state('bodyKickLeftGMU');
+        setBodyState('bodyKickLeftGMU');
 end
 
 hordeFunctions["kickRight"] = function(args,client)
-        BodyFSM.sm:set_state('bodyKickRightGMU');
+        setBodyState('bodyKickRightGMU');
 end
 
 
@@ -271,7 +277,7 @@ hordeFunctions["gotoPose"] = function(args, client)
 	wcm.set_horde_gotoPose(vector.new({dest.x, dest.y, dest.a}));
 	
 	-- call the state
-	BodyFSM.sm:set_state('bodyGotoPosition');
+	setBodyState('bodyGotoPosition');
 end
 hordeFunctions["updateGotoPose"] = function(args, client)
 	-- set the wcm values to the x,y,a from the args
@@ -296,7 +302,7 @@ hordeFunctions["updateGotoPoseFacing"] = function(args, client)
 	wcm.set_horde_gotoPose(vector.new({dest.x, dest.y, dest.a}));
 	wcm.set_horde_facing(vector.new({facing.x,facing.y,facing.a}));
 	-- call the state
-	--BodyFSM.sm:set_state('bodyGotoWhileFacing');
+	--setBodyState('bodyGotoWhileFacing');
 end
 
 hordeFunctions["gotoPoseFacing"] = function(args, client)
@@ -311,7 +317,7 @@ hordeFunctions["gotoPoseFacing"] = function(args, client)
 	wcm.set_horde_gotoPose(vector.new({dest.x, dest.y, dest.a}));
 	wcm.set_horde_facing(vector.new({facing.x,facing.y,facing.a}));
 	-- call the state
-	BodyFSM.sm:set_state('bodyGotoWhileFacing');
+	setBodyState('bodyGotoWhileFacing');
 end
 hordeFunctions["gotoPoseWhileLookingBackwards"] = function(args, client)
 	-- set the wcm values to the x,y,a from the args
@@ -325,7 +331,7 @@ hordeFunctions["gotoPoseWhileLookingBackwards"] = function(args, client)
 	wcm.set_horde_gotoPose(vector.new({dest.x, dest.y, dest.a}));
 	wcm.set_horde_facing(vector.new({facing.x,facing.y,facing.a}));
 	-- call the state
-	BodyFSM.sm:set_state('bodyGotoPoseWhileLookingBackwards');
+	setBodyState('bodyGotoPoseWhileLookingBackwards');
 end
 
 hordeFunctions["gotoWhileFacingGoalie"] = function(args, client)
@@ -340,7 +346,7 @@ hordeFunctions["gotoWhileFacingGoalie"] = function(args, client)
 	wcm.set_horde_gotoPose(vector.new({dest.x, dest.y, dest.a}));
 	wcm.set_horde_facing(vector.new({facing.x,facing.y,facing.a}));
 	-- call the state
-	BodyFSM.sm:set_state('bodyGotoWhileFacingGoalie');
+	setBodyState('bodyGotoWhileFacingGoalie');
 end
 hordeFunctions["updateGotoPoseWhileLookingBackwards"] = function(args, client)
 	-- set the wcm values to the x,y,a from the args
@@ -354,7 +360,7 @@ hordeFunctions["updateGotoPoseWhileLookingBackwards"] = function(args, client)
 	wcm.set_horde_gotoPose(vector.new({dest.x, dest.y, dest.a}));
 	wcm.set_horde_facing(vector.new({facing.x,facing.y,facing.a}));
 	-- call the state
---	BodyFSM.sm:set_state('bodyGotoPoseWhileLookingBackwards');
+--	setBodyState('bodyGotoPoseWhileLookingBackwards');
 end
 
 hordeFunctions["updateGotoWhileFacingGoalie"] = function(args, client)
@@ -369,12 +375,12 @@ hordeFunctions["updateGotoWhileFacingGoalie"] = function(args, client)
 	wcm.set_horde_gotoPose(vector.new({dest.x, dest.y, dest.a}));
 	wcm.set_horde_facing(vector.new({facing.x,facing.y,facing.a}));
 	-- call the state
---	BodyFSM.sm:set_state('bodyGotoWhileFacingGoalie');
+--	setBodyState('bodyGotoWhileFacingGoalie');
 end
 hordeFunctions["lookBackwards"] = function(args, client)
 	-- set the wcm values to the x,y,a from the args
 -- call the state
-	BodyFSM.sm:set_state('bodyLookBackwards');
+	setBodyState('bodyLookBackwards');
 end
 
 
