@@ -63,7 +63,7 @@ ROLE_RESERVE_GOALIE = 7;
 
 GOALIE_ID = 4;
 
-count = 0;
+countPackets = 0;
 
 state = {};
 state.robotName = Config.game.robotName;
@@ -220,7 +220,7 @@ end
 
 function update()
   --print("====PLAYERID:",playerID);
-  count = count + 1;
+  countPackets = countPackets + 1;
   state.time = Body.get_time();
   state.teamNumber = gcm.get_team_number();
   state.teamColor = gcm.get_team_color();
@@ -239,6 +239,7 @@ function update()
   state.ballRelative = util.pose_relative({wcm.get_ballGlobal_x(), wcm.get_ballGlobal_y(), 0}, {state.pose.x, state.pose.y, state.pose.a});
   state.ballGlobal = {wcm.get_ballGlobal_x(), wcm.get_ballGlobal_y()};
   state.ballRelative[3] = 0;
+  state.count = countPackets
   
   -- if i am the goalie then set whether we think the ball is on my side.
   if playerID == GOALIE_ID then
@@ -330,9 +331,9 @@ function update()
   --Now pack state name too
   state.body_state = gcm.get_fsm_body_state();
 	setDebugTrue();
-	print("YOLO count = " .. count .. " mod 10 = " .. math.mod(count, 10))
+	print("YOLO count = " .. countPackets .. " mod 10 = " .. math.mod(count, 10))
 	setDebugFalse();
-  if (math.mod(count, 10) == 0) then --TODO: How often can we send team message?
+  if (math.mod(countPackets, 10) == 0) then --TODO: How often can we send team message?
     msg=serialization.serialize(state);
     setDebugTrue();
     print("YOLO @!@!1 trying to send message now");
@@ -409,7 +410,7 @@ function update()
 	wcm.set_horde_declared(somebodyDeclared);
 	
 	-- if i am safety and LTDR[2] > 5 declareSupport
-	if somebodyDeclared[3] == state.id and Body.get_time() - lastTimeDeclaredReceived[2] > 5 then
+	if somebodyDeclared[3] == state.id and Body.get_time() - lastTimeDeclaredReceived[2] > STATUS_DEAD_THRESHOLD then
 		-- make sure 
 		somebodyDeclared[3] = 0; -- undeclare my previous declare
 		somebodyDeclared[2] = 0; -- and undeclare support so that I can take it if I am not closest
@@ -421,7 +422,7 @@ function update()
 		wcm.set_horde_doDeclare(state.declared)
 	end
 	-- if I am support and LTSD[1] > 5 declareKiddie
-	if somebodyDeclared[2] == state.id and Body.get_time() - lastTimeDeclaredReceived[1] > 5 then
+	if somebodyDeclared[2] == state.id and Body.get_time() - lastTimeDeclaredReceived[1] > STATUS_DEAD_THRESHOLD then
 		-- make sure 
 		somebodyDeclared[2] = 0; -- undeclare my previous declare
 		somebodyDeclared[1] = 0; -- and undeclare kiddie so that I can take it if I am closest
@@ -605,7 +606,7 @@ function update_status()
 			end
 		end
 	
-		if states[id] and states[id].role ~= ROLE_GOALIE and states[id].pose and states[id].ballRelative then
+		if states[id] and states[id].role ~= ROLE_GOALIE and states[id].pose and states[id].ballRelative  and  (states[id].count > lastStatus[id].count or lastStatus[id] == nil) then
 			
 			
 			
