@@ -208,14 +208,19 @@ public class FieldDraw extends JFrame implements Runnable {
 
 	public static final int ROBOT_WIDTH = 22;  // roughly
 	public static final int BALL_WIDTH = 11;  // roughly
+	public static final long INVALID = 3 * 1000;  // 3 seconds
 
     public void drawRobot(Graphics g) {
 		for(int i = 0; i<robotArray.size(); i++){
                 Robot currentRobot = robotArray.get(i);
 				if (currentRobot.init) {
+							long time = System.currentTimeMillis();
 							// draw the robot
 							g.setColor(botColor(currentRobot));
-							drawCircle(g, currentRobot.x, currentRobot.y, currentRobot.angle, ROBOT_WIDTH, true, true); 
+							if (time - currentRobot.timestamp > INVALID)								
+								drawCircle(g, currentRobot.x, currentRobot.y, currentRobot.angle, ROBOT_WIDTH, false, true);
+							else 
+								drawCircle(g, currentRobot.x, currentRobot.y, currentRobot.angle, ROBOT_WIDTH, true, true);
 							g.setColor(Color.black);
 							
 							// draw the robot label
@@ -223,6 +228,13 @@ public class FieldDraw extends JFrame implements Runnable {
 							g.drawString(s, (TRANSFORM_X + width / 2) + currentRobot.x - 30, (TRANSFORM_Y + height / 2) - currentRobot.y + 30);
 							s = "status " + currentRobot.status + "  declared " + currentRobot.declared1 + "  " + currentRobot.declared2 + "  " + currentRobot.declared3;
 							g.drawString(s, (TRANSFORM_X + width / 2) + currentRobot.x - 30, (TRANSFORM_Y + height / 2) - currentRobot.y + 50);
+							if (time - currentRobot.timestamp > INVALID)
+								{
+								g.setColor(Color.red);
+								s = "invalid for " + (time - currentRobot.timestamp) / 1000 + " seconds";
+								g.drawString(s, (TRANSFORM_X + width / 2) + currentRobot.x - 30, (TRANSFORM_Y + height / 2) - currentRobot.y + 70);
+								}
+
 
 							// draw the robot ball
 							g.setColor(botColor(currentRobot));
@@ -274,6 +286,7 @@ public class FieldDraw extends JFrame implements Runnable {
     	robot.id = "" + (int)(node.get("id").valueD);
     	robot.ip = (node.name).split("\\.")[3];
     	robot.init = true;
+    	robot.timestamp = node.timestamp;
     	}
 
 /*
@@ -359,6 +372,7 @@ class Particle {
 }
 
 class Robot {
+	long timestamp;
 	String ip;
     int x, y;
     int ballx, bally;
