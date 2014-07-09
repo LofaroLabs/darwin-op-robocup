@@ -607,7 +607,7 @@ function update_status()
 			end
 		end
 	
-		if states[id] and states[id].role ~= ROLE_GOALIE and states[id].pose and states[id].ballRelative  and  (lastStatus == nil or lastStatus[states[id].id] == nil or states[id].count > lastStatus[states[id].id].count ) then
+		if states[id] and states[id].role ~= ROLE_GOALIE and states[id].pose and states[id].ballRelative  and  (lastStatus == nil or states[id].id == nil or states[id].count == nil or lastStatus[states[id].id] == nil or states[id].count > lastStatus[states[id].id].count ) then
 			
 			
 			
