@@ -219,7 +219,7 @@ public class FieldDraw extends JFrame implements Runnable {
 							g.setColor(Color.black);
 							
 							// draw the robot label
-							String s = "id " + currentRobot.id + "  role " + currentRobot.role + "  battery " + currentRobot.battery; // draw robot id
+							String s = "id " + currentRobot.id + "  role " + currentRobot.role + "  battery " + currentRobot.battery + "  ip " + currentRobot.ip; // draw robot id
 							g.drawString(s, (TRANSFORM_X + width / 2) + currentRobot.x - 30, (TRANSFORM_Y + height / 2) - currentRobot.y + 30);
 							s = "status " + currentRobot.status + "  declared " + currentRobot.declared1 + "  " + currentRobot.declared2 + "  " + currentRobot.declared3;
 							g.drawString(s, (TRANSFORM_X + width / 2) + currentRobot.x - 30, (TRANSFORM_Y + height / 2) - currentRobot.y + 50);
@@ -272,6 +272,7 @@ public class FieldDraw extends JFrame implements Runnable {
     	robot.angle = node.get("pose").get("a").valueD;
     	robot.teamid = "" + (int)(node.get("teamNumber").valueD);
     	robot.id = "" + (int)(node.get("id").valueD);
+    	robot.ip = (node.name).split("\\.")[3];
     	robot.init = true;
     	}
 
@@ -358,6 +359,7 @@ class Particle {
 }
 
 class Robot {
+	String ip;
     int x, y;
     int ballx, bally;
     int ballLost;
