@@ -591,6 +591,7 @@ function update_status()
 	local ballDist = state.ballRelative; -- the position of the ball relative to me based off the global pos
 	local myDist = get_distanceBetween(ballDist, {0, 0});
 	local distIDPairs = {}
+	setDebugTrue();
 	for id = 1,5 do	
 		if states[id] and states[id].role ~= ROLE_GOALIE and states[id].pose and states[id].ballRelative then
 			lastTimeStatusRec[states[id].id] = Body.get_time();
@@ -639,7 +640,7 @@ function update_status()
 		setDebugFalse();
 	end
 	
-	
+	setDebugFalse();
 	
 	
 	local prevDis = 0;
