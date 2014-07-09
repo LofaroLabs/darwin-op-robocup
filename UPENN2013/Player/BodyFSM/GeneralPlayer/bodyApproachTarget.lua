@@ -159,9 +159,16 @@ function entry()
 
   approach_count = 0;
 end
-
+sillyTempFoo = 0
 function update()
+  sillyTempFoo++;
+  if(sillyTempFoo%10 == 0) then
+	setDebugTrue();
+	print("hey i am in approach ball update");
+	setDebugFalse();
+  end
   local t = Body.get_time();
+ 
   -- get ball position 
   ball = wcm.get_ball();
   ballR = math.sqrt(ball.x^2 + ball.y^2);
