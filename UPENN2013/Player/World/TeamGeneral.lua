@@ -607,7 +607,7 @@ function update_status()
 			end
 		end
 	
-		if states[id] and states[id].role ~= ROLE_GOALIE and states[id].pose and states[id].ballRelative  and  (states[id].count > lastStatus[id].count or lastStatus[id] == nil) then
+		if states[id] and states[id].role ~= ROLE_GOALIE and states[id].pose and states[id].ballRelative  and  (lastStatus == nil or lastStatus[states[id].id] == nil or states[id].count > lastStatus[states[id].id].count ) then
 			
 			
 			
@@ -641,7 +641,7 @@ function update_status()
 			placeHolderData.dead = 1 -- ? going to check down later to be sure
 			
 			distIDPairs[id] = placeHolderData;
-			if Body.get_time() - lastTimeStatusRec[distIDPairs[id].id] > STATUS_DEAD_THRESHOLD and lastStatus[distIDPairs[id].id] then
+			if Body.get_time() - lastTimeStatusRec[distIDPairs[id].id] > STATUS_DEAD_THRESHOLD and lastStatus[distIDPairs[id].id] ~= nil then
 				setDebugTrue();
 				print("id " .. distIDPairs[id].id .. "dead = " .. tostring(distIDPairs[id].dead));
 				print("last status at id " .. tostring((not lastStatus[distIDPairs[id].id])))
