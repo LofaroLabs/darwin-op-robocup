@@ -373,7 +373,7 @@ function update()
 	for myRole = 1,3 do 
         	for id = 1,5 do
 			--check if nil, if this is not declared, and make sure this isn't the goalie
-			if not states[id] or states[id].declared[myRole] == 0 or states[id].role == 0 then
+			if states[id] == nil or states[id].declared[myRole] == 0 or states[id].role == 0 or lastStatus[id] == nil or states[id].count <= lastStatus[states[id].id].count then
 				if states[id] == nil then
 					print("id " .. tostring(id) .. " no msg received")
 				elseif states[id].role == 0 then
@@ -443,7 +443,7 @@ function update()
  	-- need to set the penalty location
  	if playerID ~= GOALIE_ID then -- if I'm not the goalie then I need to update the penalty {x,y} location
 		for index=1,5 do -- so find the goalie and set my penaltyLocation. -- might not need to loop.
-			if states[index] and states[index].id == GOALIE_ID then
+			if states[index] ~= nil and states[index].id == GOALIE_ID and states[index].count <= lastStatus[states[index].id].count then
 				wcm.set_teamdata_penaltyLocation(states[index].penaltyLocation); -- only the goalie has the penalty loc data.
 				wcm.set_horde_goalieCertainBallOnMySide(states[index].goalieCertainBallOnMySide);
 				lastTimeReceivedFromGoalie = Body.get_time();
