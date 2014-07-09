@@ -609,15 +609,23 @@ function update_status()
 	
 		local condition1 =  states[id]~=nil and states[id].role ~= ROLE_GOALIE and states[id].pose and states[id].ballRelative 
 
- print(tostring("\n" .."\n" ..(states[id])) )
- print(tostring("\n" .."\n" ..lastStatus )  )
- print(tostring("\n" .."\n" ..states[id].id )  )
- print(tostring("\n" .."\n" ..states[id].count )  )
- print(tostring("\n" .."\n" ..lastStatus[states[id].id] )  )
- print(tostring("\n" .."\n" ..states[id].count)  )
- print(tostring("\n" .."\n" ..lastStatus[states[id].id].count) )
-	local condition2 = (states[id]~=nil or lastStatus == nil or states[id].id == nil or states[id].count == nil or lastStatus[states[id].id] == nil or states[id].count > lastStatus[states[id].id].count ) 
-			
+ print(tostring("a\n" .."\n" ..tostring(states[id])) )
+ print(tostring("b\n" .."\n" ..tostring(lastStatus )  ))
+ if(states[id] ~= nil) then
+ print(tostring("c\n" .."\n" ..tostring(states[id].id )  ))
+ 
+ print(tostring("d\n" .."\n" ..tostring(states[id].count )  ))
+ print(tostring("e\n" .."\n" ..tostring(lastStatus[states[id].id]) )  )
+-- print(tostring("\n" .."\n" ..tostring(states[id].count)  ))
+ 
+  if(lastStatus[states[id].id]~=nil) then
+ 	print(tostring("f\n" .."\n" ..tostring(lastStatus[states[id].id].count))) 
+ end 
+ end
+		local condition2 = (states[id]~=nil or lastStatus == nil or states[id].id == nil or states[id].count == nil or lastStatus[states[id].id] == nil) 
+		local condition3 = 
+		if(condition2==false) then
+		local condition3 = 	
 		if(condition1 and condition2) then
 			
 			
