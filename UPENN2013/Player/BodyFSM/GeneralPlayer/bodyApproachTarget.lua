@@ -135,8 +135,9 @@ function check_approach_type()
 end
 
 
-
+sillyTempFoo = 0;
 function entry()
+   sillyTempFoo = 0
   print("Body FSM:".._NAME.." entry");
   t0 = Body.get_time();
   ball = wcm.get_ball();
@@ -159,9 +160,9 @@ function entry()
 
   approach_count = 0;
 end
-sillyTempFoo = 0
+
 function update()
-  sillyTempFoo++;
+  sillyTempFoo = sillyTempFoo +1;;
   if(sillyTempFoo%10 == 0) then
 	setDebugTrue();
 	print("hey i am in approach ball update");
