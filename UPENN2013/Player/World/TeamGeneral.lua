@@ -622,16 +622,18 @@ function update_status()
 	end
 	
 	
-	
-	for i= 1,#lastTimeStatusRec do -- i corresponds to the id here since the lastTimeStatusRec has been assigned based off id
-		if Body.get_time() - lastTimeStatusRec[i] < STATUS_DEAD_THRESHOLD then
-			distIDPairs[i].dead = 0 -- then I will wait and keep you in
+	setDebugTrue();
+	for i= 1,#lastTimeStatusRec do -- i corresponds to the index into distIDPairs
+		if Body.get_time() - lastTimeStatusRec[distIDPairs[i].id] < STATUS_DEAD_THRESHOLD then	
 			distIDPairs[i] = lastStatus[distIDPairs[i].id]
+			distIDPairs[i].dead = 0 -- then I will wait and keep you in
 		else
 			 distIDPairs[i].dead = 1
 		end
+		
+		print("id = " .. i .. " distID = " .. distIDPairs[i].id .. " dead? = " .. distIDPairs[i].dead)
 	end
-	
+	setDebugFalse();
 	
 	local prevDis = 0;
 	for i=1,#distIDPairs do
