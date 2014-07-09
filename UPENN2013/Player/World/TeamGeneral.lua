@@ -593,6 +593,14 @@ function update_status()
 	local distIDPairs = {}
 	setDebugTrue();
 	for id = 1,5 do	
+	
+		if states[id] then
+			print("YOLO states[id] ".. id);
+			if state.id ~= states[id].id then
+				print("#YOLO id" .. tostring(states[id].id))
+			end
+		end
+	
 		if states[id] and states[id].role ~= ROLE_GOALIE and states[id].pose and states[id].ballRelative then
 			
 			
@@ -601,6 +609,7 @@ function update_status()
 			--print("DNW index = " .. tostring(id) .. " I am role = " .. tostring(states[id].role) .. " and the ballLost feature is = " .. tostring(states[id].ballLost));
 			local data = {}
 			data.id = states[id].id
+			
 			if states[id].ballLost == 0 then
 				data.dist = get_distanceBetween(states[id].ballRelative, {0, 0});
 				print("DNW index = " .. tostring(id) .. " SEE BALL so dist is " .. data.dist);
@@ -617,9 +626,7 @@ function update_status()
 			lastStatus[data.id] = data
 			distIDPairs[id] = data;
 			
-			if state.id ~= data.id then
-				print("#YOLO id" .. tostring(data.id))
-			end
+			
 			
 		else
 			local placeHolderData = {}
