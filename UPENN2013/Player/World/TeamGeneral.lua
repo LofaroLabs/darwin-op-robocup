@@ -25,6 +25,8 @@ walkSpeed = Config.team.walkSpeed;
 turnSpeed = Config.team.turnSpeed;
 
 GOALIE_DEAD_THRESHOLD = 3
+STATUS_DEAD_THRESHOLD = 3
+
 
 -- setting the distance as defined to be "close" for the goalie to the ball to be 1m
 wcm.set_horde_goalCloseDist(1.25)
@@ -581,6 +583,7 @@ end
 -- 2 = i am second closest
 -- 3 = i am third closest and within N
 -- 4 = i am third closest
+lastTimeStatusRec = {Body.get_time(), Body.get_time(), Body.get_time(), Body.get_time(), Body.get_time()}
 function update_status()
 
 	
@@ -589,6 +592,7 @@ function update_status()
 	local distIDPairs = {}
 	for id = 1,5 do	
 		if states[id] and states[id].role ~= ROLE_GOALIE and states[id].pose and states[id].ballRelative then
+			lastTimeStatusRec[states[id].id] = Body.get_time();
 			--print("DNW index = " .. tostring(id) .. " I am role = " .. tostring(states[id].role) .. " and the ballLost feature is = " .. tostring(states[id].ballLost));
 			local data = {}
 			data.id = states[id].id
@@ -641,30 +645,45 @@ function update_status()
 	setDebugFalse();
 	
 	-- loop
+	-- remove all of the statuses where the lastTimeStatusRec > 3s
+	for i = 1, #distIDPairs do
+		if lastTimeStatusRec[distIDPairs[i].id] > STATUS_DEAD_THRESHOLD then
+			distIDPairs[i].dead = 1
+		else
+			distIDPairs[i].dead = 0
+		end
+		
+	end
+	
+	
 	
 	local secondClosestWithin = 0
 	setDebugTrue();
 	print("DNW number of distIDPairs is " .. tostring(#distIDPairs))
+	local i = 1
+	for count=1, #distIDPairs do
 	
-	for i=1, #distIDPairs do
-		print("DNW i = " .. tostring(i) .. " ID = " .. tostring(distIDPairs[i].id) .. " dist = " .. tostring(distIDPairs[i].dist) .. " distN = " .. tostring(wcm.get_horde_distN()));
-		distIDPairs[i].status = (i-1)*2
+		if distIDPairs[i].dead == 0 then
+			print("DNW i = " .. tostring(i) .. " ID = " .. tostring(distIDPairs[i].id) .. " dist = " .. tostring(distIDPairs[i].dist) .. " distN = " .. tostring(wcm.get_horde_distN()));
+			distIDPairs[i].status = (i-1)*2
 		
-		if (distIDPairs[i].dist <= wcm.get_horde_distN() and i~=1) then
-			distIDPairs[i].status = distIDPairs[i].status-1;
-			print("DNW i = " .. tostring(i) .. " dist was less than N status = " ..  tostring(distIDPairs[i].status));
+			if (distIDPairs[i].dist <= wcm.get_horde_distN() and i~=1) then
+				distIDPairs[i].status = distIDPairs[i].status-1;
+				print("DNW i = " .. tostring(i) .. " dist was less than N status = " ..  tostring(distIDPairs[i].status));
+			end
+		
+			print("status DNW i = " .. tostring(i) .. " id = " .. tostring(distIDPairs[i].id) .. " status = " ..  tostring(distIDPairs[i].status) .. " dist = " .. tostring(distIDPairs[i].dist))
+			print("DNW comparing " .. tostring(distIDPairs[i].id)  .. " and " .. tostring(state.id));	
+			if distIDPairs[i].id == state.id then
+				wcm.set_horde_status(distIDPairs[i].status);
+				print("DNW i = " .. tostring(i) .. " My Status = " .. tostring(wcm.get_horde_status()));
+			end
+		
+			print("DNW i = " .. tostring(i) .. " ID = " .. tostring(distIDPairs[i].id) .. " status = " .. tostring(wcm.get_horde_status()))
+			i = i + 1
 		end
-		
-		print("status DNW i = " .. tostring(i) .. " id = " .. tostring(distIDPairs[i].id) .. " status = " ..  tostring(distIDPairs[i].status) .. " dist = " .. tostring(distIDPairs[i].dist))
-		print("DNW comparing " .. tostring(distIDPairs[i].id)  .. " and " .. tostring(state.id));	
-		if distIDPairs[i].id == state.id then
-			wcm.set_horde_status(distIDPairs[i].status);
-			print("DNW i = " .. tostring(i) .. " My Status = " .. tostring(wcm.get_horde_status()));
-		end
-		
-		print("DNW i = " .. tostring(i) .. " ID = " .. tostring(distIDPairs[i].id) .. " status = " .. tostring(wcm.get_horde_status()))
-		
 	end
+	i = 0
 	setDebugFalse();
 	
 
