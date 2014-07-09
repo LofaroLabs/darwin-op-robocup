@@ -74,7 +74,10 @@ function update()
 
   if (t - t0 > tScan) then
     tGoal = wcm.get_goal_t();
-    return 'timeout'; 
+    if(wcm.get_horde_ballLost() == 1 ) then 
+		return 'timeoutAndLost'
+    end
+	return 'timeout'; 
   end
 end
 

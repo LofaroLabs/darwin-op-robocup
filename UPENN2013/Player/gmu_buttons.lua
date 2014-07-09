@@ -210,6 +210,11 @@ function gameStateMenuUpdate()
                 scriptNumber = 0;
         end
 end
+function in_penalty() 
+	local k = gcm.get_game_penalty();
+	local p = k[Config.game.playerID]>0;
+	return p;
+end
 
 function gameStateMenuExecute()
 	Speak.talk("penalty");
@@ -312,7 +317,7 @@ while 1 do
 	--Config.game.playerID = 2;
 	setDebugTrue()
 	print(Config.game.playerID);
- 	print(tostring(gcm.get_game_state()))
+ 	print("game state: " .. tostring(gcm.get_game_state()) .. " , " .. tostring(in_penalty()));
  	setDebugFalse();
 	update();
 	unix.usleep(tDelay);
