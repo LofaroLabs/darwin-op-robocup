@@ -725,7 +725,7 @@ function update_status()
 			end
 		
 			print("DNW i = " .. tostring(i) .. " ID = " .. tostring(distIDPairs[i].id) .. " status = " .. tostring(wcm.get_horde_status()))
-			count = count + 1
+			countI = countI + 1
 		end
 	end
 	
