@@ -584,6 +584,7 @@ end
 -- 3 = i am third closest and within N
 -- 4 = i am third closest
 lastTimeStatusRec = {Body.get_time(), Body.get_time(), Body.get_time(), Body.get_time(), Body.get_time()}
+lastStatus = {} -- init it
 function update_status()
 
 	
@@ -605,11 +606,17 @@ function update_status()
 			end
 			print("DNW HEY I ADDED A DIST PAIR AT " .. id );
 			data.status = states[id].status
+			
+			
+			data.dead = 0
+			
+			lastStatus[data.id] = data
 			distIDPairs[id] = data;
 		else
 			local placeHolderData = {}
 			placeHolderData.dist = math.huge;
 			placeHolderData.id = id
+			placeHolderData.dead = 1 -- ? going to check down later to be sure
 			distIDPairs[id] = placeHolderData;
 		end	
 	end
@@ -624,6 +631,8 @@ function update_status()
 
 		end	
 	end
+	
+
 
 	-- sort everyone
 
@@ -645,14 +654,13 @@ function update_status()
 	setDebugFalse();
 	
 	-- loop
-	-- remove all of the statuses where the lastTimeStatusRec > 3s
-	for i = 1, #distIDPairs do
-		if Body.get_time() - lastTimeStatusRec[distIDPairs[i].id] > STATUS_DEAD_THRESHOLD then
-			distIDPairs[i].dead = 1
+	for i= 1,#lastTimeStatusRec do -- i corresponds to the id here since the lastTimeStatusRec has been assigned based off id
+		if Body.get_time() - lastTimeStatusRec[i] < STATUS_DEAD_THRESHOLD then
+			distIDPairs[i].dead = 0 -- then I will wait and keep you in
+			distIDPairs[i] = lastStatus[distIDPairs[i].id]
 		else
-			distIDPairs[i].dead = 0
+			 distIDPairs[i].dead = 1
 		end
-		
 	end
 	
 	
@@ -663,7 +671,7 @@ function update_status()
 	local i = 1
 	for count=1, #distIDPairs do
 	
-		if distIDPairs[i].dead == 0 then
+		if not distIDPairs[i].dead and distIDPairs[i].dead == 0 then
 			print("DNW i = " .. tostring(i) .. " ID = " .. tostring(distIDPairs[i].id) .. " dist = " .. tostring(distIDPairs[i].dist) .. " distN = " .. tostring(wcm.get_horde_distN()));
 			distIDPairs[i].status = (i-1)*2
 		
