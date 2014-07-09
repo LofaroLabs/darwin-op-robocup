@@ -323,10 +323,11 @@ function update()
   pack_vision_info(); --Vision info
 
   vision_send_interval = Config.team.vision_send_interval or 10;
-
+--[[
   if count%vision_send_interval==0 then
     pack_labelB(); --labelB info
   end
+  --]]
 
   --Now pack state name too
   state.body_state = gcm.get_fsm_body_state();
