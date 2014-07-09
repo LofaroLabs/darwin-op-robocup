@@ -686,7 +686,7 @@ function update_status()
 	local i = 1
 	for count=1, #distIDPairs do
 	
-		if not distIDPairs[i].dead and distIDPairs[i].dead == 0 then
+		if distIDPairs[i].dead and distIDPairs[i].dead == 0 then
 			print("DNW i = " .. tostring(i) .. " ID = " .. tostring(distIDPairs[i].id) .. " dist = " .. tostring(distIDPairs[i].dist) .. " distN = " .. tostring(wcm.get_horde_distN()));
 			distIDPairs[i].status = (i-1)*2
 		
