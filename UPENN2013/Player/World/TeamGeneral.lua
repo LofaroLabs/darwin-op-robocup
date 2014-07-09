@@ -610,7 +610,7 @@ function update_status()
 		--local condition1 =  states[id]~=nil and states[id].role ~= ROLE_GOALIE and states[id].pose and states[id].ballRelative 
 
  
-		local condition2 = (states[id]~=nil or lastStatus == nil or states[id].id == nil or states[id].count == nil or lastStatus[states[id].id] == nil) 
+		--local condition2 = (states[id]~=nil or lastStatus == nil or states[id].id == nil or states[id].count == nil or lastStatus[states[id].id] == nil) 
 		
 			
 		if(states[id]~=nil and states[id].role ~= ROLE_GOALIE and states[id].pose and states[id].ballRelative and 
