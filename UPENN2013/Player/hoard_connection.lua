@@ -98,7 +98,9 @@ function updateAll(newState)
 	--print("body FSM update");
         BodyFSM.update();
 	--print("HeadFSM update");
-        HeadFSM.update();
+        if(mcm.get_walk_isFallDown()==0) then
+		HeadFSM.update();
+	end
 --	GameFSM.update();	
 	fpsTimer = Body.get_time(); 
 end
@@ -245,7 +247,7 @@ function getPenaltyBounds()
         LPost = postDefend[1];
 
         sign = LPost[1] / math.abs(LPost[1])
-        -- so get the x position of the front of the penalty box
+        -- so get the xposition of the front of the penalty box
         -- and add midpoint distance between that and the edge of the field
         -- then multiply by the sign.  note that the Lgoalie_corner should
         -- be positive but putting abs around just in case
@@ -256,10 +258,6 @@ function getPenaltyBounds()
 	wcm.set_horde_penaltyBoundsY(math.abs(LPost[2]));
 	return {xBound, math.abs(LPost[2])}
 end
-
-
-
-
 
 lastState = 100;
 function checkTimeout()
@@ -304,7 +302,7 @@ connectionThread = function ()
 				timeReady = Body.get_time();
 				if(Config.game.role ~= 0) then 
 					lastState = 1;
-				end
+			end
     			wcm.set_horde_timeOut(0);
 			elseif(state ==1) then
 				print( "state 1, but last state was also 1");
