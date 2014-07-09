@@ -617,25 +617,25 @@ function update_status()
 			placeHolderData.dist = math.huge;
 			placeHolderData.id = id
 			placeHolderData.dead = 1 -- ? going to check down later to be sure
+			
+			
+			if Body.get_time() - lastTimeStatusRec[distIDPairs[i].id] < STATUS_DEAD_THRESHOLD and not lastStatus[distIDPairs[i].id] then
+				setDebugTrue();
+				print("id " .. distIDPairs[i].id .. "dead = " .. tostring(distIDPairs[i].dead));
+				setDebugFalse();
+				distIDPairs[i] = lastStatus[distIDPairs[i].id]
+				distIDPairs[i].dead = 0 -- then I will wait and keep you in
+			end
+			
 			distIDPairs[id] = placeHolderData;
 		end	
-	end
-	
-	
-	setDebugTrue();
-	for i= 1,#lastTimeStatusRec do -- i corresponds to the index into distIDPairs
-		-- so if I never received anything I don't want it so i have to check if lastStatus is nil
-		if Body.get_time() - lastTimeStatusRec[distIDPairs[i].id] < STATUS_DEAD_THRESHOLD and not lastStatus[distIDPairs[i].id] then
-			print("id " .. distIDPairs[i].id .. "dead = " .. tostring(distIDPairs[i].dead));
-			distIDPairs[i] = lastStatus[distIDPairs[i].id]
-			distIDPairs[i].dead = 0 -- then I will wait and keep you in
-		else
-			 distIDPairs[i].dead = 1
-		end
-		
+		setDebugTrue();
 		print("id = " .. i .. " distID = " .. distIDPairs[i].id .. " dead? = " .. distIDPairs[i].dead)
+		setDebugFalse();
 	end
-	setDebugFalse();
+	
+	
+	
 	
 	local prevDis = 0;
 	for i=1,#distIDPairs do
