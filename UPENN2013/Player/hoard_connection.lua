@@ -459,6 +459,9 @@ connectionThread = function ()
  				lastState = 3;
                 --print(line);
 		--lineAction = json.decode(line);
+		if(action==lastReceivedState) then
+			maintainState();
+		end
                 if(line~=nil and (action~=lastReceivedState or string.find(action,"update"))) then -- uf we received somethin:
 		
 					if lastCommand ~= nil then
@@ -526,7 +529,10 @@ function in_penalty()
 	--print((k[Config.game.playerID]>0));	
 	local p = k[Config.game.playerID]>0;
 	--print("p is .. ".. tostring(p));
-	return p;
+	return p or (wcm.get_horde_visionPenalty()==1);
+end
+function maintainState()
+	hoard_functions.maintainState();
 end
 function updateAction(servData, client)
   count = count + 1;
