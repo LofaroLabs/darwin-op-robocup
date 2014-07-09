@@ -332,10 +332,12 @@ function update()
 
   if (math.mod(count, 10) == 0) then --TODO: How often can we send team message?
     msg=serialization.serialize(state);
-    print("@!@!1 trying to send message now");
+    setDebugTrue();
+    print("YOLO @!@!1 trying to send message now");
     sendStatus = Comm.send(msg, #msg);
     state.tReceive = Body.get_time();
     states[playerID] = state;
+    setDebugFalse();
   end
 
   -- receive new messages every frame
