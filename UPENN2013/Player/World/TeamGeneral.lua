@@ -334,14 +334,15 @@ function update()
 	setDebugTrue();
 	print("YOLO count = " .. countPackets .. " mod 10 = " .. math.mod(countPackets, 10))
 	setDebugFalse();
-  if (math.mod(countPackets, 10) == 0) then --TODO: How often can we send team message?
-    msg=serialization.serialize(state);
-    setDebugTrue();
-    print("YOLO @!@!1 trying to send message now");
-    sendStatus = Comm.send(msg, #msg);
-    state.tReceive = Body.get_time();
-    states[playerID] = state;
-    setDebugFalse();
+	if (math.mod(countPackets, 10) == 0 and gcm.in_penalty() == false) then --TODO: How often can we send team message?
+		msg=serialization.serialize(state);
+		setDebugTrue();
+		print("YOLO @!@!1 trying to send message now");
+		sendStatus = Comm.send(msg, #msg);
+		state.tReceive = Body.get_time();
+		states[playerID] = state;
+		setDebugFalse();
+		
   end
 
   -- receive new messages every frame
