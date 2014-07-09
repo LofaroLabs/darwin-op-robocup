@@ -25,6 +25,8 @@ class Node
 	public ArrayList<Node> nodes = null;
 // A node has an END position just beyond it
 	public int end = -1;
+// A node might have a TIMESTAMP
+	public long timestamp = 0;
 	
 	public Node get(String name)
 		{
@@ -47,7 +49,10 @@ class Node
 	public String toString() { return out(0); }
 	public String out(int tab)
 		{
-		String s = spaces(tab) + name + " = ";
+		String s = spaces(tab) + name;
+		if (timestamp != 0) 
+			s = s + " (" + timestamp + ")";
+		s = s + " = ";
 		if (nodes != null)
 			{
 			s = s + "{\n";
