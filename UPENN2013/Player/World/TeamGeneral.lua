@@ -683,12 +683,12 @@ function update_status()
 	local secondClosestWithin = 0
 	setDebugTrue();
 	print("DNW number of distIDPairs is " .. tostring(#distIDPairs))
-	local i = 1
-	for count=1, #distIDPairs do
+	count  = 1
+	for i=1, #distIDPairs do
 		print(" i " .. i .. " count  " .. count .. " distIDPairs.dead ~= nil = " .. tostring(distIDPairs[i].dead ~= nil) .. " distIDPairs[i].dead = " .. tostring(distIDPairs[i].dead));
 		if distIDPairs[i].dead and distIDPairs[i].dead == 0 then
 			print("DNW i = " .. tostring(i) .. " ID = " .. tostring(distIDPairs[i].id) .. " dist = " .. tostring(distIDPairs[i].dist) .. " distN = " .. tostring(wcm.get_horde_distN()));
-			distIDPairs[i].status = (i-1)*2
+			distIDPairs[i].status = (count-1)*2
 		
 			if (distIDPairs[i].dist <= wcm.get_horde_distN() and i~=1) then
 				distIDPairs[i].status = distIDPairs[i].status-1;
@@ -703,10 +703,10 @@ function update_status()
 			end
 		
 			print("DNW i = " .. tostring(i) .. " ID = " .. tostring(distIDPairs[i].id) .. " status = " .. tostring(wcm.get_horde_status()))
-			i = i + 1
+			count = count + 1
 		end
 	end
-	i = 0
+	
 	setDebugFalse();
 	
 
