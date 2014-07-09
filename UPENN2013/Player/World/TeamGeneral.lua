@@ -374,7 +374,7 @@ function update()
 	for myRole = 1,3 do 
         	for id = 1,5 do
 			--check if nil, if this is not declared, and make sure this isn't the goalie
-			if states[id] == nil or states[id].declared[myRole] == 0 or states[id].role == 0 or lastStatus[id] == nil or states[id].count <= lastStatus[states[id].id].count then
+			if states[id] == nil or states[id].declared[myRole] == 0 or states[id].role == 0 or lastStatus == nil  or lastStatus[states[id].id] == nil or states[id].count <= lastStatus[states[id].id].count then
 				if states[id] == nil then
 					print("id " .. tostring(id) .. " no msg received")
 				elseif states[id].role == 0 then
