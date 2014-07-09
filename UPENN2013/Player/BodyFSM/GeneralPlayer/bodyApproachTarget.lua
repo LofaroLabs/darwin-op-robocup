@@ -258,7 +258,7 @@ function update()
     pose = wcm.get_pose();
     print("grabbed pose from wcm");
     receiveRelative = util.pose_relative(wcm.get_horde_kickToPose(), {pose.x, pose.y, pose.a});
-    --setDebugTrue()
+    setDebugTrue()
     print("kick to " .. vector.tostring(wcm.get_horde_kickToPose()));
     setDebugFalse();
     receiveRelative[3] = math.atan2(receiveRelative[2], receiveRelative[1]);
@@ -267,11 +267,14 @@ function update()
      
 	print("calculated goal relative");
     angle_check_done = true;
-    print("goal relative: " .. receiveRelative[3]);
-   stepFactor = 1;
+    setDebugTrue()
+     print("goal relative: " .. receiveRelative[3]);
+   setDebugFalse();
+    stepFactor = 1;
   --  if(receiveRelative[1]<0)then
 --	stepFactor = -1;
  --   end
+     setDebugTrue()
     if (math.abs(receiveRelative[3]) >.15) then
     	if receiveRelative[2] > 0 then
       		print("turn left");
@@ -283,6 +286,7 @@ function update()
       	  vStep[3]=0;
       	end
       end
+	setDebugFalse();
    --
     -- end override
 --[[TEMP
@@ -363,6 +367,7 @@ print("would TURNRIGHT")
      print("my kick would trigger");
   end
     --For front kick, check for other side too
+  setDebugTrue();
   if kick_dir==1 then --Front kick
     yTargetMin = math.min(math.abs(yTarget[1]),math.abs(yTarget[3]));
     yTargetMax = math.max(math.abs(yTarget[1]),math.abs(yTarget[3]));
@@ -371,6 +376,7 @@ print("would TURNRIGHT")
        (math.abs(ball.y) > yTargetMin) and 
 	(math.abs(ball.y) < yTargetMax) and
 	angle_check_done then
+	
       print("KICK DIR,TYPE: " .. kick_dir .. "," ..kick_type);
       print(string.format("Approach done, ball position: %.2f %.2f\n",ball.x,ball.y))
       print(string.format("Ball target: %.2f %.2f\n",xTarget[2],yTarget[2]))
@@ -431,6 +437,7 @@ print("OMFGOMFGOMFOMGOMFOMFOMGOMGOMGOMG KICK");
     end
     end
   end
+  setDebugFalse();
 end
 
 function exit()
