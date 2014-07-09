@@ -620,6 +620,19 @@ function update_status()
 			distIDPairs[id] = placeHolderData;
 		end	
 	end
+	
+	
+	
+	for i= 1,#lastTimeStatusRec do -- i corresponds to the id here since the lastTimeStatusRec has been assigned based off id
+		if Body.get_time() - lastTimeStatusRec[i] < STATUS_DEAD_THRESHOLD then
+			distIDPairs[i].dead = 0 -- then I will wait and keep you in
+			distIDPairs[i] = lastStatus[distIDPairs[i].id]
+		else
+			 distIDPairs[i].dead = 1
+		end
+	end
+	
+	
 	local prevDis = 0;
 	for i=1,#distIDPairs do
 		print("no sort DNW list: " .. distIDPairs[i].dist) 
@@ -654,14 +667,7 @@ function update_status()
 	setDebugFalse();
 	
 	-- loop
-	for i= 1,#lastTimeStatusRec do -- i corresponds to the id here since the lastTimeStatusRec has been assigned based off id
-		if Body.get_time() - lastTimeStatusRec[i] < STATUS_DEAD_THRESHOLD then
-			distIDPairs[i].dead = 0 -- then I will wait and keep you in
-			distIDPairs[i] = lastStatus[distIDPairs[i].id]
-		else
-			 distIDPairs[i].dead = 1
-		end
-	end
+	
 	
 	
 	
