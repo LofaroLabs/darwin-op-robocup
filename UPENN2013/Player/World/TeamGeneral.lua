@@ -624,7 +624,9 @@ function update_status()
 				print("id " .. distIDPairs[id].id .. "dead = " .. tostring(distIDPairs[id].dead));
 				
 				distIDPairs[id] = lastStatus[distIDPairs[id].id]
-				print("id now based off of lastStatus = " .. tostring(distIDPairs[id].id) .. " the table itself is " .. tostring(distIDPairs[id]) .. " and dead is = " .. tostring(distIDPairs[id].dead))
+				print(" the table itself is " .. tostring(distIDPairs[id]))
+				print("id now based off of lastStatus = " .. tostring(distIDPairs[id].id))
+				print( " and dead is = " .. tostring(distIDPairs[id].dead))
 				distIDPairs[id].dead = 0 -- then I will wait and keep you in
 				setDebugFalse();
 			end
