@@ -647,7 +647,7 @@ function update_status()
 	-- loop
 	-- remove all of the statuses where the lastTimeStatusRec > 3s
 	for i = 1, #distIDPairs do
-		if lastTimeStatusRec[distIDPairs[i].id] > STATUS_DEAD_THRESHOLD then
+		if Body.get_time() - lastTimeStatusRec[distIDPairs[i].id] > STATUS_DEAD_THRESHOLD then
 			distIDPairs[i].dead = 1
 		else
 			distIDPairs[i].dead = 0
