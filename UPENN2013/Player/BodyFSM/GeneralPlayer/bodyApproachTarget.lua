@@ -162,7 +162,7 @@ function entry()
 end
 
 function update()
-  sillyTempFoo = sillyTempFoo +1;;
+  sillyTempFoo = sillyTempFoo +1;
   if(sillyTempFoo%10 == 0) then
 	setDebugTrue();
 	print("hey i am in approach ball update");
