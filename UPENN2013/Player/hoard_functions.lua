@@ -53,12 +53,20 @@ ready = true;
 smindex = 0;
 initToggle = true;
 
-
+lastBehavior = "DESTROY ALL HUMANS";
 function setBodyState(behaviorState)
-	BodyFSM.sm:set_state(behaviorState)
-	
+	--if(BodyFSM.sm.get_current_state(BodyFSM.sm)._NAME ~= behaviorState) then
+		BodyFSM.sm:set_state(behaviorState)
+		lastBehavior = behaviorState;
+	--end
 end
-
+function maintainState()
+	if(BodyFSM.sm.get_current_state(BodyFSM.sm)._NAME ~= lastBehavior) then
+		print("WHAT THE kajsdfhkajshdfkjsahdfiaihfisuhdfiusdhfidsuhfisudhfisudhfisuhdfisudhfisudhfisudhfisuhdfisuhdfisudhfisudhfisudhfisudhfisudhfisudhfisudhfisudhfisudhfisudhfsiudhfisudhfisudfh");
+		BodyFSM.sm:set_state(behaviorState)
+            --    lastBehavior = behaviorState;
+	end	
+end
 -- main loop
 myFunctions = {}
 
