@@ -329,7 +329,9 @@ function update()
 
   --Now pack state name too
   state.body_state = gcm.get_fsm_body_state();
-
+	setDebugTrue();
+	print("YOLO count = " .. count .. " mod 10 = " .. math.mod(count, 10))
+	setDebugFalse();
   if (math.mod(count, 10) == 0) then --TODO: How often can we send team message?
     msg=serialization.serialize(state);
     setDebugTrue();
