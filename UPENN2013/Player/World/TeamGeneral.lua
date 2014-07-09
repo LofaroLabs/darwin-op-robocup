@@ -625,7 +625,8 @@ function update_status()
 	setDebugTrue();
 	for i= 1,#lastTimeStatusRec do -- i corresponds to the index into distIDPairs
 		-- so if I never received anything I don't want it so i have to check if lastStatus is nil
-		if Body.get_time() - lastTimeStatusRec[distIDPairs[i].id] < STATUS_DEAD_THRESHOLD and not lastStatus[distIDPairs[i].id] then	
+		if Body.get_time() - lastTimeStatusRec[distIDPairs[i].id] < STATUS_DEAD_THRESHOLD and not lastStatus[distIDPairs[i].id] then
+			print("id " .. distIDPairs[i].id .. "dead = " .. tostring(distIDPairs[i].dead));
 			distIDPairs[i] = lastStatus[distIDPairs[i].id]
 			distIDPairs[i].dead = 0 -- then I will wait and keep you in
 		else
