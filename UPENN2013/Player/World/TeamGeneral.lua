@@ -371,16 +371,20 @@ function update()
 	somebodyDeclared[2] = 0;
 	somebodyDeclared[3] = 0;
 	print("Going to check declared ++++++++++++++++++++++++");
+	
+	
+	
 	for myRole = 1,3 do 
         	for id = 1,5 do
 			--check if nil, if this is not declared, and make sure this isn't the goalie
-			if states[id] == nil or states[id].declared[myRole] == 0 or states[id].role == 0 or lastStatus == nil or states[id].id or states[id].count == nil  or lastStatus[states[id].id] == nil or states[id].count <= lastStatus[states[id].id].count then
+			if states[id] == nil or states[id].declared[myRole] == 0 or states[id].role == 0 or (states[id] and states[id].tReceive and
+      (t - states[id].tReceive > STATUS_DEAD_THRESHOLD))then --  I haven't received a packet in a while 
 				if states[id] == nil then
 					print("id " .. tostring(id) .. " no msg received")
 				elseif states[id].role == 0 then
 					print("id " .. tostring(id) .. " is the goalie" )
 				else
-					print("NOT GOOD should not get here")
+					print("The robot is dead")
 				end
 				--somebodyDeclared[myRole] = 0;
 			-- ^^ ignore him...^^
@@ -411,7 +415,7 @@ function update()
 	wcm.set_horde_declared(somebodyDeclared);
 	
 	-- if i am safety and LTDR[2] > 5 declareSupport
-	if somebodyDeclared[3] == state.id and Body.get_time() - lastTimeDeclaredReceived[2] > STATUS_DEAD_THRESHOLD then
+	if somebodyDeclared[3] == state.id and t - lastTimeDeclaredReceived[2] > STATUS_DEAD_THRESHOLD then
 		-- make sure 
 		somebodyDeclared[3] = 0; -- undeclare my previous declare
 		somebodyDeclared[2] = 0; -- and undeclare support so that I can take it if I am not closest
@@ -423,7 +427,7 @@ function update()
 		wcm.set_horde_doDeclare(state.declared)
 	end
 	-- if I am support and LTSD[1] > 5 declareKiddie
-	if somebodyDeclared[2] == state.id and Body.get_time() - lastTimeDeclaredReceived[1] > STATUS_DEAD_THRESHOLD then
+	if somebodyDeclared[2] == state.id and t - lastTimeDeclaredReceived[1] > STATUS_DEAD_THRESHOLD then
 		-- make sure 
 		somebodyDeclared[2] = 0; -- undeclare my previous declare
 		somebodyDeclared[1] = 0; -- and undeclare kiddie so that I can take it if I am closest
@@ -444,7 +448,8 @@ function update()
  	-- need to set the penalty location
  	if playerID ~= GOALIE_ID then -- if I'm not the goalie then I need to update the penalty {x,y} location
 		for index=1,5 do -- so find the goalie and set my penaltyLocation. -- might not need to loop.
-			if states[index] ~= nil and states[index].id == GOALIE_ID and states[index].count <= lastStatus[states[index].id].count then
+			if states[index] ~= nil and states[index].id == GOALIE_ID and (states[index] and states[index].tReceive and
+      (Body.get_time() - states[index].tReceive < GOALIE_DEAD_THRESHOLD)) then
 				wcm.set_teamdata_penaltyLocation(states[index].penaltyLocation); -- only the goalie has the penalty loc data.
 				wcm.set_horde_goalieCertainBallOnMySide(states[index].goalieCertainBallOnMySide);
 				lastTimeReceivedFromGoalie = Body.get_time();
@@ -600,33 +605,16 @@ function update_status()
 	setDebugTrue();
 	for id = 1,5 do	
 	
-		if states[id] then
-			print("YOLO states[id] ".. id);
-			if state.id ~= states[id].id then
-				print("#YOLO id" .. tostring(states[id].id))
-			end
-		end
+		
 	
-		local condition1 =  states[id]~=nil and states[id].role ~= ROLE_GOALIE and states[id].pose and states[id].ballRelative 
+		--local condition1 =  states[id]~=nil and states[id].role ~= ROLE_GOALIE and states[id].pose and states[id].ballRelative 
 
- print(tostring("a\n" .."\n" ..tostring(states[id])) )
- print(tostring("b\n" .."\n" ..tostring(lastStatus )  ))
- if(states[id] ~= nil) then
- print(tostring("c\n" .."\n" ..tostring(states[id].id )  ))
  
- print(tostring("d\n" .."\n" ..tostring(states[id].count )  ))
- print(tostring("e\n" .."\n" ..tostring(lastStatus[states[id].id]) )  )
--- print(tostring("\n" .."\n" ..tostring(states[id].count)  ))
- 
-  if(lastStatus[states[id].id]~=nil) then
- 	print(tostring("f\n" .."\n" ..tostring(lastStatus[states[id].id].count))) 
- end 
- end
 		local condition2 = (states[id]~=nil or lastStatus == nil or states[id].id == nil or states[id].count == nil or lastStatus[states[id].id] == nil) 
-		local condition3 = 
-		if(condition2==false) then
-		local condition3 = 	
-		if(condition1 and condition2) then
+		
+			
+		if(states[id]~=nil and states[id].role ~= ROLE_GOALIE and states[id].pose and states[id].ballRelative and 
+			(states[id] and states[id].tReceive and (Body.get_time() - states[id].tReceive < STATUS_DEAD_THRESHOLD))) then -- stil allive
 			
 			
 			lastTimeStatusRec[states[id].id] = Body.get_time();
@@ -677,7 +665,7 @@ function update_status()
 		setDebugTrue();
 		print("id = " .. tostring(id) .. " distID = " .. tostring(distIDPairs[id].id) .. " dead? = " .. tostring(distIDPairs[id].dead))
 		setDebugFalse();
-	end
+	end -- end the for loop
 	
 	setDebugFalse();
 
