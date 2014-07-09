@@ -19,6 +19,6 @@ wcm.set_horde_visionPenalty(1);
 
 -- Write log
 file = io.open("CameraCleanup.txt", "a")
-file:write("Camera died so standing still and killing cognition time = " .. tostring(os.date()).. "\n");
+file:write("Camera died so I am penalized time = " .. tostring(os.date()).. "\n");
 file:close()
 
