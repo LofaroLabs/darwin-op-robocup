@@ -608,7 +608,7 @@ function update_status()
 		end
 	
 		local condition1 =  states[id]~=nil and states[id].role ~= ROLE_GOALIE and states[id].pose and states[id].ballRelative 
-	print(tostring((states[id]) .. tostring(lastStatus )  ..  tostring(states[id].id )  ..  tostring(states[id].count )  ..  tostring(lastStatus[states[id].id] )  ..  tostring(states[id].count)  .. tostring(wqlastStatus[states[id].id].count) )
+	print(tostring((states[id])) .. tostring(lastStatus )  ..  tostring(states[id].id )  ..  tostring(states[id].count )  ..  tostring(lastStatus[states[id].id] )  ..  tostring(states[id].count)  .. tostring(lastStatus[states[id].id].count) )
 	local condition2 = (states[id]~=nil or lastStatus == nil or states[id].id == nil or states[id].count == nil or lastStatus[states[id].id] == nil or states[id].count > lastStatus[states[id].id].count ) 
 			
 		if(condition1 and condition2) then
