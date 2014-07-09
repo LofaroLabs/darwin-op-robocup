@@ -61,6 +61,7 @@ function setBodyState(behaviorState)
 	--end
 end
 function maintainState()
+	print("don't swear")
 	if(BodyFSM.sm.get_current_state(BodyFSM.sm)._NAME ~= lastBehavior) then
 		print("WHAT THE kajsdfhkajshdfkjsahdfiaihfisuhdfiusdhfidsuhfisudhfisudhfisuhdfisudhfisudhfisudhfisuhdfisuhdfisudhfisudhfisudhfisudhfisudhfisudhfisudhfisudhfisudhfisudhfsiudhfisudhfisudfh");
 		BodyFSM.sm:set_state(behaviorState)
