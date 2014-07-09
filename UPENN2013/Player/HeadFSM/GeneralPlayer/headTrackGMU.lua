@@ -55,7 +55,9 @@ function update()
     print('Ball lost!');
     alreadyPrinted = true;
   end
-
+   --if(Config.game.role == 0) then
+--	return "timeout"
+ --  end
   if (t - t0 > timeout) then
        		return "timeout";  --Player, look up to see goalpost
   end

@@ -72,7 +72,7 @@ function update()
 	dist*math.cos(yaw1),dist*math.sin(yaw1), height);
   Body.set_head_command({yaw, pitch});
 
-  if (t - t0 > tScan) then
+  if (t - t0 > tScan or Config.game.role==0) then
     tGoal = wcm.get_goal_t();
     if(wcm.get_horde_ballLost() == 1 ) then 
 		return 'timeoutAndLost'
