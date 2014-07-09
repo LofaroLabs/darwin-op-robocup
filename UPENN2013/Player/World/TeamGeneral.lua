@@ -607,9 +607,10 @@ function update_status()
 			end
 		end
 	
-		if states[id]~=nil and states[id].role ~= ROLE_GOALIE and states[id].pose and states[id].ballRelative then  
-		if( (lastStatus == nil or states[id].id == nil or states[id].count == nil or lastStatus[states[id].id] == nil or states[id].count > lastStatus[states[id].id].count ) then
+		local condition1 =  states[id]~=nil and states[id].role ~= ROLE_GOALIE and states[id].pose and states[id].ballRelative then  
+		local condition2 = (lastStatus == nil or states[id].id == nil or states[id].count == nil or lastStatus[states[id].id] == nil or states[id].count > lastStatus[states[id].id].count ) 
 			
+		if(condition1 and condition2) then
 			
 			
 			lastTimeStatusRec[states[id].id] = Body.get_time();
