@@ -647,7 +647,7 @@ function update_status()
 			placeHolderData.dead = 1 -- ? going to check down later to be sure
 			
 			distIDPairs[id] = placeHolderData;
-			if Body.get_time() - lastTimeStatusRec[distIDPairs[id].id] > STATUS_DEAD_THRESHOLD and lastStatus[distIDPairs[id].id] ~= nil then
+			if Body.get_time() - lastTimeStatusRec[distIDPairs[id].id] < STATUS_DEAD_THRESHOLD and lastStatus[distIDPairs[id].id] ~= nil then
 				setDebugTrue();
 				print("id " .. distIDPairs[id].id .. "dead = " .. tostring(distIDPairs[id].dead));
 				print("last status at id " .. tostring((not lastStatus[distIDPairs[id].id])))
