@@ -642,6 +642,7 @@ function update_status()
 	-- loop
 	
 	local secondClosestWithin = 0
+	setDebugTrue();
 	print("DNW number of distIDPairs is " .. tostring(#distIDPairs))
 	
 	for i=1, #distIDPairs do
@@ -659,11 +660,11 @@ function update_status()
 			wcm.set_horde_status(distIDPairs[i].status);
 			print("DNW i = " .. tostring(i) .. " My Status = " .. tostring(wcm.get_horde_status()));
 		end
-		setDebugTrue();
+		
 		print("DNW i = " .. tostring(i) .. " ID = " .. tostring(distIDPairs[i].id) .. " status = " .. tostring(wcm.get_horde_status()))
-		setDebugFalse();
+		
 	end
-	
+	setDebugFalse();
 	
 
 end
