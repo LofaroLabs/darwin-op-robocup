@@ -619,13 +619,13 @@ function update_status()
 			placeHolderData.dead = 1 -- ? going to check down later to be sure
 			
 			distIDPairs[id] = placeHolderData;
-			
+			print(
 			if Body.get_time() - lastTimeStatusRec[distIDPairs[id].id] > STATUS_DEAD_THRESHOLD and not lastStatus[distIDPairs[id].id] then
 				setDebugTrue();
 				print("id " .. distIDPairs[id].id .. "dead = " .. tostring(distIDPairs[id].dead));
 				
 				distIDPairs[id] = lastStatus[distIDPairs[id].id]
-				
+				print("id now based off of lastStatus = " .. tostring(distIDPairs[id].id) .. " the table itself is " .. tostring(distIDPairs[id]) .. " and dead is = " .. tostring(distIDPairs[id].dead))
 				distIDPairs[id].dead = 0 -- then I will wait and keep you in
 				setDebugFalse();
 			end
