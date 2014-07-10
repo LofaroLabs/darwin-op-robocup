@@ -74,7 +74,7 @@ function update()
 	setDebugTrue();
   if (t - t00 > tScan or Config.game.role==0) then
     tGoal = wcm.get_goal_t();
-    print("transitioning, " .. tostring(wcm.get_horde_balllost()))
+    print("transitioning, " .. tostring(wcm.get_horde_ballLost()))
     if(wcm.get_horde_ballLost() == 1 ) then 
 		return 'timeoutAndLost'
     end
