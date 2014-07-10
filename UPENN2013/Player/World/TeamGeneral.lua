@@ -754,11 +754,11 @@ function update_goalieCloseEnough()
 		print("goin through each guy");
                 
 	--	print("GOALIE " .. tostring(states[id]) .. " difference " .. (Body.get_time()-states[index].tReceive));
-		if states[id]  and states[index] and
+		if states[4]  and states[index] and
       (Body.get_time() - states[index].tReceive < GOALIE_DEAD_THRESHOLD)then
 			print("goalie not dead, persist current goalieCloseEnough GOALIE");
 			lastTimeReceivedFromGoalie = Body.get_time();
-			wcm.set_horde_goalieCloseEnough(states[id].goalieCloseEnough)
+			wcm.set_horde_goalieCloseEnough(states[4].goalieCloseEnough)
 			--return;
 		end
 	
