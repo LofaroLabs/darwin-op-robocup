@@ -242,7 +242,6 @@ function update_vision()
   local state = gcm.get_game_state();
   if(state==0) then -- if in initial
      init_particles();
-     
      update_shm();
      return;
   end

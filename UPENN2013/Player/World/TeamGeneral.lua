@@ -461,6 +461,7 @@ function update()
 		
 		if Body.get_time() - lastTimeReceivedFromGoalie > GOALIE_DEAD_THRESHOLD then
 			wcm.set_horde_goalieCertainBallOnMySide(0); -- make sure this is reset so that I don't end up flipping continuously.
+			
 		end
   	end
 
@@ -751,7 +752,8 @@ function update_goalieCloseEnough()
 	
 	for id = 1,5 do
 	
-		if states[id] and states[id].role == ROLE_GOALIE and states[id].goalieCloseEnough then
+		if states[id] and states[id].role == ROLE_GOALIE and states[id].goalieCloseEnough and (states[index] and states[index].tReceive and
+      (Body.get_time() - states[index].tReceive < GOALIE_DEAD_THRESHOLD))then
 			lastTimeReceivedFromGoalie = Body.get_time();
 			wcm.set_horde_goalieCloseEnough(states[id].goalieCloseEnough)
 			return;
