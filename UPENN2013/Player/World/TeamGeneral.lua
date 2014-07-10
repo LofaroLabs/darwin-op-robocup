@@ -750,19 +750,6 @@ function update_goalieCloseEnough()
 	-- If i am the goalie then i check otherwise i just get the value that the
 	-- was given to me by the goalie telling me it is close enough or not
 	setDebugTrue();
-	for id = 1,5 do
-		print("goin through each guy");
-                
-	--	print("GOALIE " .. tostring(states[id]) .. " difference " .. (Body.get_time()-states[index].tReceive));
-		if states[4]  and states[index] and
-      (Body.get_time() - states[index].tReceive < GOALIE_DEAD_THRESHOLD)then
-			print("goalie not dead, persist current goalieCloseEnough GOALIE");
-			lastTimeReceivedFromGoalie = Body.get_time();
-			wcm.set_horde_goalieCloseEnough(states[4].goalieCloseEnough)
-			--return;
-		end
-	
-	end
 	if Config.game.role ~= 0 and Body.get_time() - lastTimeReceivedFromGoalie > GOALIE_DEAD_THRESHOLD then
 		print("goalie dead, please don't persist GOALIE");
 		wcm.set_horde_goalieCloseEnough(0); -- If I didn't get anything from the goalie then I can't assume he is close enought
