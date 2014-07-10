@@ -286,7 +286,7 @@ function update()
 		-- as long as the ball is close enough and i can see it then I am close enough
 		goalieDistFromPosts = math.abs(wcm.get_ballGlobal_x()- (World.xMax*wcm.get_horde_goalSign()))
 		teamGoalieDistFromPosts = math.abs(wcm.get_team_closestToBallLoc()[1] - World.xMax*wcm.get_horde_goalSign())
-		if   goalieDistFromPosts<wcm.get_horde_goalCloseDist() or (state.ballLost == 1 and teamGoalieDistFromPosts < wcm.get_horde_goalCloseDist()) then
+		if   goalieDistFromPosts<wcm.get_horde_goalCloseDist() then --or (state.ballLost == 1 and teamGoalieDistFromPosts < wcm.get_horde_goalCloseDist()) then
 			state.goalieCloseEnough = 1;
 			wcm.set_horde_goalieCloseEnough(1);
 			print("DNW Goalie is close enough state version = " .. tostring(state.goalieCloseEnough) .. " wcm version =" .. tostring(wcm.get_horde_goalCloseDist()));
