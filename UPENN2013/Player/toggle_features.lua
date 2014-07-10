@@ -34,7 +34,7 @@ role = 0
 getch.enableblock(1);
 unix.usleep(1E6*1.0);
 Body.set_body_hardness(0);
-
+wcm.set_horde_playerID(gcm.get_team_player_id());
 --This is robot specific 
 webots = false;
 init = false;
@@ -206,7 +206,7 @@ function process_keyinput()
 	goalDist = (goalDist +1) %3;
      end
 	if(byte == string.byte('z')) then
-		wcm.set_horde_playerID((wcm.get_horde_playerID()+1)%5)
+		wcm.set_horde_playerID((wcm.get_horde_playerID())%5 + 1)
 	end
 	if(byte == string.byte('x')) then
 		wcm.set_horde_timeOut((wcm.get_horde_timeOut()+1)%2)
