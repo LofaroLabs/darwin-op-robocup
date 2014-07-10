@@ -334,7 +334,7 @@ function update()
 	setDebugTrue();
 	print("YOLO count = " .. countPackets .. " mod 10 = " .. math.mod(countPackets, 10))
 	setDebugFalse();
-	if (math.mod(countPackets, 10) == 0 and gcm.in_penalty() == false) then --TODO: How often can we send team message?
+	if (math.mod(countPackets, 1) == 0 and gcm.in_penalty() == false) then --TODO: How often can we send team message?
 		msg=serialization.serialize(state);
 		setDebugTrue();
 		print("YOLO @!@!1 trying to send message now");
