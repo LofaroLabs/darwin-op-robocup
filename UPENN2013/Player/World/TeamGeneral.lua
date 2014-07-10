@@ -453,6 +453,7 @@ function update()
 		  (Body.get_time() - states[index].tReceive < GOALIE_DEAD_THRESHOLD)) then
 					wcm.set_teamdata_penaltyLocation(states[index].penaltyLocation); -- only the goalie has the penalty loc data.
 					wcm.set_horde_goalieCertainBallOnMySide(states[index].goalieCertainBallOnMySide);
+					wcm.set_horde_goalieCloseEnough(states[index].goalieCloseEnough);
 					lastTimeReceivedFromGoalie = Body.get_time();
 					break;
 				end
