@@ -178,11 +178,13 @@ function update()
     ball_tracking=true;
     HeadFSM.sm:set_state('headKick');
   end
-
+   setDebugTrue();
+   print("well i got the head done and ...");
   --Current cordinate origin: midpoint of uLeft and uRight
   --Calculate ball position from future origin
   --Assuming we stop at next step
   if fast_approach == 1 then
+    print("well fast approach is true");
     uLeft = walk.uLeft;
     uRight = walk.uRight;
     uFoot = util.se2_interpolate(0.5,uLeft,uRight); --Current origin 
@@ -202,7 +204,7 @@ function update()
   else
     factor_x = 0.6;
   end
-
+print("well, that condition is over");
   
   -- calculate walk velocity based on ball position
   vStep = vector.new({0,0,0});
@@ -212,9 +214,10 @@ function update()
   vStep = scale*vStep;
 
   is_confused = wcm.get_robot_is_confused();
-
-  if Config.fsm.playMode==1 or is_confused>0 then 
+print("this might be killin me?");
+  if false then --Config.fsm.playMode==1 or is_confused>0 then 
     --Demo FSM, just turn towards the ball
+    print("p sure this code is killing me");
     ballA = math.atan2(ball.y - math.max(math.min(ball.y, 0.05), -0.05),
             ball.x+0.10);
     vStep[3] = 0.5*ballA;
@@ -261,6 +264,7 @@ function update()
     setDebugTrue()
     print("kick to " .. vector.tostring(wcm.get_horde_kickToPose()));
     setDebugFalse();
+	setDebugTrue();
     receiveRelative[3] = math.atan2(receiveRelative[2], receiveRelative[1]);
     --receiveRelative = util.pose_relative(wcm.get_goal_attack(), {pose.x, pose.y, pose.a});
 
