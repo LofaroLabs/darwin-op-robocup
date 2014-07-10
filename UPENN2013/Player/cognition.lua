@@ -11,6 +11,7 @@ require('Body')
 require('Vision')
 require('World')
 require('Detection') 
+require('Speak');
 wcm.set_horde_visionPenalty(0);
 function print() end
 --~ print a table
@@ -163,6 +164,10 @@ end
 
 
 function update()
+  if(wcm.get_horde_visionPenalty()==1) then
+  	print("i cannot see, help, help help");
+	Speak.talk("i cannot see. please, help");
+  end
   count = count + 1;
   tstart = unix.time();
   
