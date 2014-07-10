@@ -369,6 +369,7 @@ print("would TURNRIGHT")
     --For front kick, check for other side too
   setDebugTrue();
   print("kick_dir is " .. tostring(kick_dir));
+  kick_dir = 1;
   if kick_dir==1 then --Front kick
     yTargetMin = math.min(math.abs(yTarget[1]),math.abs(yTarget[3]));
     yTargetMax = math.max(math.abs(yTarget[1]),math.abs(yTarget[3]));
