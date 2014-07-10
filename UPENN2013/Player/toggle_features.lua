@@ -34,7 +34,7 @@ role = 0
 getch.enableblock(1);
 unix.usleep(1E6*1.0);
 Body.set_body_hardness(0);
-
+wcm.set_horde_playerID(gcm.get_team_player_id());
 --This is robot specific 
 webots = false;
 init = false;
