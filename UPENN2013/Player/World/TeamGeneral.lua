@@ -279,7 +279,7 @@ function update()
 	state.distToGoalOffend = math.sqrt((avgAGoal[1] - state.pose.x) * (avgAGoal[1] - state.pose.x) + (avgAGoal[2] - state.pose.y)*(avgAGoal[2] - state.pose.y));
 
 	if state.role == ROLE_GOALIE then
-	
+		setDebugTrue();	
 		-- calculate the distance and set the shared memory and the state
 		goalieDist = get_distanceBetween(state.ballRelative, {0, 0});
 		print("DNW goalie dist = " .. tostring(goalieDist) .. " closeDist = " .. tostring(wcm.get_horde_goalCloseDist()) .. " ball lost = " .. tostring(state.ballLost));
@@ -295,7 +295,7 @@ function update()
 			wcm.set_horde_goalieCloseEnough(0);
 			print("DNW Goalie is NOT close enough state version = " .. tostring(state.goalieCloseEnough) .. " wcm version =" .. tostring(wcm.get_horde_goalCloseDist()));
 		end
-		
+		setDebugTrue();
 	end
 
 
@@ -749,20 +749,23 @@ function update_goalieCloseEnough()
 
 	-- If i am the goalie then i check otherwise i just get the value that the
 	-- was given to me by the goalie telling me it is close enough or not
-	
+	setDebugTrue();
 	for id = 1,5 do
-	
-		if states[id] and states[id].role == ROLE_GOALIE and states[id].goalieCloseEnough and (states[index] and states[index].tReceive and
+		--print("goin through each guy");
+		if states[id]  and (states[index] and states[index].tReceive and
       (Body.get_time() - states[index].tReceive < GOALIE_DEAD_THRESHOLD))then
+			print("goalie not dead, persist current goalieCloseEnough GOALIE");
 			lastTimeReceivedFromGoalie = Body.get_time();
 			wcm.set_horde_goalieCloseEnough(states[id].goalieCloseEnough)
-			return;
+			--return;
 		end
 	
 	end
 	if Body.get_time() - lastTimeReceivedFromGoalie > GOALIE_DEAD_THRESHOLD then
+		print("goalie dead, please don't persist GOALIE");
 		wcm.set_horde_goalieCloseEnough(0); -- If I didn't get anything from the goalie then I can't assume he is close enought
 	end
+	setDebugFalse();
 
 end
 
