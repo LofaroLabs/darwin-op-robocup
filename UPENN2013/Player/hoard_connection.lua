@@ -364,7 +364,7 @@ connectionThread = function ()
 			--setDebugTrue()
 			print("am i in penalty?? " .. tostring(in_penalty()))
 			print("hey am i close enough? " .. wcm.get_horde_goalieCloseEnough());
-			print("oh yeah, and is it on my side? " .. wcm.get_horde_goalieCertainBallOnMySide() " and ball " .. wcm.get_horde_ballLost());
+			print("oh yeah, and is it on my side? " .. wcm.get_horde_goalieCertainBallOnMySide() .. " and ball " .. wcm.get_horde_ballLost());
 
 			
 			setDebugFalse()
