@@ -7,7 +7,7 @@ require('Config')
 require('vcm')
 require('wcm')
 
-t0 = 0;
+t00 = 0;
 yawSweep = Config.fsm.headLookGoal.yawSweep;
 yawMax = Config.head.yawMax;
 dist = Config.fsm.headReady.dist;
@@ -21,7 +21,7 @@ fovMargin = 30*math.pi/180;
 
 function entry()
   print(_NAME.." entry");
-  t0 = Body.get_time();
+  t00 = Body.get_time();
 
   --SJ: Check which goal to look at
   --Now we look at the NEARER goal
@@ -61,7 +61,7 @@ end
 function update()
   local t = Body.get_time();
   tScan = 2
-  local tpassed=t-t0;
+  local tpassed=t-t00;
   local ph= tpassed/tScan;
   local yawbias = (ph-0.5)* yawSweep;
 
@@ -72,8 +72,9 @@ function update()
 	dist*math.cos(yaw1),dist*math.sin(yaw1), height);
   Body.set_head_command({yaw, pitch});
 
-  if (t - t0 > tScan or Config.game.role==0) then
+  if (t - t00 > tScan or Config.game.role==0) then
     tGoal = wcm.get_goal_t();
+    print("transitioning, " .. tostring(wcm.get_horde_balllost()))
     if(wcm.get_horde_ballLost() == 1 ) then 
 		return 'timeoutAndLost'
     end

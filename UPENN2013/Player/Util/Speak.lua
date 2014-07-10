@@ -5,7 +5,7 @@ require('os')
 require('unix');
 require('Config')
 
-local volume = 30;
+local volume = 100;
 local lang = 'en-us';
 local gender = Config.dev.gender or 1;
 if gender == 1 then
@@ -44,7 +44,7 @@ if enable == 1 then
   end
   
   -- start espeak background process
-  if (unix.system('(/usr/bin/env espeak --stdout -v '..lang..girl..' -s 130 -a '..volume..' < '..fifo..' | aplay) > /dev/null 2>&1 &') ~= 0) then
+  if (unix.system('(/usr/bin/env espeak --stdout -v '..lang..girl..' -s 225 -a '..volume..' < '..fifo..' | aplay) > /dev/null 2>&1 &') ~= 0) then
     error('Could not run speak process');
   end
 end
