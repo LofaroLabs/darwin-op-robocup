@@ -71,7 +71,7 @@ function update()
   local yaw, pitch =HeadTransform.ikineCam(
 	dist*math.cos(yaw1),dist*math.sin(yaw1), height);
   Body.set_head_command({yaw, pitch});
-
+	setDebugTrue();
   if (t - t00 > tScan or Config.game.role==0) then
     tGoal = wcm.get_goal_t();
     print("transitioning, " .. tostring(wcm.get_horde_balllost()))
@@ -80,6 +80,7 @@ function update()
     end
 	return 'timeout'; 
   end
+	setDebugFalse();
 end
 
 function exit()
