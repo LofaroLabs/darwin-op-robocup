@@ -414,57 +414,57 @@ function update()
 	
 
 	wcm.set_horde_declared(somebodyDeclared);
+	if (wcm.get_horde_dummyTraining() == 0) then
+		-- if i am safety and LTDR[2] > 5 declareSupport
+		if somebodyDeclared[3] == state.id and t - lastTimeDeclaredReceived[2] > STATUS_DEAD_THRESHOLD then
+			-- make sure 
+			somebodyDeclared[3] = 0; -- undeclare my previous declare
+			somebodyDeclared[2] = 0; -- and undeclare support so that I can take it if I am not closest
+			wcm.set_horde_declared(somebodyDeclared);
 	
-	-- if i am safety and LTDR[2] > 5 declareSupport
-	if somebodyDeclared[3] == state.id and t - lastTimeDeclaredReceived[2] > STATUS_DEAD_THRESHOLD then
-		-- make sure 
-		somebodyDeclared[3] = 0; -- undeclare my previous declare
-		somebodyDeclared[2] = 0; -- and undeclare support so that I can take it if I am not closest
-		wcm.set_horde_declared(somebodyDeclared);
-		
-		-- make sure he has set that he is doing it
-		state.declared[3] = 0
-		state.declared[2] = 0
-		wcm.set_horde_doDeclare(state.declared)
-	end
-	-- if I am support and LTSD[1] > 5 declareKiddie
-	if somebodyDeclared[2] == state.id and t - lastTimeDeclaredReceived[1] > STATUS_DEAD_THRESHOLD then
-		-- make sure 
-		somebodyDeclared[2] = 0; -- undeclare my previous declare
-		somebodyDeclared[1] = 0; -- and undeclare kiddie so that I can take it if I am closest
-		wcm.set_horde_declared(somebodyDeclared);
-		
-		-- make sure he has set that he is doing it
-		state.declared[2] = 0
-		state.declared[1] = 0
-		wcm.set_horde_doDeclare(state.declared)
-	end
+			-- make sure he has set that he is doing it
+			state.declared[3] = 0
+			state.declared[2] = 0
+			wcm.set_horde_doDeclare(state.declared)
+		end
+		-- if I am support and LTSD[1] > 5 declareKiddie
+		if somebodyDeclared[2] == state.id and t - lastTimeDeclaredReceived[1] > STATUS_DEAD_THRESHOLD then
+			-- make sure 
+			somebodyDeclared[2] = 0; -- undeclare my previous declare
+			somebodyDeclared[1] = 0; -- and undeclare kiddie so that I can take it if I am closest
+			wcm.set_horde_declared(somebodyDeclared);
 	
+			-- make sure he has set that he is doing it
+			state.declared[2] = 0
+			state.declared[1] = 0
+			wcm.set_horde_doDeclare(state.declared)
+		end
+	end
 
 	
 	-- zero is the default so originally everyon will be zero so 
 	print("Done checking declared -------------------------");
  	setDebugFalse();
- 	
- 	-- need to set the penalty location
- 	if playerID ~= GOALIE_ID then -- if I'm not the goalie then I need to update the penalty {x,y} location
-		for index=1,5 do -- so find the goalie and set my penaltyLocation. -- might not need to loop.
-			if states[index] ~= nil and states[index].id == GOALIE_ID and (states[index] and states[index].tReceive and
-      (Body.get_time() - states[index].tReceive < GOALIE_DEAD_THRESHOLD)) then
-				wcm.set_teamdata_penaltyLocation(states[index].penaltyLocation); -- only the goalie has the penalty loc data.
-				wcm.set_horde_goalieCertainBallOnMySide(states[index].goalieCertainBallOnMySide);
-				lastTimeReceivedFromGoalie = Body.get_time();
-				break;
+ 	if (wcm.get_horde_dummyTraining() == 0) then
+		-- need to set the penalty location
+		if playerID ~= GOALIE_ID then -- if I'm not the goalie then I need to update the penalty {x,y} location
+			for index=1,5 do -- so find the goalie and set my penaltyLocation. -- might not need to loop.
+				if states[index] ~= nil and states[index].id == GOALIE_ID and (states[index] and states[index].tReceive and
+		  (Body.get_time() - states[index].tReceive < GOALIE_DEAD_THRESHOLD)) then
+					wcm.set_teamdata_penaltyLocation(states[index].penaltyLocation); -- only the goalie has the penalty loc data.
+					wcm.set_horde_goalieCertainBallOnMySide(states[index].goalieCertainBallOnMySide);
+					lastTimeReceivedFromGoalie = Body.get_time();
+					break;
+				end
+
 			end
-
-		end
 		
-		if Body.get_time() - lastTimeReceivedFromGoalie > GOALIE_DEAD_THRESHOLD then
-			wcm.set_horde_goalieCertainBallOnMySide(0); -- make sure this is reset so that I don't end up flipping continuously.
-			
+			if Body.get_time() - lastTimeReceivedFromGoalie > GOALIE_DEAD_THRESHOLD then
+				wcm.set_horde_goalieCertainBallOnMySide(0); -- make sure this is reset so that I don't end up flipping continuously.	
+			end
+		
 		end
-  	end
-
+	end
 
 
   for id = 1,5 do 
