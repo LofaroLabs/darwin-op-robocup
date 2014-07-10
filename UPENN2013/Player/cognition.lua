@@ -11,7 +11,7 @@ require('Body')
 require('Vision')
 require('World')
 require('Detection') 
-
+wcm.set_horde_visionPenalty(0);
 function print() end
 --~ print a table
 function printTable(list, i)
