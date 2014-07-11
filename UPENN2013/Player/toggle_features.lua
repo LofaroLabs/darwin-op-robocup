@@ -1,4 +1,4 @@
-cwd = os.getenv('PWD')
+cwd = os.getenv('pwd')
 require('init')
 
 require('wcm')
@@ -34,7 +34,7 @@ role = 0
 getch.enableblock(1);
 unix.usleep(1E6*1.0);
 Body.set_body_hardness(0);
-
+wcm.set_horde_playerID(gcm.get_team_player_id());
 --This is robot specific 
 webots = false;
 init = false;
@@ -54,6 +54,7 @@ ballDistToggle = 0;
 insist = false;
 insistBall = false;
 somethingPressed = false
+ballDistToGoalToggle = 0;
 function process_keyinput()
   local str=getch.get();
   if #str>0 then
@@ -169,7 +170,7 @@ function process_keyinput()
     end
 
    if byte==string.byte("d") then
-        if (vcm.get_ball_detect()==0) then
+        if(vcm.get_ball_detect()==0) then
           vcm.set_ball_detect(1);
           insistBall = true;
 	else
@@ -180,6 +181,23 @@ function process_keyinput()
     if(byte==string.byte("b")) then
 	ballDistToggle = (ballDistToggle +1) % 5;
     end
+    if(byte==string.byte(",")) then
+	ballDistToGoalToggle = (ballDistToGoalToggle + 1) % 3;
+        ballGlobal = {}
+   	if(ballDistToGoalToggle == 0) then
+		ballGlobal[1] = -1*wcm.get_horde_goalSign() * 1.6; 
+  	 	ballGlobal[2] = 0;
+  	 elseif ballDistToGoalToggle == 1 then
+   		ballGlobal[1] = -1*wcm.get_horde_goalSign() * 1.4; 
+   		ballGlobal[2] = 0;
+   	else
+   		ballGlobal = wcm.get_team_closestToBallLoc();
+   	end
+ 	 
+   	wcm.set_team_closestToBallLoc(ballGlobal);
+ 
+
+    end
     if(byte == string.byte("r")) then
 	role = (role+1)%5
    	wcm.set_horde_role(role); 	
@@ -188,7 +206,7 @@ function process_keyinput()
 	goalDist = (goalDist +1) %3;
      end
 	if(byte == string.byte('z')) then
-		wcm.set_horde_playerID((wcm.get_horde_playerID()+1)%5)
+		wcm.set_horde_playerID((wcm.get_horde_playerID())%5 + 1)
 	end
 	if(byte == string.byte('x')) then
 		wcm.set_horde_timeOut((wcm.get_horde_timeOut()+1)%2)
@@ -223,7 +241,7 @@ wcm.set_horde_dummyTraining(0);
    if(ballDistToggle~=4) then
    	wcm.set_ball_x(ballDist);
    end
-   wcm.set_ball_y(0);
+    -- wcm.set_ball_y(0);
    if (insist) then
    	wcm.set_horde_doneApproach(1);
    end
@@ -281,6 +299,7 @@ wcm.set_horde_pose(myNewPose);
   	print("(o)goal dist " .. tostring(wcm.get_horde_pose()[1]))
 	print("(z) player ID " .. tostring(wcm.get_horde_playerID()));
 	print("(x) timOut " .. tostring(wcm.get_horde_timeOut()))
+	print("(,) dist to goal " .. tostring(wcm.get_team_closestToBallLoc()[1]))
 	somethingPressed = false;
   end	
  end
