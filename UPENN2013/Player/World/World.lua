@@ -9,6 +9,7 @@ require('wcm')
 require('vcm');
 require('gcm');
 require('mcm');
+require('Config');
 
 -- intialize sound localization if needed
 useSoundLocalization = Config.world.enable_sound_localization or 0;
@@ -45,7 +46,7 @@ team_ball_threshold = Config.team.team_ball_threshold or 0;
 
 
 --For NSL, eye LED is not allowed during match
-led_on = 0; --Default is ON
+led_on = Config.game.led_on; --Default is ON
 
 ballFilter = Filter2D.new();
 ball = {};
