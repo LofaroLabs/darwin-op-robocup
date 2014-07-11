@@ -24,7 +24,9 @@ direction = 1;
 
 
 function entry()
+  setDebugTrue();
   print("Head SM:".._NAME.." entry");
+  setDebugFalse();
   wcm.set_ball_t_locked_on(0);
 
   --Goalie need wider scan
@@ -60,7 +62,7 @@ end
 function update()
 setDebugTrue()
 print("HEAD SCAN UPDATE");
-setDebugFalse() 
+--setDebugFalse() 
  pitchBias =  mcm.get_headPitchBias();--Robot specific head angle bias
 
   --Is the robot in bodySearch and spinning?
@@ -71,6 +73,7 @@ setDebugFalse()
 
   -- Scan left-right and up-down with constant speed
   if isSearching ==0 then --Normal headScan
+    print("searchig is zero");
     local ph = (t-t0)/tScan;
     ph = ph - math.floor(ph);
 
@@ -86,6 +89,7 @@ setDebugFalse()
     end
 
   else --Rotating scan
+    print("head scan is not zero");
     timeout = 20.0 * Config.speedFactor; --Longer timeout
     local ph = (t-t0)/tScan * 2;
     ph = ph - math.floor(ph);
@@ -99,9 +103,10 @@ setDebugFalse()
     end
     yaw = yawMagTurn * isSearching;
   end
-
+  setDebugTrue();
+  print("i can doing head command" .. yaw .. ". " .. (pitch-pitchBias));
   Body.set_head_command({yaw, pitch-pitchBias});
-
+  setDebugFalse();
   local ball = wcm.get_ball();
   if (t - ball.t < 0.1) then
       return "timeout"

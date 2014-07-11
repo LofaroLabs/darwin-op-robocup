@@ -16,9 +16,10 @@ timeout = Config.fsm.bodyGotoCenter.timeout;
 alreadyDone = false;
 distanceTolerance = .2;
 angleTolerance = .3;
+setHeadTrack = false;
 function entry()
   print(_NAME.." entry");
-  --HeadFSM.sm:set_state('headLookGoalGMU');
+ setHeadTrack = false; --HeadFSM.sm:set_state('headLookGoalGMU');
   HeadFSM.sm:set_state('headLookBehindAndBall')
   t0 = Body.get_time();
   alreadyDone = false;
@@ -60,7 +61,9 @@ function update()
   print("relative to the ball, i am facing " .. endFacingRelative[3])
   print("PURELY BALL RELATIVE " .. wcm.get_ball_x() .. ", " .. wcm.get_ball_y())
   if(alreadyDone) then --checking if we've already gotten there to our best tolerance
-      HeadFSM.sm:set_state("headTrackGMU");
+     setDebugTrue()
+   --    HeadFSM.sm:set_state("headTrackGMU");
+       setDebugFalse()
       print("nitpick adjustments");
       if(endPoseRelative[3]<0) then
            rotateVel = -1;
@@ -94,7 +97,15 @@ function update()
 	walk.set_velocity(0,0,0);
 --	Motion.sm:set_state('standstill');
 	walk.stop();
-	--alreadyDone = true;
+	 setDebugTrue()
+        print("head track") 
+	if(setHeadTrack~=true) then
+         HeadFSM.sm:set_state("headTrackGMU");
+         setHeadTrack = true;
+	end 
+	setDebugFalse()
+
+        --alreadyDone = true;
 	wcm.set_horde_yelledReady(1);
      	--wcm.set_horde_passKick(1);
 	--wcm.set_horde_timeMark(Body.get_time());
