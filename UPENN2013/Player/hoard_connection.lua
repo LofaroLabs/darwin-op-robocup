@@ -281,6 +281,7 @@ function connectToHorde(port)
 end
 lastReceivedState = nil;
 lastStateForTime = 0
+lastTimeReceived = Body.get_time();
 connectionThread = function ()
    	print("got into con thread");
 	if( darwin ) then
@@ -330,8 +331,10 @@ connectionThread = function ()
 			
 			--client:send("request\n");
 	--		print("sending request");
-			local line, err = client:receive() -- read in horde commands
-			
+			local line, err = nil,nil
+			if(Body.get_time() - lastTimeReceived > .2) then	
+				line,err = client:receive() -- read in horde commands
+			end
 			if(line~=nil) then
 				
 				--client:send("ack\n")
