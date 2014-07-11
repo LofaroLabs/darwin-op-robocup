@@ -38,7 +38,7 @@ use_gps_only = Config.use_gps_only or 0;
 gps_enable = Body.gps_enable or 0;
 
 --Use team vision information when we cannot find the ball ourselves
-tVisionBall = 0;
+tVisionBall = 1;
 use_team_ball = Config.team.use_team_ball or 0;
 team_ball_timeout = Config.team.team_ball_timeout or 0;
 team_ball_threshold = Config.team.team_ball_threshold or 0;
@@ -340,7 +340,7 @@ setDebugFalse()
     ballFilter:observation_xy(v[1], v[2], dr, da);
     --Green insted of red for indicating
     --As OP tend to detect red eye as balls
-    ball_led={1,0,0}; 
+    ball_led= {0,1,0} ---{1,0,0}; 
 
     -- Update the velocity
     -- use centroid info only
