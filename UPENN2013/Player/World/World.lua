@@ -45,7 +45,7 @@ team_ball_threshold = Config.team.team_ball_threshold or 0;
 
 
 --For NSL, eye LED is not allowed during match
-led_on = 1; --Default is ON
+led_on = 0; --Default is ON
 
 ballFilter = Filter2D.new();
 ball = {};
@@ -271,14 +271,17 @@ function update_vision()
   -- should also be pretty far from center on x axis
 setDebugTrue()
   print(tostring(wcm.get_horde_goalieCertainBallOnMySide()==1) .." ".. tostring(wcm.get_ballGlobal_x() / math.abs(wcm.get_ballGlobal_x()) ~= wcm.get_horde_goalSign() ) .. " " ..tostring(math.abs(wcm.get_ballGlobal_x()) > 1));
+
   if(Config.game.role ~= 0) then
    if wcm.get_horde_goalieCertainBallOnMySide() == 1 and wcm.get_ballGlobal_x() / math.abs(wcm.get_ballGlobal_x()) ~= wcm.get_horde_goalSign() and math.abs(wcm.get_ballGlobal_x()) > 1 then
   	print("HEY SOMETHING IS WRONG, FLIPPIN THOSE PARTICLES");
 	PoseFilter.flip_particles(); -- then flip em
+  --[[ -- we don't want upenn's flip seems to interfere with our flip
   elseif wcm.get_robot_flipped() == 1 then
     print("HEY FLIPPING PARTICLES CAUSE UPENN SAID SO");
     PoseFilter.flip_particles();
     wcm.set_robot_flipped(0);
+    ]]--
   end
  end
 -- if goalie thinks he's on offensive side, he's wrong. no way in hell
@@ -439,7 +442,9 @@ setDebugFalse()
 --print("TEAMBALL")
   end
   
-  update_led();
+  if led_on == 1 then
+  	update_led();
+  end
   update_shm();
 end
 
