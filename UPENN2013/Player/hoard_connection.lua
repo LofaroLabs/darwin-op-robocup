@@ -380,8 +380,8 @@ connectionThread = function ()
 			--print("maybe? doing horde stuff, idk " .. wcm.get_horde_sendStatus() .. " " .. gcm.get_game_state() .. " " .. tostring(in_penalty()));
 		        if(line ~=nil and string.find(line, "StartSending")) then
 				updateAction(line, client)		
-		--	elseif ((gcm.get_game_state() ~= 3 and not (Config.game.role~=0 and gcm.get_game_state() == 1)) or in_penalty()) then
-			elseif ((gcm.get_game_state() ~= 3 or in_penalty())) then
+			elseif ((gcm.get_game_state() ~= 3 and not (Config.game.role~=0 and gcm.get_game_state() == 1)) or in_penalty()) then
+			--elseif ((gcm.get_game_state() ~= 3 or in_penalty())) then
 				
 				
 				
@@ -410,7 +410,7 @@ connectionThread = function ()
 						BodyFSM.update();
 						BodyFSM.sm:set_state('bodyStop');
 						HeadFSM.sm:set_state('headIdle')
-						
+					--upenn or us?	
 					--elseif state == 1 and lastState ~= 1  and Config.game.role == 0 then -- only if you're goalie and in ready 
 						elseif state == 1 and lastState ~= 1  then -- only if you're goalie and in ready 
 	
@@ -440,7 +440,8 @@ connectionThread = function ()
 			elseif not err and not in_penalty() then
 				--local currentState = gcm.get_game_state();
 				state = gcm.get_game_state();
-				if( not doneReadyBefore and state<3 and false) then
+				--upenn or us?
+				if( not doneReadyBefore and state<3) then --and false) then
 						doneReadyBefore = true;
 						BodyFSM.sm:set_state('bodyReady') -- ready
 						BodyFSM.update();
