@@ -60,6 +60,7 @@ function update()
   print("relative to the ball, i am facing " .. endFacingRelative[3])
   print("PURELY BALL RELATIVE " .. wcm.get_ball_x() .. ", " .. wcm.get_ball_y())
   if(alreadyDone) then --checking if we've already gotten there to our best tolerance
+      HeadFSM.sm:set_state("headTrackGMU");
       print("nitpick adjustments");
       if(endPoseRelative[3]<0) then
            rotateVel = -1;

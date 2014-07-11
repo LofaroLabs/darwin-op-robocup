@@ -409,16 +409,16 @@ function gotoWhileFacingGoalieStart()
                 
     action.args.facing = {};
     action.args.facing.x = ballGlobal.x
-    action.args.facing.y = ballGlobal.y
+    action.args.facing.y = ballGlobal.y * .4 -- align half y instead of full y
     action.args.facing.a = 0
 	action.args.gotoPose = {};
 	penaltyBounds = getPenaltyBounds();
     action.args.gotoPose.x = penaltyBounds[1] -(.3*wcm.get_horde_goalSign()) 
     if math.abs(ballGlobal.y) < penaltyBounds[2] * .5  then
-        action.args.gotoPose.y = ballGlobal.y;
+        action.args.gotoPose.y = ballGlobal.y * .5; -- align half the way isntead of full y
     else
 	ysign = ballGlobal.y / math.abs(ballGlobal.y)
-        action.args.gotoPose.y = penaltyBounds[2] * ysign * .5;
+        action.args.gotoPose.y = penaltyBounds[2] * ysign * .5 * .5;
     end
     action.args.gotoPose.a = 0
 	action.ackNumber =  wcm.get_horde_ackNumber();
@@ -441,16 +441,16 @@ function gotoWhileFacingGoalieGo()
                 
     action.args.facing = {};
     action.args.facing.x = ballGlobal.x
-    action.args.facing.y = ballGlobal.y
+    action.args.facing.y = ballGlobal.y*.4 -- i trust it will still be in my vision if i ace this direction
     action.args.facing.a = 0
 	action.args.gotoPose = {};
 	penaltyBounds = getPenaltyBounds();
     action.args.gotoPose.x = penaltyBounds[1] - (0.3 * wcm.get_horde_goalSign());
     if math.abs(ballGlobal.y) < penaltyBounds[2] * .5  then
-        action.args.gotoPose.y = ballGlobal.y;
+        action.args.gotoPose.y = ballGlobal.y*.5;
     else
         ysign = ballGlobal.y / math.abs(ballGlobal.y)
-        action.args.gotoPose.y = penaltyBounds[2] * ysign * .5;
+        action.args.gotoPose.y = penaltyBounds[2] * ysign * .5*.5;
     end  
    action.args.gotoPose.a = 0
 	action.ackNumber =  wcm.get_horde_ackNumber();

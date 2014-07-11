@@ -146,7 +146,7 @@ function entry()
   if t0-ball.t<0.2 then
     ball_tracking=true;
     print("Ball Tracking")
-    HeadFSM.sm:set_state('headKick');
+    --HeadFSM.sm:set_state('headKick');
   else
     ball_tracking=false;
   end
