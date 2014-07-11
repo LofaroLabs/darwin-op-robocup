@@ -48,6 +48,9 @@ game.playerID = playerID;
 require('playerRole')
 game.role = playerRole; 
 
+game.led_on = 1;
+
+
 if (robotName=='lucy') then
   game.playerID = 1; 
 elseif (robotName=='annie') then
@@ -153,7 +156,7 @@ fallAngle = 50*math.pi/180;
 falling_timeout = 0.3;
 
 --led_on = 0; --turn off eye led
-led_on = 1; --turn on eye led
+--led_on = 1; --turn on eye led
 
 enable_ceremony = 0;
 ceremony_score = 2; --Start ceremony if we are leading by this score
@@ -230,7 +233,7 @@ walk.velLimitX={-.03,.10};
 -------------------------------------------------------------
 --FOR DEMO MATCH DAY 1
 
-led_on = 1; --turn on eye led
+--led_on = 1; --turn on eye led
 --Slow down maximum speed (for testing)
 fsm.bodyPosition.maxStep1 = 0.04; 
 fsm.bodyPosition.maxStep2 = 0.05;
@@ -266,7 +269,7 @@ fsm.bodyAnticipate.rCloseDive = 2.0; --ball distance threshold for diving
 
 ------------------------------------------------------------------
 -- FOR MATCH 1
-led_on = 0; --turn on eye led
+--led_on = 0; --turn on eye led
 
 
 team.flip_correction = 2; --ALWAYS correct 
