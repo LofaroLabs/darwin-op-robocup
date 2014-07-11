@@ -60,13 +60,13 @@ end
 
 function update()
   setDebugTrue()
-  print("hey im in HEAD update");
+  --print("hey im in HEAD update");
   local t = Body.get_time();
   tScan = 2
   local tpassed=t-t00;
   local ph= tpassed/tScan;
   local yawbias = (ph-0.5)* yawSweep;
-print("guess im not dead yet HEAD");
+  --print("guess im not dead yet HEAD");
   height=vcm.get_camera_height();
 
   yaw1 = math.min(math.max(yaw0+yawbias, -yawMax), yawMax);
