@@ -78,7 +78,7 @@ print("guess im not dead yet HEAD");
     tGoal = wcm.get_goal_t();
     print("HEAD transitioning, " .. tostring(wcm.get_horde_ballLost()))
     if(wcm.get_horde_ballLost() == 1 ) then 
-		return 'timeoutAndLost'
+		return 'LostAndTime'
     end
 	return 'timeout'; 
   end

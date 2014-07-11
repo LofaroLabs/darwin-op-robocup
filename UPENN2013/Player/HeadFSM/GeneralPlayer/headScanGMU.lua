@@ -58,7 +58,10 @@ function entry()
 end
 
 function update()
-  pitchBias =  mcm.get_headPitchBias();--Robot specific head angle bias
+setDebugTrue()
+print("HEAD SCAN UPDATE");
+setDebugFalse() 
+ pitchBias =  mcm.get_headPitchBias();--Robot specific head angle bias
 
   --Is the robot in bodySearch and spinning?
   isSearching = mcm.get_walk_isSearching();

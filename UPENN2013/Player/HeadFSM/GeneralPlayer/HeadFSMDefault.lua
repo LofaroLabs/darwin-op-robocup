@@ -46,7 +46,7 @@ sm:add_state(headLookGoalPose);
 sm:set_transition(headTrackGMU, 'timeout', headLookGoalGMU);
 sm:set_transition(headLookGoalGMU, 'timeout', headTrackGMU);
 sm:set_transition(headLookGoalPose, 'timeout', headLookGoalPose);
-sm:set_transition(headLookGoalGMU, "timeoutAndLost", headScanGMU);
+sm:set_transition(headLookGoalGMU, "LostAndTime", headScanGMU);
 sm:set_transition(headScanGMU, "timeout", headLookGoalGMU);
 ---------------------------------------------
 --Game FSM with looking at the goal
