@@ -1,4 +1,4 @@
-cwd = os.getenv('PWD')
+cwd = os.getenv('pwd')
 require('init')
 
 require('wcm')
@@ -183,6 +183,20 @@ function process_keyinput()
     end
     if(byte==string.byte(",")) then
 	ballDistToGoalToggle = (ballDistToGoalToggle + 1) % 3;
+        ballGlobal = {}
+   	if(ballDistToGoalToggle == 0) then
+		ballGlobal[1] = -1*wcm.get_horde_goalSign() * 1.6; 
+  	 	ballGlobal[2] = 0;
+  	 elseif ballDistToGoalToggle == 1 then
+   		ballGlobal[1] = -1*wcm.get_horde_goalSign() * 1.4; 
+   		ballGlobal[2] = 0;
+   	else
+   		ballGlobal = wcm.get_team_closestToBallLoc();
+   	end
+ 	 
+   	wcm.set_team_closestToBallLoc(ballGlobal);
+ 
+
     end
     if(byte == string.byte("r")) then
 	role = (role+1)%5
@@ -227,19 +241,7 @@ wcm.set_horde_dummyTraining(0);
    if(ballDistToggle~=4) then
    	wcm.set_ball_x(ballDist);
    end
-   ballGlobal = {}
-   if(ballDistToGoalToggle == 0) then
-	ballGlobal[1] = -1*wcm.get_horde_goalSign() * 1.6; 
-   	ballGlobal[2] = 0;
-   elseif ballDistToGoalToggle == 1 then
-   	ballGlobal[1] = -1*wcm.get_horde_goalSign() * 1.4; 
-   	ballGlobal[2] = 0;
-   else
-   	ballGlobal = wcm.get_team_closestToBallLoc();
-   end
-  
-   wcm.set_team_closestToBallLoc(ballGlobal);
-  -- wcm.set_ball_y(0);
+    -- wcm.set_ball_y(0);
    if (insist) then
    	wcm.set_horde_doneApproach(1);
    end
