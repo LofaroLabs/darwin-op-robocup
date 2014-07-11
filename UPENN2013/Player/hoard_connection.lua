@@ -114,7 +114,7 @@ function sendFeatures (client)
        
         
 	--	print(" difference is : " .. tostring(Body.get_time() - sendFeaturesTimer));
-		if(Body.get_time() - sendFeaturesTimer < .5) then 
+		if(Body.get_time() - sendFeaturesTimer < .1) then 
 	--		print("is not sending")	
 			return;
 		end
