@@ -440,7 +440,7 @@ connectionThread = function ()
 			elseif not err and not in_penalty() then
 				--local currentState = gcm.get_game_state();
 				state = gcm.get_game_state();
-				if( not doneReadyBefore and state<3) then
+				if( not doneReadyBefore and state<3 and false) then
 						doneReadyBefore = true;
 						BodyFSM.sm:set_state('bodyReady') -- ready
 						BodyFSM.update();
