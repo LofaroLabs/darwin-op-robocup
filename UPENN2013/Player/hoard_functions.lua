@@ -56,6 +56,7 @@ initToggle = true;
 lastBehavior = "DESTROY ALL HUMANS";
 function setBodyState(behaviorState)
 	--if(BodyFSM.sm.get_current_state(BodyFSM.sm)._NAME ~= behaviorState) then
+		if(behaviorState==nil) then return end
 		BodyFSM.sm:set_state(behaviorState)
 		lastBehavior = behaviorState;
 	--end
@@ -64,6 +65,7 @@ function maintainState()
 	print("don't swear")
 	if(BodyFSM.sm.get_current_state(BodyFSM.sm)._NAME ~= lastBehavior) then
 		print("WHAT THE kajsdfhkajshdfkjsahdfiaihfisuhdfiusdhfidsuhfisudhfisudhfisuhdfisudhfisudhfisudhfisuhdfisuhdfisudhfisudhfisudhfisudhfisudhfisudhfisudhfisudhfisudhfisudhfsiudhfisudhfisudfh");
+		if(behaviorState==nil) then return end;
 		BodyFSM.sm:set_state(behaviorState)
             --    lastBehavior = behaviorState;
 	end	
