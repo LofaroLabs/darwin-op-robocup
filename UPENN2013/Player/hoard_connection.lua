@@ -93,6 +93,7 @@ function updateAll(newState)
 	--gcm.set_game_state(3);
        	--print("Motion update");
 	--if(false) then
+	updateAllTimer2 = Body.get_time();
 	Motion.update();
 	--if(false) then
 	--print("Body update");
@@ -109,10 +110,16 @@ function updateAll(newState)
 	end
 --	GameFSM.update();	
 	fpsTimer = Body.get_time(); 
+	updateAllTimer2 = Body.get_time() - updateAllTimer2;
 end
 count = 0;
+sendFeaturesTimer2 = Body.get_time();
+updateAllTimer2 = Body.get_time();
+receiveClientTimer = Body.get_time();
+
 function sendFeatures (client)
-        if(wcm.get_horde_sendStatus()~="StartSending") then
+        sendFeaturesTimer2 = Body.get_time();
+	if(wcm.get_horde_sendStatus()~="StartSending") then
         	--print("Start sending was false");
 		 	return;
         end
@@ -198,18 +205,18 @@ function sendFeatures (client)
 	features["status"] = wcm.get_horde_status();
 	--print("sending some features, yo\n");-- wcm.set_horde_doneFrontApproach("true");
        -- print(json.encode(features) .. "\n");
-		features["ackNumber"] = ackNumber;
-		client:settimeout(.01);
-		client:send(json.encode(features) .. "\n");
+	features["ackNumber"] = ackNumber;
+	client:settimeout(.01);
+	client:send(json.encode(features) .. "\n");
         -- Send the features to horde via the client
         -- args may contain the amount of time to wait between sending
-
+	sendFeaturesTimer2 = Body.get_time() - sendFeaturesTimer2;
 end
 --[[function setupUDPDarwins()
     --local myClient = 
    local host, port = "localhost", 4010
    -- load namespace
-   local socket = require("socket")
+   local/ socket = require("socket")
    -- convert host name to ip address
    local ip = assert(socket.dns.toip(host))
    -- create a new UDP object
@@ -277,7 +284,10 @@ function checkTimeout()
 	end
 	if((Body.get_time() - fpsTimer) > .1) then
                 print("time since last frame: " .. (Body.get_time() - fpsTimer) .. updateAllTimer .. " " .. sendFeaturesTimer);
-        end
+		print("send features timer"  .. sendFeaturesTimer2);
+        	print("client receive features timer " .. clientReceiveTimer);
+		print("updateAll timer " .. updateAllTimer2);
+	end
 end
 function connectToHorde(port)
 		local socket = require("socket")
@@ -338,15 +348,19 @@ connectionThread = function ()
 			--client:send("request\n");
 	--		print("sending request");
 			local line, err = nil,nil
-			if(Body.get_time() - lastTimeReceived > .2) then	
+			clientReceiveTimer = Body.get_time();
+			if(Body.get_time() - lastTimeReceived > .075) then	
 				line,err = client:receive() -- read in horde commands
+				lastTimeReceived = Body.get_time();
 			end
+			clientReceiveTimer = Body.get_time() - clientReceiveTimer;
 			if(line~=nil) then
 				
 				--client:send("ack\n")
 				
 				print("---------------------------- ACK Number IS " .. ackNumber .. " ----------------------------------")
-				local req = json.decode(line);	
+				globalJasonDecoded = json.decode(line);
+				local req = globalJasonDecoded;	
 				local err = req==nil;
 				action = req.action
 				action = string.sub(line, string.find(line, "action") or 0, #line);
@@ -530,7 +544,7 @@ connectionThread = function ()
 			end    
             end
 			 unix.usleep(tDelay);
-
+			checkTimeout();
         end
 end
 function in_penalty() 
@@ -563,7 +577,7 @@ function updateAction(servData, client)
         print("printing servData");
 	--print(servData);  
 	--print("In update")
-	req = json.decode(servData)
+	req = globalJsonDecoded--json.decode(servData)
         --print("fuckshit\n")
 	print("unholywords\n");
 	unix.usleep(.04*1E6);
