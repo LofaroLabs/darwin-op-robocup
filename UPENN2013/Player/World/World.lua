@@ -274,7 +274,7 @@ setDebugTrue()
   print(tostring(wcm.get_horde_goalieCertainBallOnMySide()==1) .." ".. tostring(wcm.get_ballGlobal_x() / math.abs(wcm.get_ballGlobal_x()) ~= wcm.get_horde_goalSign() ) .. " " ..tostring(math.abs(wcm.get_ballGlobal_x()) > 1));
 
   if(Config.game.role ~= 0) then
-   if wcm.get_horde_goalieCertainBallOnMySide() == 1 and wcm.get_ballGlobal_x() / math.abs(wcm.get_ballGlobal_x()) ~= wcm.get_horde_goalSign() and math.abs(wcm.get_ballGlobal_x()) > 1 and vcm.get_ball_detect() == 1 and gcm.in_penalty() == 0 and gcm.get_game_state() == 3 then
+   if wcm.get_horde_goalieCertainBallOnMySide() == 1 and wcm.get_ballGlobal_x() / math.abs(wcm.get_ballGlobal_x()) ~= wcm.get_horde_goalSign() and math.abs(wcm.get_ballGlobal_x()) > 1 and vcm.get_ball_detect() == 1 and gcm.in_penalty() == false and gcm.get_game_state() == 3 then
   	print("HEY SOMETHING IS WRONG, FLIPPIN THOSE PARTICLES");
 	PoseFilter.flip_particles(); -- then flip em
   --[[ -- we don't want upenn's flip seems to interfere with our flip
