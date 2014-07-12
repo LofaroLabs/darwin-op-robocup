@@ -359,8 +359,8 @@ connectionThread = function ()
 				--client:send("ack\n")
 				
 				print("---------------------------- ACK Number IS " .. ackNumber .. " ----------------------------------")
-				globalJsonDecoded = json.decode(line);
-				local req = globalJsonDecoded;	
+				--globalJsonDecoded = json.decode(line);
+				local req = json.decode(line);	
 				local err = req==nil;
 				action = req.action
 				action = string.sub(line, string.find(line, "action") or 0, #line);
@@ -577,7 +577,7 @@ function updateAction(servData, client)
         print("printing servData");
 	--print(servData);  
 	--print("In update")
-	req = globalJsonDecoded--json.decode(servData)
+	req = json.decode(servData)
         --print("fuckshit\n")
 	print("unholywords\n");
 	unix.usleep(.04*1E6);
