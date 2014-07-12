@@ -127,7 +127,7 @@ function sendFeatures (client)
        
         
 	--	print(" difference is : " .. tostring(Body.get_time() - sendFeaturesTimer));
-		if(Body.get_time() - sendFeaturesTimer < .1) then 
+		if(Body.get_time() - sendFeaturesTimer < .05) then 
 	--		print("is not sending")	
 			return;
 		end
@@ -205,9 +205,9 @@ function sendFeatures (client)
 	features["status"] = wcm.get_horde_status();
 	--print("sending some features, yo\n");-- wcm.set_horde_doneFrontApproach("true");
        -- print(json.encode(features) .. "\n");
-	features["ackNumber"] = ackNumber;
-	client:settimeout(.01);
-	client:send(json.encode(features) .. "\n");
+		features["ackNumber"] = ackNumber;
+		client:settimeout(.01);
+		client:send(json.encode(features) .. "\n");
         -- Send the features to horde via the client
         -- args may contain the amount of time to wait between sending
 	sendFeaturesTimer2 = Body.get_time() - sendFeaturesTimer2;
@@ -216,7 +216,7 @@ end
     --local myClient = 
    local host, port = "localhost", 4010
    -- load namespace
-   local/ socket = require("socket")
+   local socket = require("socket")
    -- convert host name to ip address
    local ip = assert(socket.dns.toip(host))
    -- create a new UDP object
@@ -359,8 +359,8 @@ connectionThread = function ()
 				--client:send("ack\n")
 				
 				print("---------------------------- ACK Number IS " .. ackNumber .. " ----------------------------------")
-				globalJasonDecoded = json.decode(line);
-				local req = globalJasonDecoded;	
+				globalJsonDecoded = json.decode(line);
+				local req = globalJsonDecoded;	
 				local err = req==nil;
 				action = req.action
 				action = string.sub(line, string.find(line, "action") or 0, #line);
