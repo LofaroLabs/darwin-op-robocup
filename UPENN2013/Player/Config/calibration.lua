@@ -6,6 +6,15 @@ module(..., package.seeall);
 cal={}
 
 --Initial values for each robots
+cal["darwin53"]={
+  servoBias={0,0,0,0,0,0, 0,0,0,0,0,0},
+  footXComp = 0,
+  footYComp = 0,
+  kickXComp = 0,
+  headPitchComp = 0,
+  armBias={0,0,0,0,0,0},
+  pid = 1,
+};
 
 cal["darwin50"]={
   servoBias={0,0,0,0,0,0, 0,0,0,0,0,0},
@@ -648,6 +657,11 @@ cal["darwin57"].kickXComp=0.000;
 cal["darwin54"].servoBias={-10,-13,50,0,-4,-18,-53,14,-55,0,-3,29,};
 cal["darwin54"].footXComp=0.000;
 cal["darwin54"].kickXComp=0.000;
+
+-- Updated date: Fri Jul 11 21:16:03 2014
+cal["darwin53"].servoBias={0,0,42,0,0,0,-34,6,-51,0,0,0,};
+cal["darwin53"].footXComp=0.000;
+cal["darwin53"].kickXComp=0.000;
 
 -- Updated date: Fri Jul 11 21:50:17 2014
 cal["darwin56"].servoBias={20,-10,32,0,0,0,-9,4,-44,0,18,0,};
