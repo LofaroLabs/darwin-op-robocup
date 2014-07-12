@@ -92,14 +92,20 @@ lastCommand = nil;
 function updateAll(newState)
 	--gcm.set_game_state(3);
        	--print("Motion update");
+	--if(false) then
 	Motion.update();
+	--if(false) then
 	--print("Body update");
        	Body.update();
+	--end
 	--print("body FSM update");
         BodyFSM.update();
 	--print("HeadFSM update");
-        if(mcm.get_walk_isFallDown()==0) then
+       -- end
+	if(mcm.get_walk_isFallDown()==0) then
+		setDebugTrue();
 		HeadFSM.update();
+		setDebugFalse();
 	end
 --	GameFSM.update();	
 	fpsTimer = Body.get_time(); 
@@ -114,7 +120,7 @@ function sendFeatures (client)
        
         
 	--	print(" difference is : " .. tostring(Body.get_time() - sendFeaturesTimer));
-		if(Body.get_time() - sendFeaturesTimer < .5) then 
+		if(Body.get_time() - sendFeaturesTimer < .1) then 
 	--		print("is not sending")	
 			return;
 		end
@@ -364,7 +370,7 @@ connectionThread = function ()
 				
 				
 			end
-			setDebugTrue()
+			--setDebugTrue()
 			print("am i in penalty?? " .. tostring(in_penalty()))
 			print("hey am i close enough? " .. wcm.get_horde_goalieCloseEnough());
 			print("oh yeah, and is it on my side? " .. wcm.get_horde_goalieCertainBallOnMySide() .. " and ball " .. wcm.get_horde_ballLost());
@@ -484,13 +490,15 @@ connectionThread = function ()
 						setDebugFalse();
 
 						updateAction(lastCommand,client);
+						if(string.find(lastCommand,"kick")) then
+							while i<100 do
+								updateAll();		
+								unix.usleep(.005 * 1E6);
+								i=i+1;
+							end	
+						end
 						lastCommand = nil;
 						i=0;
-						while i<100 do
-							updateAll();		
-							unix.usleep(.005 * 1E6);
-							i=i+1;
-						end	
 						if(gcm.get_game_state() == 1) then
 							i = Body.get_time();
 							while(Body.get_time() - i < 7.2) do
