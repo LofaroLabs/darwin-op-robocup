@@ -17,11 +17,15 @@ min_eta_look = Config.min_eta_look or 2.0;
 
 yawMax = Config.head.yawMax or 90*math.pi/180;
 fovMargin = 30*math.pi/180;
+myTLost = 3; -- 3s timeout until lost
+
+MAX_BALL_DIST = 0.5; -- half a meter and I will 
 
 
 function entry()
   print(_NAME.." entry");
   t00 = Body.get_time();
+
 
   --SJ: Check which goal to look at
   --Now we look at the NEARER goal
@@ -59,6 +63,19 @@ function entry()
 end
 
 function update()
+	local t = Body.get_time();
+	ball = wcm.get_ball();
+  	ballR = math.sqrt (ball.x^2 + ball.y^2);
+  	
+	if ballR < MAX_BALL_DIST then
+		
+		if (t - ball.t > myTLost) then
+			return 'LostAndTime'
+		end	
+		return "timeout";
+	end
+	
+
   setDebugTrue()
   --print("hey im in HEAD update");
   local t = Body.get_time();

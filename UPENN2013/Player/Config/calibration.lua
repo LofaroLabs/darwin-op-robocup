@@ -648,3 +648,8 @@ cal["darwin57"].kickXComp=0.000;
 cal["darwin54"].servoBias={-10,-13,50,0,-4,-18,-53,14,-55,0,-3,29,};
 cal["darwin54"].footXComp=0.000;
 cal["darwin54"].kickXComp=0.000;
+
+-- Updated date: Fri Jul 11 21:50:17 2014
+cal["darwin56"].servoBias={20,-10,32,0,0,0,-9,4,-44,0,18,0,};
+cal["darwin56"].footXComp=0.000;
+cal["darwin56"].kickXComp=0.000;
