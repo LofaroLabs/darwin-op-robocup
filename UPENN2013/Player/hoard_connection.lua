@@ -120,7 +120,7 @@ function sendFeatures (client)
        
         
 	--	print(" difference is : " .. tostring(Body.get_time() - sendFeaturesTimer));
-		if(Body.get_time() - sendFeaturesTimer < .1) then 
+		if(Body.get_time() - sendFeaturesTimer < .05) then 
 	--		print("is not sending")	
 			return;
 		end
@@ -332,14 +332,18 @@ connectionThread = function ()
 			sendFeatures(client);--send all the features to horde
 			--sendFeaturesTimer = Body.get_time() - sendFeaturesTimer;
                         --print("checkTimeout");
-			--checkTimeout(); -- very special case for passKick timing out the feature to 0 after a second
+			checkTimeout(); -- very special case for passKick timing out the feature to 0 after a second
 			client:settimeout(0);--non blocking read
 			
 			--client:send("request\n");
 	--		print("sending request");
 			local line, err = nil,nil
-			if(Body.get_time() - lastTimeReceived > .2) then	
+			if(Body.get_time() - lastTimeReceived > .05) then	
+				lastTimeReceived = Body.get_time();
+				setDebugTrue()
+				print("time test, receiving");
 				line,err = client:receive() -- read in horde commands
+			
 			end
 			if(line~=nil) then
 				
