@@ -60,7 +60,7 @@ function entry()
 end
 
 function update()
-setDebugTrue()
+--setDebugTrue()
 print("HEAD SCAN UPDATE");
 --setDebugFalse() 
  pitchBias =  mcm.get_headPitchBias();--Robot specific head angle bias
@@ -103,7 +103,7 @@ print("HEAD SCAN UPDATE");
     end
     yaw = yawMagTurn * isSearching;
   end
-  setDebugTrue();
+  --setDebugTrue();
   print("i can doing head command" .. yaw .. ". " .. (pitch-pitchBias));
   Body.set_head_command({yaw, pitch-pitchBias});
   setDebugFalse();

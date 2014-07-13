@@ -11,7 +11,7 @@ killall -q naoqi-bin naoqi hal espeak lua luajit luajit2 screen
 rm -f screenlog*
 rm -f /dev/shm/*
 
-SCREEN_FLAGS="-dm -L -s /usr/bin/bash -S"
+SCREEN_FLAGS="-dm -s /usr/bin/bash -S"
 
 reset_wb(){
   uvcdynctrl -d video0 -s 'White Balance Temperature, Auto' -- 1
@@ -115,7 +115,7 @@ run_visiontest(){
   run_dcm_vcm
   echo "Starting Test Vision..."
   cd $PLAYER_DIR
-  screen -m -L -S test $LUA_COM Test/test_vision.lua
+  screen -m -S test $LUA_COM Test/test_vision.lua
   #
   echo "Rock and Roll!"
   screen -ls
@@ -131,7 +131,7 @@ run_obstacle(){
   #
   echo "Starting Test Vision..."
   cd $PLAYER_DIR
-  screen -m -L -S test $LUA_COM Test/test_vision.lua
+  screen -m -S test $LUA_COM Test/test_vision.lua
   #
   echo "Rock and Roll!"
   screen -ls
@@ -140,32 +140,33 @@ run_obstacle(){
 run_bias(){
   echo "Starting DCM..."
   cd $PLAYER_DIR
-  screen -dm -L -S dcm $LUA_COM run_dcm.lua
+  screen -dm  -S dcm $LUA_COM run_dcm.lua
   # Allow DCM some time to start
   sleep 1
   
   echo "Starting Setup..."
   cd $PLAYER_DIR
-  screen -m -L -S bias $LUA_COM run_setup.lua
+  screen -m -S bias $LUA_COM run_setup.lua
+
 }
 
 run_pushtest(){
   echo "Starting DCM..."
   cd $PLAYER_DIR
-  screen -dm -L -S dcm $LUA_COM run_dcm.lua
+  screen -dm -S dcm $LUA_COM run_dcm.lua
   # Allow DCM some time to start
   sleep 1
   
   echo "Starting Push Test.."
   cd $PLAYER_DIR
-  screen -m -L -S bias $LUA_COM Test/test_push.lua
+  screen -m -S bias $LUA_COM Test/test_push.lua
 }
 
 run_roletest(){
   run_dcm_vcm
   echo "Starting Role Testing..."
   cd $PLAYER_DIR
-  screen -m -L -S test $LUA_COM Test/test_role.lua
+  screen -m -S test $LUA_COM Test/test_role.lua
   #
   echo "Rock and Roll!"
 }
@@ -174,7 +175,7 @@ run_nao_vision(){
   run_nao_vcm
   echo "Starting Vision Testing..."
   cd $PLAYER_DIR
-  screen -m -L -S player $LUA_COM test_vision.lua
+  screen -m -S player $LUA_COM test_vision.lua
   
   echo "Rock and Roll!"
 }

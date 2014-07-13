@@ -60,7 +60,7 @@ function entry()
 end
 
 function update()
-setDebugTrue()
+--setDebugTrue()
 print("HEAD SCAN UPDATE");
 --setDebugFalse() 
  pitchBias =  mcm.get_headPitchBias();--Robot specific head angle bias

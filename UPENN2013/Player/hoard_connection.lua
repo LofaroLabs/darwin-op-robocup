@@ -95,25 +95,25 @@ function updateAll(newState)
 	--if(false) then
 	updateAllTimer2 = Body.get_time();
 	setDebugTrue();
-	print(HeadFSM.sm.get_current_state(HeadFSM.sm)._NAME .. " before motion")
+--	print(HeadFSM.sm.get_current_state(HeadFSM.sm)._NAME .. " before motion")
 	Motion.update();
 	--HeadFSM.update();
 	--if(false) then
 	
-	print(HeadFSM.sm.get_current_state(HeadFSM.sm)._NAME .. " after motion, before body")
+--	print(HeadFSM.sm.get_current_state(HeadFSM.sm)._NAME .. " after motion, before body")
 	
 	--print("Body update");
 	
 
        	Body.update();
 	--HeadFSM.update();
-	print(HeadFSM.sm.get_current_state(HeadFSM.sm)._NAME .. " after  motion, before BodyFSM update")
+--	print(HeadFSM.sm.get_current_state(HeadFSM.sm)._NAME .. " after  motion, before BodyFSM update")
 	
 	--end
 	--print("body FSM update");
         BodyFSM.update();
 	--HeadFSM.update();	
-	print(HeadFSM.sm.get_current_state(HeadFSM.sm)._NAME .. " after BodyFSM, before Headfsm")
+--	print(HeadFSM.sm.get_current_state(HeadFSM.sm)._NAME .. " after BodyFSM, before Headfsm")
 	
 	--print("HeadFSM update");
        -- end
@@ -123,7 +123,7 @@ function updateAll(newState)
 		setDebugFalse();
 	end
 	--HeadFSM.update();
-	print(HeadFSM.sm.get_current_state(HeadFSM.sm)._NAME .. " after Headfsm update, before end of function")
+	--print(HeadFSM.sm.get_current_state(HeadFSM.sm)._NAME .. " after Headfsm update, before end of function")
 --	GameFSM.update();
 		
 	fpsTimer = Body.get_time(); 
