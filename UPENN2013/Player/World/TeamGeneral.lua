@@ -741,7 +741,7 @@ function update_status()
 	
 	
 	local secondClosestWithin = 0
-	if(wcm.get_horde_yelledKick()==1) then
+	if(somebodyYelledKick()) then
 		lastTimeKicked = Body.get_time();
 	end
 	setDebugTrue();
@@ -751,7 +751,7 @@ function update_status()
 		print(" i " .. i .. " count  " .. countI .. " distIDPairs.dead ~= nil = " .. tostring(distIDPairs[i].dead ~= nil) .. " distIDPairs[i].dead = " .. tostring(distIDPairs[i].dead));
 		if distIDPairs[i].dead and distIDPairs[i].dead == 0 then
 			print("DNW i = " .. tostring(i) .. " ID = " .. tostring(distIDPairs[i].id) .. " dist = " .. tostring(distIDPairs[i].dist) .. " distN = " .. tostring(wcm.get_horde_distN()));
-			if(wcm.get_horde_yelledKick() == 1 or Body.get_time() - lastTimeKicked < 2) then 
+			if(somebodyYelledKick() == 1 or Body.get_time() - lastTimeKicked < 2) then 
 				distIDPairs[i].status = 2;	
 			else
 				distIDPairs[i].status = (countI-1)*2
@@ -779,6 +779,16 @@ function update_status()
 end
 
 
+function somebodyYelledKick()
+        avoidRaceCondition = wcm.get_team_yelledKick()
+        for i=1,4 do
+                if(avoidRaceCondition[i] == 1) then
+                        return true
+                end
+
+        end
+        return false;
+end
 function update_goalieCloseEnough()
 
 	-- If i am the goalie then i check otherwise i just get the value that the
