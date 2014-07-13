@@ -6,7 +6,8 @@ require('Motion')
 function entry()
   print(_NAME..' entry');
   
-  HeadFSM.sm:set_state('headLookGoalGMU');
+  HeadFSM.sm:set_state('headStopTrackGMU.lua');
+  if(wcm.get_horde_ballLost()) then HeadFSM.sm:set_state('headStopScanGMU.lua'); end
   walk.set_velocity(0,0,0);
   walk.stop();
   started = false;
