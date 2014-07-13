@@ -410,7 +410,7 @@ function update()
 					
 					if myRole == 3 and playerID ~= id and  -- if the role is safety and its not me
 					state.ballDetect == 1 and states[id].ballDetect == 1 and -- we can see the ball
-						and gcm.in_penalty() == false and gcm.get_game_state() == 3 then -- and we can actually do something
+						gcm.in_penalty() == false and gcm.get_game_state() == 3 then -- and we can actually do something
 					
 						-- check if based off of the safety's global ball position I should flip
 						if  states[id].ballGlobal[1] * state.ballGlobal[1] <= 0 and math.abs(states[id].ballGlobal[1] - state.ballGlobal[1]) > 0.75 and
