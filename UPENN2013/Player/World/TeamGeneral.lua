@@ -28,6 +28,7 @@ GOALIE_DEAD_THRESHOLD = 3
 STATUS_DEAD_THRESHOLD = 3
 CONNECTED_TIMEOUT = 3
 
+setDebugFalse();
 
 -- setting the distance as defined to be "close" for the goalie to the ball to be 1m
 wcm.set_horde_goalCloseDist(1.25)
@@ -259,7 +260,7 @@ function update()
             postDefend = PoseFilter.postYellow;
 			postAttack = PoseFilter.postCyan;
     else
-        print("not yellow")
+       -- print("not yellow")
             -- blue attack yellow goal
             postDefend = PoseFilter.postCyan;
 			postAttack = PoseFilter.postYellow;
@@ -954,7 +955,7 @@ function getMidpoint()
                 print("  yellow ")
                 postDefend = PoseFilter.postYellow;
         else
-                print("not yellow")
+                --print("not yellow")
                 -- blue attack yellow goal
                 postDefend = PoseFilter.postCyan;
         end

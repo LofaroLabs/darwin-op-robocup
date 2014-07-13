@@ -94,7 +94,7 @@ function updateAll(newState)
        	--print("Motion update");
 	--if(false) then
 	updateAllTimer2 = Body.get_time();
-	setDebugTrue();
+	--setDebugTrue();
 --	print(HeadFSM.sm.get_current_state(HeadFSM.sm)._NAME .. " before motion")
 	Motion.update();
 	--HeadFSM.update();
@@ -118,9 +118,9 @@ function updateAll(newState)
 	--print("HeadFSM update");
        -- end
 	if(mcm.get_walk_isFallDown()==0) then
-		setDebugTrue();
+		--setDebugTrue();
 		HeadFSM.update();
-		setDebugFalse();
+		--setDebugFalse();
 	end
 	--HeadFSM.update();
 	--print(HeadFSM.sm.get_current_state(HeadFSM.sm)._NAME .. " after Headfsm update, before end of function")
