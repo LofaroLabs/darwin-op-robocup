@@ -586,8 +586,11 @@ function updateAction(servData, client)
 	
 	--BodyFSM = require('BodyFSM');
 	print("before action is... " .. tostring(BodyFSM.sm.get_current_state(BodyFSM.sm)._NAME))
-	hoard_functions.hordeFunctions[req.action](req.args, client)--this is wrong, only here for the send.... TODO
-	print("after action is... " .. tostring(BodyFSM.sm.get_current_state(BodyFSM.sm)._NAME))
+--	if(req~=nil and hoard_functions~=nil) then
+		
+		hoard_functions.hordeFunctions[req.action](req.args, client)--this is wrong, only here for the send.... TODO
+--	end
+--	print("after action is... " .. tostring(BodyFSM.sm.get_current_state(BodyFSM.sm)._NAME))
 	setDebugTrue();
 	--print("after horde function");
 	--unix.usleep(1*1E6);	

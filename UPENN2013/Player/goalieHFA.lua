@@ -164,6 +164,7 @@ gotoPoseFacingGo = function(hfa)
 		    if(vcm.get_ball_detect() == 1) then		
 				sendBehavior(json.encode(action) .. "\n");
 			end
+		--BodyFSM.set_state("bodyStop");
 end
 gotoPoseFacingStop = function (hfa)
 end
@@ -472,10 +473,11 @@ end
 
 function turnThetaLookGoalStart()
 	action  = {}
-        action["action"] = "turnThetaLookGoal";
+        action["action"] = "stop";
         action["args"] = "";
         action.ackNumber =  wcm.get_horde_ackNumber();
         sendBehavior(json.encode(action) .. "\n");
+	
 end
 
 faceBall = makeBehavior("faceBall",nil,nil,faceBallStart);

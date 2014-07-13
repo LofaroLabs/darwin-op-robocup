@@ -31,7 +31,11 @@ alreadyPrinted = false;
 function update()
 
   local t = Body.get_time();
+  if(wcm.get_horde_ballLost() == 1) then
 
+  	sm:set_state('headScanGMU'); 
+
+  end
   -- update head position based on ball location
   ball = wcm.get_ball();
   ballR = math.sqrt (ball.x^2 + ball.y^2);
