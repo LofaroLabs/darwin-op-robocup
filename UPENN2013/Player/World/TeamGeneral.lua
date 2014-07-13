@@ -754,6 +754,14 @@ function update_goalieCloseEnough()
 	if Config.game.role ~= 0 and Body.get_time() - lastTimeReceivedFromGoalie > GOALIE_DEAD_THRESHOLD then
 		print("goalie dead, please don't persist GOALIE");
 		wcm.set_horde_goalieCloseEnough(0); -- If I didn't get anything from the goalie then I can't assume he is close enought
+		
+		if wcm.get_horde_fallTime() > lastTimeRecivedFromGoalie then
+			wcm.set_horde_kickOutOfBounds(1);
+		else
+			wcm.set_horde_kickOutOfBounds(0);
+		end
+	else
+		wcm.set_horde_kickOutOfBounds(0);
 	end
 	setDebugFalse();
 

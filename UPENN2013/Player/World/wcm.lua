@@ -47,6 +47,8 @@ shared.ball.t_locked_on = vector.zeros(1);
 
 --connection 
 shared.horde = {};
+shared.horde.kickOutOfBounds = vector.zeros(1);
+shared.horde.fallTime = vector.zeros(1);
 shared.horde.visionPenalty = vector.zeros(1);
 shared.horde.goalieCertainBallOnMySide = vector.zeros(1) -- 1 if the goalie has seen the ball on his side for >= 5s else 0
 shared.horde.timeOut = vector.zeros(1);
