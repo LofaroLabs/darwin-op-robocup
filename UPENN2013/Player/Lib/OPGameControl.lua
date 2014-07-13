@@ -139,8 +139,11 @@ function update()
       set_team_color(gamePacket.teams[teamIndex].teamColour); 
 --]]
 
+--[[
       -- update goal color
       set_team_color(gamePacket.teams[teamIndex].goalColour); 
+--]]
+      
       our_score = gamePacket.teams[teamIndex].score;
 
       -- update kickoff team
