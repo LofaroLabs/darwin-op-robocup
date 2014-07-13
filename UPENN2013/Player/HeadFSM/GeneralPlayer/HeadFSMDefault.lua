@@ -43,6 +43,8 @@ sm:add_state(headLog);
 sm:add_state(headTrackGMU);
 sm:add_state(headLookGoalGMU);
 sm:add_state(headLookGoalPose);
+sm:add_state(headStopTrackGMU);
+sm:add_state(headStopScanGMU);
 -----
 -- GMU FSM for most situations
 ----
