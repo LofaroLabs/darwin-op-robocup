@@ -67,12 +67,16 @@ function somebodyYelledKick()
 		if(avoidRaceCondition[i] == 1) then
 			return true
 		end
+	
 
  	end
 	return false;
 end
 function update()
+
+
 	local t = Body.get_time();
+
 	ball = wcm.get_ball();
   	ballR = math.sqrt (ball.x^2 + ball.y^2);
 	if(somebodyYelledKick()) then
