@@ -212,7 +212,6 @@ function sendFeatures (client)
 	features["penaltyBounds"] = getPenaltyBounds()
 	features["declared"] = wcm.get_horde_declared()
 	
-	wcm.set_horde_bodyFSMState(BodyFSM.sm.get_current_state(BodyFSM.sm)._NAME)
 	inPlay = 0;
 	if(gcm.get_game_state()==3) then
 		inPlay = 1;
