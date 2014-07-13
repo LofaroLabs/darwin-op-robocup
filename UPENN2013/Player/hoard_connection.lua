@@ -211,6 +211,8 @@ function sendFeatures (client)
 	features["isClosestToGoalOffend"] = wcm.get_team_isClosestToGoalOffend();
 	features["penaltyBounds"] = getPenaltyBounds()
 	features["declared"] = wcm.get_horde_declared()
+	
+	wcm.set_horde_bodyFSMState(BodyFSM.sm.get_current_state(BodyFSM.sm)._NAME)
 	inPlay = 0;
 	if(gcm.get_game_state()==3) then
 		inPlay = 1;
@@ -606,6 +608,7 @@ function updateAction(servData, client)
 	
 	--BodyFSM = require('BodyFSM');
 	print("before action is... " .. tostring(BodyFSM.sm.get_current_state(BodyFSM.sm)._NAME))
+	
 --	if(req~=nil and hoard_functions~=nil) then
 		
 		hoard_functions.hordeFunctions[req.action](req.args, client)--this is wrong, only here for the send.... TODO
