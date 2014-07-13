@@ -280,7 +280,7 @@ function update()
 	state.distToGoalOffend = math.sqrt((avgAGoal[1] - state.pose.x) * (avgAGoal[1] - state.pose.x) + (avgAGoal[2] - state.pose.y)*(avgAGoal[2] - state.pose.y));
 
 	if state.role == ROLE_GOALIE then
-		setDebugTrue();	
+		--setDebugTrue();	
 		-- calculate the distance and set the shared memory and the state
 		goalieDist = get_distanceBetween(state.ballRelative, {0, 0});
 		--print("DNW goalie dist = " .. tostring(goalieDist) .. " closeDist = " .. tostring(wcm.get_horde_goalCloseDist()) .. " ball lost = " .. tostring(state.ballLost));
@@ -296,7 +296,7 @@ function update()
 			wcm.set_horde_goalieCloseEnough(0);
 			--print("DNW Goalie is NOT close enough state version = " .. tostring(state.goalieCloseEnough) .. " wcm version =" .. tostring(wcm.get_horde_goalCloseDist()));
 		end
-		setDebugTrue();
+		--setDebugTrue();
 	end
 
 
@@ -633,7 +633,7 @@ function update_status()
 	local ballDist = state.ballRelative; -- the position of the ball relative to me based off the global pos
 	local myDist = get_distanceBetween(ballDist, {0, 0});
 	local distIDPairs = {}
-	setDebugTrue();
+	--setDebugTrue();
 	for id = 1,5 do	
 	
 		
@@ -724,7 +724,7 @@ function update_status()
 			return a.id < b.id
 		end
 		return a.dist < b.dist end)
-		setDebugTrue();
+		--setDebugTrue();
 	prevDis = 0	
 	for i=1,#distIDPairs do
 		--print("DNW list: " .. distIDPairs[i].dist .. " id = " .. tostring(distIDPairs[i].id)) 
