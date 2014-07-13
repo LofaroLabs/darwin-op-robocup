@@ -283,7 +283,13 @@ setDebugTrue()
     PoseFilter.flip_particles();
     wcm.set_robot_flipped(0);
     ]]--
+    -- so if the safety thinks i should flip and the goalie doesn't think its on his side then I can flip
+    elseif wcm.get_horde_safetySaysFlip() == 1 then
+  	PoseFilter.flip_particles(); -- then flip em
+  	wcm.set_horde_safetySaysFlip(0)
   end
+  
+  
  end
 -- if goalie thinks he's on offensive side, he's wrong. no way in hell
 --print("YOe ".. tostring(wcm.get_pose().x/math.abs(wcm.get_pose().x)) .. " " .. tostring(wcm.get_horde_goalSign() ))
@@ -514,6 +520,10 @@ function update_shm()
   wcm.set_goal_attack_post2(get_attack_posts()[2]);
 
   wcm.set_robot_is_fall_down(mcm.get_walk_isFallDown());
+  -- set the time that the robot fell.
+  if wcm.get_robot_is_fall_down() == 1 then
+  	wcm.set_horde_fallTime(Body.get_time());
+  end
   --Particle information
   wcm.set_particle_x(PoseFilter.xp);
   wcm.set_particle_y(PoseFilter.yp);

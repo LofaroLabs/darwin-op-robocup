@@ -139,8 +139,11 @@ function update()
       set_team_color(gamePacket.teams[teamIndex].teamColour); 
 --]]
 
+--[[
       -- update goal color
       set_team_color(gamePacket.teams[teamIndex].goalColour); 
+--]]
+      
       our_score = gamePacket.teams[teamIndex].score;
 
       -- update kickoff team
@@ -248,7 +251,7 @@ function update_shm()
   gcm.set_game_last_update(lastUpdate);
 
   gcm.set_team_number(teamNumber);
-  gcm.set_team_color(teamColor);
+  gcm.set_team_color(Config.game.teamColor);
 end
 
 function exit()

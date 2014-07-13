@@ -239,13 +239,13 @@ function update()
   state.ballRelative = util.pose_relative({wcm.get_ballGlobal_x(), wcm.get_ballGlobal_y(), 0}, {state.pose.x, state.pose.y, state.pose.a});
   state.ballGlobal = {wcm.get_ballGlobal_x(), wcm.get_ballGlobal_y()};
   state.ballRelative[3] = 0;
+  state.ballDetect = vcm.get_ball_detect();
   state.count = countPackets
   
   -- if i am the goalie then set whether we think the ball is on my side.
   if playerID == GOALIE_ID then
   	state.goalieCertainBallOnMySide = wcm.get_horde_goalieCertainBallOnMySide();
   end
-  
   
    
   print("yelledReady = " .. tostring(state.yelledReady))
@@ -374,6 +374,14 @@ function update()
 	print("Going to check declared ++++++++++++++++++++++++");
 	
 	
+	local goalieBallGlobalX = -1
+	for id = 1,5 do
+		if states ~= nil and states[id] ~= nil and states[id].role == 0 then
+			goalieBallGlobalX = states[id].ballGlobal[1];
+		end
+	end
+	
+	
 	
 	for myRole = 1,3 do 
         	for id = 1,5 do
@@ -398,6 +406,25 @@ function update()
 					print("ID " .. tostring(id) .. " declared the role " .. tostring(myRole));
 					somebodyDeclared[myRole] = id;
 					setDebugFalse();
+					
+					
+					if myRole == 3 and playerID ~= id and  -- if the role is safety and its not me
+					state.ballDetect == 1 and states[id].ballDetect == 1 and -- we can see the ball
+						gcm.in_penalty() == false and gcm.get_game_state() == 3 then -- and we can actually do something
+					
+						-- check if based off of the safety's global ball position I should flip
+						if  states[id].ballGlobal[1] * state.ballGlobal[1] <= 0 and math.abs(states[id].ballGlobal[1] - state.ballGlobal[1]) > 0.75 and
+						 	states[id].ballGlobal[1] * goalieBallGlobalX >= 0 then -- now check the goalie if the goalie thinks the ball is not on the same side as the safety then can't flip
+							-- we disagree about the side of the field
+							-- so set 
+							state.safetyBasedFlip = 1
+							wcm.get_set_horde_safetySaysFlip(1)
+						else
+							wcm.get_set_horde_safetySaysFlip(0)
+						end
+					end
+					
+					
 				--wcm.set_horde_declared(1); -- somebody has declared
 					break;-- break out of inner loop, run again for next role
 				else
@@ -760,6 +787,14 @@ function update_goalieCloseEnough()
 	if Config.game.role ~= 0 and Body.get_time() - lastTimeReceivedFromGoalie > GOALIE_DEAD_THRESHOLD then
 		print("goalie dead, please don't persist GOALIE");
 		wcm.set_horde_goalieCloseEnough(0); -- If I didn't get anything from the goalie then I can't assume he is close enought
+		
+		if wcm.get_horde_fallTime() > lastTimeReceivedFromGoalie then
+			wcm.set_horde_kickOutOfBounds(1);
+		else
+			wcm.set_horde_kickOutOfBounds(0);
+		end
+	else
+		wcm.set_horde_kickOutOfBounds(0);
 	end
 	setDebugFalse();
 
