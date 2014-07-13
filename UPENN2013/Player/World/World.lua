@@ -514,6 +514,10 @@ function update_shm()
   wcm.set_goal_attack_post2(get_attack_posts()[2]);
 
   wcm.set_robot_is_fall_down(mcm.get_walk_isFallDown());
+  -- set the time that the robot fell.
+  if wcm.get_robot_is_fall_down() == 1 then
+  	wcm.set_horde_fallTime(Body.get_time());
+  end
   --Particle information
   wcm.set_particle_x(PoseFilter.xp);
   wcm.set_particle_y(PoseFilter.yp);
