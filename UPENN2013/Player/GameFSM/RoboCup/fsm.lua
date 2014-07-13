@@ -56,6 +56,9 @@ function new(state1, ...)
   o.events = {};
   o.initialState = o.states[1];
   o.currentState = o.initialState;
+  setDebugTrue();
+  print("just testing");
+  setDebugFalse();
   o.previousState = nil;
   o.nextState = nil;
   o.nextAction = nil;

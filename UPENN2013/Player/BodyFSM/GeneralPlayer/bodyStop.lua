@@ -14,12 +14,26 @@ end
 tempTimer = 0.0;
 
 function update()
-  if(wcm.get_horde_ballLost() == 1 and not alreadySet) then
- 	HeadFSM.sm:set_state("headScanGMU");
-  	alreadySet = true;
+  ballFound = vcm.get_ball_detect()
+  if(ballFound == 0 and not alreadySet) then
+	setDebugTrue()
+	print("hey im a dumbass");
+	setDebugFalse()
+--        HeadFSM.sm:set_state('headScanGMU');
+--	HeadFSM.update();	
+	if( HeadFSM.sm.get_current_state(HeadFSM.sm)._NAME ~="headScanGMU") then
+		setDebugTrue();
+		print("the state was actually " .. HeadFSM.sm.get_current_state(HeadFSM.sm)._NAME);
+		setDebugFalse();
+		HeadFSM.sm:set_state("headScanGMU");
+	
+		--	HeadFSM.sm.get_current_state(HeadFSM.sm)	
+	end
+			  	alreadySet = true;
+  elseif ballFound == 1 and HeadFSM.sm.get_current_state(HeadFSM.sm)._NAME~="headTrackGMU" then
+	HeadFSM.sm:set_state("headTrackGMU");
   else
      alreadySet = false
-
   end
    --for webots : we have to stop with 0 bodytilt
   --[[if not started then

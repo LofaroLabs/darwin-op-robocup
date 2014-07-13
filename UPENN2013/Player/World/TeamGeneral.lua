@@ -14,7 +14,7 @@ require('gcm');
 Comm.init(Config.dev.ip_wireless,Config.dev.ip_wireless_port);
 print('Receiving Team Message From',Config.dev.ip_wireless);
 playerID = gcm.get_team_player_id();
-
+lastTimeKicked = Body.get_time();
 msgTimeout = Config.team.msgTimeout;
 nonAttackerPenalty = Config.team.nonAttackerPenalty;
 nonDefenderPenalty = Config.team.nonDefenderPenalty;
@@ -714,6 +714,9 @@ function update_status()
 	
 	
 	local secondClosestWithin = 0
+	if(wcm.get_horde_yelledKick()==1) then
+		lastTimeKicked = Body.get_time();
+	end
 	setDebugTrue();
 	print("DNW number of distIDPairs is " .. tostring(#distIDPairs))
 	countI  = 1
@@ -721,8 +724,11 @@ function update_status()
 		print(" i " .. i .. " count  " .. countI .. " distIDPairs.dead ~= nil = " .. tostring(distIDPairs[i].dead ~= nil) .. " distIDPairs[i].dead = " .. tostring(distIDPairs[i].dead));
 		if distIDPairs[i].dead and distIDPairs[i].dead == 0 then
 			print("DNW i = " .. tostring(i) .. " ID = " .. tostring(distIDPairs[i].id) .. " dist = " .. tostring(distIDPairs[i].dist) .. " distN = " .. tostring(wcm.get_horde_distN()));
-			distIDPairs[i].status = (countI-1)*2
-		
+			if(wcm.get_horde_yelledKick() == 1 or Body.get_time() - lastTimeKicked < 2) then 
+				distIDPairs[i].status = 2;	
+			else
+				distIDPairs[i].status = (countI-1)*2
+			end
 			if (distIDPairs[i].dist <= wcm.get_horde_distN() and i~=1) then
 				distIDPairs[i].status = distIDPairs[i].status-1;
 				print("DNW i = " .. tostring(i) .. " dist was less than N status = " ..  tostring(distIDPairs[i].status));
