@@ -28,6 +28,7 @@ GOALIE_DEAD_THRESHOLD = 3
 STATUS_DEAD_THRESHOLD = 3
 CONNECTED_TIMEOUT = 3
 
+setDebugFalse();
 
 -- setting the distance as defined to be "close" for the goalie to the ball to be 1m
 wcm.set_horde_goalCloseDist(1.25)
@@ -124,7 +125,7 @@ tLastReceivedMessage = 0;
 
 lastTimeFound = Body.get_time();
 function isBallLost()
-	print("got into ball lost, get ball detect:  ".. vcm.get_ball_detect())
+	--print("got into ball lost, get ball detect:  ".. vcm.get_ball_detect())
 	if vcm.get_ball_detect() ~= 0 then
 		state.ballLost = 0
 		lastTimeFound = Body.get_time();
@@ -249,7 +250,7 @@ function update()
   end
   
    
-  print("yelledReady = " .. tostring(state.yelledReady))
+  --print("yelledReady = " .. tostring(state.yelledReady))
 	isBallLost();
 
   if gcm.get_team_color() == 1 then
@@ -259,7 +260,7 @@ function update()
             postDefend = PoseFilter.postYellow;
 			postAttack = PoseFilter.postCyan;
     else
-        print("not yellow")
+       -- print("not yellow")
             -- blue attack yellow goal
             postDefend = PoseFilter.postCyan;
 			postAttack = PoseFilter.postYellow;
@@ -280,23 +281,23 @@ function update()
 	state.distToGoalOffend = math.sqrt((avgAGoal[1] - state.pose.x) * (avgAGoal[1] - state.pose.x) + (avgAGoal[2] - state.pose.y)*(avgAGoal[2] - state.pose.y));
 
 	if state.role == ROLE_GOALIE then
-		setDebugTrue();	
+		--setDebugTrue();	
 		-- calculate the distance and set the shared memory and the state
 		goalieDist = get_distanceBetween(state.ballRelative, {0, 0});
-		print("DNW goalie dist = " .. tostring(goalieDist) .. " closeDist = " .. tostring(wcm.get_horde_goalCloseDist()) .. " ball lost = " .. tostring(state.ballLost));
+		--print("DNW goalie dist = " .. tostring(goalieDist) .. " closeDist = " .. tostring(wcm.get_horde_goalCloseDist()) .. " ball lost = " .. tostring(state.ballLost));
 		-- as long as the ball is close enough and i can see it then I am close enough
 		goalieDistFromPosts = math.abs(wcm.get_ballGlobal_x()- (World.xMax*wcm.get_horde_goalSign()))
 		teamGoalieDistFromPosts = math.abs(wcm.get_team_closestToBallLoc()[1] - World.xMax*wcm.get_horde_goalSign())
 		if   goalieDistFromPosts<wcm.get_horde_goalCloseDist() then --or (state.ballLost == 1 and teamGoalieDistFromPosts < wcm.get_horde_goalCloseDist()) then
 			state.goalieCloseEnough = 1;
 			wcm.set_horde_goalieCloseEnough(1);
-			print("DNW Goalie is close enough state version = " .. tostring(state.goalieCloseEnough) .. " wcm version =" .. tostring(wcm.get_horde_goalCloseDist()));
+			--print("DNW Goalie is close enough state version = " .. tostring(state.goalieCloseEnough) .. " wcm version =" .. tostring(wcm.get_horde_goalCloseDist()));
 		elseif(goalieDistFromPosts >  wcm.get_horde_goalCloseDist()*1.25) then
 			state.goalieCloseEnough = 0;
 			wcm.set_horde_goalieCloseEnough(0);
-			print("DNW Goalie is NOT close enough state version = " .. tostring(state.goalieCloseEnough) .. " wcm version =" .. tostring(wcm.get_horde_goalCloseDist()));
+			--print("DNW Goalie is NOT close enough state version = " .. tostring(state.goalieCloseEnough) .. " wcm version =" .. tostring(wcm.get_horde_goalCloseDist()));
 		end
-		setDebugTrue();
+		--setDebugTrue();
 	end
 
 
@@ -332,13 +333,13 @@ function update()
 
   --Now pack state name too
   state.body_state = gcm.get_fsm_body_state();
-	setDebugTrue();
+	--[[setDebugTrue();
 	print("YOLO count = " .. countPackets .. " mod 10 = " .. math.mod(countPackets, 10))
 	setDebugFalse();
+	]]--
 	if (math.mod(countPackets, 1) == 0 and gcm.in_penalty() == false) then --TODO: How often can we send team message?
 		msg=serialization.serialize(state);
-		setDebugTrue();
-		print("YOLO @!@!1 trying to send message now");
+	
 		sendStatus = Comm.send(msg, #msg);
 		state.tReceive = Body.get_time();
 		states[playerID] = state;
@@ -372,7 +373,7 @@ function update()
 	somebodyDeclared[1] = 0;
 	somebodyDeclared[2] = 0;
 	somebodyDeclared[3] = 0;
-	print("Going to check declared ++++++++++++++++++++++++");
+	--print("Going to check declared ++++++++++++++++++++++++");
 	
 	
 	local goalieBallGlobalX = -1
@@ -390,11 +391,11 @@ function update()
 			if states[id] == nil or states[id].declared[myRole] == 0 or states[id].role == 0 or (states[id] and states[id].tReceive and
       (t - states[id].tReceive > STATUS_DEAD_THRESHOLD))then --  I haven't received a packet in a while 
 				if states[id] == nil then
-					print("id " .. tostring(id) .. " no msg received")
+					--print("id " .. tostring(id) .. " no msg received")
 				elseif states[id].role == 0 then
-					print("id " .. tostring(id) .. " is the goalie" )
+					--print("id " .. tostring(id) .. " is the goalie" )
 				else
-					print("The robot is dead")
+					--print("The robot is dead")
 				end
 				--somebodyDeclared[myRole] = 0;
 			-- ^^ ignore him...^^
@@ -591,7 +592,7 @@ function update()
   if smallest_id ~= 0 then
     
     if (wcm.get_horde_dummyTraining() == 0) then
-		print("DNW ballRelative a = " .. states[smallest_id].ballRelative[3] .. " x = " .. states[smallest_id].ballRelative[1] .. " y = " .. states[smallest_id].ballRelative[2]);
+	--	print("DNW ballRelative a = " .. states[smallest_id].ballRelative[3] .. " x = " .. states[smallest_id].ballRelative[1] .. " y = " .. states[smallest_id].ballRelative[2]);
 		closestToBallLoc = util.pose_global(states[smallest_id].ballRelative, {states[smallest_id].pose.x, states[smallest_id].pose.y, states[smallest_id].pose.a})
     	wcm.set_team_closestToBallLoc(closestToBallLoc)
 	end
@@ -633,7 +634,7 @@ function update_status()
 	local ballDist = state.ballRelative; -- the position of the ball relative to me based off the global pos
 	local myDist = get_distanceBetween(ballDist, {0, 0});
 	local distIDPairs = {}
-	setDebugTrue();
+	--setDebugTrue();
 	for id = 1,5 do	
 	
 		
@@ -655,12 +656,12 @@ function update_status()
 			
 			if states[id].ballLost == 0 then
 				data.dist = get_distanceBetween(states[id].ballRelative, {0, 0});
-				print("DNW index = " .. tostring(id) .. " SEE BALL so dist is " .. data.dist);
+				--print("DNW index = " .. tostring(id) .. " SEE BALL so dist is " .. data.dist);
 			else
 				data.dist = math.huge;
-				print("DNW index = " .. tostring(id) .. " BALL LOST so dist is " .. data.dist);
+				--print("DNW index = " .. tostring(id) .. " BALL LOST so dist is " .. data.dist);
 			end
-			print("DNW HEY I ADDED A DIST PAIR AT " .. id );
+			--print("DNW HEY I ADDED A DIST PAIR AT " .. id );
 			data.status = states[id].status
 			
 			
@@ -679,7 +680,7 @@ function update_status()
 			
 			distIDPairs[id] = placeHolderData;
 			if Body.get_time() - lastTimeStatusRec[distIDPairs[id].id] < STATUS_DEAD_THRESHOLD and lastStatus[distIDPairs[id].id] ~= nil then
-				setDebugTrue();
+				--setDebugTrue();
 				print("id " .. distIDPairs[id].id .. "dead = " .. tostring(distIDPairs[id].dead));
 				print("last status at id " .. tostring((not lastStatus[distIDPairs[id].id])))
 				distIDPairs[id] = lastStatus[distIDPairs[id].id]
@@ -687,15 +688,15 @@ function update_status()
 				print("id now based off of lastStatus = " .. tostring(distIDPairs[id].id))
 				print( " and dead is = " .. tostring(distIDPairs[id].dead))
 				distIDPairs[id].dead = 0 -- then I will wait and keep you in
-				setDebugFalse();
+			--	setDebugFalse();
 			end
 			
 			
 		end	
 		
-		setDebugTrue();
+		--setDebugTrue();
 		print("id = " .. tostring(id) .. " distID = " .. tostring(distIDPairs[id].id) .. " dead? = " .. tostring(distIDPairs[id].dead))
-		setDebugFalse();
+	--	setDebugFalse();
 	end -- end the for loop
 	
 	setDebugFalse();
@@ -705,7 +706,7 @@ function update_status()
 	
 	local prevDis = 0;
 	for i=1,#distIDPairs do
-		print("no sort DNW list: " .. distIDPairs[i].dist) 
+		--print("no sort DNW list: " .. distIDPairs[i].dist) 
 		if distIDPairs[i].dist >= prevDis then
 			prevDis = distIDPairs[i].dist
 --		else
@@ -724,10 +725,10 @@ function update_status()
 			return a.id < b.id
 		end
 		return a.dist < b.dist end)
-		setDebugTrue();
+		--setDebugTrue();
 	prevDis = 0	
 	for i=1,#distIDPairs do
-		print("DNW list: " .. distIDPairs[i].dist .. " id = " .. tostring(distIDPairs[i].id)) 
+		--print("DNW list: " .. distIDPairs[i].dist .. " id = " .. tostring(distIDPairs[i].id)) 
 		if distIDPairs[i].dist >= prevDis then
 			prevDis = distIDPairs[i].dist
 		else
@@ -745,7 +746,7 @@ function update_status()
 	if(somebodyYelledKick()) then
 		lastTimeKicked = Body.get_time();
 	end
-	setDebugTrue();
+	--setDebugTrue();
 	print("DNW number of distIDPairs is " .. tostring(#distIDPairs))
 	countI  = 1
 	for i=1, #distIDPairs do
@@ -794,7 +795,7 @@ function update_goalieCloseEnough()
 
 	-- If i am the goalie then i check otherwise i just get the value that the
 	-- was given to me by the goalie telling me it is close enough or not
-	setDebugTrue();
+	--setDebugTrue();
 	if Config.game.role ~= 0 and Body.get_time() - lastTimeReceivedFromGoalie > GOALIE_DEAD_THRESHOLD then
 		print("goalie dead, please don't persist GOALIE");
 		wcm.set_horde_goalieCloseEnough(0); -- If I didn't get anything from the goalie then I can't assume he is close enought
@@ -954,7 +955,7 @@ function getMidpoint()
                 print("  yellow ")
                 postDefend = PoseFilter.postYellow;
         else
-                print("not yellow")
+                --print("not yellow")
                 -- blue attack yellow goal
                 postDefend = PoseFilter.postCyan;
         end

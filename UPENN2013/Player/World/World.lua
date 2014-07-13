@@ -79,13 +79,13 @@ yaw0 =0;
 --Track gcm state
 gameState = 0;
 function getGoalSign()
-
+	setDebugFalse();
         if gcm.get_team_color() == 1 then
                 -- red attacks cyan goali
-                print(" yellow ")
+                --print(" yellow ")
                 postDefend = PoseFilter.postYellow;
         else
-                print("not yellow")
+                --print("not yellow")
                 -- blue attack yellow goal
                 postDefend = PoseFilter.postCyan;
         end
@@ -114,9 +114,9 @@ function init_particles()
   	PoseFilter.initializeUniform(vector.new({math.abs(goalDefend[1]/2)*goalDefendSign,  -1 * goalDefendSign * Config.world.yMax,  math.pi/2 * goalDefendSign}), vector.new({.15*xMax, .15*yMax, math.pi/6}))
   end
    
-  if (useSoundLocalization > 0) then
-    SoundFilter.reset();
-  end
+  --if (useSoundLocalization > 0) then
+  --  SoundFilter.reset();
+  --end
   setDebugFalse();
   update_shm();
 end
@@ -285,7 +285,8 @@ setDebugTrue()
     ]]--
     -- so if the safety thinks i should flip and the goalie doesn't think its on his side then I can flip
     elseif wcm.get_horde_safetySaysFlip() == 1 then
-  	PoseFilter.flip_particles(); -- then flip em
+  	print("SAFETY SAID TO FLIP, freakingsafety");
+	PoseFilter.flip_particles(); -- then flip em
   	wcm.set_horde_safetySaysFlip(0)
   end
   

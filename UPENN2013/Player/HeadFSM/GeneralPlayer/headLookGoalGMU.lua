@@ -93,7 +93,7 @@ function update()
 	end
 	
 
-  setDebugTrue()
+  --setDebugTrue()
   --print("hey im in HEAD update");
   local t = Body.get_time();
   tScan = 2

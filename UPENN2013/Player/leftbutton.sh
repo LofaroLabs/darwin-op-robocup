@@ -14,13 +14,13 @@ fi
 if [ "$1" = "0" ]; then
 	
 	`echo "111111" | sudo killall killall -q naoqi-bin naoqi hal espeak lua luajit luajit2 screen`
-	screen -dm -L -s /usr/bin/bash -S cog lua ./run_dcm.lua
+	screen -dm -s /usr/bin/bash -S cog lua ./run_dcm.lua
 	sleep 1
-	screen -dm -L -s /usr/bin/bash -S cog lua ./gmu_buttons.lua
+	screen -dm -s /usr/bin/bash -S cog lua ./gmu_buttons.lua
 	sleep 1
-	screen -dm -L -s /usr/bin/bash -S cog lua ./run_cognition.lua
+	screen -dm -s /usr/bin/bash -S cog lua ./run_cognition.lua
 	sleep 3	
-	screen -dm -L -s /usr/bin/bash -S cog lua ./hoard_connection.lua
+	screen -dm -s /usr/bin/bash -S cog lua ./hoard_connection.lua
 #touch m2.txt
 fi
 

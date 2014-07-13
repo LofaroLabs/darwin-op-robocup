@@ -6,6 +6,6 @@ cd $PLAYER # make sure you are in the right folder
 GODIR=/home/darwin/dev/merc/darwin/UPENN2013/Player
 cd $GODIR
 echo "`pwd`" | cat >> KITTYLOG.txt
-screen -dm -L -s /usr/bin/bash -S kitty lua ./kittySoccerHFA.lua
+screen -dm -s /usr/bin/bash -S kitty lua ./kittySoccerHFA.lua
 
 
