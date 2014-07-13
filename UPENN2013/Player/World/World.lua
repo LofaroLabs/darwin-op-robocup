@@ -79,13 +79,13 @@ yaw0 =0;
 --Track gcm state
 gameState = 0;
 function getGoalSign()
-
+	setDebugFalse();
         if gcm.get_team_color() == 1 then
                 -- red attacks cyan goali
-                print(" yellow ")
+                --print(" yellow ")
                 postDefend = PoseFilter.postYellow;
         else
-                print("not yellow")
+                --print("not yellow")
                 -- blue attack yellow goal
                 postDefend = PoseFilter.postCyan;
         end
