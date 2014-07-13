@@ -61,12 +61,28 @@ function entry()
   end
   vcm.set_camera_command(0); --top camera
 end
+function somebodyYelledKick() 
+	kickers = wcm.get_team_yelledKick();
+	for i=1,4 do 
+	
+		if(kickers[i] == 1) then
+			return true;
 
+		end
+	end
+	return false;
+
+end
 function update()
+
+
 	local t = Body.get_time();
+	if(somebodyYelledKick()) then
+		return "timeout"
+	end
 	ball = wcm.get_ball();
   	ballR = math.sqrt (ball.x^2 + ball.y^2);
-  	
+	  	
 	if ballR < MAX_BALL_DIST then
 		
 		if (t - ball.t > myTLost) then

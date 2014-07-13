@@ -19,18 +19,7 @@ min_eta_look = Config.min_eta_look or 2.0;
 goalie_dive = Config.goalie_dive or 0;
 goalie_type = Config.fsm.goalie_type;
 
-function somebodyYelledKick()
-        kickers = wcm.get_team_yelledKick();
-        for i=1,4 do
 
-                if(kickers[i] == 1) then
-                        return true;
-
-                end
-        end
-        return false;
-
-end
 function entry()
   print("Head SM:".._NAME.." entry");
 
@@ -42,9 +31,7 @@ alreadyPrinted = false;
 function update()
 
   local t = Body.get_time();
-  if(somebodyYelledKick()) then
-	t0 = Body.get_time();
-  end
+
   -- update head position based on ball location
   ball = wcm.get_ball();
   ballR = math.sqrt (ball.x^2 + ball.y^2);
@@ -64,15 +51,16 @@ function update()
   end
   Body.set_head_command({yaw, pitch});
 
-  if (t - ball.t > tLost and not alreadyPrinted) then
+   if (t - ball.t > .5) then
     print('Ball lost!');
-    alreadyPrinted = true;
+    return "ballLost";
+    --alreadyPrinted = true;
   end
    --if(Config.game.role == 0) then
 --	return "timeout"
  --  end
   if (t - t0 > timeout) then
-       		return "timeout";  --Player, look up to see goalpost
+       		--return "timeout";  --Player, look up to see goalpost
   end
 end
 

@@ -87,8 +87,10 @@ function process_keyinput()
 	if byte==string.byte("g") then
 		if (wcm.get_horde_goalieCloseEnough() == 1) then
 			wcm.set_horde_goalieCloseEnough(0);
+			force = 0;
 		else
 			wcm.set_horde_goalieCloseEnough(1);		
+			force = 1
 		end
 	end
 	
@@ -212,6 +214,7 @@ function process_keyinput()
 		wcm.set_horde_timeOut((wcm.get_horde_timeOut()+1)%2)
 	end
   end
+  --vcm.set_vision_enable(1);
 end
 
 -- main loop
@@ -227,6 +230,7 @@ wcm.set_horde_dummyTraining(0);
     -- update motion process
  --  unix.usleep(.5 * 1E6);
     update();
+   if(wcm.get_horde_dummyTraining() == 1) then
    if(ballDistToggle == 0) then
 	ballDist = .582259821
    elseif(ballDistToggle==1) then
@@ -266,9 +270,9 @@ wcm.set_horde_dummyTraining(0);
    
    if(goalDist ==0) then
    --let localization handle
-	vcm.set_vision_enable(1)
+	--vcm.set_vision_enable(1)
    elseif(goalDist ==1) then
-	vcm.set_vision_enable(0);
+	--vcm.set_vision_enable(1);
 	myNewPose = {}
 	
 	myNewPose[1] = -1*1.6*wcm.get_horde_goalSign();
@@ -277,7 +281,7 @@ wcm.set_horde_dummyTraining(0);
 wcm.set_horde_pose(myNewPose);	
 
    elseif goalDist == 2 then
-	vcm.set_vision_enable(0);
+	vcm.set_vision_enable(1);
 	myNewPose = {}
         myNewPose[1] = -1*1.4*wcm.get_horde_goalSign();
         myNewPose[2] = 0;
@@ -287,9 +291,13 @@ wcm.set_horde_pose(myNewPose);
    if wcm.get_horde_dummyTraining() == 1 then
    	wcm.set_horde_doDeclare(declared);
    end
+  	--vcm.set_vision_enable(1);
+	wcm.set_horde_goalieCloseEnough(force);
+   end
    io.stdout:flush();
    if(somethingPressed) then
 	os.execute('clear')
+	print("vision enable: " .. vcm.get_vision_enable());
 	print("Yellfailed :".. wcm.get_horde_yelledFail() ..  "\ndetect ball: " .. vcm.get_ball_detect() ..  " ball dist:" .. wcm.get_ball_x().. " frontApproach: " .. tostring(wcm.get_horde_doneApproach()))
 	print("ready: " .. tostring(wcm.get_horde_yelledReady()) .. " passkick: " .. tostring(wcm.get_horde_yelledKick()) .. " (c)ClosestToGoalDefend: " .. tostring(wcm.get_team_isClosestToGoalDefend()) ) 
 	print(" (k)ClosestToBall: " .. tostring(wcm.get_team_is_smallest_eta()) .. "\n (g)GoalieCloseEnough " .. tostring(wcm.get_horde_goalieCloseEnough())) 
