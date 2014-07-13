@@ -26,6 +26,7 @@ turnSpeed = Config.team.turnSpeed;
 
 GOALIE_DEAD_THRESHOLD = 3
 STATUS_DEAD_THRESHOLD = 3
+CONNECTED_TIMEOUT = 3
 
 
 -- setting the distance as defined to be "close" for the goalie to the ball to be 1m
@@ -313,7 +314,7 @@ function update()
   
   -- If I haven't received things from anyone in the last 3 seconds then I'm not connected
   if wcm.get_horde_dummyTraining() == 0 then
-   if teamLatency > 3 then
+   if teamLatency > CONNECTED_TIMEOUT then
   	wcm.set_team_connected(0);
   else
   	wcm.set_team_connected(1);
@@ -782,9 +783,12 @@ function update_goalieCloseEnough()
 		print("goalie dead, please don't persist GOALIE");
 		wcm.set_horde_goalieCloseEnough(0); -- If I didn't get anything from the goalie then I can't assume he is close enought
 		
-		if wcm.get_horde_fallTime() > lastTimeReceivedFromGoalie then
+		if wcm.get_horde_fallTime() > lastTimeReceivedFromGoalie and wcm.get_team_connected() == 1 then
+			-- only if it has been a while since i received a message from the goalie and I'm still connected
+			-- while I start to kick out of bounds.  
 			wcm.set_horde_kickOutOfBounds(1);
 		else
+			-- otherwise I won't because I still want to at least play kiddie soccer when wifi dies
 			wcm.set_horde_kickOutOfBounds(0);
 		end
 	else
