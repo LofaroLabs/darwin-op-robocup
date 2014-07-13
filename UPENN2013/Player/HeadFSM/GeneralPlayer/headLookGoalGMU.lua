@@ -62,27 +62,28 @@ function entry()
   vcm.set_camera_command(0); --top camera
 end
 function somebodyYelledKick() 
-	kickers = wcm.get_team_yelledKick();
-	for i=1,4 do 
-	
-		if(kickers[i] == 1) then
-			return true;
-
+	avoidRaceCondition = wcm.get_team_yelledKick()
+	for i=1,4 do
+		if(avoidRaceCondition[i] == 1) then
+			return true
 		end
-	end
-	return false;
+	
 
+ 	end
+	return false;
 end
 function update()
 
 
 	local t = Body.get_time();
-	if(somebodyYelledKick()) then
-		return "timeout"
-	end
+
 	ball = wcm.get_ball();
   	ballR = math.sqrt (ball.x^2 + ball.y^2);
-	  	
+	if(somebodyYelledKick()) then
+ 		if(wcm.get_horde_ballLost()) then return "LostAndTime" end
+
+		return "timeout"
+	end
 	if ballR < MAX_BALL_DIST then
 		
 		if (t - ball.t > myTLost) then

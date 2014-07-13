@@ -94,13 +94,27 @@ function updateAll(newState)
        	--print("Motion update");
 	--if(false) then
 	updateAllTimer2 = Body.get_time();
+	setDebugTrue();
+	print(HeadFSM.sm.get_current_state(HeadFSM.sm)._NAME .. " before motion")
 	Motion.update();
+	--HeadFSM.update();
 	--if(false) then
+	
+	print(HeadFSM.sm.get_current_state(HeadFSM.sm)._NAME .. " after motion, before body")
+	
 	--print("Body update");
+	
+
        	Body.update();
+	--HeadFSM.update();
+	print(HeadFSM.sm.get_current_state(HeadFSM.sm)._NAME .. " after  motion, before BodyFSM update")
+	
 	--end
 	--print("body FSM update");
         BodyFSM.update();
+	--HeadFSM.update();	
+	print(HeadFSM.sm.get_current_state(HeadFSM.sm)._NAME .. " after BodyFSM, before Headfsm")
+	
 	--print("HeadFSM update");
        -- end
 	if(mcm.get_walk_isFallDown()==0) then
@@ -108,14 +122,19 @@ function updateAll(newState)
 		HeadFSM.update();
 		setDebugFalse();
 	end
---	GameFSM.update();	
+	--HeadFSM.update();
+	print(HeadFSM.sm.get_current_state(HeadFSM.sm)._NAME .. " after Headfsm update, before end of function")
+--	GameFSM.update();
+		
 	fpsTimer = Body.get_time(); 
 	updateAllTimer2 = Body.get_time() - updateAllTimer2;
+	setDebugFalse();
 end
 count = 0;
 sendFeaturesTimer2 = Body.get_time();
 updateAllTimer2 = Body.get_time();
 receiveClientTimer = Body.get_time();
+--/sendFeatures
 
 function sendFeatures (client)
         sendFeaturesTimer2 = Body.get_time();
@@ -202,6 +221,7 @@ function sendFeatures (client)
 		getGoalSign();
 	end
 	features["goalSign"] = wcm.get_horde_goalSign(); -- not a feature but may become one... also it sets the value in the wcm
+	
 	features["status"] = wcm.get_horde_status();
 	--print("sending some features, yo\n");-- wcm.set_horde_doneFrontApproach("true");
        -- print(json.encode(features) .. "\n");
@@ -432,7 +452,7 @@ connectionThread = function ()
   						BodyFSM.update();
 						BodyFSM.update();
 						BodyFSM.sm:set_state('bodyStop');
-						HeadFSM.sm:set_state('headIdle')
+						--HeadFSM.sm:set_state('headIdle')
 					--upenn or us?	
 					--elseif state == 1 and lastState ~= 1  and Config.game.role == 0 then -- only if you're goalie and in ready 
 						elseif state == 1 and lastState ~= 1  then -- only if you're goalie and in ready 
@@ -450,7 +470,7 @@ connectionThread = function ()
     				--		return 'playing';
   					elseif (state == 4 and lastState ~=4) then
     						BodyFSM.sm:set_state('bodyIdle')	-- 'finished';
-  						HeadFSM.sm:set_state('headIdle');
+  						--HeadFSM.sm:set_state('headIdle');
 						 doneReadyBefore = false;
 					end
 					
@@ -586,8 +606,11 @@ function updateAction(servData, client)
 	
 	--BodyFSM = require('BodyFSM');
 	print("before action is... " .. tostring(BodyFSM.sm.get_current_state(BodyFSM.sm)._NAME))
-	hoard_functions.hordeFunctions[req.action](req.args, client)--this is wrong, only here for the send.... TODO
-	print("after action is... " .. tostring(BodyFSM.sm.get_current_state(BodyFSM.sm)._NAME))
+--	if(req~=nil and hoard_functions~=nil) then
+		
+		hoard_functions.hordeFunctions[req.action](req.args, client)--this is wrong, only here for the send.... TODO
+--	end
+--	print("after action is... " .. tostring(BodyFSM.sm.get_current_state(BodyFSM.sm)._NAME))
 	setDebugTrue();
 	--print("after horde function");
 	--unix.usleep(1*1E6);	

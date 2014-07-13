@@ -13,6 +13,7 @@ function entry()
   started = false;
 end
 tempTimer = 0.0;
+
 function update()
   --for webots : we have to stop with 0 bodytilt
   --[[if not started then
