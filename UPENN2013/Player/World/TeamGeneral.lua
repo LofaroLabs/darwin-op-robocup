@@ -376,7 +376,7 @@ function update()
 	
 	local goalieBallGlobalX = -1
 	for id = 1,5 do
-		if states[id] == nil and states[id].role == 0 then
+		if states ~= nil and states[id] ~= nil and states[id].role == 0 then
 			goalieBallGlobalX = states[id].ballGlobal[1];
 		end
 	end
