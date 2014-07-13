@@ -283,7 +283,13 @@ setDebugTrue()
     PoseFilter.flip_particles();
     wcm.set_robot_flipped(0);
     ]]--
+    -- so if the safety thinks i should flip and the goalie doesn't think its on his side then I can flip
+    elseif wcm.get_horde_safetySaysFlip() == 1 then
+  	PoseFilter.flip_particles(); -- then flip em
+  	wcm.set_horde_safetySaysFlip(0)
   end
+  
+  
  end
 -- if goalie thinks he's on offensive side, he's wrong. no way in hell
 --print("YOe ".. tostring(wcm.get_pose().x/math.abs(wcm.get_pose().x)) .. " " .. tostring(wcm.get_horde_goalSign() ))

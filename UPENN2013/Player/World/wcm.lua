@@ -47,6 +47,7 @@ shared.ball.t_locked_on = vector.zeros(1);
 
 --connection 
 shared.horde = {};
+shared.horde.safetySaysFlip = vector.zeros(1);
 shared.horde.kickOutOfBounds = vector.zeros(1);
 shared.horde.fallTime = vector.zeros(1);
 shared.horde.visionPenalty = vector.zeros(1);
