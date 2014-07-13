@@ -6,6 +6,8 @@ require('walk')
 require('vector')
 require('walk')
 require('position')
+require('Config')
+
 
 t0 = 0;
 timeout = Config.fsm.bodyApproach.timeout;
