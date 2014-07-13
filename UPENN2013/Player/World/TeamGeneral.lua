@@ -755,7 +755,7 @@ function update_goalieCloseEnough()
 		print("goalie dead, please don't persist GOALIE");
 		wcm.set_horde_goalieCloseEnough(0); -- If I didn't get anything from the goalie then I can't assume he is close enought
 		
-		if wcm.get_horde_fallTime() > lastTimeRecivedFromGoalie then
+		if wcm.get_horde_fallTime() > lastTimeReceivedFromGoalie then
 			wcm.set_horde_kickOutOfBounds(1);
 		else
 			wcm.set_horde_kickOutOfBounds(0);
