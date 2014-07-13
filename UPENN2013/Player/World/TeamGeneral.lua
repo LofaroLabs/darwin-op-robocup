@@ -242,6 +242,7 @@ function update()
   state.ballRelative[3] = 0;
   state.ballDetect = vcm.get_ball_detect();
   state.count = countPackets
+  state.bodyFSMState = BodyFSM.sm.get_current_state(BodyFSM.sm)._NAME;
   
   -- if i am the goalie then set whether we think the ball is on my side.
   if playerID == GOALIE_ID then
