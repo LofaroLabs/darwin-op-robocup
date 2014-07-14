@@ -146,7 +146,7 @@ function sendFeatures (client)
        
         
 	--	print(" difference is : " .. tostring(Body.get_time() - sendFeaturesTimer));
-		if(true or Body.get_time() - sendFeaturesTimer < .025) then 
+		if( Body.get_time() - sendFeaturesTimer < .025) then 
 	--		print("is not sending")	
 			return;
 		end
@@ -370,7 +370,7 @@ connectionThread = function ()
 	--		print("sending request");
 			local line, err = nil,nil
 			clientReceiveTimer = Body.get_time();
-			if(true or Body.get_time() - lastTimeReceived > .025) then	
+			if( Body.get_time() - lastTimeReceived > .025) then	
 				line,err = client:receive() -- read in horde commands
 				lastTimeReceived = Body.get_time();
 			end
