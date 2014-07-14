@@ -146,7 +146,7 @@ function sendFeatures (client)
        
         
 	--	print(" difference is : " .. tostring(Body.get_time() - sendFeaturesTimer));
-		if(true or  Body.get_time() - sendFeaturesTimer < .025) then 
+		if(false or  Body.get_time() - sendFeaturesTimer < .025) then 
 	--		print("is not sending")	
 			return;
 		end
@@ -227,6 +227,10 @@ function sendFeatures (client)
 	--print("sending some features, yo\n");-- wcm.set_horde_doneFrontApproach("true");
        -- print(json.encode(features) .. "\n");
 		features["ackNumber"] = ackNumber;
+		
+setDebugTrue();
+		print("yeah i'm sending");
+		--Speak.talk("sending");
 		client:settimeout(.01);
 		client:send(json.encode(features) .. "\n");
         -- Send the features to horde via the client
@@ -551,10 +555,12 @@ connectionThread = function ()
 						setDebugFalse();
 						updateAction(line, client);
 						i = 0
-						while i<100 do
-							updateAll();		
-							unix.usleep(.005 * 1E6);
-							i=i+1;
+						if string.find(line,"kick") then
+							while i<100 do
+								updateAll();		
+								unix.usleep(.005 * 1E6);
+								i=i+1;
+							end
 						end	
 						lastReceivedState = action;
 					end
