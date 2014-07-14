@@ -1,0 +1,41 @@
+# Default Arena
+
+# size width height
+size 200 200
+
+# circle x y targetableIndex diameter field
+#circle 0 0 -1 10 0
+#circle -1 -1 -1 5 0 sim.app.horde.scenarios.forage.Box 5
+9 sim.app.horde.scenarios.forage.Box 5 0
+1 sim.app.horde.scenarios.forage.Box 25 0
+
+# rect x y targetableIndex width height field
+#rect 10 20 -1 10 10 0
+#rect 10 20 -1 30 30 1
+
+# squarecircle x y targetableIndex field
+# This is basically a hack
+#squarecircle 30 30 -1 0
+
+# text x y targetableIndex field fontsize string
+#text 20 20 -1 0 12 ������
+#text 20 40 -1 0 12 ������
+#Vittorio
+#text 20 20 -1 0 12 Robert
+
+# marker x y targetableIndex name
+marker 75 75 0 Home Base
+#marker 25 25 1 Elsewhere
+#marker 75 75 2 Third Place
+
+# agent x y orientation
+# agent SimAgent 60 60 0.2
+
+# basicpool name className count color
+basicpool Forager sim.app.horde.scenarios.forage.Forager 50 Magenta
+
+# controller name count
+
+# food filename
+# ground filename terrain0Name terrain1Name ...
+# ground test.png

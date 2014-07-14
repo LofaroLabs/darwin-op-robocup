@@ -1,0 +1,98 @@
+AgentGroup constraints
+	MINIMUM number of agents	[hard]
+	HARD MAXIMUM number of agents	[hard]
+	PREFERRED number of agents	[soft]
+
+Controller constraints
+	ORDER among AgentGroups of importance of meeting preferences
+
+AgentGroup computed requirements
+	MINIMUM number of basic agents by type
+	HARD MAXIMUM number of basic agents by type
+	PREFERRED number of basic agents by type
+
+Controller computed requirements
+	MINIMUM number of basic agents by type
+	HARD MAXIMUM number of basic agents by type
+	PREFERRED number of basic agents by type
+
+
+
+
+ComputeRequirementsForController(Controller of type C) [Memoized]
+	for each basic agent B
+		C.requirements.B.minimum = Sum(Group G under C) C.G.requirements.B.minimum
+		C.requirements.B.maximum= Sum(Group G under C) C.G.requirements.B.maximum
+		C.requirements.B.preferred = Sum(Group G under C) C.G.requirements.B.preferred
+	
+ComputeRequirementsForGroup(AgentGroup under controller C of agents of type G) [Memoized]
+	if group members are basic agents
+		C.G.requirements.T.minimum = C.G.constraints.minimum
+		C.G.requirements.T.maximum = C.G.constraints.maximum
+		C.G.requirements.T.preferred = C.G.constraints.preferred
+	else (group members are controllers)
+		ComputeRequirementsForController(T)
+		for each basic agent B
+			C.G.requirements.B.minimum = T.requirements.B.minimum * C.G.constraints.minimum
+			C.G.requirements.B.maximum = T.requirements.B.maximum * C.G.constraints.maximum
+			C.G.requirements.B.preferred = T.requirements.B.preferred * C.G.constraints.preferred
+
+
+DispenseForAgentGroup(AgentGroup of type G under controller C of agents of type G, Basic Agent counts type B_1... B_n)
+	if group members are basic agents (of type B_i)
+		current.B_i = number of agents of type B_i provided
+		Create current.B_i agents of type B_i
+	else (group members are controllers)
+		n = count of the smallest number of agents of type B_i, for all i provided
+		n = min(C.G.constraints.preferred, n)
+		Create n agents of type G
+		for each type B_i
+			total.B_i = number of agents of type B_i provided
+			remainder.B_i = total.B_i mod n
+		for each agent A_j
+			for each type B_i
+				if (remainder.B_i > 0)
+					dispense.A_j.B_i = ceiling(total.B_i / n)
+					remainder.B_i = remainder.B_i - 1
+				else 
+					dispense.A+j.B_i = floor(total.B_i / n)
+			DispenseForController(A_j, Basic Agents with counts dispense.A_j.B_1, ..., dispense.A_j.B_n)
+
+
+DispenseForController(Controller of type C, Basic Agent counts type B_1... B_n)
+	foreach Basic Agent B_i
+		current.B_i = number of agents of type B_i provided
+	// Load minimums
+	foreach group G
+		foreach Basic Agent B_i
+			C.G.dispensed.B_i = C.G.requirements.B_i.minimum
+			current.B_i = current.B_i - C.G.dispensed.B_i
+	// Load preferred 
+	foreach group G by C.constraints.order
+		foreach Basic Agent B_i
+			v = min(current.B_i, C.G.requirements.B_i.preferred - C.G.dispensed.B_i)
+			C.G.dispensed.B_i = C.G.dispensed.B_i + v
+			current.B_i = current.B_i - v
+	// Load maximums
+	foreach group G by REVERSE C.constraints.order
+		foreach Basic Agent B_i
+			v = min(current.B_i, C.G.requirements.B_i.maximum - C.G.dispensed.B_i)
+			C.G.dispensed.B_i = C.G.dispensed.B_i + v
+			current.B_i = current.B_i - v
+
+DispenseForRoots(Root Counts for root type R_1...R_m, Available Basic Agent counts of type B_1... B_n)
+	foreach Root type R_i
+		Put the roots of type R_i under an agent group of type R_i with agent group min = max = preferred = number of roots of type R_i
+	Put the agent groups under a "fake" controller C with an arbitrary GROUPING
+	ComputeRequirementsForController(C)
+	Revised Agent Counts <- restrict to values between C.requirements.B_i.minimum and C.requirements.B_i.maximum and suggest to user to use C.requirements.B_i.preferred
+	DispenseForController(C, Revised Agent Counts)
+	
+
+
+
+
+
+
+
+

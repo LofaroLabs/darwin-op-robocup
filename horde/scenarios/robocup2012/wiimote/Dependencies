@@ -1,0 +1,3 @@
+horde.o: horde.c easysocket.h \
+ /home/ksulliv/Robotics/robocup/robocup2012/overo/kondo/kondobits.h
+easysocket.o: easysocket.c easysocket.h
