@@ -420,9 +420,9 @@ function update()
 							-- we disagree about the side of the field
 							-- so set 
 							state.safetyBasedFlip = 1
-							wcm.get_set_horde_safetySaysFlip(1)
+							wcm.set_horde_safetySaysFlip(1)
 						else
-							wcm.get_set_horde_safetySaysFlip(0)
+							wcm.set_horde_safetySaysFlip(0)
 						end
 					end
 					
