@@ -133,15 +133,14 @@ function update_box()
 end
 
 
-lastTimeFound = Body.get_time();
+lastTimeFoundForFlip = Body.get_time();
 lastTimeFoundOnGoalieSide = Body.get_time();
 lastTimeNotOnGoalieSide = 0;
 -- if I have seen the ball on my side for >3s then I will say ball certain on my side
 function updateGoalieFlip()
 
 	if vcm.get_ball_detect() ~= 0 then
-		lastTimeFound = Body.get_time();
-		lastTimeFound = Body.get_time();
+		lastTimeFoundForFlip = Body.get_time();
  		local ballGlobalXSign = wcm.get_ballGlobal_x() / math.abs(wcm.get_ballGlobal_x());
   		local goalSign = wcm.get_horde_goalSign();
   		
@@ -152,10 +151,14 @@ function updateGoalieFlip()
 		end
 		
 		if lastTimeFoundOnGoalieSide - lastTimeNotOnGoalieSide >= 3 then
+			setDebugTrue();
+			print("lasttime, lasttimenot, goalsign,ballGlobalsign " .. lastTimeFoundOnGoalieSide .. " " .. lastTimeNotOnGoalieSide .. " " .. goalSign .. " " .. ballGlobalXSign);
+			print("ball x, " .. wcm.get_ballGlobal_x());
 			wcm.set_horde_goalieCertainBallOnMySide(1);
+			setDebugFalse();
 		end
 		
-	elseif(Body.get_time() - lastTimeFound > 3.5) then
+	elseif(Body.get_time() - lastTimeFoundForFlip > 3.5) then
 		lastTimeNotOnGoalieSide = Body.get_time();
 		wcm.set_horde_goalieCertainBallOnMySide(0);
 	end
