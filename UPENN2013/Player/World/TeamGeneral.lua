@@ -754,11 +754,11 @@ function update_status()
 		print(" i " .. i .. " count  " .. countI .. " distIDPairs.dead ~= nil = " .. tostring(distIDPairs[i].dead ~= nil) .. " distIDPairs[i].dead = " .. tostring(distIDPairs[i].dead));
 		if distIDPairs[i].dead and distIDPairs[i].dead == 0 then
 			print("DNW i = " .. tostring(i) .. " ID = " .. tostring(distIDPairs[i].id) .. " dist = " .. tostring(distIDPairs[i].dist) .. " distN = " .. tostring(wcm.get_horde_distN()));
-			if(somebodyYelledKick() == 1 or Body.get_time() - lastTimeKicked < 2) then 
-				distIDPairs[i].status = 2;	
-			else
+	--		if(somebodyYelledKick() == 1 or Body.get_time() - lastTimeKicked < 2) then 
+	--			distIDPairs[i].status = 2;	
+	--		else
 				distIDPairs[i].status = (countI-1)*2
-			end
+	--		end
 			if (distIDPairs[i].dist <= wcm.get_horde_distN() and i~=1) then
 				distIDPairs[i].status = distIDPairs[i].status-1;
 				print("DNW i = " .. tostring(i) .. " dist was less than N status = " ..  tostring(distIDPairs[i].status));
