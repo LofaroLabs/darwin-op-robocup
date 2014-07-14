@@ -637,6 +637,11 @@ function update_status()
 	local ballDist = state.ballRelative; -- the position of the ball relative to me based off the global pos
 	local myDist = get_distanceBetween(ballDist, {0, 0});
 	local distIDPairs = {}
+	
+	if(wcm.get_horde_yelledKick() == 1) then
+		lastTimeKicked = Body.get_time();
+	end
+	
 	--setDebugTrue();
 	for id = 1,5 do	
 	
@@ -658,7 +663,11 @@ function update_status()
 			data.id = states[id].id
 			
 			if states[id].ballLost == 0 then
-				data.dist = get_distanceBetween(states[id].ballRelative, {0, 0});
+				if(Body.get_time() - lastTimeKicked < 2) then 
+					data.dist = wcm.get_horde_distN() + 0.27;
+				else
+					data.dist = get_distanceBetween(states[id].ballRelative, {0, 0});
+				end
 				--print("DNW index = " .. tostring(id) .. " SEE BALL so dist is " .. data.dist);
 			else
 				data.dist = math.huge;
@@ -746,9 +755,7 @@ function update_status()
 	
 	
 	local secondClosestWithin = 0
-	if(somebodyYelledKick()) then
-		lastTimeKicked = Body.get_time();
-	end
+
 	--setDebugTrue();
 	print("DNW number of distIDPairs is " .. tostring(#distIDPairs))
 	countI  = 1
