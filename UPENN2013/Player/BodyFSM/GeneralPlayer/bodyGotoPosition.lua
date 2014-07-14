@@ -43,7 +43,7 @@ function update()
   endPoseRelative  = util.pose_relative(endPosition, {pose.x, pose.y, pose.a});
   endPoseX = endPoseRelative[1];
   endPoseY = endPoseRelative[2];
-  scaleFactor = 15*(math.abs(endPoseX)+math.abs(endPoseY));
+  scaleFactor = 13*(math.abs(endPoseX)+math.abs(endPoseY));
   
   if(alreadyDone) then --checking if we've already gotten there to our best tolerance
       --setDebugTrue();
