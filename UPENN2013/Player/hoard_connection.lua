@@ -314,7 +314,8 @@ function connectToHorde(port)
 		local socket = require("socket")
                 local server = assert(socket.bind("*", port))
                 local client = server:accept()
-              	return client;
+              	unix.usleep(.5 * 1E6);
+		return client;
 end
 lastReceivedState = nil;
 lastStateForTime = 0
