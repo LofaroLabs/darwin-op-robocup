@@ -152,10 +152,16 @@ function updateGoalieFlip()
 		
 		if lastTimeFoundOnGoalieSide - lastTimeNotOnGoalieSide >= 3 then
 			setDebugTrue();
+			--Speak.talk("monkey brains");
+			setDebugTrue();
+			--Speak.talk("hey idk, what's up");
 			print("lasttime, lasttimenot, goalsign,ballGlobalsign " .. lastTimeFoundOnGoalieSide .. " " .. lastTimeNotOnGoalieSide .. " " .. goalSign .. " " .. ballGlobalXSign);
-			print("ball x, " .. wcm.get_ballGlobal_x());
+			setDebugTrue();
+			--Speak.talk("ball x, " .. wcm.get_ballGlobal_x());
 			wcm.set_horde_goalieCertainBallOnMySide(1);
 			setDebugFalse();
+		elseif( latTimeNotOnGoalieSide - lastTimeFoundOnGoalieSide >= .27) then
+			wcm.set_horde_goalieCertainBallOnMySide(0);
 		end
 		
 	elseif(Body.get_time() - lastTimeFoundForFlip > 3.5) then
