@@ -417,7 +417,7 @@ function update()
 					
 						-- check if based off of the safety's global ball position I should flip
 						if  states[id].ballGlobal[1] * state.ballGlobal[1] <= 0 and math.abs(states[id].ballGlobal[1] - state.ballGlobal[1]) > 0.75 and
-						 	states[id].ballGlobal[1] * goalieBallGlobalX >= 0 then -- now check the goalie if the goalie thinks the ball is not on the same side as the safety then can't flip
+						 	states[id].ballGlobal[1] * goalieBallGlobalX >= 0  and math.abs(goalieBallGlobalX) > .75 and math.abs(states[id].ballGlobal[1]) > .75 and not goalieDead then -- now check the goalie if the goalie thinks the ball is not on the same side as the safety then can't flip
 							-- we disagree about the side of the field
 							-- so set 
 							state.safetyBasedFlip = 1
@@ -471,7 +471,7 @@ function update()
 		end
 	end
 
-	
+	goalieDead = false;	
 	-- zero is the default so originally everyon will be zero so 
 	print("Done checking declared -------------------------");
  	setDebugFalse();
@@ -485,6 +485,7 @@ function update()
 					wcm.set_horde_goalieCertainBallOnMySide(states[index].goalieCertainBallOnMySide);
 					wcm.set_horde_goalieCloseEnough(states[index].goalieCloseEnough);
 					lastTimeReceivedFromGoalie = Body.get_time();
+					
 					break;
 				end
 
@@ -492,6 +493,7 @@ function update()
 		
 			if Body.get_time() - lastTimeReceivedFromGoalie > GOALIE_DEAD_THRESHOLD then
 				wcm.set_horde_goalieCertainBallOnMySide(0); -- make sure this is reset so that I don't end up flipping continuously.	
+				goalieDead = true;
 			end
 		
 		end
