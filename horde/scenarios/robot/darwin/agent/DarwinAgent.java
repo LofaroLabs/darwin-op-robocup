@@ -113,8 +113,8 @@ static Darwins[] available = new Darwins[4];
                 double theta = dp.getPoseAngle();
                     //System.err.println("X, y theta " + x + "  " + y + " " + theta + " id = " + myID);
                 // translate from C to A
-                x += 30;
-                y += 20;
+                x += ((SimHorde)state).agents.getWidth();
+                y += ((SimHorde)state).agents.getHeight();
                 Double2D loc = new Double2D(x,y);
                 //System.err.println("Translated Agent Location: " + loc);
                 setLocation(loc);
