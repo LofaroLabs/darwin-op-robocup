@@ -136,7 +136,7 @@ function update()
   end
 
 
-  if vcm.get_vision_enable() ==0 then
+  if false then --vcm.get_vision_enable() ==0 then
     print("@@@Vision enable is false, so therefore you dont detect anything");
     ball.detect = 0;
     ballYellow.detect=0; 

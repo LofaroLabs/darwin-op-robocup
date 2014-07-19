@@ -295,7 +295,10 @@ wcm.set_horde_pose(myNewPose);
 	wcm.set_horde_goalieCloseEnough(force);
    end
    io.stdout:flush();
-   if(somethingPressed) then
+   if(wcm.get_horde_dummyTraining() == 0 ) then
+	vcm.set_vision_enable(1);
+   end
+	if(somethingPressed) then
 	os.execute('clear')
 	print("vision enable: " .. vcm.get_vision_enable());
 	print("Yellfailed :".. wcm.get_horde_yelledFail() ..  "\ndetect ball: " .. vcm.get_ball_detect() ..  " ball dist:" .. wcm.get_ball_x().. " frontApproach: " .. tostring(wcm.get_horde_doneApproach()))
