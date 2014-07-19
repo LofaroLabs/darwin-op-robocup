@@ -183,7 +183,7 @@ function process_keyinput()
     if(byte==string.byte("b")) then
 	ballDistToggle = (ballDistToggle +1) % 5;
     end
-    if(byte==string.byte(",")) then
+    --[[if(byte==string.byte(",")) then
 	ballDistToGoalToggle = (ballDistToGoalToggle + 1) % 3;
         ballGlobal = {}
    	if(ballDistToGoalToggle == 0) then
@@ -199,12 +199,12 @@ function process_keyinput()
    	wcm.set_team_closestToBallLoc(ballGlobal);
  
 
-    end
+    end]]--
     if(byte == string.byte("r")) then
 	role = (role+1)%5
    	wcm.set_horde_role(role); 	
     end
-    if(byte == string.byte('o')) then
+--[[    if(byte == string.byte('o')) then
 	goalDist = (goalDist +1) %3;
      end
 	if(byte == string.byte('z')) then
@@ -212,7 +212,7 @@ function process_keyinput()
 	end
 	if(byte == string.byte('x')) then
 		wcm.set_horde_timeOut((wcm.get_horde_timeOut()+1)%2)
-	end
+	end]]--
   end
   --vcm.set_vision_enable(1);
 end
@@ -228,7 +228,7 @@ end
 wcm.set_horde_dummyTraining(0);
   while (true) do
     -- update motion process
- --  unix.usleep(.5 * 1E6);
+   unix.usleep(.1 * 1E6);
     update();
    if(wcm.get_horde_dummyTraining() == 1) then
    if(ballDistToggle == 0) then

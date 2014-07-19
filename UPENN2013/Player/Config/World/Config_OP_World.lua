@@ -7,23 +7,23 @@ require('vector')
 
 world={};
 world.n = 200;--David: is this number of particles?
-world.xLineBoundary = 2.74;--UPDATED
-world.yLineBoundary = 1.8;--UPDATED
+world.xLineBoundary = 4.5;--UPDATED
+world.yLineBoundary = 3.0;--UPDATED
 --world.xMax = 4;
-world.xMax = 2.74; --UPDATED, this was 20 cm beyond border for some reason though....
-world.yMax = 1.8;--UPDATED (20cm thing)
-world.goalWidth = 1.64;   --UPDATED -- c currently measured outside.  inside yellow is 1.41 outside is 1.64
-world.goalHeight= 0.85;   --UPDATED -- come back
-world.goalDiameter=0.115; --UPDATED -- diameter of a post
+world.xMax = 4.5; --UPDATED, this was 20 cm beyond border for some reason though....
+world.yMax = 3.0;--UPDATED (20cm thing)
+world.goalWidth = 2.44; --robocup done  --UPDATED -- c currently measured outside.  inside yellow is 1.41 outside is 1.64
+world.goalHeight= 1.14;   --UPDATED -- come back
+world.goalDiameter=0.108; --UPDATED -- diameter of a post
 world.ballYellow= {{0,0.0}};-- idk used to b 4.5,0
 world.ballCyan= {{0,0.0}};--idk, used to be -4.5,0
 world.postYellow = {};
 -- field length is 548 cm, 5.48m
-world.postYellow[1] = {2.74, 0.82};-- UPDATED
-world.postYellow[2] = {2.74, -0.82};--UPDATED 
+world.postYellow[1] = {4.5, 1.22};-- UPDATED
+world.postYellow[2] = {4.5, -1.22};--UPDATED 
 world.postCyan = {};
-world.postCyan[1] = {-2.74, -0.82}; --UPDATED
-world.postCyan[2] = {-2.74, 0.82}; -- UPDATED
+world.postCyan[1] = {-4.5, -1.22}; --UPDATED
+world.postCyan[2] = {-4.5, 1.22}; -- UPDATED
 world.spot = {};
 world.spot[1] = {-1.16, 0};--UPDATED--center to + sign, 116cm -- radius 56
 world.spot[2] = {1.16, 0};--UPDATED
