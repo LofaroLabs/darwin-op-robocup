@@ -1,0 +1,12 @@
+The OBJECTS package contains most kinds of targetables, except for the Agent,
+which display themselves on-screen in one fashion or another.  Such 
+targetables include:
+
+1. BODIES are shapes which represent regions on-screen or obstacles to the agent.
+   You can make arbitrary-shape bodies, but two are available for you automatically,
+   namely rectangular and circular bodies.  Bodies typically form obstacles in
+   the HORDE class, but can also form regions (non-colliding areas) in the HORDE
+   class as well.
+
+2. MARKERS are single 2D points, displayed as little "X"s, in the Horde screen.
+

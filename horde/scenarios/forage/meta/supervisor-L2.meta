@@ -1,0 +1,4 @@
+# controller name className
+controller Supervisor-L2 sim.app.horde.scenarios.forage.Supervisor
+# subordinate name className max min pref
+subordinate Supervisor-L1 sim.app.horde.scenarios.forage.Supervisor 5 1 5

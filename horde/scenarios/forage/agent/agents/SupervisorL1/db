@@ -1,0 +1,22 @@
+### AGENT CLASS
+class = sim.app.horde.scenarios.forage.agent.Supervisor
+shape = square
+scale = 2.0
+
+### TYPES
+# I have defined two types already:
+# global	Things that show up in every Horde agent
+# sim		Things that show up in basic sim agents
+
+# Here we state that we will use both global and sim types
+num-types = 3
+type.0 = global
+type.1 = sim
+type.2 = supervisor
+
+#### If I were a homogeneous controller agent, I might say:
+num-subs = 1
+sub.0 = Forager
+sub.0.min = 1
+sub.0.max = 5
+sub.0.pref = 5

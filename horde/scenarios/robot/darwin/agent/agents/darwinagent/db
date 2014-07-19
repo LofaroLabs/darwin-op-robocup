@@ -1,0 +1,49 @@
+### AGENT CLASS
+
+class = sim.app.horde.scenarios.robot.darwin.agent.DarwinAgent
+
+### TYPES
+# I have defined two types already:
+# global	Things that show up in every Horde agent
+# sim		Things that show up in basic sim agents
+
+# Here we state that we will use both global and sim types
+
+num-types = 2
+type.0 = global
+type.1 = sim
+
+#### If I were a homogeneous controller agent, I might say:
+# class = sim.app.horde.agent.SimControllerAgent
+# num-subs = 1
+# sub.0 = foo
+# sub.0.min = 1
+# sub.0.max = 5
+# sub.0.pref = 4
+#### (foo is the name of a subsidiary agent type)
+#### Additionally, if I wanted to force joint behaviors for
+#### Every single behavior in the subsidiary, not just the
+#### macros, I can say:
+# all-behaviors = true
+
+#### If I were a heterogeneous controller agent, I might say:
+# class = sim.app.horde.agent.SimControllerAgent
+# num-subs = 2
+# sub.0 = foo
+# sub.0.min = 1
+# sub.0.max = 9
+# sub.0.pref = 2
+# sub.1 = bar
+# sub.1.min = 4
+# sub.1.max = 4
+# sub.1.pref = 4
+# num-joints = 3
+# joint.0.name = attack-castle
+# joint.0.does.0 = go-left
+# joint.0.does.1 = go-right
+# joint.1.name = circle-castle
+# joint.1.does.0 = go-around
+# joint.1.does.1 = wait
+# joint.2.name = stop
+# joint.2.does.0 = stop
+# joint.2.does.1 = stop
