@@ -19,6 +19,7 @@ import sim.app.horde.scenarios.robot.darwin.behaviors.Motions;
 import sim.app.horde.scenarios.robot.darwin.comm.DarwinParser;
 import sim.engine.SimState;
 import sim.util.Double2D;
+import sim.app.horde.*;
 
 /**
  * 
@@ -77,7 +78,7 @@ static Darwins[] available = new Darwins[4];
  public Double2D getRealTargetLocation(Agent agent, Macro parent, Horde horde)
         {
         Double2D d = getLocation();
-        return new Double2D((d.x - 30) * 0.1, (d.y - 20) * 0.1);
+        return new Double2D((d.x - ((SimHorde)horde).agents.getWidth()) * 0.1, (d.y - ((SimHorde)horde).agents.getHeight()) * 0.1);
         }
  
  public double getOrientation(Agent agent, Macro parent, Horde horde) { return getOrientation(); }
