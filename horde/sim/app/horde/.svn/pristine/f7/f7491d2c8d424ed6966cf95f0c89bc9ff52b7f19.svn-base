@@ -1,0 +1,36 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
+package sim.app.horde.scenarios.robot.flockbots.comm;
+
+import java.io.IOException;
+import sim.app.horde.scenarios.robot.comm.IParse;
+import sim.app.horde.scenarios.robot.comm.StringComm;
+
+/**
+ *
+ * @author drew
+ */
+public class RemoteControlComm extends StringComm {
+
+    public RemoteControlComm(int port, IParse parser, byte readDelayMS) throws IOException {
+        super(port, parser, readDelayMS);
+    }
+
+    
+
+    
+    @Override
+    public void startSending() {
+        
+    }
+
+    @Override
+    public void terminateSending() {
+        
+    }
+    
+}

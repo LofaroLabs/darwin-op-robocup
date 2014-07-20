@@ -1,0 +1,670 @@
+package sim.app.horde;
+
+import java.awt.*;
+import java.awt.geom.*;
+import java.io.*;
+import java.lang.reflect.*;
+import java.util.*;
+
+import sim.app.horde.agent.*;
+import sim.app.horde.behaviors.*;
+import sim.app.horde.objects.*;
+import sim.field.continuous.*;
+import sim.field.grid.*;
+import sim.util.*;
+
+public class SimHorde extends Horde
+    {
+    private static final long serialVersionUID = 1;
+
+    public static String arena = "arenas/default.arena.txt";
+
+    // width and height of the environment
+    public int width = 100;
+    public int height = 100;
+
+    // No obstacles should be larger than this size
+    public static final double MAX_OBSTACLE_DIAMETER = 25;
+
+    public static final boolean ALLOW_COLLISIONS_WITH_AGENTS = false;
+
+    // objects come in two size categories: SMALL/MEDIUM and ARBITRARILY LARGE
+    // SMALL/MEDIUM object may be detected within a certain range, depending on
+    // the object.
+    public double SMALL_CLOSE_RANGE = 1.0;
+    public double SMALL_MEDIUM_RANGE = 5.0;
+    public double SMALL_FAR_RANGE = 10.0;
+    public double SMALL_FULL_RANGE = Math.max(width, height);
+
+    // ARBITRARILY LARGE are meant to be relatively sparse, and so they are
+    // globally detectable
+    public double LARGE_FULL_RANGE = Math.max(width, height);
+
+    // fields
+    public IntGrid2D ground = new IntGrid2D(width + 1, height + 1);
+    public DoubleGrid2D food = new DoubleGrid2D(width + 1, height + 1);
+    public Continuous2D agents = new Continuous2D(SMALL_MEDIUM_RANGE * 1.5, width, height);
+    public Continuous2D obstacles = new Continuous2D(LARGE_FULL_RANGE * 1.5, width, height);
+    public Continuous2D regions = new Continuous2D(LARGE_FULL_RANGE * 1.5, width, height);
+    public Continuous2D markers = new Continuous2D(SMALL_MEDIUM_RANGE * 1.5, width, height);
+    public Set<Marker> markerTable = new HashSet<Marker>();
+
+    /**
+     * Converts a floating-point coordinate into a grid cell for the ground or
+     * floor
+     */
+    public int gridX(double x)
+        {
+        return (int) (x + 0.5);
+        } // we presume that x is positive, else the proper equation is
+    // Math.floor(x+0.5);
+
+    /**
+     * Converts a floating-point coordinate into a grid cell for the ground or
+     * floor
+     */
+    public int gridY(double y)
+        {
+        return (int) (y + 0.5);
+        } // we presume that y is positive, else the proper equation is
+    // Math.floor(y+0.5);
+
+    // mouse location in the horde world
+    public Double2D mouseLoc;
+
+    public SimHorde(long seed)
+        {
+        super(seed);
+        }
+
+    Targetable defaultTargetable = new Targetable()
+        {
+        public Double2D getTargetLocation(Agent agent, Horde horde)
+            {
+            return mouseLoc;
+            }
+
+        public int getTargetStatus(Agent agent, Horde horde)
+            {
+            return 0;
+            }
+
+        public int getTargetRank(Agent agent, Horde horde)
+            {
+            return -1;
+            }
+
+        public boolean getTargetIntersects(Agent agent, Horde horde, Double2D location, double slopSquared)
+            {
+            return getTargetLocation(agent, horde).distanceSq(location) <= slopSquared;
+            }
+
+        public void setParameterValue(int index) {}
+        public void setTargetLocation(Agent agent, Horde horde, Double2D location) {}
+        public void setTargetStatus(Agent agent, Horde horde, int status) {}
+        public void setTargetRank(Agent agent, Horde horde, int rank) {}
+        };
+
+    public static final Color[] parameterObjectColor = new Color[]
+    { Color.red, Color.blue, Color.green };
+
+    public static final String[] parameterObjectColorName = new String[]
+    { "red", "blue", "green" };
+
+    Targetable[] parameterObject = new Targetable[]
+    { defaultTargetable, defaultTargetable, defaultTargetable };
+
+    public Targetable getParameterObject(int i)
+        {
+        return parameterObject[i];
+        }
+
+    public void setParameterObject(int i, Targetable obj)
+        {
+        // find the targetable if it's already a parameter
+        int foundObj = -1;
+        for (int j = 0; j < parameterObject.length; j++)
+            if (parameterObject[j] == obj)
+                {
+                foundObj = j;
+                break;
+                }
+
+        // CASE 1:
+        // obj is not a parameter. Make it a parameter and
+        // replace the old one
+        if (foundObj == -1)
+            {
+            parameterObject[i].setParameterValue(-1);
+            obj.setParameterValue(i);
+            parameterObject[i] = obj;
+            }
+        // CASE 2:
+        // obj is a parameter already. Swap with the existing parameter
+        else
+            {
+            Targetable old = parameterObject[i];
+            old.setParameterValue(foundObj);
+            obj.setParameterValue(i);
+            parameterObject[i] = obj;
+            parameterObject[foundObj] = old;
+            }
+        }
+
+
+    public Marker getMarker(String name)
+        {
+        Iterator<Marker> im = markerTable.iterator();
+                
+        while (im.hasNext())
+            {
+            Marker m = im.next();
+            if (m.toString().equals(name))
+                return m;
+            }
+                
+        return null;
+        }
+        
+    /*
+      public void fillInitialPool(String agentName, Agent firstAgent)
+      {
+      AgentPool ap = pool.get(agentName);
+
+      List<Agent> agentList = basicAgents(agentName);         
+                
+      if (agentList.size() > 0)
+      {
+      Agent a = agentList.get(0);
+      firstAgent = a;
+
+      if (!ap.agentClass.isInstance(a))
+      throw new RuntimeException("A basic agent with this name has a different class");
+      }
+
+      if (ap.initialSize < agentList.size())
+      {
+      // trim agents
+      int len = agentList.size() - ap.initialSize;
+      for (int i = 0; i < len; i++)
+      {
+      SimAgent agent = (SimAgent) (agentList.remove(agentList.size() - 1));
+      agent.stoppable.stop();
+      agents.remove(agent);
+      }
+      // is the training agent still there?
+      if (!agentList.contains(trainingAgent)) trainingAgent = (Agent) (agentList.get(0));
+      }
+      else if (ap.initialSize > agentList.size())
+      {
+      // add new agents
+      int len = ap.initialSize - agentList.size();
+      for (int i = 0; i < len; i++)
+      {
+      Agent a = buildNewAgent(agentName, types, firstAgent);
+
+      if (firstAgent == null) firstAgent = a;
+      }
+      }
+                
+      System.err.println("FILL " + agentName + " " + agentList.size()); 
+      }
+    */
+
+    void loadArena(String resource)
+        {
+        Scanner scan = null;
+        try
+            {
+            scan = new Scanner(new InputStreamReader(SimHorde.class.getResourceAsStream(resource), "UTF-8"));
+            } catch (UnsupportedEncodingException e)
+            {
+            System.err.println("For some reason, UTF-8 isn't supported.");
+            e.printStackTrace();
+            return;
+            }
+        while (scan.hasNext())
+            {
+            String tok = scan.next().trim();
+            if (tok.startsWith("#")) // comment
+                {
+                scan.nextLine();
+                continue;
+                }
+            // size is: size width height
+            else if (tok.equals("size"))
+                {
+                String val = scan.nextLine().trim();
+                Scanner vscan = new Scanner(val);
+                int w = vscan.nextInt();
+                int h = vscan.nextInt();
+                agents.width = regions.width = markers.width = obstacles.width = width = w;
+                agents.height = regions.height = markers.height = obstacles.height = height = h;
+                }
+            // Food grid is: food filename
+            else if (tok.equals("food"))
+                {
+                String val = scan.nextLine().trim();
+                InputStream str = SimHorde.class.getResourceAsStream(val);
+                double[][] res = null;
+                try
+                    {
+                    if (val.endsWith(".pgm") || val.endsWith(".pbm") || val.endsWith(".PGM")
+                        || val.endsWith(".PBM"))
+                        ; // food.setTo(TableLoader.convertToDoubleArray(TableLoader.loadPNMFile(str,
+                    // true)));
+                    /*
+                     * ^ | --- the above line has problem, need to fix. I
+                     * commented out to test the pruning code -khaled
+                     */
+                    else
+                        food.setTo(TableLoader.loadTextFile(str, true));
+                    } catch (Exception e)
+                    {
+                    System.err.println("Could not load file defining the food grid");
+                    e.printStackTrace();
+                    }
+                }
+            // Ground is: ground filename
+            else if (tok.equals("ground"))
+                {
+                String val = scan.nextLine().trim();
+                InputStream str = SimHorde.class.getResourceAsStream(val);
+                double[][] res = null;
+                try
+                    {
+                    if (val.endsWith(".pgm") || val.endsWith(".pbm") || val.endsWith(".PGM")
+                        || val.endsWith(".PBM"))
+                        ground.setTo(TableLoader.loadPNMFile(str, true));
+                    else if (val.endsWith(".png") || val.endsWith(".gif"))
+                        ; // ground.setTo(TableLoader.loadPNGFile(str)); //<--
+                    // this line has problem, need to fix. -khaled
+                    else
+                        ground.setTo(TableLoader.convertToIntArray(TableLoader.loadTextFile(str,
+                                    true)));
+                    } catch (Exception e)
+                    {
+                    System.err.println("Could not load file defining the ground grid");
+                    e.printStackTrace();
+                    }
+                }
+            // Markers are: marker x y targetableIndex name
+            // if targetableIndex < 0, it's not initially targetable
+            else if (tok.equals("marker"))
+                {
+                String val = scan.nextLine().trim();
+                Scanner vscan = new Scanner(val);
+                Double2D loc = new Double2D(vscan.nextDouble(), vscan.nextDouble());
+                int index = vscan.nextInt();
+                String name = vscan.nextLine().trim();  // the rest of the line is the name
+
+                Marker marker = new Marker(name);
+                markerTable.add(marker);
+                markers.setObjectLocation(marker, loc);
+                if (index >= 0) setParameterObject(index, marker);
+                }
+            // Circles are: circle x y targetableIndex diameter field
+            // fields are: 0=obstacles 1=regions
+            // if targetableIndex < 0, it's not initially targetable
+            else if (tok.equals("circle"))
+                {
+                String val = scan.nextLine().trim();
+                Scanner vscan = new Scanner(val);
+                Double2D loc = new Double2D(vscan.nextDouble(), vscan.nextDouble());
+                int index = vscan.nextInt();
+                double diameter = vscan.nextDouble();
+                int f = vscan.nextInt();
+                Continuous2D field = (f == 0 ? obstacles : regions);
+
+                CircularBody body = new CircularBody(diameter, field, loc);
+                field.setObjectLocation(body, loc);
+                if (index >= 0) setParameterObject(index, body);
+                }
+            // Rects are: rect x y targetableIndex width height field
+            // fields are: 0=obstacles 1=regions
+            // if targetableIndex < 0, it's not initially targetable
+            else if (tok.equals("rect"))
+                {
+                String val = scan.nextLine().trim();
+                Scanner vscan = new Scanner(val);
+                Double2D loc = new Double2D(vscan.nextDouble(), vscan.nextDouble());
+                int index = vscan.nextInt();
+                double width = vscan.nextDouble();
+                double height = vscan.nextDouble();
+                int f = vscan.nextInt();
+                Continuous2D field = (f == 0 ? obstacles : regions);
+
+                RectangularBody body = new RectangularBody(width, height, field, loc);
+                field.setObjectLocation(body, loc);
+                if (index >= 0) setParameterObject(index, body);
+                }
+            // SquareCircles are: squarecircle x y targetableIndex field
+            // fields are: 0=obstacles 1=regions
+            // if targetableIndex < 0, it's not initially targetable
+            // This is just a hack to get the square-circle shape loadable for
+            // now
+            else if (tok.equals("squarecircle"))
+                {
+                String val = scan.nextLine().trim();
+                Scanner vscan = new Scanner(val);
+                Double2D loc = new Double2D(vscan.nextDouble(), vscan.nextDouble());
+                int index = vscan.nextInt();
+                int f = vscan.nextInt();
+                Continuous2D field = (f == 0 ? obstacles : regions);
+
+                Area r = new Area(new Rectangle2D.Double(0, 0, 10, 10));
+                Area r2 = new Area(new Ellipse2D.Double(5, 5, 15, 15));
+                r.add(r2);
+
+                Body body = new Body(r, field, loc);
+                field.setObjectLocation(body, loc);
+                if (index >= 0) setParameterObject(index, body);
+                }
+            // Text is: text x y targetableIndex field fontsize string
+            // fields are: 0=obstacles 1=regions
+            // The string can have whitespace inside
+            // if targetableIndex < 0, it's not initially targetable
+            else if (tok.equals("text"))
+                {
+                String val = scan.nextLine().trim();
+                Scanner vscan = new Scanner(val);
+                Double2D loc = new Double2D(vscan.nextDouble(), vscan.nextDouble());
+                int index = vscan.nextInt();
+                int f = vscan.nextInt();
+                Continuous2D field = (f == 0 ? obstacles : regions);
+                int fontSize = vscan.nextInt();
+                String string = vscan.nextLine().trim();
+
+                Body body = new Body(string, fontSize, field, loc);
+                field.setObjectLocation(body, loc);
+                if (index >= 0) setParameterObject(index, body);
+                }
+            // Agent is: agent name x y orientation
+            // Agents are not initially targetable :-( due to their dynamic
+            // nature
+            // The first agent will be the initial training agent
+            else if (tok.equals("agent"))
+                {
+                String val = scan.nextLine().trim();
+                Scanner vscan = new Scanner(val);
+                String agentName = vscan.next();
+                Double2D loc = new Double2D(vscan.nextDouble(), vscan.nextDouble());
+                double orientation = ((vscan.nextDouble() % Math.PI) + Math.PI) % Math.PI;
+
+/*                              AgentPool ap = pool.get(agentName);
+
+                                if (ap != null)
+                                {
+                                ap.locations.add(loc);
+                                ap.orientations.add(orientation);
+                                }
+*/
+                }
+            /*
+            // Basic Agent Pool: The basic agent name, class name, 
+            // (initial) number of agents in the pool, and the color name of the agents
+            else if (tok.equals("basicpool"))
+            {
+            String val = scan.nextLine().trim();
+            Scanner vscan = new Scanner(val);
+            String agentName = vscan.next();
+            String agentClassName = vscan.next();
+            int size = vscan.nextInt();
+            String colorName = vscan.next();
+            Color color = Color.GRAY;
+
+            try
+            {
+            Field field = Color.class.getField(colorName.toLowerCase());
+            color = (Color) field.get(null);
+            } catch (Exception e) {}  // just use grey
+            allocBasicAgent(agentName, agentClassName, size, color);
+            // TODO: things will fail if there is more than one type of basic agent and no controller during initialization
+            this.agentName = agentName; 
+            }       
+            // Controller: The top controller name, number of top controllers, 
+            // (initial) number of agents in the pool, and the color name of the agents
+            else if (tok.equals("controller"))
+            {
+            String val = scan.nextLine().trim();
+            Scanner vscan = new Scanner(val);
+            String controllerName = vscan.next();
+            int size = vscan.nextInt();
+
+            controller = true;
+            topControllerName = controllerName;
+            topControllerCount = size;
+            }                               
+            */                      
+            // This must be a custom class with it's own initFromParamString method
+            else
+                {
+                try
+                    {
+                    int numObjs = Integer.valueOf(tok);
+                    String className = scan.next().trim();
+                    String params = scan.nextLine().trim();
+                                        
+                    Class theClass = Class.forName(className);
+                    Constructor constructor = theClass.getConstructor(new Class[]
+                        { Horde.class });
+                                        
+                    for (int i = 0; i < numObjs; i++)
+                        {
+                        Initable theObj = (Initable) constructor.newInstance(this);
+
+                        theObj.initFromParamString(params);
+                        }
+                    } 
+                catch (Exception e)
+                    {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                    }
+                }
+            }
+        scan.close();
+        }
+
+    // protected boolean hack = false;
+
+    public void start()
+        {
+        // set up the agents field
+        agents = new Continuous2D(SMALL_MEDIUM_RANGE * 1.5, width, height);
+        obstacles = new Continuous2D(LARGE_FULL_RANGE * 1.5, width, height);
+        regions = new Continuous2D(LARGE_FULL_RANGE * 1.5, width, height);
+        markers = new Continuous2D(SMALL_MEDIUM_RANGE * 1.5, width, height);
+
+        if (arena != null) loadArena(arena);
+
+/*
+  if (pool.size() == 0)
+  {
+  allocBasicAgent("SimAgent", "sim.app.horde.agent.SimAgent", 20, Color.gray);
+  }
+*/
+
+        super.start();
+        }
+
+    protected void createAgents() { } // this has to be fixed -- Sean
+
+    /**
+     * This is called from Horde.start() SET TOP CONTROLLER COUNT BEFORE THIS
+     * POINT IF THERE IS A CONTROLLER.
+     */
+    /*
+      protected void createAgents()
+      {
+      if (controller)
+      {
+      topControllers = new ArrayList<Controller>();
+
+      // allocate basic agent pool
+      for (String agentNm : pool.keySet())
+      {
+      fillInitialPool(agentNm, null);
+      }
+
+      // create agent hiearchy
+      trainingAgent = meta.createAgent(new ArrayList<String>(), this, basicAgentPoolSize(0));
+      ((SimControllerAgent) trainingAgent).schedule();
+
+      // distribute basic agents in hierarchy
+      Agent[][] pool = basicAgents(0);
+      topControllers.add((Controller) trainingAgent);
+      ((Controller) trainingAgent).distribute(pool, new int[pool.length]);
+
+      Behavior b = ((SimControllerAgent) trainingAgent).initBehavior(this, null);
+
+      // This also makes the controller appear on the agents field
+      ((SimControllerAgent)trainingAgent).setPose(
+      ((SimControllerAgent)trainingAgent).meanAgentLoc(), random.nextDouble()
+      * Math.PI * 2 - Math.PI);
+
+      if (topControllerCount > 1)
+      for (int i = 1; i < topControllerCount; i++)
+      {
+      Agent ctlr = meta.createAgent(new ArrayList<String>(), this,
+      basicAgentPoolSize(i));
+
+      //ctlr.setBehavior((Behavior) trainingAgent.getBehavior().clone());
+
+      pool = basicAgents(i);
+      ((Controller)ctlr).distribute(pool, new int[pool.length]);
+      ((SimControllerAgent)ctlr).setPose(
+      ((SimControllerAgent)ctlr).meanAgentLoc(), random.nextDouble()
+      * Math.PI * 2 - Math.PI);
+
+      ((SimControllerAgent)ctlr).initBehavior(this, b);
+      ((SimControllerAgent)ctlr).schedule();
+      topControllers.add((Controller)ctlr);
+      }
+      }
+      else
+      { // not a controller
+      trainingAgent = buildNewAgent(agentName, types, null);
+      fillInitialPool(agentName, trainingAgent);
+      }
+
+      distributeAndRestartBehaviors();
+      }
+
+      protected boolean controller;
+      protected String agentName = "SimAgent";
+      protected String[] types = { Agent.TYPE_GLOBAL, SimAgent.TYPE_SIMAGENT  };
+
+      //private Map<String, AgentPool> pool = new HashMap<String, AgentPool>();
+
+      public void allocBasicAgent(String name, String className, int capacity, Color defaultPaint)
+      {
+      Class aClass;
+      try
+      {
+      aClass = Class.forName(className);
+      } 
+      catch (ClassNotFoundException e)
+      {
+      throw new RuntimeException("Agent class " + className + " not found");
+      }
+
+      AgentPool ap = new AgentPool();
+      ap.initialSize = capacity;
+      ap.agentClass = aClass;
+      ap.defaultColor = defaultPaint;
+                
+      pool.put(name, ap);
+      }
+
+      public SimAgent buildNewAgent(String name, String[] types, Agent firstAgent)
+      {
+      AgentPool ap = pool.get(name);
+
+      if (ap == null)
+      {
+      throw new RuntimeException("SimHorde not intialized for " + name + agents);
+      }
+
+      SimAgent agent;
+      Class aClass = ap.agentClass;
+
+      try
+      {
+      Constructor constructor = ap.agentClass.getConstructor(new Class[]
+      { Horde.class });
+      agent = (SimAgent) constructor.newInstance(this);
+
+      // the agent name should be set by the subclass, but do it anyway
+      agent.setAgentName(name);
+      agent.addTypes(types);
+
+      if (firstAgent == null)
+      {
+      Behavior b = new TrainableMacro(agentName).reset(this, buildNewParameters(),
+      initialParameterObjectName, Behavior.provideAllBehaviors(agent),
+      currentFeatures());
+      agent.setBehavior(b);
+      }
+      else
+      {
+      agent.setBehavior((Behavior) (firstAgent.getBehavior().clone()));
+      }
+      // agent.setBehavior(new Dummy()); // TODO: BILL - Find out what
+      // initial behavior should be
+
+      } catch (Exception e)
+      {
+      throw new RuntimeException("Couldn't instantiate agent class " + aClass, e);
+      }
+
+      Double2D d = null;
+
+      // Set agent location and orientation from a previous simulation if
+      // available
+      int agentCount = ap.initialSize;
+      if (agentCount < ap.locations.size())
+      {
+      d = (Double2D) (ap.locations.get(agentCount));
+      agent.setPose(d, ap.orientations.get(agentCount));
+      agentCount++;
+      }
+      else
+      {
+      // build a random location
+      do
+      {
+      d = new Double2D(random.nextDouble() * width, random.nextDouble() * height);
+      } while (Utilities.collision(this, d, null));
+      agent.setPose(d, random.nextDouble() * Math.PI * 2 - Math.PI);
+      }
+
+      agent.stoppable = schedule.scheduleRepeating(agent);
+      agent.defaultPaint = ap.defaultColor;
+      addBasicAgent(agent);
+      return agent;
+      }
+    */
+
+    public void setTraining(boolean val)
+        {
+        super.setTraining(val);
+
+        // spread to other agents if val is false. For now, we just have one
+        if (!val) distributeAndRestartBehaviors();
+        }
+
+    public static void main(String[] args)
+        {
+        doLoop(SimHorde.class, args);
+        System.exit(0);
+        }
+
+    // available ranks
+    int nextRank = 0;
+
+    public int assignRank()
+        {
+        return nextRank++;
+        }
+    }

@@ -194,6 +194,7 @@ function gameStateMenuUpdate()
                 gcm.set_game_state(1);
         elseif scriptNumber == 3 then
                 Speak.talk('set')
+                wcm.set_horde_startGoalLine(0); -- don't want it for the next match per se.
                 gcm.set_game_state(2);
         elseif scriptNumber == 4 then
                 Speak.talk('play')
@@ -217,13 +218,17 @@ function in_penalty()
 end
 
 function gameStateMenuExecute()
-	Speak.talk("penalty");
-	teamPenalty = gcm.get_game_penalty();
-	teamPenalty[Config.game.playerID] = 1 - teamPenalty[Config.game.playerID];
-	setDebugTrue();
-	print("Team Penalty = " .. teamPenalty[Config.game.playerID]);
-	setDebugFalse();
-	gcm.set_game_penalty(teamPenalty);
+	if gcm.get_game_state() == 1 then -- I am in ready so when I press the center I want the particles to go to
+		wcm.set_horde_startGoalLine(1);
+	else
+		Speak.talk("penalty");
+		teamPenalty = gcm.get_game_penalty();
+		teamPenalty[Config.game.playerID] = 1 - teamPenalty[Config.game.playerID];
+		setDebugTrue();
+		print("Team Penalty = " .. teamPenalty[Config.game.playerID]);
+		setDebugFalse();
+		gcm.set_game_penalty(teamPenalty);
+	end
 	
 end
 WANT_MAIN = 0

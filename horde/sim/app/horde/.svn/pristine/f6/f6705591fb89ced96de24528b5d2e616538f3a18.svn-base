@@ -1,0 +1,125 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
+package sim.app.horde.scenarios.robot.comm;
+
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.net.Socket;
+
+/**
+ * A threadable bi-directional socket communication object.
+ * @author drew
+ */
+public abstract class Communication implements Runnable{
+    
+    protected final IParse myParser;
+    private final DataOutputStream outd;
+    private final DataInputStream in;
+    protected byte readDelayMS;
+    protected boolean shouldStop = false;
+    private final Socket clientSocket;
+    private final int port;
+    private final String host;
+    
+    /**
+     * create Communication a bi-directional communication object.
+     * @param host the ip address of the host you are going to connect to.
+     * @param port the port to connect with
+     * @param parser parser to store/parse received msgs
+     * @param readDelayMS how long to wait to get a new msg from server
+     * @throws IOException  thrown if socket creation goes bad.
+     */
+    public Communication(String host, int port, IParse parser, byte readDelayMS) throws IOException {
+        myParser = parser;
+        
+        clientSocket = new Socket(host, port);
+        outd = new DataOutputStream(clientSocket.getOutputStream());
+        in = new DataInputStream(clientSocket.getInputStream());
+        this.readDelayMS = readDelayMS;
+        this.host = host;
+        this.port = port;
+    }
+    
+    public String getIP() {
+        return host;
+    }
+    
+    public int getPort() {
+        return port;
+    }
+    
+    public void stopComm() {
+        shouldStop = true;
+    }
+    
+    /**
+     * Write the string to the socket
+     * @param value 
+     */
+    public void write(byte[] value) throws IOException {
+        outd.write(value);
+    }
+    
+    /**
+     * Reads data from socket and sets the data to the parser
+     * @param parser The IParser that caller will use to parse the received data.
+     */
+    protected void read() {
+        try {
+            System.out.println("Starting to read");
+
+            // number of following bytes to read
+            byte followingBytes = in.readByte();
+
+            System.out.println(followingBytes);
+            byte[] bytesRead = new byte[followingBytes];
+            in.read(bytesRead);
+            
+            myParser.setInput(bytesRead);    
+            System.out.println(myParser.toString());
+        } catch (IOException ex) {
+            System.out.println("Error reading line");
+        }
+        
+        
+        
+    }
+    
+    /**
+     * This method is called to tell the server to start sending info to me
+     */
+    public abstract void startSending();
+    
+    /**
+     * This method tells the server to stop sending info to me.
+     */
+    public abstract void terminateSending();
+    
+    
+    @Override
+    public void run() {
+        
+        
+        // must have a way to ask for info from the host I have connected to
+        startSending();
+        //write("2SS");
+        
+        while(!shouldStop) {
+            read();
+        }
+        try {
+            // shutdown the socket
+            terminateSending();
+            clientSocket.close();
+        } catch (IOException ex) {
+            System.err.println("Failed to close connection to socket");
+        }
+        
+    }
+    
+}

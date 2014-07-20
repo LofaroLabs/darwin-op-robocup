@@ -1,0 +1,53 @@
+# Robot Soccer Arena
+
+# size width height
+size 60 40
+
+# rect x y targetableIndex width height fieldtype color
+# circle x y targetableIndex diameter fieldtype color
+# Main Field
+rect 0 0 -1 60 40 3 0.128.128
+rect 2.6 2 -1 54.8 36 3 160.160.160
+rect 3.1 2.5 -1 53.8 35 3 0.128.128
+# Penalty Boxes
+rect 2.6 10 -1 4.8 20.0 3 160.160.160 
+rect 3.1 10.5 -1 3.8 19.0 3 0.128.128
+rect 52.6 10 -1 4.8 20.0 3 160.160.160
+rect 53.1 10.5 -1 3.8 19.0 3 0.128.128
+# Goals
+rect 2.6 12.8 -1 0.5 14.4 3 yellow
+rect 56.9 12.8 -1 0.5 14.4 3 yellow
+# Circle
+circle 24.4 14.4 -1 11.2 3 160.160.160
+circle 24.9 14.9 -1 10.2 3 0.128.128
+# Center Mark
+rect 29.75 2 -1 0.5 36 3 160.160.160
+rect 29.5 19.75 -1 1 0.5 3 160.160.160
+# Penalty Marks
+rect 18.6 19.75 -1 1 0.5 3 160.160.160
+rect 18.85 19.5 -1 0.5 1 3 160.160.160
+rect 40.4 19.75 -1 1 0.5 3 160.160.160
+rect 40.65 19.5 -1 0.5 1 3 160.160.160
+
+# Ball
+circle 29.5 19.5 -1 1 1 orange
+
+# Other Robot: ROBOTNUM COLOR NAME
+1 sim.app.horde.scenarios.robot.darwin.agent.VirtualAgent 1 black The Other Guy
+
+#root darwinagent 30 20 0 ##not used anymore
+#root attackerZero 30 25 0  ## 50
+#root attackerOne 30 20 0   ## 51
+root attackerTwo 30 25 0   ## 52
+
+#root attackerThree 30 30 0 ## 53
+# Markers
+
+1 sim.app.horde.scenarios.robot.darwin.agent.RealMarker 10 10 0 black First
+1 sim.app.horde.scenarios.robot.darwin.agent.RealMarker 15 15 1 black Second
+1 sim.app.horde.scenarios.robot.darwin.agent.RealMarker 20 20 2 black Third
+
+# 200 Particles
+200 sim.app.horde.scenarios.robot.darwin.agent.Particle
+
+

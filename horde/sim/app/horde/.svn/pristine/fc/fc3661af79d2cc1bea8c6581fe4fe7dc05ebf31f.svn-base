@@ -1,0 +1,325 @@
+/*
+ * Copyright 2006 by Sean Luke and George Mason University Licensed under the Academic Free License version 3.0 See the
+ * file "LICENSE" for more information
+ */
+package sim.app.horde.agent;
+
+import java.awt.*;
+
+import sim.app.horde.*;
+import sim.app.horde.behaviors.*;
+import sim.app.horde.objects.*;
+import sim.engine.*;
+import sim.portrayal.*;
+import sim.util.*;
+import ec.util.*;
+
+/**
+ * SIMAGENT
+ */
+
+public class SimAgent extends Agent implements Steppable, Orientable2D, Targetable
+    {
+    public static String TYPE_SIMAGENT = "sim";  // behaviors and features designed to work sith wim agents
+    public static Parameter P_SHAPE = new Parameter("shape");
+    public static Parameter P_COLOR = new Parameter("color");
+    public static Parameter P_FILLED = new Parameter("filled");
+    public static Parameter P_SCALE = new Parameter("scale");
+    
+    private static final long serialVersionUID = 1;
+    protected Double2D loc = new Double2D(0,0);
+    protected Double2D prevLoc = loc;
+    protected double orientation = 0;
+    protected Double2D orientationVector;
+    protected int status = 0;
+    protected int targetIndex = -1; // if I am a parameter target(A/B/C), what am I? Else I'm -1
+    protected int rank;
+    protected double distanceTraveled;
+
+    public boolean setSelected(LocationWrapper wrapper, boolean selected)
+        {
+        if (selected)
+            horde.setTrainingAgent(this);  // attempt it.  It may not be permitted.
+        return super.setSelected(wrapper, selected);
+        }
+
+    public void draw(Object object, Graphics2D graphics, DrawInfo2D info)
+        {
+        // first draw basic stuff -- target information, etc.
+        if (targetIndex >= 0)
+            bottom.paint = SimHorde.parameterObjectColor[targetIndex];
+        else if (isTheTrainingAgent())
+            bottom.paint = Color.BLACK;
+        else
+            bottom.paint = defaultPaint;
+        
+        // I am an immediate subsidiary
+        if (getController() != null && getController().isTraining())
+            {
+            Color gColor = graphics.getColor();
+            Double2D l = ((SimControllerAgent)getController()).getLocation();
+            double dx = l.x - loc.x;
+            double dy = l.y - loc.y;
+            int x2 = (int) (info.draw.x + info.draw.width * dx);
+            int y2 = (int) (info.draw.y + info.draw.height * dy);
+            graphics.setColor(Color.lightGray);
+            graphics.drawLine((int) info.draw.x, (int) info.draw.y, x2, y2);
+            graphics.setColor(gColor);
+            }
+        // I am training myself
+        else if (getController() != null && isTraining())
+            {
+            Color gColor = graphics.getColor();
+            Double2D l = ((SimControllerAgent)getController()).getLocation();
+            double dx = l.x - loc.x;
+            double dy = l.y - loc.y;
+            int x2 = (int) (info.draw.x + info.draw.width * dx);
+            int y2 = (int) (info.draw.y + info.draw.height * dy);
+            graphics.setColor(Color.RED);
+            graphics.drawLine((int) info.draw.x, (int) info.draw.y, x2, y2);
+            graphics.setColor(gColor);
+            }
+        
+        super.draw(object, graphics, info);
+        }
+
+    public void setParameterValue(int index)
+        {
+        targetIndex = index;
+        }
+        
+    public boolean getTargetIntersects(Agent agent, Horde horde, Double2D location, double slopSquared)
+        {
+        return getTargetLocation(agent, horde).distanceSq(location) <= slopSquared;
+        }
+
+    public Double2D getTargetLocation(Agent agent, Horde horde)
+        {
+        return getLocation();
+        }
+
+    public void setTargetLocation(Agent agent, Horde horde, Double2D location)
+        {
+        setLocation(location);
+        }
+
+    public void setTargetStatus(Agent agent, Horde horde, int status)
+        {
+        setStatus(status);
+        }
+
+    public void setStatus(int status)
+        {
+        this.status |= status;
+        }
+
+    public void maskStatus(int s)
+        {
+        status &= s;
+        }
+
+
+    public int getTargetStatus(Agent agent, Horde horde)
+        {
+        return getStatus();
+        }
+
+    public int getStatus()
+        {
+        return status;
+        }
+
+    public int getTargetRank(Agent agent, Horde horde)
+        {
+        return getRank();
+        }
+
+    public int getRank()
+        {
+        return rank;
+        }
+
+    public void setTargetRank(Agent agent, Horde horde, int rank)
+        {
+        setRank(rank);
+        }
+
+    public void setRank(int rank)
+        {
+        this.rank = rank;
+        }
+
+    public void setup(ec.util.ParameterDatabase db)
+        {
+        super.setup(db);
+        rank = ((SimHorde)horde).assignRank();
+        resetDistanceTraveled();
+        if (db.exists(P_SHAPE, null))
+			setShape(db.getString(P_SHAPE, null));
+        else
+			setShape(SHAPE_CIRCLE);
+		if (db.exists(P_COLOR, null))
+			setColor(db.getString(P_COLOR, null));
+		else
+			setPaint(Color.BLACK);
+		setFilled(db.getBoolean(P_FILLED, null, true));
+		if (db.exists(P_SCALE, null))
+			{
+			double s = db.getDouble(P_SCALE, null, 0.0);
+			if (s <= 0.0)
+				{
+				System.err.println("WARNING: invalid scale " + s + ", must be > 0.0 in " + db.getLabel() +
+					", using 1.0");
+				s = 1.0;
+				}
+			setScale(s);
+			}
+		else setScale(1.0);		
+        }
+
+    public void setPose(Double2D location, double orientation)
+        {
+        setLocation(location);
+        setOrientation(orientation);
+        prevLoc = loc;
+        }
+
+    public Double2D getLocation()
+        {
+        return loc;
+        }
+
+    public Double2D getPrevLocation()
+        {
+        return prevLoc;
+        }
+
+    public double getDistanceTraveled()
+        {
+        return distanceTraveled;
+        }
+
+    public void resetDistanceTraveled()
+        {
+        distanceTraveled = 0;
+        }
+
+    public Interval domOrientation()
+        {
+        return new Interval(-Math.PI, Math.PI);
+        }
+
+    public double getOrientation()
+        {
+        return orientation;
+        }
+
+    public Double2D getOrientationVector()
+        {
+        return orientationVector;
+        }
+
+    public void setLocation(Double2D location)
+        {
+        loc = location;
+        ((SimHorde) horde).agents.setObjectLocation(this, location);
+        }
+
+    public void setOrientation2D(double val)
+        {
+        setOrientation(val);
+        }
+
+    public void setOrientation(double val)
+        {
+        double x = Math.cos(val);
+        double y = Math.sin(val);
+        //orientation = Math.atan2(y, x); // normalize to between -Pi and +Pi
+        
+        // [[ cheaper normalization, saves an atan2 -- Sean]]
+        orientation = Utilities.normalizeAngle(val);  // this function ranges between 0 and 2PI
+        if (orientation > Math.PI) orientation -= Math.PI * 2; // move to between -Pi and +Pi
+        orientationVector = new Double2D(x, y);
+        }
+
+    public double orientation2D()
+        {
+        return orientation;
+        }
+
+    public boolean collision(Double2D location)
+        {
+        return Utilities.collision(horde, location, this);
+        }
+
+    boolean stuck;
+    public void setStuck(boolean val)
+        {
+        stuck = val;
+        }
+
+    public boolean getStuck()
+        {
+        return stuck;
+        }
+
+    public void restart(Horde horde)
+        {
+        if (started) resetDistanceTraveled();
+        super.restart(horde);
+        }
+
+    public void step(SimState state)
+        {
+        distanceTraveled += this.prevLoc.distance(loc);
+        prevLoc = loc;
+        super.step(state);
+        nudge((Horde) state, loc, prevLoc);
+        }
+
+
+    // object manipulation
+    
+    public Targetable manipulated = null;
+    
+    Double2D manipulatedGoalLoc = new Double2D();
+    public static final double NUDGE_MULTIPLIER = 0.1;
+
+    public Targetable getManipulated()
+        {
+        return manipulated;
+        }
+        
+    public void setManipulated(Targetable m) 
+        { 
+        if (manipulated != null && manipulated instanceof Body)
+            ((Body)manipulated).decrementAttachment();
+            
+        manipulated = m;
+        if (manipulated != null)
+            {
+            manipulatedGoalLoc = manipulated.getTargetLocation(this, horde);
+            if (manipulated instanceof Body)
+                ((Body)manipulated).incrementAttachment();
+            }
+        
+        }
+    
+    public void nudge(Horde horde, Double2D agentLoc, Double2D previousAgentLoc)
+        {
+        if (manipulated == null)  // nothing there
+            return;
+            
+        manipulatedGoalLoc = manipulatedGoalLoc.add(agentLoc.subtract(previousAgentLoc));
+        
+        if (manipulated instanceof Body)
+            {
+            if (((Body)manipulated).collision(agentLoc))  // don't move yet
+                return;
+            }
+            
+        Double2D curloc = manipulated.getTargetLocation(this, horde);
+        Double2D diff = manipulatedGoalLoc.subtract(curloc).multiply(NUDGE_MULTIPLIER);
+        manipulated.setTargetLocation(this, horde, curloc.add(diff));
+        }
+    }

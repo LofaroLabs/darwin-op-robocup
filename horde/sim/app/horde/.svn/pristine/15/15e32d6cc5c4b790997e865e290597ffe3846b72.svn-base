@@ -1,0 +1,46 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
+package sim.app.horde.scenarios.robot.darwin.behaviors;
+
+import com.google.gson.Gson;
+import sim.app.horde.scenarios.robot.behaviors.CommandMotions;
+
+/**
+ *
+ * @author drew
+ */
+public class Motions implements CommandMotions {
+    public static Motions GOTOBALL = new Motions("gotoBall", "");
+    public static Motions APPROACHBALL = new Motions("approachBall", "");
+    public static Motions WALKFORWARD = new Motions("walkForward", "");
+
+    static Gson gson = new Gson();
+    DoMotion motion;
+
+    private Motions(String action, String args) {
+        motion = new DoMotion(action, args);
+    }
+    
+    
+    
+    public class DoMotion {
+        String action;
+        String args;
+        public DoMotion(String action, String args) {
+            this.action = action;
+            this.args = args;
+        }
+    }
+    
+    
+    @Override
+    public byte[] command(byte speed) {
+        System.out.println("Sending command in Motions.java: " + (gson.toJson(motion) + "\n"));
+        return (gson.toJson(motion) + "\n").getBytes();
+    }
+    
+}

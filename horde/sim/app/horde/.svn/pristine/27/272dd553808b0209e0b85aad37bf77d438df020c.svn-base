@@ -1,0 +1,6 @@
+package sim.app.horde;
+
+public interface Initable
+	{
+	public void initFromParamString(String params);
+	}

@@ -1,0 +1,73 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
+package sim.app.horde.scenarios.robot.darwin.behaviors;
+
+import sim.app.horde.agent.Agent;
+import sim.app.horde.behaviors.Behavior;
+import sim.app.horde.behaviors.Macro;
+import sim.app.horde.scenarios.robot.darwin.agent.*;
+import sim.app.horde.targets.*;
+import sim.app.horde.*;
+import sim.util.*;
+
+/**
+ *
+ * @author drew
+ */
+public class GotoPose extends Behavior {
+    private static final long serialVersionUID = 1L;
+
+    public GotoPose() 
+    	{
+    	targets = new Target[2];
+    	targets[0] = new Me();
+    	targets[1] = new Me();
+    	targetNames = new String[] {"Where", "Facing"};
+        name = "gotoPose";
+        }
+    
+    public GotoPose(Target where, Target facing) 
+    	{
+    	this();
+    	targets[0] = where;
+    	targets[1] = facing;
+        }
+    
+    public static String getType() { return sim.app.horde.agent.SimAgent.TYPE_SIMAGENT; }
+    
+    @Override
+    public void start(Agent agent, Macro parent, Horde horde) {
+        super.start(agent, parent, horde);
+        
+        Targetable targetable = targets[0].getTargetable(agent, parent, horde);
+        Targetable targetable2 = targets[1].getTargetable(agent, parent, horde);
+        
+        if (targetable instanceof RealMarker &&
+        	targetable2 instanceof RealMarker)
+        		{
+        		RealMarker rm = (RealMarker)targetable;
+        		RealMarker rm2 = (RealMarker)targetable2;
+        		
+				Double2D loc = rm.getRealTargetLocation(agent, parent, horde);
+				// position: loc.x, loc.y
+				Double2D loc2 = rm2.getRealTargetLocation(agent, parent, horde);
+				
+                                
+                                // .1 meters = 1 decimeter
+                                // convert to darwin's inertial frame.
+                                double x = (loc.x - 27.6) * 0.1;
+                                double y = (loc.y - 18) * 0.1;
+                                // orientation: Math.atan2(loc2.y - loc.y, loc2.x - loc.x);
+                                double orientation = Math.atan2(loc2.y - loc.y, loc2.x - loc.x);
+                                System.err.println("The Horde coords" + loc.toCoordinates() + "  converted: " + x + " " + y + " orientation: " + orientation);
+                                ((DarwinAgent) agent).sendMotion(Motions.getGotoPose(x, y, orientation));
+				}
+        else
+        	System.err.println("Targets not real markers");
+        
+        }
+    }

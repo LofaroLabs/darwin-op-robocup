@@ -1,0 +1,3 @@
+size 200 200
+basicpool Pioneer sim.app.horde.scenarios.boxpushing.PioneerAgent 1 Magenta
+

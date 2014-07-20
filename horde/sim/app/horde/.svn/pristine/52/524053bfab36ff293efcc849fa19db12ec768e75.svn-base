@@ -1,0 +1,21 @@
+package sim.app.horde.features;
+import sim.app.horde.*;
+import sim.app.horde.agent.Agent;
+import sim.app.horde.behaviors.*;
+
+/** A simple binary categorical feature which returns 1 or 0 based on whether the
+    macro is "done". **/
+        
+public class Done extends CategoricalFeature implements NonDefaultFeature
+    {   
+    private static final long serialVersionUID = 1;
+
+    public static String getType() { return sim.app.horde.agent.Agent.TYPE_GLOBAL; }
+
+    public Done() { super("Done", new String[] {"NotDone", "Done"}); }
+
+    public double getValue(Agent agent, Macro parent, Horde horde)
+        {     
+        return (parent.getFlag(Macro.FLAG_DONE) ? 1 : 0); 
+        }
+    }

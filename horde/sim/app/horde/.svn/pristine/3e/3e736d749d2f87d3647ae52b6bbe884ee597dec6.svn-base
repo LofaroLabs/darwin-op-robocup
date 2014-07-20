@@ -1,0 +1,42 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
+package sim.app.horde.scenarios.robot.darwin;
+
+import sim.app.horde.Horde;
+import sim.app.horde.agent.Agent;
+import sim.app.horde.scenarios.robot.behaviors.ICommandMotions;
+import sim.app.horde.scenarios.robot.darwin.comm.DarwinComm;
+import sim.app.horde.scenarios.robot.darwin.comm.DarwinParser;
+
+/**
+ * NOTE: May need to create a controller Communication object.
+ * @author drew
+ */
+public class DarwinAgent extends Agent{
+
+    
+    Darwin bot;
+    
+    public DarwinAgent(Horde horde) {
+        super(horde);
+        
+    }
+    
+    
+    public DarwinParser getCurrentData() {
+        return (DarwinParser) bot.getParser();
+    }
+    
+    public void sendMotion(ICommandMotions cms) {
+        // interact with the robot to send the command
+        bot.sendCommand(cms);
+    }
+    
+    public void sendMotion(ICommandMotions cms, byte customSpeed) {
+        bot.sendCommand(cms, customSpeed);
+    }
+}

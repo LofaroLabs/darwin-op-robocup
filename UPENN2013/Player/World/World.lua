@@ -121,6 +121,25 @@ function init_particles()
   update_shm();
 end
 
+function init_startGoalLine()
+
+	goalDefend=get_goal_defend();
+  	local goalDefendSign = getGoalSign();
+	if gcm.get_team_player_id() == 4 then -- I am the goalie
+		PoseFilter.initializeUniform(vector.new({goalDefend[1],  0,  -1* math.pi/2 *goalDefendSign}), vector.new({.15*xMax, .15*yMax, math.pi/6}))
+	else
+		if gcm.get_team_player_id() % 2 == 0 then
+			-- want a low spread so set the second arg manually
+			PoseFilter.initializeUniform(vector.new({goalDefend[1],  goalDefendSign * .5,  -1* math.pi/2 *goalDefendSign}), vector.new({.15*xMax, .15*yMax, math.pi/6}))
+		else
+			-- want a low spread so set the second arg manually
+			PoseFilter.initializeUniform(vector.new({goalDefend[1],  -1 * goalDefendSign * .5,  math.pi/2 * goalDefendSign}), vector.new({.15*xMax, .15*yMax, math.pi/6}))
+		end
+	end
+	
+end
+
+
 function init_penalty_particles()
 
 	local penaltyYLoc = wcm.get_teamdata_penaltyLocation()
@@ -246,6 +265,16 @@ function update_vision()
      update_pos();
      update_shm();
      return;
+  end
+  
+  if (state == 1) then -- if we are in ready
+  	if wcm.get_horde_startGoalLine() == 1 then -- if we have set it so we will start on goal line
+  		-- we set the particles on the goal line
+  		init_startGoalLine()
+  		update_pos();
+		update_shm();
+		return;
+  	end
   end
   
   local amPenalized = gcm.in_penalty()

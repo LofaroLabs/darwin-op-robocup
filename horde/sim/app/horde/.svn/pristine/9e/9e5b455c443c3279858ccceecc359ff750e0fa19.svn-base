@@ -1,0 +1,534 @@
+package sim.app.horde;
+
+import java.util.*;
+
+import sim.engine.*;
+import sim.app.horde.agent.*;
+import sim.app.horde.behaviors.*;
+import sim.app.horde.features.*;
+import sim.app.horde.targets.*;
+import sim.app.horde.classifiers.*;
+import sim.app.horde.classifiers.decisiontree.*;
+import sim.app.horde.classifiers.decisiontree.pruning.*;
+import sim.app.horde.classifiers.knn.*;
+
+public class Horde extends SimState
+	{
+	private static final long serialVersionUID = 1;
+
+	// note these are not final. This is a hack to let us change the locations
+	public static String BASIC_BEHAVIORS_LOCATION = "behaviors/basic.behaviors";
+	public static String BASIC_TARGETS_LOCATION = "targets/basic.targets";
+	public static String BASIC_FEATURES_LOCATION = "features/basic.features";
+	public static String TRAINABLE_MACRO_DIRECTORY = Horde.getPathInDirectory("behaviors/trained/");
+	public static String AGENT_META_DIRECTORY = Horde.getPathInDirectory("agent/meta/");
+
+	public void setBasicBehaviorLocation(String s)
+		{
+		BASIC_BEHAVIORS_LOCATION = s;
+		}
+
+	public void setBasicTargetLocation(String s)
+		{
+		BASIC_TARGETS_LOCATION = s;
+		}
+
+	public void setBasicFeatureLocation(String s)
+		{
+		BASIC_FEATURES_LOCATION = s;
+		}
+
+	public void setTrainableMacroDirectory(String s)
+		{
+		TRAINABLE_MACRO_DIRECTORY = s;
+		}
+
+	public void setAgentMetaDirectory(String s)
+		{
+		AGENT_META_DIRECTORY = s;
+		}
+
+	public static String getPathInDirectory(String s)
+		{
+		return Horde.class.getResource("").getPath() + "/" + s;
+		}
+
+	/** Called by go(...) to signal that the macro has transitioned. This in turn will
+	    cause the ButtonArray to change the state of its buttons to show the user that this
+	    has happened.  */
+	public MacroObserver observer;
+
+	// the default classifier is a decision tree
+	public static final int METHOD_DECISION_TREE_UNPRUNED = 0;
+	public static final int METHOD_DECISION_TREE_PEP = 1;
+	public static final int METHOD_K_NEAREST_NEIGHBOR = 2;
+	
+	public int method = METHOD_DECISION_TREE_UNPRUNED;
+	public int getMethod() { return method; }
+	public void setMethod(int val) { method = val; }
+	
+	public Classifier makeNewClassifier()
+		{
+		switch (getMethod())
+			{
+			case METHOD_DECISION_TREE_UNPRUNED: return new DecisionTree();
+			case METHOD_DECISION_TREE_PEP: { return new DecisionTree(new PessimisticErrorPruning()); }
+			case METHOD_K_NEAREST_NEIGHBOR: return new KNN();
+			default: return null; // never happens
+			}
+		}
+
+	public Object domMethod() { return new String[] { "Decision Tree", "Decision Tree PEP", "K-Nearest Neighbor" }; }
+	public String desMethod() { return "Classification technique to be used for training."; }
+
+	public Agent trainingAgent;
+
+	// has the simulation started?
+	public boolean started = false;
+
+	public boolean defaultExamplesAreSpecial = true;
+	public boolean getDefaultExamplesAreSpecial() { return defaultExamplesAreSpecial; }
+	public void setDefaultExamplesAreSpecial(boolean val) { defaultExamplesAreSpecial = val; }
+	public String desDefaultExamplesAreSpecial() { return "For this behavior, should default examples be \"special\"\nthat is, should they consume as much classification space as possible?"; }
+
+	// used for pruning the decision trees
+
+	public double data = 0.0;
+
+	public String[] provideAllSavedMacroNames()
+		{
+		TrainableMacro[] tm = TrainableMacro.provideAllTrainableMacros(trainingAgent);
+		String[] s = new String[tm.length];
+		for (int i = 0; i < tm.length; i++)
+			s[i] = tm[i].getName();
+		return s;
+		}
+
+	/** Doesn't check to see if the name is valid and different from other names -- you need to check that. */
+	public void save(String name, javax.swing.KeyStroke stroke)
+		{
+		getTrainingMacro().setName(name);
+		getTrainingMacro().setKeyStroke(stroke);
+		getTrainingMacro().save();
+		}
+
+	/** Doesn't check to see if the name is valid -- you need to check that. */
+	public void load(String name)
+		{
+		getTrainingAgent().setBehavior(TrainableMacro.load(name, getTrainingAgent().getName()));
+		}
+
+	public void showClassifiers()
+		{
+		TrainableMacro tm = getTrainingMacro();
+		if (tm != null) tm.showClassifiers(this);
+		}
+
+	/** you could call this or directly call it on the macro, your choice */
+	public void setTraining(boolean val)
+		{
+		getTrainingMacro().userChangedTraining(this, val);
+		}
+
+	/** you could call this or directly call it on the macro, your choice */
+	public void setNewBehavior(int newBehavior)
+		{
+		getTrainingMacro().userChangedBehavior(this, newBehavior);
+		}
+
+	public Agent getTrainingAgent()
+		{
+		return trainingAgent;
+		}
+
+	public String desTrainingAgent() { return "The current Agent instance presently being trained."; }
+
+	public TrainableMacro getTrainingMacro()
+		{
+		Agent a = getTrainingAgent();
+		if (a == null) return null;
+		return ((TrainableMacro) (a.getBehavior()));
+		}
+
+	public String desTrainingMacro() { return "The current TrainableMacro instance presently being trained."; }
+
+	public Horde(long seed)
+		{
+		super(seed);
+		}
+
+	/** Current Features. These are the features which the training macro relies on at present. */
+	ArrayList currentFeatures = new ArrayList();
+	public void removeCurrentFeature(Feature feature) { currentFeatures.remove(feature); }
+	public void addCurrentFeature(Feature feature) { currentFeatures.add(feature); }
+	public void clearCurrentFeatures() { currentFeatures.clear(); }
+
+	public Feature[] currentFeatures()
+		{
+		Feature[] f = new Feature[currentFeatures.size()];
+		for (int i = 0; i < f.length; i++)
+			f[i] = (Feature) (currentFeatures.get(i));
+		return f;
+		}
+
+	/** Default Features. These are the standard default features which always appear initially. */
+	public Feature[] defaultFeatures()
+		{
+		return new Feature[] {}; // new TargetDirection(parameters[0]), new TargetDistance(parameters[0]) };
+		}
+
+	// NOTE: not sure what thsi does -- Sean
+
+	boolean singleState = false;
+	public boolean getSingleState() { return this.singleState; }
+	public void setSingleState(boolean inputFlag) { singleState = inputFlag; }
+	public String desSingleState() { return "Is the behavior being trained a policy (single state), or is it stateful?"; }
+	// this junk is for specifying whether or not a training macro is designed to be
+	// one-shot or continuous, that is, using default examples when uses in a higher-level FSA.
+	// NOTE: name is different than underlying TrainableMacro because it's confusing to the
+	// user, it sounds like Horde should or should not be dumping in default examples during
+	
+	protected String topControllerName;
+	protected int topControllerCount = 1;
+	protected List<Controller> topControllers;
+	protected AgentMeta meta;
+	private List<String> basicAgentNames = new ArrayList<String>();
+	private List<List<Agent>> basicAgents = new ArrayList<List<Agent>>();
+
+	/*
+	 * Get the basic agent names
+	 */
+	public String[] basicAgentNames()
+		{
+		String[] basic = new String[basicAgents.size()];
+		basicAgentNames.toArray(basic);
+
+		return basic;
+		}
+
+	/**
+	 * Add a basic agent to the agent pool. The agent name may or may not be one
+	 * that has been previously added.
+	 * 
+	 * @param basic A basic agent
+	 */
+	public void addBasicAgent(Agent basic)
+		{
+		int poolId = basicAgentIndex(basic.getName());
+
+		if (poolId == -1)
+			{
+			basicAgentNames.add(basic.getName());
+			basicAgents.add(new ArrayList<Agent>());
+			poolId = basicAgentNames.size() - 1;
+			}
+
+		basicAgents.get(poolId).add(basic);
+		}
+
+	/**
+	 * Get the basic agent pool sizes for a top level controller agent
+	 * 
+	 * @param controllerIndex Index of top level controller agent
+	 * 
+	 * @return Array of basic agent pool sizes
+	 */
+	protected int[] basicAgentPoolSize(int controllerIndex)
+		{
+		int[] pool = new int[basicAgents.size()];
+
+		for (int i = 0; i < pool.length; i++)
+			{
+			int remainder = basicAgents.get(i).size() % topControllerCount;
+			pool[i] = (basicAgents.get(i).size() - remainder) / topControllerCount;
+
+			if (controllerIndex < remainder) pool[i] = pool[i] + 1;
+			}
+
+		return pool;
+		}
+
+	// Get the start index for each basic agent type for a top-level controller
+	// index
+	private int[] basicAgentStartIndices(int controllerIndex)
+		{
+		int[] starts = new int[basicAgents.size()];
+
+		for (int i = 0; i < starts.length; i++)
+			{
+			int remainder = basicAgents.get(i).size() % topControllerCount;
+			starts[i] = ((basicAgents.get(i).size() - remainder) / topControllerCount)
+					* controllerIndex;
+
+			for (int j = 0; j < controllerIndex; j++)
+				{
+
+				if (j < remainder) starts[i] = starts[i] + 1;
+				}
+			}
+
+		return starts;
+		}
+
+	/**
+	 * Get the basic agent pool for a given agent name. If the pool doesn't
+	 * exist yet, create an empty one
+	 * 
+	 * @param agentName Basic agent name
+	 * 
+	 * @return A list of basic agents
+	 */
+	public List<Agent> basicAgents(String agentName)
+		{
+		int poolId = basicAgentIndex(agentName);
+
+		if (poolId >= 0) return basicAgents.get(poolId);
+
+		basicAgentNames.add(agentName);
+		basicAgents.add(new ArrayList<Agent>());
+
+		return basicAgents.get(basicAgentNames.size() - 1);
+		}
+
+	protected int basicAgentIndex(String agentName)
+		{
+		for (int i = 0; i < basicAgentNames.size(); i++)
+			if (basicAgentNames.get(i).equalsIgnoreCase(agentName)) return i;
+
+		return -1;
+		}
+
+	/**
+	 * Get the basic agents allocated to a top-level controller assuming the
+	 * basic agents are divided evenly among the controllers. If the basic
+	 * agents don't divide evenly among the top-level controllers, allocate the
+	 * extra ones to the lower controller indices.
+	 * 
+	 * @param controllerIndex Top-level controller index
+	 * 
+	 * @return Basic agents of all types allocated to top-level agents
+	 */
+	public Agent[][] basicAgents(int controllerIndex)
+		{
+		Agent[][] basic = new Agent[basicAgents.size()][];
+
+		int[] sizes = basicAgentPoolSize(controllerIndex);
+		int[] starts = basicAgentStartIndices(controllerIndex);
+
+		for (int i = 0; i < basic.length; i++)
+			{
+			basic[i] = new Agent[sizes[i]];
+
+			List<Agent> agents = basicAgents.get(i);
+
+			for (int j = 0; j < sizes[i]; j++)
+				{
+				basic[i][j] = agents.get(j + starts[i]);
+				}
+			}
+
+		return basic;
+		}
+
+	public int getNumAgents(String agentName)
+		{
+		int poolId = basicAgentIndex(agentName);
+
+		if (poolId >= 0) return basicAgents.get(poolId).size();
+
+		return 0;
+		}
+
+	protected void clearBasicAgents()
+		{
+		for (int i = 0; i < basicAgents.size(); i++)
+			basicAgents.get(i).clear();
+		}
+
+	// this junk is for specifying whether or not a training macro is designed
+	// to be
+	// one-shot or continuous, that is, using default examples when uses in a
+	// higher-level FSA.
+	// NOTE: name is different than underlying TrainableMacro because it's
+	// confusing to the
+	// user, it sounds like Horde should or should not be dumping in default
+	// examples during
+	// training, and that's not what this.
+	public boolean getUsesDefaultExample()
+		{
+		TrainableMacro tm = getTrainingMacro();
+		if (tm != null) return tm.getShouldAddDefaultExample();
+		else return true;
+		}
+
+	public void setUsesDefaultExample(boolean val)
+		{
+		TrainableMacro tm = getTrainingMacro();
+		if (tm != null) tm.setShouldAddDefaultExample(val);
+		}
+
+	public String desUsesDefaultExample() { return "Should default examples be included during training?"; }
+
+	public boolean isDone()
+		{
+		TrainableMacro tm = getTrainingMacro();
+		if (tm != null) return tm.getFlag(tm.FLAG_DONE);
+		else return false;
+		}
+
+	public void setDone(boolean val)
+		{
+		TrainableMacro tm = getTrainingMacro();
+		if (tm != null) tm.setFlag(tm.FLAG_DONE, val);
+		}
+
+	public String desDone() { return "Setting of the \"Done\" flag."; }
+
+	public boolean isFailed()
+		{
+		TrainableMacro tm = getTrainingMacro();
+		if (tm != null) return tm.getFlag(tm.FLAG_FAILED);
+		else return false;
+		}
+
+	public void setFailed(boolean val)
+		{
+		TrainableMacro tm = getTrainingMacro();
+		if (tm != null) tm.setFlag(tm.FLAG_FAILED, val);
+		}
+
+	public String desFailed() { return "Setting of the \"Failed\" flag."; }
+
+	public int getCounter()
+		{
+		TrainableMacro tm = getTrainingMacro();
+		if (tm != null) return tm.getCounter(tm.COUNTER_BASIC);
+		else return 0;
+		}
+
+	public void setCounter(int val)
+		{
+		TrainableMacro tm = getTrainingMacro();
+		if (tm != null) tm.setCounter(tm.COUNTER_BASIC, val);
+		}
+
+	public Object domCounter()
+		{
+		return new sim.util.Interval(0L, 5L);
+		}
+
+	public String desCounter() { return "Setting of the primary counter."; }
+
+	public void start()
+		{
+		super.start();
+		started = true;
+
+		meta = AgentMeta.getMeta(topControllerName);
+
+		if (meta == null)
+			{
+			System.out.println("Meta data not found for controller " + topControllerName);
+			}
+
+		clearBasicAgents();
+		createAgents(); // override this in subclasses
+
+		// reset the behavior
+		resetBehavior();
+		}
+
+	protected void createAgents()
+		{
+		// TODO Auto-generated method stub
+
+		}
+
+	// gotta have it here rather than SimHorde so reset will work
+	public static final String[] initialParameterObjectName = new String[] { "A", "B", "C" };
+
+	public Target[] buildNewParameters() { return new Target[] { 
+			new Parameter(0, initialParameterObjectName[0]),
+			new Parameter(1, initialParameterObjectName[1]),
+			new Parameter(2, initialParameterObjectName[2]) };
+		}
+
+	public void resetBehavior()
+		{
+		// reset the training Agent's behavior
+		if (trainingAgent != null)
+			{
+			trainingAgent.setBehavior(new TrainableMacro(trainingAgent.getName()).reset(this, buildNewParameters(), initialParameterObjectName,
+					(trainingAgent.getUnderlyingBehaviorArray() == null ? Behavior.provideAllBehaviors(trainingAgent) : trainingAgent.getUnderlyingBehaviorArray()), currentFeatures()));
+
+			distributeAndRestartBehaviors();
+			}
+		}
+
+	public void distributeAndRestartBehaviors()
+		{
+		trainingAgent.restart(this);
+		}
+
+	public final static int PORT = 6000;
+	public static final String STOP = "Stop";
+	public static final int NUM_FEATURES = 4;
+	static double[] tempfeatures = new double[NUM_FEATURES];
+	public double[] features = new double[NUM_FEATURES];
+	public static java.io.PrintStream toSocket = null;
+
+	// This is the agent id we want to train, not necessarily same as current
+	// training agent
+	protected String agentID;
+
+	/*** BEGIN HACKS FOR KEITH'S EXPERIMENT ***/
+	/*
+	// dunno if I gotta do these static to be easier, but why not...
+	 
+ 	
+	 static 
+	 { 
+	 try 
+	 { 
+	 ServerSocket server = new ServerSocket(PORT); 
+	 Socket sock = server.accept(); 
+	 final InputStream i = sock.getInputStream(); 
+	 final OutputStream o = sock.getOutputStream();
+	  
+	 // build the input stream to read incoming features 
+	 Thread t = new Thread(new Runnable() 
+	 { 
+	 public void run() 
+	 { 
+	 Scanner scan = new Scanner(i); 
+	 while(true) 
+	 { 
+	 // load into temporary facility, then do a quick dump to the locked array 
+	 for(int x = 0; x < features.length; x++)
+	 tempfeatures[x] = scan.nextDouble(); 
+	 synchronized(features) 
+	 {
+	 System.arraycopy(tempfeatures, 0, features, 0, features.length); 
+	 } 
+	 } 
+	 }
+	 });
+	 
+	 t.setDaemon(true); 
+	 t.start();
+	 
+	 // build the output stream 
+	 toSocket = new PrintStream(o);
+	 stopAllRobots(); 
+	 } 
+	 catch (IOException e) 
+	 { 
+	 throw new RuntimeException("FAILED TO OPEN AND SET UP SOCKET", e); 
+	 } 
+	 }
+	 
+	 public static void stopAllRobots() { toSocket.println(STOP); }
+	 */
+	/*** END HACKS FOR KEITH'S EXPERIMENT ***/
+
+	}

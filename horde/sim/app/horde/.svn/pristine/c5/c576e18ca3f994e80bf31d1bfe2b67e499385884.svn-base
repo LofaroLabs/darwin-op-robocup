@@ -1,0 +1,44 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
+package sim.app.horde.scenarios.robot.darwin.comm;
+
+import java.io.UnsupportedEncodingException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import sim.app.horde.scenarios.robot.comm.DefaultParser;
+
+/**
+ *
+ * @author drew
+ */
+public class DarwinParser extends DefaultParser {
+
+    private final Object lock = new Object[0];
+    
+    @Override
+    public void setInput(byte[] input) {
+        super.setInput(input); 
+        
+        synchronized(lock) {
+            System.err.println("Going to read something");
+            String readings = "";
+            try {
+                readings = new String(input, "UTF-8");
+            } catch (UnsupportedEncodingException ex) {
+                Logger.getLogger(DarwinParser.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            System.out.print(readings);
+            
+            
+        }
+    }
+
+   
+    
+    
+    
+}

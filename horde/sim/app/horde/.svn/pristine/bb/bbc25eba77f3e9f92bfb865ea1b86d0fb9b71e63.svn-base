@@ -1,0 +1,156 @@
+/*
+ * Copyright 2013 by Sean Luke and George Mason University Licensed under the Academic Free License version 3.0 See the
+ * file "LICENSE" for more information
+ */
+
+package sim.app.horde.agent;
+import sim.portrayal.*;
+import java.awt.*;
+import sim.display.*;
+import java.awt.event.*;
+import sim.portrayal.simple.*;
+import sim.portrayal.*;
+
+public class AgentPortrayal2D extends SimplePortrayal2D
+    {
+    public SimplePortrayal2D child;
+    public AbstractShapePortrayal2D bottom;
+    public OrientedPortrayal2D op2d;
+        
+    public static final int SHAPE_CIRCLE = 0;
+    public static final int SHAPE_SQUARE = 1;
+    public static final int SHAPE_HEXAGON = 2;
+    public static final int SHAPE_TRIANGLE_UP = 3;
+    public static final int SHAPE_TRIANGLE_DOWN = 4;
+    public static final int SHAPE_TRIANGLE_LEFT = 5;
+    public static final int SHAPE_TRIANGLE_RIGHT = 6;
+    public static final int SHAPE_DIAMOND = 7;
+    public static final int SHAPE_BOWTIE = 8;
+    public static final int SHAPE_HOURGLASS = 9;
+    public static final int SHAPE_OCTAGON = 10;
+    public static final int SHAPE_HEXAGON_ROTATED = 11;
+        
+    public void setShape(int shape)
+        {
+        switch(shape)
+            {
+            case SHAPE_CIRCLE:
+                bottom = new OvalPortrayal2D();
+                break;
+            case SHAPE_SQUARE:
+                bottom = new RectanglePortrayal2D();
+                break;
+            case SHAPE_HEXAGON:
+                bottom = new ShapePortrayal2D(ShapePortrayal2D.X_POINTS_HEXAGON, ShapePortrayal2D.Y_POINTS_HEXAGON);
+                break;
+            case SHAPE_TRIANGLE_UP:
+                bottom = new ShapePortrayal2D(ShapePortrayal2D.X_POINTS_TRIANGLE_UP, ShapePortrayal2D.Y_POINTS_TRIANGLE_UP);
+                break;
+            case SHAPE_TRIANGLE_DOWN:
+                bottom = new ShapePortrayal2D(ShapePortrayal2D.X_POINTS_TRIANGLE_DOWN, ShapePortrayal2D.Y_POINTS_TRIANGLE_DOWN);
+                break;
+            case SHAPE_TRIANGLE_LEFT:
+                bottom = new ShapePortrayal2D(ShapePortrayal2D.X_POINTS_TRIANGLE_LEFT, ShapePortrayal2D.Y_POINTS_TRIANGLE_LEFT);
+                break;
+            case SHAPE_TRIANGLE_RIGHT:
+                bottom = new ShapePortrayal2D(ShapePortrayal2D.X_POINTS_TRIANGLE_RIGHT, ShapePortrayal2D.Y_POINTS_TRIANGLE_RIGHT);
+                break;
+            case SHAPE_DIAMOND:
+                bottom = new ShapePortrayal2D(ShapePortrayal2D.X_POINTS_DIAMOND, ShapePortrayal2D.Y_POINTS_DIAMOND);
+                break;
+            case SHAPE_BOWTIE:
+                bottom = new ShapePortrayal2D(ShapePortrayal2D.X_POINTS_BOWTIE, ShapePortrayal2D.Y_POINTS_BOWTIE);
+                break;
+            case SHAPE_HOURGLASS:
+                bottom = new ShapePortrayal2D(ShapePortrayal2D.X_POINTS_HOURGLASS, ShapePortrayal2D.Y_POINTS_HOURGLASS);
+                break;
+            case SHAPE_OCTAGON:
+                bottom = new ShapePortrayal2D(ShapePortrayal2D.X_POINTS_OCTAGON, ShapePortrayal2D.Y_POINTS_OCTAGON);
+                break;
+            case SHAPE_HEXAGON_ROTATED:
+                bottom = new ShapePortrayal2D(ShapePortrayal2D.X_POINTS_HEXAGON_ROTATED, ShapePortrayal2D.Y_POINTS_HEXAGON_ROTATED);
+                break;
+            default:
+                throw new RuntimeException("Invalid Shape: " + shape);
+            }
+                
+        op2d.child = bottom;  // reset it
+        }
+        
+    public void setPaint(Paint paint)
+        {
+        bottom.paint = paint;
+        }
+                
+    public void setScale(double scale) 
+        {
+        bottom.scale = scale;
+        }
+        
+    public void setFilled(boolean filled)
+        {
+        bottom.filled = filled;
+        }
+                
+    public AgentPortrayal2D()
+        {
+        bottom = new OvalPortrayal2D();
+        op2d = new OrientedPortrayal2D(bottom, 0, 1.0);
+            
+        LabelledPortrayal2D lp2d = new LabelledPortrayal2D(op2d, null)
+            {
+            private static final long serialVersionUID = 1L;
+
+            public String getLabel(Object object, DrawInfo2D info)
+                {
+                SimAgent simagent = (SimAgent)object;
+                return simagent.getBehavior().getBehaviorBacktrace();
+                }
+            };
+                    
+        lp2d.setOnlyLabelWhenSelected(true);
+        child = new AdjustablePortrayal2D(lp2d);
+        }
+                                
+    public SimplePortrayal2D getChild(Object object)
+        {
+        if (child!=null) return child;
+        else
+            {
+            if (!(object instanceof SimplePortrayal2D))
+                throw new RuntimeException("Object provided to CircledPortrayal2D is not a SimplePortrayal2D: " + object);
+            return (SimplePortrayal2D) object;
+            }
+        }
+        
+    public void draw(Object object, Graphics2D graphics, DrawInfo2D info)
+        {
+        getChild(object).draw(object,graphics,info);
+        }
+        
+    public boolean hitObject(Object object, DrawInfo2D range)
+        {
+        return getChild(object).hitObject(object,range);
+        }
+
+    public boolean setSelected(LocationWrapper wrapper, boolean selected)
+        {
+        return getChild(wrapper.getObject()).setSelected(wrapper, selected);
+        }
+
+    public Inspector getInspector(LocationWrapper wrapper, GUIState state)
+        {
+        return getChild(wrapper.getObject()).getInspector(wrapper,state);
+        }
+    
+    public String getName(LocationWrapper wrapper)
+        {
+        return getChild(wrapper.getObject()).getName(wrapper);
+        }
+
+    public boolean handleMouseEvent(GUIState guistate, Manipulating2D manipulating, LocationWrapper wrapper,
+        MouseEvent event, DrawInfo2D fieldPortrayalDrawInfo, int type)
+        {
+        return getChild(wrapper.getObject()).handleMouseEvent(guistate, manipulating, wrapper, event, fieldPortrayalDrawInfo, type);  // let someone else have it
+        }
+    }

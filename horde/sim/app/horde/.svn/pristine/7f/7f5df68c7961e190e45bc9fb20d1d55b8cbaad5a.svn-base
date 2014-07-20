@@ -1,0 +1,21 @@
+package sim.app.horde.agent;
+
+public class Subordinate
+	{
+	String agentName;
+	String agentClassName;
+	int max;
+	int min;
+	int preferred;
+	
+	public Subordinate() {};
+	
+	public Subordinate(String name, String className, int max, int min, int pref)
+		{
+		agentName = name;
+		agentClassName = className;
+		this.max = max;
+		this.min = min;
+		this.preferred = pref;
+		}
+	}

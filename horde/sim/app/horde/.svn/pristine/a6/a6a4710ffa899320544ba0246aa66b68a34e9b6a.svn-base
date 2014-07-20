@@ -1,0 +1,22 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
+package sim.app.horde.scenarios.robot.darwin.agent;
+
+import sim.app.horde.agent.SimAgent;
+
+/**
+ *
+ * @author drew
+ */
+public class AttackerOneAgent extends DarwinAgent{
+
+    public AttackerOneAgent() {
+        super(0);
+    }
+    
+    
+}

@@ -1,0 +1,35 @@
+package sim.app.horde.scenarios.forage.hardcoded.features;
+
+import sim.app.horde.Horde;
+import sim.app.horde.agent.Agent;
+import sim.app.horde.behaviors.Macro;
+import sim.app.horde.features.Feature;
+import sim.app.horde.scenarios.forage.agent.Supervisor;
+import sim.app.horde.targets.Target;
+
+public class SomeoneFinished extends Feature
+    {
+    private static final long serialVersionUID = 1L;
+
+    public static String getType()
+    	{
+    	return "Supervisor-L1";
+    	}
+        
+    public SomeoneFinished()
+        {
+        super("SomeoneFinished"); 
+        targets = new Target[0]; 
+        targetNames = new String[0]; 
+        }
+        
+    public double getValue(Agent agent, Macro parent, Horde horde)
+        {               
+        Supervisor s = (Supervisor)agent; 
+        
+            if (s.hasSomeoneFinished()) 
+                return 1; 
+
+        return 0; 
+        }
+    }

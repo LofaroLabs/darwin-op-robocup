@@ -1,0 +1,20 @@
+# Things that need to be defined elsewhere:
+#    - Basic agent pool size(s)
+#    - Number of top level controllers
+#    - Whether or not we're training the controller (This could be done by selecting an agent in SimHorde, maybe)
+#    - What is the top level agent meta?
+#
+# Top level agent name
+name=Supervisor-L3
+# Top level agent class
+className=sim.app.horde.scenarios.forage.Supervisor
+# Subordinate agent group class
+groupClassName_0=sim.app.horde.scenarios.forage.Supervisor
+# Subordinate agent group name
+groupAgentName_0=Supervisor-L2
+# Subordinate agent group max size
+groupMaxSize_0=5
+# Subordinate agent group min size
+groupMinSize_0=1
+# Subordinate agent group preferred size (debatable)
+groupPreferredSize_0=5

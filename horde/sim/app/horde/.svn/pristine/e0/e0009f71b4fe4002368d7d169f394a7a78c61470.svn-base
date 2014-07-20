@@ -1,0 +1,89 @@
+package sim.app.horde.behaviors;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.swing.KeyStroke;
+
+import sim.app.horde.Horde;
+import sim.app.horde.agent.Agent;
+import sim.app.horde.targets.Target;
+
+public class JointBehavior extends Behavior
+	{
+	private static final long serialVersionUID = 1L;
+	private Map<String, Behavior> behaviors = null;
+	private Map<String, String> behaviorNames = new HashMap<String, String>();
+
+	public String toString()
+		{
+		return name;
+		}
+
+	public void setTarget(String agentName, int i, Target t)
+		{
+		Behavior b = behaviors.get(agentName);
+
+		if (b != null) b.setTarget(i, t);
+		}
+
+	public JointBehavior(String alias, KeyStroke key)
+		{
+		name = alias;
+		setKeyStroke(key);
+		}
+
+	public void setAgentBehavior(String agentName, Behavior b)
+		{
+		behaviors.put(agentName, new GroupBehavior(b, agentName));
+		}
+
+	// pass to the associated behaviors
+	public void go(Agent agent, Macro parent, Horde horde)
+		{
+		super.go(agent, parent, horde);
+
+		for (Behavior b : behaviors.values())
+			b.go(agent, parent, horde);
+		}
+
+	// start the associated behaviors
+	public void start(Agent agent, Macro parent, Horde horde)
+		{
+		super.start(agent, parent, horde);
+		
+		// Initialize behavior map if it hasn't already been created.
+		if (behaviors == null)
+			{
+			for (String agentNm : behaviorNames.keySet())
+				{
+				Behavior b = Behavior.getBehavior("G_" + agentNm + behaviorNames.get(agentNm));
+				behaviors.put(agentNm, b);
+				}
+			}
+
+		for (Behavior b : behaviors.values())
+			b.start(agent, parent, horde);
+
+		}
+	
+	public void setAgentBehavior(String agentName, String behaviorName)
+		{
+		behaviorNames.put(agentName, behaviorName);
+		}
+
+	protected String getUniqueName()
+		{
+		return "J_" + name;
+		}
+
+	public Object clone()
+		{
+		JointBehavior jb = (JointBehavior) (super.clone());
+
+		for (String agentNm : behaviors.keySet())
+			jb.setAgentBehavior(agentNm, (GroupBehavior) behaviors.get(agentNm).clone());
+
+		return jb;
+		}
+	}
