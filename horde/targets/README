@@ -1,0 +1,22 @@
+TARGETS are objects which can provide FEATURES.  For example, the feature
+"Distance To" can be with respect to the target "closest obstacle", or to
+the target "mouse pointer".
+
+Certain targets are PARAMETERS.  These are special targets declared by
+the user during training of a finite-state automaton behavior.  Parameters
+are labelled "A", "B", or "C" (we have three of them right now).
+
+After the FSA is trained and saved to disk, any parameters it uses are
+changed to WRAPPERS.  A wrapper is a target which represents an argument
+to the FSA.  When you load and use the FSA later, each wrapper must be
+bound to some other target.  This is the procedure used to handle
+the equivalent of function arguments in an FSA.
+
+The remaining targets are GROUND TARGETS which specify an actual thing
+like "closest obstacle" or "mouse pointer".  In general objects which
+can be queried by targets to get information for features (like obstacles)
+are TARGETABLE objects.
+
+The default target is ME, which represents the agent itself.
+
+All available targets are specified in the basic.targets file.

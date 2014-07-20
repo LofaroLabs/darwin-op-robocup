@@ -1,0 +1,24 @@
+FEATURES provide the current values of interesting features of various TARGETS.
+Features can be associated with a variety of targets: for example, a feature
+might be "direction to", and can be associated with the target "closest obstacle",
+the target "mouse pointer", or even the abstract target "parameter A".
+
+Features provide single values.  There are three kinds of features:
+
+	- CATEGORICAL FEATURES provide integers from a range 1..n which represent
+	  individual possible categories.  For example, a categorical feature might
+	  be "status" and be one of "happy", "sad", or "disgruntled".  Categorical
+	  features include boolean features ("true" and "false") as a subset, where
+	  n = 2.
+
+	- REAL VALUED FEATURES provide real numbers in a range from min ... max.
+	  For example, "distance to" is a real valued feature.  The FEATURE class
+	  is both the superclass of all features and also the default real-valued
+	  feature abstract class.
+
+	- TOROIDAL FEATURES provide real numbers in a range from min ... max, where
+	  it is presumed that max and min are right next to each other (it's a loop).
+	  For example, "angle to" is a real-valued feature whose values run from
+	  0 ... just under 360.
+
+

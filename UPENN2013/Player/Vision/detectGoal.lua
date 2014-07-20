@@ -253,8 +253,11 @@ function detect(color)
 
         -- is there green under the ball?
         if (green_ratio<th_min_green_ratio) then
-          vcm.add_debug_message("Green check fail");
-          valid = false;
+          setDebugTrue()
+	  Speak.talk("Green Check fail");
+	  setDebugFalse()  
+	  vcm.add_debug_message("Green check fail");
+	  valid = false;
         end
       end
     end
@@ -264,8 +267,11 @@ function detect(color)
       scale = math.sqrt(postStats.area / (postDiameter*postHeight) );
       v = HeadTransform.coordinatesA(postStats.centroid, scale);
       if v[3] < goal_height_min then
-      vcm.add_debug_message(string.format("Height check fail:%.2f\n",v[3]));
-        valid = false; 
+	setDebugTrue();
+	Speak.talk("height check fail");
+        vcm.add_debug_message(string.format("Height check fail:%.2f\n",v[3]));
+        setDebugFalse();
+	valid = false; 
       end
     end
 
@@ -275,7 +281,9 @@ function detect(color)
       postA[npost] = postStats;
     end
   end
-
+  setDebugTrue();
+	print(string.format("Total %d valid posts\n", npost ))
+  setDebugFalse();
   vcm.add_debug_message(string.format("Total %d valid posts\n", npost ));
 
   if ((npost < 1) or (npost > 2)) then 
@@ -328,7 +336,13 @@ function detect(color)
     else
       vcm.add_debug_message("Post distance measured by area\n");
     end
+    setDebugTrue()
 
+	print(string.format("Distance by width : %.1f\n",math.sqrt(v1[1]^2+v1[2]^2)));
+	print(string.format("Distance by height : %.1f\n",math.sqrt(v2[1]^2+v2[2]^2)))
+        print(string.format("Distance by area : %.1f\n",math.sqrt(v3[1]^2+v3[2]^2) ))
+
+    setDebugFalse();
     goal.v[i] = HeadTransform.coordinatesA(postA[i].centroid, scale);
 
     goal.v[i][1]=goal.v[i][1]*distanceFactorYellow;
