@@ -1,0 +1,25 @@
+auto lo
+iface lo inet loopback
+
+auto wlan0
+allow-hotplug wlan0
+iface wlan0 inet static
+	metric 10
+	wireless-power off
+	address 192.168.19.54
+	netmask 255.255.0.0
+#	gateway 10.0.0.99
+#	dns-nameservers 10.0.0.99
+#pre-up wpa_supplicant -Dwext -i wlan0 -c /etc/wpa_supplicant.conf -B
+
+
+
+#iface eth0 inet dhcp
+#auto eth0
+allow-hotplug eth0
+iface eth0 inet static
+	metric 2 
+	address 10.0.0.64
+	netmask 255.255.255.0
+	gateway 10.0.0.99
+	dns-nameservers 10.0.0.99
