@@ -1,0 +1,208 @@
+/*
+ * Copyright 2006 by Sean Luke and George Mason University Licensed under the Academic Free License version 3.0 See the
+ * file "LICENSE" for more information
+ */
+package sim.app.horde.agent;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import sim.app.horde.Horde;
+import sim.app.horde.Targetable;
+import sim.app.horde.Targeting;
+import sim.app.horde.behaviors.Behavior;
+import sim.app.horde.behaviors.Macro;
+import sim.app.horde.behaviors.TrainableMacro;
+import sim.app.horde.features.Feature;
+
+/**
+ * AGENT
+ */
+
+public class Agent extends AgentPortrayal2D/* unavoidable */
+{
+	private static final long serialVersionUID = 1L;
+	private AgentGroup group;                 // the group containing this agent
+	protected String agentName = "Smith";
+	protected List<String> agentTypes = new ArrayList<String>();
+	protected Behavior behavior;
+	protected Horde horde;
+	protected boolean started = false;
+
+       
+        
+        
+	public Agent(Horde horde)
+	{
+ //           super(AgentPortrayal2D.X_POINTS_SQUARE,AgentPortrayal2D.Y_POINTS_SQUARE);
+	this.horde = horde;
+	setShape(SHAPE_CIRCLE);  // might I enquire why you're making agents squares?  -- Sean
+	}
+
+	public Agent(Horde horde, String agentName)
+	{
+	this(horde);
+	this.agentName = agentName;
+	}
+
+	public void addType(String agentType)
+		{
+		agentTypes.add(agentType);
+		}
+	
+	public void addTypes(String [] types)
+		{
+		for (int i = 0; i<types.length; i++)
+			addType(types[i]);
+		}
+
+	public boolean hasType(String type)
+		{
+		return type.equals(Targeting.GLOBAL_TYPE) || agentTypes.contains(type);
+		}
+
+	public int getBasicCounter()
+		{
+		if (behavior == null)
+			return 0;
+		if (!(behavior instanceof Macro))
+			return 0;
+		return ((Macro) behavior).getCounter(Macro.COUNTER_BASIC);
+		}
+
+	public Behavior getBehavior()
+		{
+		return behavior;
+		}
+
+	public String getName()
+		{
+		return agentName;
+		}
+
+	protected AgentGroup getGroup()
+		{
+		return group;
+		}
+	
+	public Controller getController()
+		{
+		if (group != null)
+			return group.getController();
+		
+		return null;
+		}
+
+	public void setGroup(AgentGroup group)
+		{
+		this.group = group;
+		}
+
+	public Behavior getUnderlyingBehavior()
+		{
+		if (behavior == null || !(behavior instanceof Macro))
+			return null;
+		Macro macro = ((Macro) behavior);
+		if (macro.currentBehavior == Macro.UNKNOWN_BEHAVIOR)
+			return null;
+		else
+			return macro.behaviors[macro.currentBehavior];
+		}
+
+	public Behavior[] getUnderlyingBehaviorArray()
+		{
+		if (behavior == null || !(behavior instanceof Macro))
+			return null;
+		Macro macro = ((Macro) behavior);
+		return macro.behaviors;
+		}
+
+	public void go()
+		{
+		if (!started)
+			{
+			behavior.start(this, null, horde);
+			started = true;
+			}
+		behavior.go(this, null, horde);
+		}
+
+	/**
+	 * Returns the index of the provided behavior in the current training macro.
+	 * Throws an exception if the provided behavior does not exist.
+	 */
+	public int indexOfBehavior(Class behavior)
+		{
+		Behavior[] behaviors = horde.getTrainingMacro().behaviors;
+		for (int i = 0; i < behaviors.length; i++)
+			if (behaviors[i].getClass() == behavior)
+				return i;
+		throw new RuntimeException("Class not found among behaviors: "
+				+ behavior);
+		}
+
+	/**
+	 * Returns the index of the provided feature in the current training macro.
+	 * Throws an exception if the provided feature does not exist.
+	 */
+	public int indexOfFeature(Class feature)
+		{
+		Feature[] features = horde.getTrainingMacro().features;
+		for (int i = 0; i < features.length; i++)
+			if (features[i].getClass() == feature)
+				return i;
+		throw new RuntimeException("Class not found among behaviors: "
+				+ feature);
+		}
+
+	public boolean isTheTrainingAgent()
+		{
+		return horde.getTrainingAgent() == this;
+		}
+
+	public boolean isTraining()
+		{
+		if (behavior instanceof TrainableMacro)
+			return isTheTrainingAgent()
+					&& ((TrainableMacro) behavior).isTraining();
+		return false;
+		}
+
+	public void restart(Horde horde)
+		{
+		if (started)
+			behavior.stop(this, null, horde);
+		started = false;
+		}
+
+	public void setBehavior(Behavior behavior)
+		{
+		this.behavior = behavior;
+		}
+
+	public String getAgentName()
+		{
+		return agentName;
+		}
+
+	public void setAgentName(String agentName)
+		{
+		this.agentName = agentName;
+		}
+
+	public Horde getHorde()
+		{
+		return horde;
+		}
+
+	public void setHorde(Horde horde)
+		{
+		this.horde = horde;
+		}
+	
+	// HACK ALERT - Targetable isn't really usable as a physical object, probably need to remove this and rework it's callers
+    public Targetable getManipulated()
+        {
+        return null;
+        }
+}

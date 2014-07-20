@@ -1,0 +1,6 @@
+package sim.app.horde.behaviors;
+
+public class Dummy extends Behavior
+	{
+
+	}

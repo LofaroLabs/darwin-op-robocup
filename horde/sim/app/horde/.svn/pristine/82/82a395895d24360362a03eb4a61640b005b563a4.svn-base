@@ -1,0 +1,427 @@
+package sim.app.horde;
+
+import java.util.*;
+
+import sim.engine.*;
+import sim.app.horde.agent.*;
+import sim.app.horde.behaviors.*;
+import sim.app.horde.features.*;
+import sim.app.horde.targets.*;
+import sim.app.horde.classifiers.*;
+import sim.app.horde.classifiers.decisiontree.*;
+import sim.app.horde.classifiers.decisiontree.pruning.*;
+import sim.app.horde.classifiers.knn.*;
+
+public abstract class Horde extends SimState
+    {
+    private static final long serialVersionUID = 1;
+
+    // note these are not final. This is a hack to let us change the locations
+    public static String BASIC_BEHAVIORS_LOCATION = "behaviors/basic.behaviors";
+    public static String BASIC_TARGETS_LOCATION = "targets/basic.targets";
+    public static String BASIC_FEATURES_LOCATION = "features/basic.features";
+    public static String AGENT_DIRECTORY = Horde.getPathInDirectory("agent/");
+
+    public void setBasicBehaviorLocation(String s)
+        {
+        BASIC_BEHAVIORS_LOCATION = s;
+        }
+
+    public void setBasicTargetLocation(String s)
+        {
+        BASIC_TARGETS_LOCATION = s;
+        }
+
+    public void setBasicFeatureLocation(String s)
+        {
+        BASIC_FEATURES_LOCATION = s;
+        }
+
+    public void setAgentDirectory(String s)
+        {
+        AGENT_DIRECTORY = s;
+        }
+
+    public static String getPathInDirectory(String s)
+        {
+        return Horde.class.getResource("").getPath() + "/" + s;
+        }
+
+    /** Called by go(...) to signal that the macro has transitioned. This in turn will
+        cause the ButtonArray to change the state of its buttons to show the user that this
+        has happened.  */
+    public MacroObserver observer;
+
+    // the default classifier is a decision tree
+    public static final int METHOD_DECISION_TREE_UNPRUNED = 0;
+    public static final int METHOD_DECISION_TREE_PEP = 1;
+    public static final int METHOD_K_NEAREST_NEIGHBOR = 2;
+        
+    public int method = METHOD_DECISION_TREE_UNPRUNED;
+    public int getMethod() { return method; }
+    public void setMethod(int val) { method = val; }
+        
+    public Classifier makeNewClassifier()
+        {
+        switch (getMethod())
+            {
+            case METHOD_DECISION_TREE_UNPRUNED: return new DecisionTree();
+            case METHOD_DECISION_TREE_PEP: return new DecisionTree(new PessimisticErrorPruning());
+            case METHOD_K_NEAREST_NEIGHBOR: return new KNN();
+            default: return null; // never happens
+            }
+        }
+
+    public Object domMethod() { return new String[] { "Decision Tree", "Decision Tree PEP", "K-Nearest Neighbor" }; }
+    public String desMethod() { return "Classification technique to be used for training."; }
+
+    public Agent trainingAgent;
+
+    // has the simulation started?
+    public boolean started = false;
+
+    public boolean defaultExamplesAreSpecial = true;
+    public boolean getDefaultExamplesAreSpecial() { return defaultExamplesAreSpecial; }
+    public void setDefaultExamplesAreSpecial(boolean val) { defaultExamplesAreSpecial = val; }
+    public String desDefaultExamplesAreSpecial() { return "For this behavior, should default examples be \"special\"\nthat is, should they consume as much classification space as possible?"; }
+
+/*
+  public String[] provideAllSavedMacroNames()
+  {
+  TrainableMacro[] tm = TrainableMacro.provideAllTrainableMacros(trainingAgent);
+  String[] s = new String[tm.length];
+  for (int i = 0; i < tm.length; i++)
+  s[i] = tm[i].getName();
+  return s;
+  }
+*/
+
+    /** Doesn't check to see if the name is valid and different from other names -- you need to check that. */
+    public void save(String name, javax.swing.KeyStroke stroke)
+        {
+        getTrainingMacro().setName(name);
+        getTrainingMacro().setKeyStroke(stroke);
+        getTrainingMacro().save(getTrainingAgent());
+        }
+
+    /** Doesn't check to see if the name is valid -- you need to check that. */
+    public void load(String name)
+        {
+        getTrainingAgent().setBehavior(TrainableMacro.load(name, getTrainingAgent()));
+        }
+
+    public void showClassifiers()
+        {
+        TrainableMacro tm = getTrainingMacro();
+        if (tm != null) tm.showClassifiers(this);
+        }
+
+    /** you could call this or directly call it on the macro, your choice */
+    public void setTraining(boolean val)
+        {
+        getTrainingMacro().userChangedTraining(this, val);
+        }
+
+    /** you could call this or directly call it on the macro, your choice */
+    public void setNewBehavior(int newBehavior)
+        {
+        getTrainingMacro().userChangedBehavior(this, newBehavior);
+        }
+
+    /** This pool contains the most recently previously-trained agents of various
+        names (types).  These agents hold the current examples, and so need to be transferred
+        to new training agents during setTrainingAgent.
+    */
+    HashMap<String, Agent> trainingAgentsPool = new HashMap<String, Agent>();
+
+    public void setTrainingAgent(Agent agent)
+        {
+        // What we do here depends on the relationship of the agent to the current training agent
+        if (agent.getGroup() != null)  // it's not a trainable agent
+            {
+            // do nothing
+            }
+        else if (trainingAgent == null)  // never been set yet
+            {
+            trainingAgent = agent;
+            }
+        else if (trainingAgent == agent)
+            {
+            // do nothing
+            }
+        else //  it's a different kind of agent
+            {
+            trainingAgentsPool.put(trainingAgent.getName(), trainingAgent);
+            trainingAgent.getBehavior().setTraining(false);  // let him go, but don't build a new model
+
+            // set up new agent
+            Agent oldAgent = trainingAgentsPool.get(agent.getName());  // this COULD be the immediately-previous agent
+            if (oldAgent != null)  // there was a previously trained version of this agent
+                agent.getBehavior().transferExamplesFrom(oldAgent.getBehavior());
+            // don't need to state that the new agent is training
+
+            trainingAgent = agent; // set new agent
+            }
+        }
+                
+    void clearTrainingAgentsPool()
+        {
+        for (Agent agent : trainingAgentsPool.values())
+            agent.getBehavior().clearExamples();
+        trainingAgentsPool.clear();
+        }
+
+    public Agent getTrainingAgent()
+        {
+        return trainingAgent;
+        }
+
+    public String desTrainingAgent() { return "The current Agent instance presently being trained."; }
+
+    public TrainableMacro getTrainingMacro()
+        {
+        Agent a = getTrainingAgent();
+        if (a == null) return null;
+        return ((TrainableMacro) (a.getBehavior()));
+        }
+
+    public String desTrainingMacro() { return "The current TrainableMacro instance presently being trained."; }
+
+    public Horde(long seed)
+        {
+        super(seed);
+        }
+
+    boolean singleState = false;
+    public boolean getSingleState() { return this.singleState; }
+    public void setSingleState(boolean inputFlag) { singleState = inputFlag; }
+    public String desSingleState() { return "Is the behavior being trained a policy (single state), or is it stateful?"; }
+
+
+
+    // this junk is for specifying whether or not a training macro is designed to be
+    // one-shot or continuous, that is, using default examples when uses in a
+    // higher-level FSA.
+    // NOTE: name is different than underlying TrainableMacro because it's
+    // confusing to the
+    // user, it sounds like Horde should or should not be dumping in default
+    // examples during
+    // training, and that's not what this.
+    public boolean getUsesDefaultExample()
+        {
+        TrainableMacro tm = getTrainingMacro();
+        if (tm != null) return tm.getShouldAddDefaultExample();
+        else return true;
+        }
+
+    public void setUsesDefaultExample(boolean val)
+        {
+        TrainableMacro tm = getTrainingMacro();
+        if (tm != null) tm.setShouldAddDefaultExample(val);
+        }
+
+    public String desUsesDefaultExample() { return "Should default examples be included during training?"; }
+
+    public boolean isDone()
+        {
+        TrainableMacro tm = getTrainingMacro();
+        if (tm != null) return tm.getFlag(tm.FLAG_DONE);
+        else return false;
+        }
+
+    public void setDone(boolean val)
+        {
+        TrainableMacro tm = getTrainingMacro();
+        if (tm != null) tm.setFlag(tm.FLAG_DONE, val);
+        }
+
+    public String desDone() { return "Setting of the \"Done\" flag."; }
+
+    public boolean isFailed()
+        {
+        TrainableMacro tm = getTrainingMacro();
+        if (tm != null) return tm.getFlag(tm.FLAG_FAILED);
+        else return false;
+        }
+
+    public void setFailed(boolean val)
+        {
+        TrainableMacro tm = getTrainingMacro();
+        if (tm != null) tm.setFlag(tm.FLAG_FAILED, val);
+        }
+
+    public String desFailed() { return "Setting of the \"Failed\" flag."; }
+
+    public int getCounter()
+        {
+        TrainableMacro tm = getTrainingMacro();
+        if (tm != null) return tm.getCounter(tm.COUNTER_BASIC);
+        else return 0;
+        }
+
+    public void setCounter(int val)
+        {
+        TrainableMacro tm = getTrainingMacro();
+        if (tm != null) tm.setCounter(tm.COUNTER_BASIC, val);
+        }
+
+    public Object domCounter()
+        {
+        return new sim.util.Interval(0L, 5L);
+        }
+
+    public String desCounter() { return "Setting of the primary counter."; }
+
+    public void start()
+        {
+        super.start();
+                
+        started = true;
+
+        clearAgents();
+        createAgents(); // override this in subclasses
+
+        // reset the behavior  -- is this necessary?  SEAN
+        resetAgents();
+        }
+
+    protected abstract void createAgents();
+
+    // gotta have it here rather than SimHorde so reset will work
+    public static final String[] initialParameterObjectNames = new String[] { "A", "B", "C" };
+
+    public Target[] buildNewParameters() 
+        { 
+        return new Target[] 
+            { 
+            new Parameter(0, initialParameterObjectNames[0]),
+            new Parameter(1, initialParameterObjectNames[1]),
+            new Parameter(2, initialParameterObjectNames[2]) 
+            };
+        }
+
+    public void resetAgents()
+        {
+        for(ArrayList<Agent> agents : allAgents.values())
+            {
+            for(int i = 0; i < agents.size(); i++)
+                {
+                Agent other = agents.get(i);
+                other.reload();
+                }
+            }
+        }
+                
+/*
+  public void resetBehavior()
+  {
+  clearTrainingAgentsPool();
+                                
+  // reset the training Agent's behavior
+  trainingAgent.setBehavior(new TrainableMacro(trainingAgent.getName()).reset(this, buildNewParameters(), initialParameterObjectName,
+  (trainingAgent.getUnderlyingBehaviorArray() == null ? Behavior.provideAllBehaviors(trainingAgent) : trainingAgent.getUnderlyingBehaviorArray()), currentFeatures()));
+
+  distributeAndRestartBehaviors();
+  }
+*/
+                
+    /** This is the master list of all agents in the simulation, hashed into buckets by agent name (type) */
+    public HashMap<String, ArrayList<Agent>> allAgents = new HashMap<String, ArrayList<Agent>>();
+
+    public void clearAgents() { allAgents.clear(); clearTrainingAgentsPool(); }
+    public void addAgent(Agent agent)
+        {
+        ArrayList<Agent> agents = allAgents.get(agent.getName());
+        if (agents == null)
+            {
+            agents = new ArrayList<Agent>();
+            allAgents.put(agent.getName(), agents);
+            }
+        agents.add(agent);
+        }
+
+    /** Distributes and restarts behaviors of all agents like the training agent */
+    public void distributeAndRestartBehaviors()
+        {
+        // Restart to like agents
+        ArrayList<Agent> agents = allAgents.get(trainingAgent.getName());
+                
+        for(int i = 0; i < agents.size(); i++)
+            {
+            Agent other = agents.get(i);
+            if (!other.equals(trainingAgent))
+                other.setBehavior((TrainableMacro)(trainingAgent.getBehavior().clone()));
+            other.restart(this);
+            }
+        }
+
+
+    /// This code resets features in the underlying training agent
+        
+    /** Current Features.  These are the features which the training macro relies on at present. */
+    public void removeCurrentFeature(Feature feature)
+        {
+        String name = feature.getName();
+        int index = -1;
+        Feature[] features = getTrainingMacro().features;
+
+        for(int i = 0; i < features.length; i++)
+            if (features[i].getName().equals(name))
+                { 
+                if (index != -1)  // uh oh
+                    throw new RuntimeException("Multiple features by the same name: " + feature);
+                else index = i; 
+                }
+                        
+        if (index==-1)  // uh oh
+            throw new RuntimeException("No such feature found: " + feature);
+                
+        Feature[] newFeatures = new Feature[features.length - 1];
+        int count = 0;
+        for (int i = 0; i < features.length; i++)
+            if (i != index)
+                {
+                newFeatures[count] = features[i];
+                count++;
+                }
+                        
+        // reset the macro to the revised features.  This will involve deleting
+        // all curret examples and resetting the current model, oh well.
+        getTrainingMacro().reset(this, getTrainingMacro().behaviors, newFeatures);
+        
+        // redistribute to all the like-minded agents.  This will basically lobotomize them all.
+        distributeAndRestartBehaviors();
+        }
+        
+        
+    public void addCurrentFeature(Feature feature)
+        {
+        Feature[] features = getTrainingMacro().features;
+        Feature[] newFeatures = new Feature[features.length];
+        System.arraycopy(features, 0, newFeatures, 0, features.length);
+        newFeatures[features.length] = feature;
+
+        // reset the macro to the revised features.  This will involve deleting
+        // all curret examples and resetting the current model, oh well.
+        getTrainingMacro().reset(this, getTrainingMacro().behaviors, newFeatures);
+        
+        // redistribute to all the like-minded agents.  This will basically lobotomize them all.
+        distributeAndRestartBehaviors();
+        }
+
+    public void clearCurrentFeatures()
+        {
+        // reset the macro to the revised features.  This will involve deleting
+        // all curret examples and resetting the current model, oh well.
+        getTrainingMacro().reset(this, getTrainingMacro().behaviors, new Feature[0]);
+        
+        // redistribute to all the like-minded agents.  This will basically lobotomize them all.
+        distributeAndRestartBehaviors();
+        }
+
+    public Feature[] currentFeatures()
+        {
+        return getTrainingMacro().features;
+        }
+    }
+        

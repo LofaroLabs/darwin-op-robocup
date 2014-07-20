@@ -1,0 +1,18 @@
+# controller name className
+controller Commander sim.app.horde.scenarios.boxpushing.PioneerController
+
+# subordinate name className max min pref
+subordinate PioneerAgent sim.app.horde.scenarios.boxpushing.PioneerAgent 1 1 1
+subordinate FlockbotController sim.app.horde.scenarios.boxpushing.FlockbotController 1 1 1 
+
+
+# Define allowable joint behaviors for heterogeneous
+#jointbehavior alias a1:b1 a2:b2 ... one per subordinate
+#jointbehavior Scout Forager:Wander Seeker:Seek 
+
+jointbehavior GroupInit PioneerAgent:PioneerAgentInit FlockbotController:FlockbotControllerInit
+jointbehavior GroupForward PioneerAgent:PionerAgentGotoBox FlockbotController:FlockbotsForward
+jointbehavior GroupCorrectLeft PioneerAgent:PionerAgentGotoBox FlockbotController:FlockbotsCorrectLeft
+jointbehavior GroupCorrectRight PioneerAgent:PionerAgentGotoBox FlockbotController:FlockbotsCorrectRight
+
+

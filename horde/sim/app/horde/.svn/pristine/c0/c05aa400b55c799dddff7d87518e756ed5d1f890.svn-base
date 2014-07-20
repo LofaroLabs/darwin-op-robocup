@@ -1,0 +1,232 @@
+package sim.app.horde.behaviors;
+
+import sim.app.horde.*;
+import sim.app.horde.agent.*;
+
+import java.util.*;
+
+import javax.swing.*;
+
+import java.awt.event.*;
+import java.io.*;
+import java.lang.reflect.Method;
+
+/** BEHAVIOR
+   
+   <p>The superclass of all behaviors of the agent, which manipulate the robot and
+   also which may appear as states in a macro FSA behavior.
+   
+   <p>Each Behavior has some number of TARGETS which need to be specified for the
+   Behavior to work. Behaviors also have names, names for the buttons on which
+   they appear in Horde, and also optional associated keystrokes.
+   
+   <p>The default behavior does nothing at all.
+ */
+
+public abstract class Behavior extends Targeting // SEE NOTE BELOW
+// in fact we only want TrainableMacros to be serializable. However since
+// TrainableMacro is a subclass of Behavior, if Behavior isn't serializable,
+// then Behavior's default constructor is called (see the documentation for
+// java.io.Serializable). This results in unexpected behavior -- such as
+// deserialized TrainableMacros having the name "Composed".
+	{
+	static Class[] basicBehaviorClasses; // stores all basic behavior classes
+
+	/** By default returns true -- override this to return false if you want to declare that when transitioning TO this behavior,
+	    no DEFAULT example should be added to Horde's examples list. */
+	public boolean shouldAddExamples() { return true; }
+
+	/** By default returns true -- override this to return false if you want to declare that when transitioning TO this behavior,
+	    no DEFAULT example should be added to Horde's examples list. */
+	public boolean getShouldAddDefaultExample() { return true; }
+
+	private static final long serialVersionUID = 1;
+	protected String name = "Behavior";
+	KeyStroke stroke = null; // likely immutable so we don't have to clone it
+
+	// Various convenience constants for up/down/left/right.
+	public static final KeyStroke KS_UP = KeyStroke.getKeyStroke(KeyEvent.VK_UP, 0, false);
+	public static final KeyStroke KS_DOWN = KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, 0, false);
+	public static final KeyStroke KS_LEFT = KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, 0, false);
+	public static final KeyStroke KS_RIGHT = KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, 0, false);
+
+	KeyStroke keyStroke(char val) { return KeyStroke.getKeyStroke(val); }
+
+	/** Sets the keystroke. */
+	public void setKeyStroke(KeyStroke val) { stroke = val; }
+
+	/** Sets the keystroke. */
+	public void setKeyStroke(char val) { stroke = keyStroke(val); }
+
+	/** Returns the Behavior's keystroke, or null if there is no associated keystroke. */
+	public KeyStroke getKeyStroke() { return stroke; }
+
+	public String getName() { return name; }
+
+	protected String getUniqueName() { return getType(this.getClass()) + "_" + getName() + "_" + getClass().toString(); }
+
+	protected static final Map<String, Behavior> allBehaviors = new LinkedHashMap<String, Behavior>();
+	protected static final Set<String> loadedTMs = new HashSet<String>(); // loaded trainable macros
+	protected static final Set<String> loadedGBs = new HashSet<String>(); // loaded group behaviors
+	private static boolean basicLoaded;
+	
+	protected Macro parent = null;
+
+	/** Returns the Macro which presently owns and/or has called start() on this behavior. This value may be null
+	    if the Macro has never called start() on the behavior yet. getParent() is used by wrappers to determine the
+	    parent of a Macro or other behavior when computing their wrapped target value. */
+	public Macro getParent() { return parent; }
+
+	/** Sets the parent and also calls start() on all targets. When overriding, be sure to call super() */
+	public void start(Agent agent, Macro parent, Horde horde)
+		{
+		this.parent = parent;
+		super.startTargets(agent, parent, horde);
+		}
+
+	/** Sets the parent and also calls stop() on all targets. When overriding, be sure to call super() */
+	public void stop(Agent agent, Macro parent, Horde horde)
+		{
+		this.parent = parent;
+		super.stopTargets(agent, parent, horde);
+		}
+
+	/** Sets the parent. When overriding, be sure to call super() */
+	public void go(Agent agent, Macro parent, Horde horde) { this.parent = parent; }
+
+	/** By default returns the name of the behavior. */
+	public String toString() { return name; }
+
+	/** Returns what to display on the button. May be different than toString() if you like. */
+	public String getButtonName() { return name; } // what to display on the button
+
+	/** Returns all behaviors. Note that the behaviors' parameters have not yet been converted to wrappers. */
+	public static Behavior[] provideAllBehaviors() { return provideAllBehaviors(null); }
+
+	public static Behavior[] provideAllBehaviors(Agent agent)
+		{
+		// grab the macros from disk
+		Behavior[] basic = provideAllBasicBehaviors(agent);
+		TrainableMacro[] tm = TrainableMacro.provideAllTrainableMacros(agent);
+		GroupBehavior [] gb = new GroupBehavior[0];
+		
+		if (agent instanceof Controller)
+			{
+			Controller ctl = (Controller)agent;
+			gb = ctl.groupBehaviors();
+			}
+
+		Behavior[] b = new Behavior[tm.length + gb.length + basic.length];
+		System.arraycopy(basic, 0, b, 0, basic.length);
+		System.arraycopy(gb, 0, b, basic.length, gb.length);
+		System.arraycopy(tm, 0, b, basic.length + gb.length, tm.length);
+		
+		return b;
+		}
+
+	public static Behavior[] provideAllBasicBehaviors(Agent agent)
+		{
+		
+		ArrayList<Behavior> basic = new ArrayList<Behavior>();
+
+		if (!basicLoaded)
+			{
+			
+			for (int i = 0; i < basicBehaviorClasses.length; i++)
+				try
+					{
+					Class behaviorClass = basicBehaviorClasses[i];
+	
+					if (agent == null
+							|| agent.hasType(Targeting.getType(behaviorClass)))
+						{
+						Behavior b = (Behavior) behaviorClass.newInstance();
+						
+						if (allBehaviors.get(b.getUniqueName()) != null)
+							System.err.println("WARNING: Duplicate basic behavior " + b.toString());
+						else
+							{
+							System.out.println("Loaded basic behavior " + b.getUniqueName());
+							allBehaviors.put(b.getUniqueName(), b);
+							}
+						}
+					} catch (Exception e)
+					{
+					e.printStackTrace();
+					}
+
+			basicLoaded = true;
+		}
+
+		boolean startFound = false;
+		String agentPref = agent.getName() + "_";
+		String basicPref = "Basic_";
+		String globalPref = "Global_";
+		
+		for (String bName : allBehaviors.keySet())
+			{
+			if (bName.startsWith(agentPref) || bName.startsWith(basicPref) || bName.startsWith(globalPref))
+				{
+				Behavior b = allBehaviors.get(bName);
+				
+				if (b instanceof Start)
+					{
+					basic.add(0, (Behavior)b.clone());
+					startFound = true;
+					}
+
+				else if (agent.hasType(Targeting.getType(b.getClass())))
+					basic.add((Behavior)b.clone());
+				}
+			}
+		
+		if (!startFound)
+			System.err.println("WARNING: No \"Start\" Behavior Loaded");
+
+		Behavior[] b = new Behavior[basic.size()];
+		basic.toArray(b);
+		return b;
+		}
+
+    /** Returns a stack of useful behavior information as a string. */
+    public String getBehaviorBacktrace()
+    	{
+    	return getBehaviorBacktrace(null).toString().trim();
+    	}
+
+    /** Returns a stack of useful behavior information. */
+	protected StringBuilder getBehaviorBacktrace(StringBuilder builder)
+    	{
+    	// default:
+    	return builder.append(toString()).append("\n");
+    	}
+    
+    
+	/** Loads all basic behavior classes from basic.behaviors */
+	static
+		{
+		// load the basic behaviors
+		ArrayList list = new ArrayList();
+		Scanner scanner = new Scanner(Horde.class.getResourceAsStream(Horde.BASIC_BEHAVIORS_LOCATION));
+		while (scanner.hasNextLine())
+			{
+			String s = scanner.nextLine().trim();
+			if (s.startsWith("#") || s.length() == 0) continue;
+			try { list.add(Class.forName(s)); } 
+			catch (ClassNotFoundException e) { System.err.println("Couldn't find Behavior: " + s); }
+			}
+		scanner.close();
+		basicBehaviorClasses = new Class[list.size()];
+		System.arraycopy(list.toArray(), 0, basicBehaviorClasses, 0, list.size());
+		}
+
+	public void write(PrintWriter writer, HashSet<String> behaviorsSoFar)
+		{
+		if (!behaviorsSoFar.contains(name))
+			{
+			writer.print(" ( behavior " + name + " " + getType(this.getClass()) + " )\n\n");
+			behaviorsSoFar.add(name);
+			}
+		}
+
+	}

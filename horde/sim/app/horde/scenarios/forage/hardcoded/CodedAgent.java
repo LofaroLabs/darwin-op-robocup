@@ -1,0 +1,65 @@
+package sim.app.horde.scenarios.forage.hardcoded;
+
+import java.awt.Color;
+
+import sim.app.horde.behaviors.Behavior;
+import sim.app.horde.behaviors.Done;
+import sim.app.horde.behaviors.Forward;
+import sim.app.horde.behaviors.Rotate;
+import sim.app.horde.behaviors.RotateNeg;
+import sim.app.horde.features.Feature;
+import sim.app.horde.scenarios.forage.*;
+import sim.app.horde.scenarios.forage.agent.Forager;
+import sim.app.horde.scenarios.forage.behaviors.Grab;
+import sim.app.horde.scenarios.forage.behaviors.ReleaseDone;
+import sim.app.horde.scenarios.forage.hardcoded.behaviors.Forage;
+import sim.app.horde.scenarios.forage.hardcoded.behaviors.GrabBox;
+import sim.app.horde.scenarios.forage.hardcoded.behaviors.ReleaseDoneNoFlag;
+import sim.util.Double2D;
+
+public class CodedAgent extends Forager 
+    {
+    private static final long serialVersionUID = 1L;
+
+    public static final int GRAB_RANGE = Grab.SLOP;
+    public static final double ATTACHED_RANGE = GRAB_RANGE/4;
+        
+    public static int FORAGE, RELEASE, GRAB_BOX, DONE, RELEASE_NO_FLAG; 
+        
+    public static Behavior[] homeInBehaviors = new Behavior[] { new Forward(), new Rotate(), new RotateNeg() };
+    public static final int FORWARD = 0;
+    public static final int ROTATE = 1;
+    public static final int ROTATE_NEG = 2;
+        
+    public CodedAgent(ForageHorde horde)
+        {
+        super(horde);
+        paint = Color.blue;
+        setPose(new Double2D(horde.HOME_X, horde.HOME_Y), horde.random.nextDouble() * Math.PI * 2);
+        setBehavior(new CodedBehavior(new Feature[]{ new sim.app.horde.features.Done()}, new Behavior[] {  new Forage(), new GrabBox(), new ReleaseDone(), new Done(), new ReleaseDoneNoFlag() } ));
+                
+        CodedBehavior cb = (CodedBehavior)getBehavior(); 
+                
+        FORAGE = cb.indexOfBehaviorNamed("Forage"); 
+        GRAB_BOX = cb.indexOfBehaviorNamed("GrabBox"); 
+        RELEASE = cb.indexOfBehaviorNamed("ReleaseDone"); 
+        RELEASE_NO_FLAG = cb.indexOfBehaviorNamed("ReleaseDoneNoFlag"); 
+        DONE = cb.indexOfBehaviorNamed("Done");         
+        }
+                
+    public static int homeIn(double val) 
+        {
+        int options[] = { ROTATE, ROTATE_NEG, FORWARD };
+        return homeIn(val, options); 
+        }
+        
+    public static int homeIn(double val, int[] options)
+        {
+        if (val > 0.2)
+            return options[0];
+        else if (val < -0.2)
+            return options[1];
+        else
+            return options[2];
+        }
+    }

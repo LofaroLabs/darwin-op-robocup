@@ -1,0 +1,9 @@
+size 200 200
+
+9 sim.app.horde.scenarios.forage.Box 5 0
+1 sim.app.horde.scenarios.forage.Box 25 0
+
+# marker x y targetableIndex name
+marker 75 75 0 Red Home Base
+
+root Forager 50 0 0 200 200

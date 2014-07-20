@@ -1,0 +1,50 @@
+package sim.app.horde.scenarios.pioneer.behaviors;
+
+import sim.app.horde.Agent;
+import sim.app.horde.Horde;
+import sim.app.horde.behaviors.Behavior;
+import sim.app.horde.behaviors.Macro;
+import sim.app.horde.scenarios.pioneer.PioneerAgent;
+
+public class TurnLeft extends Behavior
+    {
+    private static final long serialVersionUID = 1L;
+
+    double startingOrientation=0; 
+    public double amount = Math.PI/2; 
+        
+    public TurnLeft() { name = "Turn Left"; } 
+        
+    public TurnLeft(double a, String s) 
+        {
+        amount = a; 
+        name = s; 
+        }
+                
+    public void start(Agent agent, Macro parent, Horde horde)
+        {
+        super.start(agent, parent, horde);      
+        PioneerAgent a = (PioneerAgent ) agent; 
+        startingOrientation = (2*Math.PI + a.robot.getOrientation()) % (2*Math.PI);  
+        parent.setDone(false); 
+        }       
+        
+    public void go(Agent agent, Macro parent, Horde horde)
+        { 
+        super.go(agent, parent, horde); 
+        PioneerAgent a = (PioneerAgent ) agent; 
+                
+        double currentOrientation = (2*Math.PI + a.robot.getOrientation()) % (2*Math.PI);
+                
+        if (currentOrientation < startingOrientation) 
+            currentOrientation += 2*Math.PI; 
+                                
+        if (Math.abs(startingOrientation - currentOrientation) >= amount )
+            {
+            a.stopRobot();
+            parent.setDone(true); 
+            }
+        else 
+            a.turn(PioneerAgent.LEFT) ;
+        }       
+    }

@@ -1,0 +1,12 @@
+### AGENT CLASS
+
+class = sim.app.horde.agent.SimAgent
+
+color = yellow 
+shape = circle
+scale = 2
+
+num-types = 1
+type.0 = global
+#type.1 = sim
+

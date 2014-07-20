@@ -1,0 +1,143 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
+package sim.app.horde.scenarios.robot.flockbots;
+
+
+import java.io.IOException;
+import sim.app.horde.Horde;
+import sim.app.horde.scenarios.robot.behaviors.ICommandMotions;
+import sim.app.horde.scenarios.robot.flockbots.comm.FlockbotParser;
+import sim.app.horde.scenarios.robot.flockbots.comm.RCParser;
+import sim.app.horde.scenarios.robot.flockbots.comm.RemoteControlComm;
+
+
+/**
+ *
+ * @author drew
+ */
+public class FlockbotAgent extends sim.app.horde.agent.SimAgent {
+
+    Flockbot bot;
+    RemoteControlComm behCom;
+    int myID = 0;
+    static int curAgent = 0;
+    
+    static FlockbotEnum[] available = new FlockbotEnum[8];
+    {
+        available[0] = FlockbotEnum.THIRTY;
+        available[1] = FlockbotEnum.THIRTYONE;
+        available[2] = FlockbotEnum.THIRTYTWO;
+        available[3] = FlockbotEnum.THIRTYTHREE;
+        available[4] = FlockbotEnum.THIRTYFOUR;
+        available[5] = FlockbotEnum.THIRTYFIVE;
+        available[6] = FlockbotEnum.THIRTYSIX;
+        available[7] = FlockbotEnum.THIRTYSEVEN;
+    }
+    
+    
+    private static final String[] types = {"Global", "Basic", "Flockbots"};
+    public FlockbotAgent(Horde horde)
+    {
+        
+        super(horde);
+        
+        System.err.println("in Flockbot constructor");
+        
+        myID = curAgent;
+        curAgent++;
+        this.bot = available[myID].build();//FlockbotEnum.values()[myID].build();
+        
+        // otherwise i will need a static Integer that will tell me which
+        // bot I am at in building
+        addTypes(types);
+        /*
+        // start up the connection to the android app.
+        rcparse = new RCParser();
+        try {
+            System.out.println("Starting the RC server");
+            
+            behCom = new RemoteControlComm(androidPort, rcparse, (byte) 0);
+            Thread th = new Thread(behCom);
+            th.start();
+            //agentName = "Flockbot"; //
+        } catch (IOException ex) {
+            System.err.println("Error creating com to android controller" + ex);
+        }*/
+        
+    }
+
+    @Override
+    public String getAgentName() {
+        return super.getAgentName() + "_" + myID; //To change body of generated methods, choose Tools | Templates.
+    }
+    
+    
+    
+    boolean setup = false;
+    int STOP, TURN_LEFT, TURN_RIGHT, FORWARD;
+    private void setupBehaviors() {
+        if (!setup)
+            {
+            STOP = indexOfBehavior(sim.app.horde.scenarios.robot.flockbots.behaviors.Stop.class);
+
+            // these are the continuous motions 
+            FORWARD = indexOfBehavior(sim.app.horde.scenarios.robot.flockbots.behaviors.Forward.class);
+            TURN_LEFT = indexOfBehavior(sim.app.horde.scenarios.robot.flockbots.behaviors.TurnLeft.class);
+            TURN_RIGHT = indexOfBehavior(sim.app.horde.scenarios.robot.flockbots.behaviors.TurnRight.class);
+            
+            }
+        setup = true;
+    }
+
+    @Override
+    public void go() {
+        setupBehaviors();
+        /*
+        // update the actions from the hand held device
+        String newBeh = rcparse.getAction();
+        if(newBeh.equals("Forward")) {
+            horde.getTrainingMacro().userChangedBehavior(horde, FORWARD);
+        }else if (newBeh.equals("Left")) {
+            horde.getTrainingMacro().userChangedBehavior(horde, TURN_LEFT);
+        }else if (newBeh.equals("Right")) {
+            horde.getTrainingMacro().userChangedBehavior(horde, TURN_RIGHT);
+        }else if (newBeh.equals("Stop")) {
+            horde.getTrainingMacro().userChangedBehavior(horde, STOP);
+        }
+        */
+        
+        
+        super.go(); //To change body of generated methods, choose Tools | Templates.
+    }
+    
+    
+    
+    
+    /**
+     * 
+     * @param horde
+     * @param bot create the bot by using the Flockbot enum
+     */
+    public FlockbotAgent(Horde horde, FlockbotEnum bot) {
+        super(horde);
+        this.bot = bot.build();// new Flockbot(FLOCKBOT_HOST, FLOCKBOT_PORT);
+        
+    }
+    public FlockbotParser getCurrentData() {
+        return (FlockbotParser) bot.getParser();
+    }
+    
+    public void sendMotion(ICommandMotions cms) {
+        // check with horde?
+        
+        // interact with the robot to send the command
+        bot.sendCommand(cms);
+    }
+    
+    
+    
+}

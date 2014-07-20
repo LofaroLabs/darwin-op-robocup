@@ -1,0 +1,75 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
+package sim.app.horde.scenarios.robot.darwin.agent;
+
+
+import sim.app.horde.agent.SimAgent;
+import sim.app.horde.scenarios.robot.behaviors.CommandMotions;
+import sim.app.horde.scenarios.robot.darwin.Darwins;
+import sim.app.horde.scenarios.robot.darwin.comm.DarwinParser;
+import sim.engine.SimState;
+import sim.util.Double2D;
+
+/**
+ * 
+ * @author drew
+ */
+public class DarwinAgent extends SimAgent{
+
+    
+    Darwin bot;
+    int myID = 0;
+    static int curAgent = 0;
+    
+    static Darwins[] available = new Darwins[3];
+    {
+        available[0] = Darwins.FIFTYTWO;
+    }
+
+    public DarwinAgent() {
+        super();
+        myID = curAgent;
+        curAgent++;
+        this.bot = available[myID].build();
+    }
+
+    public void step(SimState state)
+            {
+            super.step(state);
+                
+            DarwinParser dp = getCurrentData();
+            if (dp != null)
+            {
+            // get current ball location                     
+            double x = dp.getPoseX();
+            double y = dp.getPoseY();
+            double theta = dp.getPoseAngle() + Math.PI;
+            
+            // adjust and set that sucker
+            x += 30;
+            y += 20;
+                Double2D loc = new Double2D(x,y);
+            System.err.println("Agent location? " + loc);
+            setLocation(loc);
+            setOrientation(theta);
+            }
+            }
+          
+    
+    public DarwinParser getCurrentData() {
+        return (DarwinParser) bot.getParser();
+    }
+    
+    public void sendMotion(CommandMotions cms) {
+        // interact with the robot to send the command
+        bot.sendCommand(cms);
+    }
+    
+    public void sendMotion(CommandMotions cms, byte customSpeed) {
+        bot.sendCommand(cms, customSpeed);
+    }
+}

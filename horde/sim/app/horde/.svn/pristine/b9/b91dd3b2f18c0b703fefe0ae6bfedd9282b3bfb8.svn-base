@@ -1,0 +1,15 @@
+package sim.app.horde.agent;
+
+import java.awt.Color;
+
+import sim.util.Bag;
+import sim.util.DoubleBag;
+
+public class AgentPool
+	{
+	public int initialSize;
+	public Class agentClass;
+	public Color defaultColor;
+	public Bag locations = new Bag();
+	public DoubleBag orientations = new DoubleBag();
+	}

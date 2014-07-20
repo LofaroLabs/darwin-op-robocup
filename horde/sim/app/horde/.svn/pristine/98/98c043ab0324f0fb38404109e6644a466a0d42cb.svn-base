@@ -1,0 +1,111 @@
+package sim.app.horde.behaviors;
+
+import java.util.*;
+import javax.swing.*;
+import java.io.*;
+import ec.util.*;
+
+import sim.app.horde.*;
+import sim.app.horde.agent.*;
+import sim.app.horde.targets.*;
+
+public class JointBehavior extends Behavior
+    {
+    static final long serialVersionUID = 1L;
+
+    public static final String P_NAME = "name";  // yes, I know this isn't a Parameter, it's a string
+    public static final String P_DOES = "does";  // yes, I know this isn't a Parameter, it's a string
+    int[] behaviorIndices;
+    String[] behaviorNames;  // really only useful for debugging
+        
+    /** Creates a homogeneous behavior of the same name as the provided Behavior */
+    public JointBehavior(ControllerAgent controller, Behavior behavior)
+        {
+        name = behavior.getName();  // same name
+        behaviorNames = new String[] { name }; 
+        behaviorIndices = new int[1];
+                
+        // determine behavior index
+        ArrayList<AgentGroup> subs = controller.getSubsidiaryAgents();
+        if (subs.size() != 1)
+            throw new RuntimeException("Incorrect number of subsidiary agent types for homogeneous Joint Behavior (" + subs.size() + ")");
+        Agent proto = subs.get(0).getAgent(0);
+        try 
+            {
+            behaviorIndices[0] = proto.indexOfBehavior(name);
+            }
+        catch (Exception e)  // uh oh
+            { 
+            throw new RuntimeException("No subsidiary behavior called " + name + " exists in subsidiary");
+            }
+                
+        // At present, JointBehaviors have no targets
+        if (behavior.getTargets().length != 0)
+            throw new RuntimeException("Joint Behavior created for behavior with a target: " + behavior);
+        }
+                
+    public JointBehavior(ControllerAgent controller, ec.util.ParameterDatabase db, ec.util.Parameter base)
+        {
+        // load name
+        name = db.getString(base.push(P_NAME), null);
+        if (name == null)
+            throw new RuntimeException("Heterogeneous Joint Behavior created with null name at: " + base.push(P_NAME));
+                
+        // figure out joint sub-behavior names
+        ArrayList<AgentGroup> subs = controller.getSubsidiaryAgents();
+        if (subs.size() == 0)
+            throw new RuntimeException("Zero subsidiary agent types for heterogenous Joint Behavior");
+        behaviorNames = new String[subs.size()];
+        behaviorIndices = new int[subs.size()];
+        for(int i = 0; i < subs.size(); i++)
+            {
+            Agent proto = subs.get(i).getAgent(0);
+            behaviorNames[i] = db.getString(base.push(P_DOES).push("" + i), null);
+            if (behaviorNames[i] == null)
+                {
+                throw new RuntimeException("Heterogeneous Joint Behavior created with empty behavior name #" + i + " at: " + base.push(P_DOES).push("" + i));
+                }
+            try 
+                {
+                behaviorIndices[i] = proto.indexOfBehavior(behaviorNames[i]);
+                }
+            catch (Exception e)  // uh oh
+                {
+                throw new RuntimeException("No subsidiary behavior called " + behaviorNames[i] + " exists in subsidiary at: " + base.push(P_DOES).push("" + i));
+                }
+                                
+            Behavior behavior = proto.getBehavior().behaviors[behaviorIndices[i]];
+                        
+            // At present, JointBehaviors have no targets
+            if (behavior.getTargets().length != 0)
+                throw new RuntimeException("Joint Behavior created for behavior with a target: " + behavior + "at: " + base.push(P_DOES).push("" + i));
+            }
+        }
+        
+    public void go(Agent agent, Macro parent, Horde horde)
+        {
+        super.go(agent, parent, horde);
+
+        ArrayList<AgentGroup> sub = ((ControllerAgent)agent).getSubsidiaryAgents();
+
+        for (int i = 0; i < behaviorIndices.length; i++)
+            ((AgentGroup)(sub.get(i))).fireBehaviors(behaviorIndices[i]);
+        }
+
+    public String toString()
+        {
+        StringBuilder sb = new StringBuilder(name);
+        sb.append("->(");
+        for(int i = 0; i < behaviorNames.length; i++)
+            sb.append(behaviorNames[i]);
+        sb.append(")");
+        return sb.toString();
+        }
+                        
+    /*
+      protected String getUniqueName()
+      {
+      return "J_" + name;
+      }
+    */
+    }

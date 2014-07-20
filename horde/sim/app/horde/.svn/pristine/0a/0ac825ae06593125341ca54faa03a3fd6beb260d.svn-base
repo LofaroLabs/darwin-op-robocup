@@ -1,0 +1,151 @@
+package sim.app.horde.behaviors;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import sim.app.horde.Horde;
+import sim.app.horde.agent.Agent;
+import sim.app.horde.agent.Controller;
+import sim.app.horde.agent.ControllerAgent;
+import sim.app.horde.targets.Target;
+
+public class GroupBehavior extends Behavior
+    {
+    private static final long serialVersionUID = 1L;
+    private String agentName;
+    
+    public static GroupBehavior[] provideAllGroupBehaviors(Agent agent)
+    	{
+    	
+    	List<GroupBehavior> g = new ArrayList<GroupBehavior>();
+    	
+    	if (!loadedGBs.contains(agent.getName()))
+    		{
+			Behavior[] tm = TrainableMacro.provideAllTrainableMacros(agent);
+
+			for (int i = 0; i < tm.length; i++)
+				{
+				GroupBehavior b = new GroupBehavior(tm[i], agent.getName());
+				
+				if (allBehaviors.get(b.getUniqueName()) != null)
+					System.err.println("WARNING: Duplicate group behavior " + b.toString());
+				else
+					{
+					System.out.println("Loaded group behavior " + b.getUniqueName());
+					allBehaviors.put(b.getUniqueName(), b);
+					}
+				}
+			
+			loadedGBs.add(agent.getName());
+    		}
+    	
+		String agentPref = "G_" + agent.getName() + "_";
+		for (String bName : allBehaviors.keySet())
+			{
+			if (bName.startsWith(agentPref))
+				{
+				GroupBehavior gb = (GroupBehavior)allBehaviors.get(bName);
+				g.add((GroupBehavior)gb.clone());
+				}
+			}
+		
+		GroupBehavior[] gb = new GroupBehavior[g.size()];
+		System.arraycopy(g.toArray(), 0, gb, 0, g.size());
+		return gb;
+    	}
+    
+    public String toString() 
+        { 
+        return agentName + ": " + name;
+        }
+                
+        
+    int behaviorIndex = -1;                 // the location of the underlying behavior in the subsidiary's trainablemacro
+    boolean reloadTargets = false;          // do I need to reset the targets because something has changed?
+        
+    public void setTarget(int i, Target t)
+        {
+        super.setTarget(i,t);
+        reloadTargets = true;
+        }
+
+    public void loadTargets(Controller agent)
+        {
+        List<Agent> agents = agent.getSubsidiaryAgents(agentName);
+        //System.out.println("Loading Group targets for " + name + " - targets=" + targets[0]);
+        int s = agents.size();
+        for (int i = 0; i < s; i++)
+            {
+            Agent a = agents.get(i);
+            TrainableMacro m = (TrainableMacro)(a.getBehavior());
+            m.behaviors[behaviorIndex].loadTargetCopiesFrom(this);          // will this break wrappers?
+            }
+        }
+        
+    public GroupBehavior(Behavior b, String agentName)
+        {
+        this.agentName = agentName;
+        name = b.getName();
+        setKeyStroke(b.getKeyStroke());
+                
+        loadTargetCopiesFrom(b);
+        }
+
+    public void go(Agent agent, Macro parent, Horde horde)
+        {
+        super.go(agent, parent, horde);
+        if (reloadTargets) { 
+            ControllerAgent cAgent = (ControllerAgent) agent;
+            loadTargets(cAgent); 
+            reloadTargets = false; 
+            }
+        }
+                
+    // make sure all my subsidiary agents are running the same behavior
+    public void start(Agent agent, Macro parent, Horde horde)
+        {
+        super.start(agent, parent, horde);
+                
+        Controller cAgent = (Controller) agent;
+        List<Agent> agents = cAgent.getSubsidiaryAgents(agentName);
+                
+        if (behaviorIndex == -1)  // need to set up behavior index, use first subsidiary agent
+            {
+            Agent a = agents.get(0);
+            Macro m = (Macro)(a.getBehavior());
+            behaviorIndex = m.indexOfBehaviorNamed(name);
+            }
+
+        if (reloadTargets) { loadTargets(cAgent); reloadTargets = false; }
+        
+        int s = agents.size();
+        for (int i = 0; i < s; i++)
+            {
+            Agent a = agents.get(i);                      
+            Macro m = (Macro)(a.getBehavior());
+                        
+/*            if (m instanceof TrainableMacro) { 
+                TrainableMacro tm = (TrainableMacro)m; 
+                tm.userChangedBehavior(horde, behaviorIndex);
+                tm.setIAmSlave(true);                   // so he doesn't try to transition      
+                }
+            else { */
+                m.performTransition(behaviorIndex, a, horde); 
+                m.finished = false; 
+//                }
+                        
+                        
+            }
+        }
+
+	protected String getUniqueName() { return "G_" + agentName + "_"  + getName() + "_" + getClass().toString(); }
+   
+	public Object clone()
+		{
+		GroupBehavior g = (GroupBehavior) (super.clone());
+		
+		if (getNumTargets() > 0) g.reloadTargets = true;
+		
+		return g;
+		}
+    }

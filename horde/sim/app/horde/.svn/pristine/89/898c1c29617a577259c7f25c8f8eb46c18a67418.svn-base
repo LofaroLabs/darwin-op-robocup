@@ -1,0 +1,257 @@
+/*
+ * Copyright 2006 by Sean Luke and George Mason University Licensed under the Academic Free License version 3.0 See the
+ * file "LICENSE" for more information
+ */
+package sim.app.horde.agent;
+
+import sim.app.horde.*;
+import sim.app.horde.behaviors.*;
+import sim.app.horde.features.*;
+import sim.app.horde.transitions.*;
+import sim.engine.*;
+
+import java.util.*;
+import ec.util.*;
+import java.io.*;
+
+/**
+ * AGENT
+ */
+
+public class Agent extends AgentPortrayal2D /* unavoidable */ implements Steppable
+    {
+    public static final String TYPE_GLOBAL = "global";  // this is the type of behaviors and features which work with anything.
+
+    public static final Parameter P_NUM_TYPES = new ec.util.Parameter("num-types");
+    public static final Parameter P_TYPE = new ec.util.Parameter("type");
+    public static final Parameter P_CLASS = new ec.util.Parameter("class");
+
+    static final long serialVersionUID = 1L;
+        
+    AgentGroup group;                 // the group containing this agent, if any
+    String name;
+    ArrayList<String> types = new ArrayList<String>();
+    TrainableMacro behavior;
+    Horde horde;
+    boolean started = false;
+    boolean trainable = true;
+    public Stoppable stoppable;
+        
+    /** Sets whether this agent is permitted to become a training agent.  Perhaps it's
+        just a foil in the simulation, for example.  */
+    public void setTrainable(boolean val) { trainable = val; }
+    /** Returns whether this agent is permitted to become a training agent.  Perhaps it's
+        just a foil in the simulation, for example.  */
+    public boolean isTrainable() { return trainable; }
+        
+    public Object clone()
+        {
+        try
+            {
+            Agent clone = (Agent)(super.clone());
+            // don't clone the types, current or available features, horde, name, or group
+            // Just clone the behavior
+            // The group will get set by my AgentGroup when it clones.
+            clone.behavior = (TrainableMacro)(behavior.clone());
+            return clone;
+            }
+        catch (CloneNotSupportedException e) { return null; }  // never happens
+        }
+        
+    public Behavior[] provideJointBehaviors(ec.util.ParameterDatabase db) { return new Behavior[0]; }  // no joint behaviors by default
+    
+    public static ec.util.ParameterDatabase getDatabase(String name)
+        {
+        try 
+            {
+            return new ec.util.ParameterDatabase(Horde.AGENT_DIRECTORY + "agents/" + name + "/db", Horde.class, new String[] {});
+            }
+        catch (IOException e) { throw new RuntimeException("Could not open file " + 
+                Horde.getPathRelativeToClass(Horde.locationRelativeClass, Horde.AGENT_DIRECTORY) + "agents/" + name + "/db",
+                e); }
+        }
+        
+    /** This factory method returns a new agent from the class as specified in the database, with setup() called on it*/
+    public static Agent provideAgent(ec.util.ParameterDatabase db, AgentGroup group, String name, Horde horde)
+        {
+        Agent proto = (Agent)(db.getInstanceForParameter(P_CLASS, null, Agent.class));
+        proto.group = group;
+        proto.name = name;
+        proto.horde = horde;
+        proto.setup(db);
+        return proto;
+        }
+                    
+    /** Reloads the entire Agent from its parameter database, resetting it. */
+    public void reload()
+        {
+        setup(getDatabase(name));
+        }
+        
+    /** Though this is public -- because interfaces (see Controller.java) must be public --
+        do NOT call this method.  Instead, call setup(AgentGroup, String, Horde) */
+    public void setup(ec.util.ParameterDatabase db)
+        {
+        // Load my types
+        int numTypes = db.getInt(P_NUM_TYPES, null, 1);
+        if (numTypes < 1) throw new RuntimeException("Invalid number of types in Agent " + this.name);
+        for(int i = 0; i < numTypes ; i++)
+            {
+            String type = db.getString(P_TYPE.push("" + i), null);
+            if (type == null) throw new RuntimeException("Missing type " + i + " in Agent " + this.name);
+            types.add(type);
+            }
+                
+        // Load my behaviors
+        Behavior[] basic = Behavior.provideAllBasicBehaviors(this);
+        Behavior[] joints = provideJointBehaviors(db);
+        Behavior[] basicAndJoints = new Behavior[basic.length + joints.length];
+        System.arraycopy(basic, 0, basicAndJoints, 0, basic.length);
+        System.arraycopy(joints, 0, basicAndJoints, basic.length, joints.length);
+        Behavior[] trainable = TrainableMacro.provideAllTrainableMacros(this, basicAndJoints);
+                
+        // create the TrainableMacro
+        Behavior[] all = new Behavior[basicAndJoints.length + trainable.length];
+        System.arraycopy(basicAndJoints,0,all,0,basicAndJoints.length);
+        System.arraycopy(trainable,0,all,basicAndJoints.length, trainable.length);
+
+        behavior = new TrainableMacro();
+        behavior.reset(horde, all, new Feature[0]);
+        }
+        
+    public void addType(String type)
+        {
+        types.add(type);
+        }
+        
+    public boolean hasType(String type)
+        {
+        return types.contains(type);
+        }
+
+    public int getBasicCounter()
+        {
+        if (behavior == null)
+            return 0;
+        if (!(behavior instanceof Macro))
+            return 0;
+        return ((Macro) behavior).getCounter(Macro.COUNTER_BASIC);
+        }
+
+    public TrainableMacro getBehavior()
+        {
+        return behavior;
+        }
+
+    public String getName()
+        {
+        return name;
+        }
+
+    public AgentGroup getGroup()
+        {
+        return group;
+        }
+        
+    public Controller getController()
+        {
+        if (group != null)
+            return group.getController();
+        else
+            return null;
+        }
+
+    public void setGroup(AgentGroup group)
+        {
+        this.group = group;
+        }
+
+    public Behavior getUnderlyingBehavior()
+        {
+        if (behavior == null || !(behavior instanceof Macro))
+            return null;
+        Macro macro = ((Macro) behavior);
+        if (macro.currentBehavior == Macro.UNKNOWN_BEHAVIOR)
+            return null;
+        else
+            return macro.behaviors[macro.currentBehavior];
+        }
+
+    public void go()
+        {
+        if (!started)
+            {
+            behavior.start(this, null, horde);
+            started = true;
+            }
+        behavior.go(this, null, horde);
+        }
+
+    /**
+     * Returns the index of the provided behavior in the current training macro.
+     * Throws an exception if the provided behavior does not exist.
+     */
+    public int indexOfBehavior(String name)
+        {
+        Behavior[] behaviors = behavior.behaviors;
+        for (int i = 0; i < behaviors.length; i++)
+            if (behaviors[i].getName().equals(name))
+                return i;
+        throw new RuntimeException("Class not found among behaviors: " + behavior);
+        }
+
+    /**
+     * Returns the index of the provided feature in the current training macro.
+     * Throws an exception if the provided feature does not exist.
+     */
+    public int indexOfFeature(Class feature)
+        {
+        Feature[] features = behavior.features;
+        for (int i = 0; i < features.length; i++)
+            if (features[i].getClass() == feature)
+                return i;
+        throw new RuntimeException("Class not found among features: " + feature);
+        }
+
+    public boolean isTheTrainingAgent()
+        {
+        return horde.getTrainingAgent() == this;
+        }
+
+    public boolean isTraining()
+        {
+        if (behavior instanceof TrainableMacro)
+            return isTheTrainingAgent()
+                && ((TrainableMacro) behavior).isTraining();
+        return false;
+        }
+
+    public void restart(Horde horde)
+        {
+        if (started)
+            behavior.stop(this, null, horde);
+        started = false;
+        }
+
+    public void setBehavior(TrainableMacro behavior)
+        {
+        this.behavior = behavior;
+        }
+
+    public Horde getHorde()
+        {
+        return horde;
+        }
+
+    // HACK ALERT - Targetable isn't really usable as a physical object, probably need to remove this and rework its callers
+    public Targetable getManipulated()
+        {
+        return null;
+        }
+    
+     public void step(SimState state)
+        {
+        go();
+        }
+
+    }

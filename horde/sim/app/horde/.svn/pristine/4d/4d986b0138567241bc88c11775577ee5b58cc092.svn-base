@@ -1,0 +1,78 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
+package sim.app.horde.scenarios.robot.darwin.agent;
+
+import java.io.IOException;
+import sim.app.horde.scenarios.robot.Robot;
+import sim.app.horde.scenarios.robot.behaviors.CommandMotions;
+import sim.app.horde.scenarios.robot.comm.Communication;
+import sim.app.horde.scenarios.robot.comm.DefaultParser;
+import sim.app.horde.scenarios.robot.comm.Parse;
+import sim.app.horde.scenarios.robot.darwin.comm.DarwinComm;
+import sim.app.horde.scenarios.robot.darwin.comm.DarwinFeatureComm;
+import sim.app.horde.scenarios.robot.darwin.comm.DarwinParser;
+import sim.app.horde.scenarios.robot.flockbots.comm.FlockbotComm;
+import sim.app.horde.scenarios.robot.flockbots.comm.FlockbotParser;
+
+/**
+ *
+ * @author drew
+ */
+public class Darwin implements Robot{
+
+    
+    
+    private Communication comm;
+    private Parse myParser;
+    
+    
+    
+    
+    private final DarwinParser parser = new DarwinParser();
+    private final byte readDelayMS = 30;
+    private Thread th;
+    private final byte speed;
+    
+    public Darwin(String host, int port, byte speed) {
+        this.speed = speed;
+        try {       
+            // use a default Parser since don't expect to receive anything on this port.
+            comm = new DarwinComm(host, port, parser, readDelayMS);
+            
+            myParser = parser;
+            th = new Thread(comm);
+            th.start();
+        } catch (IOException ex) {
+            System.out.println("Error creating FlockbotComm.");
+        }
+    }
+    
+    
+    @Override
+    public void sendCommand(CommandMotions cms) {
+        try {
+            comm.write(cms.command(speed));
+        } catch (IOException ex) {
+            System.out.println("Error sending command " + cms.toString() + " to " + comm.getIP() + ":" + comm.getPort());
+        }
+        
+    }
+    
+    public void sendCommand(CommandMotions cms, byte customSpeed) {
+        try {
+            comm.write(cms.command(customSpeed));
+        } catch (IOException ex) {
+            System.out.println("Error sending command " + cms.toString() + " to " + comm.getIP() + ":" + comm.getPort());
+        }
+    }
+
+    @Override
+    public Parse getParser() {
+        return myParser;
+    }
+    
+}

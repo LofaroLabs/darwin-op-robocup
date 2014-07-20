@@ -1,0 +1,40 @@
+CLASSES {
+
+Start
+gotoBall
+ApproachBall
+WalkForward
+Stop
+kickBall
+gotoPose
+ApproachTarget
+LocateBall
+GotoWhileFacing
+GotoPoseWhileLookingBackwards
+GotoWhileFacingGoalie
+Declare Kiddie
+Declare Support
+Declare Safety
+Undeclare
+Defer
+WaitOrAgain
+WaitInitial
+Done
+Failed
+GoalKickWithLoss
+Pass
+PassToGoal
+PassWithFailSignal
+Receive
+ReceiveWithSignal
+SetPlay1A
+SetPlay1AWithFail
+SetPlay1AWithFailRedo
+SetPlay1AWithFailRedoTerm
+SetPlay1B
+SetPlay1BWithFail
+ } 
+CATEGORICAL {
+YelledReady[X->Me] NotReady Ready
+
+ } 

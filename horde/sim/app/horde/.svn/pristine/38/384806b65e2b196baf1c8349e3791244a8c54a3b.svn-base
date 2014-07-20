@@ -1,0 +1,58 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
+package sim.app.horde.scenarios.robot.darwin.comm;
+
+import com.google.gson.Gson;
+import java.io.UnsupportedEncodingException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import sim.app.horde.scenarios.robot.comm.DefaultParser;
+import sim.app.horde.scenarios.robot.darwin.features.DarwinFeature;
+
+/**
+ *
+ * @author drew
+ */
+public class DarwinParser extends DefaultParser {
+
+    private final Object lock = new Object[0];
+    Gson json = new Gson();
+    DarwinFeature feature;
+    private double detectBall;
+    
+    @Override
+    public void setInput(byte[] input) {
+        super.setInput(input); 
+        
+        synchronized(lock) {
+            
+            String readings = new String(input);
+            feature = json.fromJson(readings, DarwinFeature.class);
+            
+        }
+    }
+
+    // make methods to access the features.
+    
+    public double detectBall() {
+        synchronized(lock) {
+            return feature.ballDetect;
+        }
+    }
+
+    public double getDistanceToBall() {
+        synchronized(lock) {
+            double dist = Math.sqrt(feature.ballX * feature.ballX + feature.ballY * feature.ballY);
+            System.err.println(dist);
+            return dist;
+        }
+    }
+   
+    
+    
+    
+}

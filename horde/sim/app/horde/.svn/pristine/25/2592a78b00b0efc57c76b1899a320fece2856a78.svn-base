@@ -1,0 +1,75 @@
+package sim.app.horde.agent;
+
+import java.awt.*;
+import java.util.*;
+import java.awt.*;
+
+import sim.app.horde.*;
+import sim.app.horde.behaviors.*;
+import sim.portrayal.*;
+import sim.util.*;
+import sim.portrayal.simple.*;
+
+public class SimControllerAgent extends SimAgent implements Controller
+    {
+    static final long serialVersionUID = 1L;
+        
+    ControllerAgent controller;
+        
+    RobotIcon icon = new RobotIcon();
+    AbstractShapePortrayal2D myBottom = 
+        new RectanglePortrayal2D()  // it's roughly rectangular so we can use that to do hit testing
+            {
+            public void draw(Object object, Graphics2D graphics, DrawInfo2D info)
+                {
+                icon.setDimension(new Dimension((int)(info.draw.width * scale), (int)(info.draw.height * scale)));
+                icon.paintIcon(null, graphics, (int)(info.draw.x - info.draw.width * scale / 2.0),
+                    (int)(info.draw.y - info.draw.height * scale / 2.0));
+                }
+            };      
+                
+    // draw in bright pink, and twice as large as the other agents
+    public void draw(Object object, Graphics2D graphics, DrawInfo2D info)
+        {
+        setScale(1 + maxLeafDistance());
+        setPaint(Color.pink);
+        op2d.child = bottom = myBottom;  // reset it
+        super.draw(object, graphics, info);
+        }
+
+    public static final double JUMP = 0.95;
+    public void driftToPose(Double2D location, double orientation)  
+        {
+        Double2D loc = getLocation();
+        if (loc == null)
+            {
+            loc = location;
+            }
+        //else if (location.distanceSq(loc) <= 1.0)  // really cloxe
+//                      loc = location;
+        else 
+            {
+            loc = new Double2D(
+                loc.x * JUMP + location.x * (1-JUMP),
+                loc.y * JUMP + location.y * (1-JUMP));
+            }
+        setPose(loc, orientation);
+        }
+        
+        
+        
+    /** Routed to ControllerAgent */
+        
+    public Object clone()
+        {
+        SimControllerAgent clone = (SimControllerAgent)(super.clone());
+        if (clone.controller != null)
+            clone.controller = (ControllerAgent)(clone.controller.clone());
+                
+        }
+                
+    public void setup(ec.util.ParameterDatabase db, Horde horde) { controller.setup(db, horde); }
+    public ArrayList<AgentGroup> getSubsidiaryAgents() { return controller.getSubsidiaryAgents(); }
+    public int maxLeafDistance() { return controller.maxLeafDistance(); }
+
+    }

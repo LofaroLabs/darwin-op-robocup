@@ -1,0 +1,58 @@
+CLASSES {
+
+Start
+gotoBall
+ApproachBall
+WalkForward
+Stop
+kickBall
+gotoPose
+ApproachTarget
+LocateBall
+GotoWhileFacing
+GotoPoseWhileLookingBackwards
+GotoWhileFacingGoalie
+Declare Kiddie
+Declare Support
+Declare Safety
+Undeclare
+Defer
+WaitOrAgain
+WaitInitial
+Done
+Failed
+AttackerReady
+DecideDefensePositionsV4
+DecideOffensePositionsV4
+DeclareKiddieOrPassV4
+Defend
+DefenderReady
+DefenseHFAV4
+DefenseKiddieV4
+DefenseSafetyV4
+DefenseSupportV4
+DoReady
+KiddieApproach
+KiddieOrPassV3
+KiddieSoccer
+OffenseDefenseSoccerV4
+OffenseSafetyV4
+OffenseSupportV4
+OffenseV4
+ReadySet
+ReadySetPlay
+RefboxSoccer
+Safety
+SoccerWithKiddie
+SupportKitty
+SupportReady
+UndeclareThenDefenseHFAV4
+UndeclareThenOffenseV4
+ } 
+CONTINUOUS {
+Safety Declared
+ } 
+CATEGORICAL {
+Taken Safety Role NotTakenRole TakenRole
+
+ } 

@@ -1,0 +1,73 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
+package sim.app.horde.scenarios.robot.darwin.comm;
+
+import com.google.gson.Gson;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import sim.app.horde.scenarios.robot.comm.Communication;
+import sim.app.horde.scenarios.robot.comm.Parse;
+
+/**
+ * Used to read the features.
+ * @author drew
+ */
+public class DarwinFeatureComm extends Communication {
+
+    private BufferedReader br;
+    Gson json = new Gson();
+    
+    public DarwinFeatureComm(String host, int port, Parse parser, byte readDelayMS) throws IOException {
+        super(host, port, parser, readDelayMS);
+    }
+
+    @Override
+    protected void read() {
+        try {
+            
+            String line = br.readLine();
+            if (line != null)
+                this.myParser.setInput(line.getBytes());
+        } catch (IOException ex) {
+            Logger.getLogger(DarwinComm.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        
+    }
+
+    @Override
+    protected void makeClientConnection() throws IOException {
+        super.makeClientConnection(); 
+         br = new BufferedReader(new InputStreamReader(in));
+ 
+    }
+
+    @Override
+    public void run() {
+        super.run(); //To change body of generated methods, choose Tools | Templates.
+    }
+    
+    
+    @Override
+    public void startSending() {
+        
+    }
+
+    @Override
+    public void terminateSending() {
+        
+    }
+    
+    
+    
+    
+    
+    
+}

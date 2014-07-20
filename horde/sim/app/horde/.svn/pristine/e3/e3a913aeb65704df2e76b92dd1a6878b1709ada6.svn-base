@@ -1,0 +1,11 @@
+BEHAVIORS manipulate the agent in some way.  Behaviors are divided into two basic
+categories:
+
+	- BASIC BEHAVIORS are hard-coded manipulators.
+
+	- MACROS are finite-state automata whose states are other behaviors.
+	  Importantly, TRAINABLE MACROS are Macros whos transition functions
+	  are decision trees based on FEATURES of the environment.
+
+Trainable macros, once learned, are serialized and saved out in the subdirectory
+'trained'.  All other behaviors are defined in the "basic.behaviors" file.

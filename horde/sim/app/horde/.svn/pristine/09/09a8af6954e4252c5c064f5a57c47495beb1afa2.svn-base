@@ -1,0 +1,38 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
+package sim.app.horde.scenarios.robot.flockbots;
+
+import sim.app.horde.*;
+import sim.engine.SimState;
+
+public class FlockbotHordeWithUI extends SimHordeWithUI
+	{
+    
+	public FlockbotHordeWithUI()
+	{
+	this(new FlockbotHorde(System.currentTimeMillis()));
+	}
+
+	public FlockbotHordeWithUI(SimState state)
+	{
+	super(state);
+	}
+
+        @Override
+	public void setupPortrayals()
+		{
+		setupAgentsAndPlacesPortrayals();
+		}
+
+
+
+	public static void main(String[] args)
+		{
+		new FlockbotHordeWithUI().createController();
+		}
+	}
+

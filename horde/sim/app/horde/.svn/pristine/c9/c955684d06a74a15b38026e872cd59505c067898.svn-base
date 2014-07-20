@@ -1,0 +1,40 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
+package sim.app.horde.scenarios.robot.darwin.comm;
+
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import sim.app.horde.scenarios.robot.comm.IParse;
+import sim.app.horde.scenarios.robot.comm.StringComm;
+
+/**
+ * 
+ * @author drew
+ */
+public class DarwinComm extends StringComm {
+
+    public DarwinComm(String host, int port, IParse parser, byte readDelayMS) throws IOException {
+        super(host, port, parser, readDelayMS);
+    }
+
+    @Override
+    public void startSending() {
+        try {
+            System.err.println("in Start Sending");
+            this.write("hi".getBytes());// must send something to get it to start sending me features.
+        } catch (IOException ex) {
+            Logger.getLogger(DarwinComm.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    @Override
+    public void terminateSending() {
+        //does nothing.
+    }
+    
+}

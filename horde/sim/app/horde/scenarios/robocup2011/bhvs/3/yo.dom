@@ -1,0 +1,15 @@
+CLASSES {
+
+Start
+Sevo
+Glen
+Stop
+Forward
+Backward
+Left-Turn
+Right-Turn
+Left-Step
+Right-Step
+Kick-Left
+Kick-Right
+ } 

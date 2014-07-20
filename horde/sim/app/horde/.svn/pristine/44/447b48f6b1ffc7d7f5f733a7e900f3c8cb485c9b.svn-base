@@ -1,0 +1,54 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
+package sim.app.horde.scenarios.robot.darwin;
+
+import java.io.IOException;
+import sim.app.horde.scenarios.robot.IRobot;
+import sim.app.horde.scenarios.robot.behaviors.ICommandMotions;
+import sim.app.horde.scenarios.robot.comm.Communication;
+import sim.app.horde.scenarios.robot.comm.IParse;
+
+/**
+ *
+ * @author drew
+ */
+public class Darwin implements IRobot{
+
+    
+    
+    private Communication sendBehaviorComm, readFeaturesComm;
+    private byte speed = 10;
+    private IParse myParser;
+    /**
+     * May need two communication managers to manage the sending of commands and
+     * the receiving of the features.
+     * @param sendBehaviorComm
+     * @param readFeaturesComm 
+     */
+    public Darwin(Communication sendBehaviorComm, Communication readFeaturesComm) {
+        this.sendBehaviorComm = sendBehaviorComm;
+        this.readFeaturesComm = readFeaturesComm;
+        myParser = readFeaturesComm.getParser();
+    }
+    
+    
+    
+    @Override
+    public void sendCommand(ICommandMotions cms) {
+        try {
+            sendBehaviorComm.write(cms.command(speed));
+        } catch (IOException ex) {
+            System.err.println("Error sending command to " + sendBehaviorComm.getIP() + ":" + sendBehaviorComm.getPort() + "\n" + ex);
+        }
+    }
+
+    @Override
+    public IParse getParser() {
+        return myParser;
+    }
+    
+}
