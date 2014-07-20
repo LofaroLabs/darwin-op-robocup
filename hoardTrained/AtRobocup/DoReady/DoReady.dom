@@ -1,0 +1,41 @@
+CLASSES {
+
+Start
+gotoBall
+ApproachBall
+WalkForward
+Stop
+kickBall
+gotoPose
+ApproachTarget
+LocateBall
+GotoWhileFacing
+GotoPoseWhileLookingBackwards
+GotoWhileFacingGoalie
+Declare Kiddie
+Declare Support
+Declare Safety
+Undeclare
+Defer
+WaitOrAgain
+WaitInitial
+Done
+Failed
+AttackerReady
+DefenderReady
+DoReady
+KiddieOrPass
+KiddieSoccer
+NoDefaultKiddieSoccer
+OffenseDefenseSoccer
+PrimaryApproach
+SoccerWithKiddie
+SupportReady
+ } 
+CATEGORICAL {
+Done NotDone Done
+
+ } 
+CONTINUOUS {
+PlayerID
+ } 

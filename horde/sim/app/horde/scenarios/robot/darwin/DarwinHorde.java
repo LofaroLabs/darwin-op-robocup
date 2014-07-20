@@ -138,8 +138,9 @@ public class DarwinHorde extends SimHorde{
                                         }
 				});
 			}
-
+/*
     bag = markers.getObjectsAtLocation(new Double2D(60, 40));
+    
         for(int i = 0; i < bag.size(); i++)
         	{
         	final VirtualAgent particle = (VirtualAgent)(bag.get(i));
@@ -168,7 +169,7 @@ public class DarwinHorde extends SimHorde{
                                         }
 				});
 			}
-
+*/
 
         
         }
