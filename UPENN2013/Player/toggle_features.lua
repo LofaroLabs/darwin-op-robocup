@@ -204,7 +204,7 @@ function process_keyinput()
 	role = (role+1)%5
    	wcm.set_horde_role(role); 	
     end
---[[    if(byte == string.byte('o')) then
+   if(byte == string.byte('o')) then
 	goalDist = (goalDist +1) %3;
      end
 	if(byte == string.byte('z')) then
@@ -212,7 +212,7 @@ function process_keyinput()
 	end
 	if(byte == string.byte('x')) then
 		wcm.set_horde_timeOut((wcm.get_horde_timeOut()+1)%2)
-	end]]--
+	end
   end
   --vcm.set_vision_enable(1);
 end
@@ -268,7 +268,7 @@ wcm.set_horde_dummyTraining(0);
    
    
    
-   if(goalDist ==0) then
+   if(goalDist ==0 or true) then
    --let localization handle
 	--vcm.set_vision_enable(1)
    elseif(goalDist ==1) then

@@ -254,7 +254,7 @@ function detect(color)
         -- is there green under the ball?
         if (green_ratio<th_min_green_ratio) then
           setDebugTrue()
-	  Speak.talk("Green Check fail");
+	  --Speak.talk("Green Check fail");
 	  setDebugFalse()  
 	  vcm.add_debug_message("Green check fail");
 	  valid = false;
@@ -268,7 +268,7 @@ function detect(color)
       v = HeadTransform.coordinatesA(postStats.centroid, scale);
       if v[3] < goal_height_min then
 	setDebugTrue();
-	Speak.talk("height check fail");
+	--Speak.talk("height check fail");
         vcm.add_debug_message(string.format("Height check fail:%.2f\n",v[3]));
         setDebugFalse();
 	valid = false; 
