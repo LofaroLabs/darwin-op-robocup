@@ -24,17 +24,25 @@ public class AttackerReadyPosition extends Target implements Real{
     // seems to be important to have the same so setting it to 1
     private static final long serialVersionUID = 1;
     
-    
+    /*
     Double2D positiveAttackReadyPos = new Double2D(7.0, 0);
     Double2D negativeAttackReadyPos = new Double2D(-7.0, 0);
     
     Double2D realPositiveAttackReadyPos = new Double2D(.7, 0);
     Double2D realNegativeAttackReadyPos = new Double2D(-0.7, 0);
+    */
+    
+    
+    Double2D positiveAttackReadyPos = new Double2D(9.0, 0);
+    Double2D negativeAttackReadyPos = new Double2D(-9.0, 0);
+    
+    Double2D realPositiveAttackReadyPos = new Double2D(.9, 0);
+    Double2D realNegativeAttackReadyPos = new Double2D(-0.9, 0);
     
     
     @Override
     public String toString() {
-        return "Attacker Ready Position (+/-.7, 0)"; // this is the position between the robot and the goal post
+        return "Attacker Ready Position (+/-.9, 0)"; // this is the position between the robot and the goal post
     }
 
     @Override

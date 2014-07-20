@@ -24,8 +24,18 @@ public class DynamicPassLocation extends Target implements Real{
     // seems to be important to have the same so setting it to 1
     private static final long serialVersionUID = 1;
     
-    /* // ROBOCUP values uncomment at robocup and put on the robots!!!
+     // ROBOCUP values uncomment at robocup and put on the robots!!!
     // FOR ROBOCUP!!! = ((|lengthOfField| - .75, |1.25|
+    // lengthOfField = 9m
+    Double2D positivePassToBallPositive = new Double2D(8.25, -1.25);
+    Double2D negativePassToBallPositive = new Double2D(-8.25, -1.25); // not going to use since always attacking +
+    
+    
+    Double2D positivePassToBallNegative = new Double2D(8.25, 1.25);
+    Double2D negativePassToBallNegative = new Double2D(-8.25, 1.25); // not going to use since always attacking +
+    
+    
+    /*
     Double2D positivePassToBallPositive = new Double2D(2.25, -0.75);
     Double2D negativePassToBallPositive = new Double2D(-2.25, -0.75);
     
@@ -33,15 +43,6 @@ public class DynamicPassLocation extends Target implements Real{
     Double2D positivePassToBallNegative = new Double2D(2.25, 0.75);
     Double2D negativePassToBallNegative = new Double2D(-2.25, 0.75);
     */
-    
-    
-    Double2D positivePassToBallPositive = new Double2D(2.25, -0.75);
-    Double2D negativePassToBallPositive = new Double2D(-2.25, -0.75);
-    
-    
-    Double2D positivePassToBallNegative = new Double2D(2.25, 0.75);
-    Double2D negativePassToBallNegative = new Double2D(-2.25, 0.75);
-    
     
     @Override
     public String toString() {

@@ -25,17 +25,23 @@ public class SupportReadyPosition extends Target implements Real{
     // seems to be important to have the same so setting it to 1
     private static final long serialVersionUID = 1;
     
-    
+    /*
     Double2D positiveSupportReadyPos = new Double2D(13.0, -7.0);
     Double2D negativeSupportReadyPos = new Double2D(-13.0, 7.0);
     
     Double2D realPositiveSupportReadyPos = new Double2D(1.3, -0.7);
     Double2D realNegativeSupportReadyPos = new Double2D(-1.3, 0.7);
+    */
     
+    Double2D positiveSupportReadyPos = new Double2D(15.2, -12.2);
+    Double2D negativeSupportReadyPos = new Double2D(-15.2, 12.2);
+    
+    Double2D realPositiveSupportReadyPos = new Double2D(1.52, -1.22);
+    Double2D realNegativeSupportReadyPos = new Double2D(-1.52, 1.22);
     
     @Override
     public String toString() {
-        return "Support Ready Position (+/-1.3, -/+.7)"; // this is the position between the robot and the goal post
+        return "Support Ready Position (+/-1.52, -/+1.22)"; // this is the position between the robot and the goal post
     }
 
     @Override
