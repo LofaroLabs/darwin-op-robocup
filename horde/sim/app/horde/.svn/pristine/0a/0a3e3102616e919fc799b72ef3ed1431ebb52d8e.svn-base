@@ -1,0 +1,9 @@
+TRANSITIONS are classes which tell a macro when it can and should
+transition away from a given behavior and which new behavior it should
+transition to.  There are two classes here:
+
+	- Basic TRANSITIONS, which you can hard-code however you like
+
+	- LEARNABLE TRANSITIONS, which gather examples, and then learn
+	  decision trees (or other classifiers in theory) from those
+	  examples to provide the behaviors (classes) to transition to.

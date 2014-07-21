@@ -7,23 +7,23 @@ require('vector')
 
 world={};
 world.n = 200;--David: is this number of particles?
-world.xLineBoundary = 2.74;--UPDATED
-world.yLineBoundary = 1.8;--UPDATED
+world.xLineBoundary = 4.5;--UPDATED
+world.yLineBoundary = 3.0;--UPDATED
 --world.xMax = 4;
-world.xMax = 2.74; --UPDATED, this was 20 cm beyond border for some reason though....
-world.yMax = 1.8;--UPDATED (20cm thing)
-world.goalWidth = 1.64;   --UPDATED -- c currently measured outside.  inside yellow is 1.41 outside is 1.64
-world.goalHeight= 0.85;   --UPDATED -- come back
-world.goalDiameter=0.115; --UPDATED -- diameter of a post
+world.xMax = 4.5; --UPDATED, this was 20 cm beyond border for some reason though....
+world.yMax = 3.0;--UPDATED (20cm thing)
+world.goalWidth = 2.44; --robocup done  --UPDATED -- c currently measured outside.  inside yellow is 1.41 outside is 1.64
+world.goalHeight= 1.14;   --UPDATED -- come back
+world.goalDiameter=0.108; --UPDATED -- diameter of a post
 world.ballYellow= {{0,0.0}};-- idk used to b 4.5,0
 world.ballCyan= {{0,0.0}};--idk, used to be -4.5,0
 world.postYellow = {};
 -- field length is 548 cm, 5.48m
-world.postYellow[1] = {2.74, 0.82};-- UPDATED
-world.postYellow[2] = {2.74, -0.82};--UPDATED 
+world.postYellow[1] = {4.5, 1.22};-- UPDATED
+world.postYellow[2] = {4.5, -1.22};--UPDATED 
 world.postCyan = {};
-world.postCyan[1] = {-2.74, -0.82}; --UPDATED
-world.postCyan[2] = {-2.74, 0.82}; -- UPDATED
+world.postCyan[1] = {-4.5, -1.22}; --UPDATED
+world.postCyan[2] = {-4.5, 1.22}; -- UPDATED
 world.spot = {};
 world.spot[1] = {-1.16, 0};--UPDATED--center to + sign, 116cm -- radius 56
 world.spot[2] = {1.16, 0};--UPDATED
@@ -39,15 +39,15 @@ world.Lcorner[4]={-2.74,-1.80};
 world.Lcorner[5]={0,1.80};
 world.Lcorner[6]={0,-1.80};
 --Penalty box edge --UPDATED SECTION
-world.Lcorner[7]={-2.26,.82};--226cm,82cm 2.26 is from center field to penalty box first piece of tape
-world.Lcorner[8]={-2.26,-.82};
-world.Lcorner[9]={2.26,.82};
-world.Lcorner[10]={2.26,-.82};
+world.Lcorner[7]={-3.9,.82};--226cm,82cm 2.26 is from center field to penalty box first piece of tape
+world.Lcorner[8]={-3.9,-.82};
+world.Lcorner[9]={3.9,.82};
+world.Lcorner[10]={3.9,-.82};
 --Penalty box T edge --UPDATED SECTION -- 2.74 is the field edge
-world.Lcorner[11]={2.74,.82};
-world.Lcorner[12]={2.74,-.82};
-world.Lcorner[13]={-2.74,.82};
-world.Lcorner[14]={-2.74,-.82};
+world.Lcorner[11]={4.5,.82};
+world.Lcorner[12]={4.5,-.82};
+world.Lcorner[13]={-4.5,.82};
+world.Lcorner[14]={-4.5,-.82};
 --Center circle junction --UPDATED SECTION
 world.Lcorner[15]={0,0.56};
 world.Lcorner[16]={0,-0.56};

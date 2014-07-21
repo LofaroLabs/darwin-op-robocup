@@ -1,0 +1,6 @@
+sim.app.horde.scenarios.robot.flockbots.features.BumpSensor
+sim.app.horde.scenarios.robot.flockbots.features.IRSensor 0
+sim.app.horde.scenarios.robot.flockbots.features.IRSensor 1
+sim.app.horde.scenarios.robot.flockbots.features.IRSensor 2
+sim.app.horde.scenarios.robot.flockbots.features.IRSensor 3
+sim.app.horde.scenarios.robot.flockbots.features.IRSensor 4

@@ -1,0 +1,213 @@
+%%%
+%%%
+%%%
+%%% The SEANMACROS Macro file
+%%%
+%%% Chock full of goodies that you might find useful!
+%%%
+%%% I am putting together a collection of macros that I use all the time here.
+%%% More will show up later.
+
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesClass{seanmacros}[2009/09/06]
+
+%%% Some packages we need to use
+\RequirePackage{color}
+\RequirePackage{ifthen}
+\RequirePackage{epsfig}
+\RequirePackage{calc}
+\RequirePackage{amssymb}
+\RequirePackage{amsxtra}
+%\RequirePackage[normalem]{ulem}
+
+% Smileys.
+% Usage example:      Happy {\smiley} Sad {\frowny} Blah {\blahy}
+% Note the commands are surrounded in { ... }
+
+\newcommand\frowny{\(\bigcirc\hspace{-0.82em}_{\smash{\stackrel{}{\stackrel{\hspace{0.02em}.\hspace{0.1em}.}{\hspace{0.004em}\smallfrown}}}}\hspace{0.15em}\)}
+\newcommand\smiley{\(\bigcirc\hspace{-0.815em}_{\smash{\stackrel{}{\stackrel{\hspace{0.04em}.\hspace{0.1em}.}{\hspace{0.007em}\smallsmile}}}}\hspace{0.15em}\)}
+\newcommand\blahy{\(\bigcirc\hspace{-0.81em}_{\smash{\stackrel{}{\stackrel{\hspace{0.04em}.\hspace{0.1em}.}{\hspace{0.007em}-}}}}\hspace{0.15em}\)}
+
+%%% option declarations
+\newboolean{showchanges}
+\setboolean{showchanges}{false}
+\DeclareOption{showchanges}{%
+	\typeout{}
+	\typeout{---- Reminder: to use the showchanges option, seanmacros must be}
+	\typeout{declared after all margin width changes!}
+	\typeout{}
+	\setboolean{showchanges}{true}
+}
+\newboolean{forprinter}
+\setboolean{forprinter}{false}
+\DeclareOption{forprinter}{\setboolean{forprinter}{true}}
+%%% mathptm  uses ugly large symbols -- we set them back to the normal ones
+%%% If you include the [bigsym] option
+\DeclareOption{bigsym}{%
+	\typeout{}
+	\typeout{---- Reminder: to use the bigsym option, seanmacros must be}
+	\typeout{declared AFTER mathptm! }
+	\typeout{}
+	\DeclareSymbolFont{largesymbols}{OMX}{cmex}{m}{n}
+}
+\newboolean{fixacm}
+\setboolean{fixacm}{false}
+\DeclareOption{fixacm}{\setboolean{fixacm}{true}}
+%%% acm style files, which are evil and stupid, delete margin paragraphs among other idiotic decisions.
+%%% This feature turns them back on again.
+\DeclareOption{fixacm}{%
+\def\marginpar{%
+  \ifhmode
+    \@bsphack
+    \@floatpenalty -\@Mii
+  \else
+    \@floatpenalty-\@Miii
+  \fi
+  \ifinner
+    \@parmoderr
+    \@floatpenalty\z@
+  \else
+    \@next\@currbox\@freelist{}{}%
+    \@next\@marbox\@freelist{\global\count\@marbox\m@ne}%
+       {\@floatpenalty\z@
+        \@fltovf\def\@currbox{\@tempboxa}\def\@marbox{\@tempboxa}}%
+  \fi
+  \@ifnextchar [\@xmpar\@ympar}
+\long\def\@xmpar[#1]#2{%
+  \@savemarbox\@marbox{#1}%
+  \@savemarbox\@currbox{#2}%
+  \@xympar}
+\long\def\@ympar#1{%
+  \@savemarbox\@marbox{#1}%
+  \global\setbox\@currbox\copy\@marbox
+  \@xympar}
+\long\def \@savemarbox #1#2{%
+  \global\setbox #1%
+    \color@vbox
+      \vtop{%
+        \hsize\marginparwidth
+        \@parboxrestore
+        \@marginparreset
+        #2%
+        \@minipagefalse
+        \outer@nobreak
+        }%
+    \color@endbox
+}
+}
+\ProcessOptions
+
+%%% \ignore{TEXT}
+%%% Comments out the text.
+\newcommand\ignore[1]{}
+
+%%%  \usepackage[showchanges]{seanmacros} 
+%%%	Turns on use of showchanges facility
+%%%  \ch[explanation]{oldtext}{newtext}
+%%%	If showchanges facility is on, then oldtext is displayed in red, and newtext in blue.
+%%%	Additionally, if forprinter is on, then the text is shown in the format
+%%%	<<oldtext|>|>newtext>> where |> is a right-facing triangle.  
+%%%	If showchanges facility is off, then only newtext is displayed (and not in color).
+%%%	explanation adds a comment which is shown (in blue) as a margin paragraph.
+%%%	The idea here is that you can display changes by showing the text that was
+%%%	changed in red, and the text you changed it to in blue.
+%%%  \chl{explanation}{oldtext}{newtext}
+%%%	Identical to \ch[explanation]{oldtext}{newtext}.  Old command -- deprecated.
+%%%  \co[comment]
+%%%	Adds a comment as a blue margin paragraph, which will disappear if showchanges is on
+%%% \com{comment}
+%%%	identical to \co[comment].  Old command -- deprecated
+%%% \ann[explanation]{text}
+%%%	Annotates the text by (if showchanges is on) hilighting it in blue, and (if forprinter is also
+%%%	on) putting the text in the form <<text>> plus adding explanation as a blue margin paragraph.
+%%%	If showchanges is off, then the plain text is shown.
+%%%
+%%%	Note: does NOT work inside footnotes (because margin paragraphs are problematic there)
+
+\setlength{\marginparsep}{3pt}
+
+% set the margin paragaph width to 0.25 inches in from the margins.  This is because many
+% printers cannot print in the final 0.25 inches of the margin on a document.
+\setlength{\marginparwidth}{\paperwidth-\textwidth-\oddsidemargin-\hoffset-\marginparsep-1in-0.25in}
+
+% A better margin paragraph according to the LaTeX Companion
+%\newcommand\marginlabel[1]{\mbox{}\marginpar{\raggedright\hspace{0pt}#1}}
+%The \mbox in that code appears to break pdftex so it doesn't complete paragraph
+% colors properly.  Here's a workaround?
+\newcommand\marginlabel[1]{\marginpar{\raggedright\hspace{0pt}#1}}
+
+% \maybecreatebox[text]{color}     \ifthenelse\equal{#2}{}
+% make a tiny margin paragraph of the given color with text; 
+% but if there is no text, don't make a marginpar (saving a float)
+\newcommand{\maybemarginpar}[2]{\marginlabel{\tiny{\color{#1}#2}}}
+
+\newcommand{\co}[1][]{\ifthenelse{\equal{#1}{}}{}{\ifthenelse{\boolean{showchanges}}{\maybemarginpar{blue}{\ifthenelse{\boolean{forprinter}}{\(\langle\langle\rightarrow\)}{}#1}}{}}}
+\newcommand{\com}[1]{\co[#1]}
+\newcommand{\ann}[2][]{\com{#1}\ifthenelse{\boolean{showchanges}}
+		{\ifthenelse{\boolean{forprinter}}
+			{\mbox{\(\langle\langle\)}{\color{blue}#2}\mbox{\(\rangle\rangle\)}}
+			{{\color{blue}#2}}}
+		{#2}}
+\newcommand{\ch}[3][]{\com{#1}\ifthenelse{\boolean{showchanges}}
+		{\ifthenelse{\boolean{forprinter}}
+			{\mbox{\(\langle\langle\)}{\color{red}#2}\mbox{\(\triangleright\triangleright\)}{\color{blue}#3}\mbox{\(\rangle\rangle\)}}
+			{{\color{red}#2}{\color{blue}#3}}}
+		{#3}}
+\newcommand{\chl}[3]{\ch[#1]{#2}{#3}}
+
+\definecolor{darkgreen}{rgb}{0,0.5,0}
+\newcommand{\coa}[1][]{\ifthenelse{\equal{#1}{}}{}{\ifthenelse{\boolean{showchanges}}{\maybemarginpar{darkgreen}{\ifthenelse{\boolean{forprinter}}{\(\mid\vdash\rightarrow\)}{}#1}}{}}}
+\newcommand{\coma}[1]{\coa[#1]}
+\newcommand{\anna}[2][]{\coma{#1}\ifthenelse{\boolean{showchanges}}
+		{\ifthenelse{\boolean{forprinter}}
+			{\mbox{\(\mid\vdash\)}{\color{darkgreen}#2}\mbox{\(\dashv\mid\)}}
+			{{\color{darkgreen}#2}}}
+		{#2}}
+\newcommand{\cha}[3][]{\coma{#1}\ifthenelse{\boolean{showchanges}}
+		{\ifthenelse{\boolean{forprinter}}
+			{\mbox{\(\mid\vdash\)}{\color{red}#2}\mbox{\(\triangleright\triangleright\)}{\color{darkgreen}#3}\mbox{\(\dashv\mid\)}}
+			{{\color{red}#2}{\color{darkgreen}#3}}}
+		{#3}}
+\newcommand{\chla}[3]{\cha[#1]{#2}{#3}}
+	
+\definecolor{purple}{rgb}{0.5,0,0.5}
+\newcommand{\cob}[1][]{\ifthenelse{\equal{#1}{}}{}{\ifthenelse{\boolean{showchanges}}{\maybemarginpar{purple}{\ifthenelse{\boolean{forprinter}}{\(\mid\prec\rightarrow\)}{}#1}}{}}}
+\newcommand{\comb}[1]{\cob[#1]}
+\newcommand{\annb}[2][]{\comb{#1}\ifthenelse{\boolean{showchanges}}
+		{\ifthenelse{\boolean{forprinter}}
+			{\mbox{\(\mid\prec\)}{\color{purple}#2}\mbox{\(\succ\mid\)}}
+			{{\color{purple}#2}}}
+		{#2}}
+\newcommand{\chb}[3][]{\comb{#1}\ifthenelse{\boolean{showchanges}}
+		{\ifthenelse{\boolean{forprinter}}
+			{\mbox{\(\mid\prec\)}{\color{red}#2}\mbox{\(\triangleright\triangleright\)}{\color{purple}#3}\mbox{\(\succ\mid\)}}
+			{{\color{red}#2}{\color{purple}#3}}}
+		{#3}}
+\newcommand{\chlb}[3]{\chb[#1]{#2}{#3}}
+	
+		
+%%% \puteps{file-without-extension}{width}{caption}{label}
+%%%	Makes a one-column eps figure, set with [tbhp]
+
+\newcommand{\puteps}[4]{
+	\begin{figure}[tbhp]
+	\begin{center}
+	\psfig{file={#1},width={#2}}
+	\end{center}
+	\caption{#3}
+	\label{#4}
+	\end{figure}
+	}
+
+%%% \user
+%%% Makes a tilde suitable for placing into URLs (unlike the standard tilde , which is too high)
+\newcommand{\user}{\(\sim\)}
+
+%%% \aside{text}
+%%%	Turns on display of aside -- this is like \com except that it ALWAYS appears in red
+%%%	regardless of the value of showchanges
+\newcommand{\aside}[1]{\textbf{\color{red}{[#1]}}}
+
+%%% I include this because it's almost ALWAYS the case
+\sloppy
+

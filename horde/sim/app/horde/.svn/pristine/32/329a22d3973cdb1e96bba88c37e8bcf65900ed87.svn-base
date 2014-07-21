@@ -1,0 +1,142 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
+package sim.app.horde.scenarios.robot.darwin.comm;
+
+import com.google.gson.Gson;
+import sim.app.horde.scenarios.robot.comm.DefaultParser;
+import sim.app.horde.scenarios.robot.darwin.features.DarwinFeature;
+
+/**
+ *
+ * @author drew
+ */
+public class DarwinParser extends DefaultParser {
+
+    private final Object lock = new Object[0];
+    Gson json = new Gson();
+    DarwinFeature feature;
+    
+    // how long since we last saw the ball until we declare the ball lost in miliseconds
+    long untilLost = 3000;// 3 seconds
+    // time that the ball was last seen.
+    long lastTimeSeen;
+    
+    double distanceLastSeen;
+    @Override
+    public void setInput(byte[] input) {
+        super.setInput(input); 
+        
+        synchronized(lock) {
+            
+            String readings = new String(input);
+            feature = json.fromJson(readings, DarwinFeature.class);
+            if(feature.ballDetect == 1)
+                distanceLastSeen = Math.sqrt(feature.ballX * feature.ballX + feature.ballY * feature.ballY);
+            else
+                distanceLastSeen = 9001;
+        }
+        
+        System.err.println("Current Distance To ball: " + getDistanceToBall());
+        System.err.println("Done Front Aproach: " + doneFrontApproach());
+        getBallLost();
+    }
+
+    // make methods to access the features.
+    
+    public double detectBall() {
+        synchronized(lock) {
+            System.err.println("Detect Ball: " + feature.ballDetect);
+            return feature.ballDetect;
+        }
+    }
+    
+    public double getDistanceLastSeen() {
+        synchronized(lock) {
+            System.err.println("Distance Last Seen: " + distanceLastSeen);
+            return distanceLastSeen;
+        }
+        
+    }
+
+    public double getDistanceToBall() {
+        synchronized(lock) {
+            double dist = Math.sqrt(feature.ballX * feature.ballX + feature.ballY * feature.ballY);
+            System.err.println(dist);
+            return dist;
+        }
+    }
+
+    public double getPoseX() {
+        synchronized(lock) {
+            System.err.println("Pose X: " + feature.poseX);
+            return feature.poseX;
+        }
+    }
+
+    public double getPoseY() {
+        synchronized(lock) {
+            System.err.println("Pose Y: " + feature.poseY);
+            return feature.poseY;
+        }
+    }
+
+    public double getPoseAngle() {
+        synchronized(lock) {
+            System.err.println("Pose Angle: " + feature.poseA);
+            return feature.poseA;
+        }
+    }
+
+    public double getBallX() {
+        synchronized(lock) {
+            System.err.println("Ball X: " + feature.ballX);
+            return feature.ballX;
+        }
+    }
+   public double getBallY() {
+        synchronized(lock) {
+            System.err.println("Ball Y: " + feature.ballY);
+            return feature.ballY;
+        }
+    }
+
+    public double doneFrontApproach() {
+        synchronized(lock) {
+            System.err.println("done Front Approach: " + feature.doneFrontApproach);
+            return feature.doneFrontApproach;
+        }
+    }
+    
+    
+    public double getBallLost() {
+        // if the ball is lost for >=5 times in a row then it is lost
+        // otherwise it is visible
+        synchronized(lock) {
+            // lost
+            if (feature.ballDetect <= 0.0) {
+                
+                if (Math.abs(System.currentTimeMillis() - lastTimeSeen) >= untilLost) {
+                    
+                    System.err.println("Ball Lost");
+                    return 1.0; // 
+                }
+                else {
+                    System.err.println("Ball Not seen but within time period where it is not lost");
+                    return 0.0;
+                } // still we believe we will see it we just missed it
+            }
+            else {
+                System.err.println("Ball Found");
+                lastTimeSeen = System.currentTimeMillis();
+                return 0.0; // we saw the ball.
+            }
+        }
+    }
+    
+    
+    
+}

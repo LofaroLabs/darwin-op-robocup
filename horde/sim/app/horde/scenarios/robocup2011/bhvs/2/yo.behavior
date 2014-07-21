@@ -1,0 +1,95 @@
+ ( targets 3 A B C )
+ ( features 1  ( feature Ball-X 0 0 )  )
+( behavior-names 11 1  Start Sevo Stop Forward Backward Left-Turn Right-Turn Left-Step Right-Step Kick-Left Kick-Right )
+
+%%% ----- 0 ------
+ ( behavior Start 0 )
+
+%%% ----- 1 ------
+ ( trainable-macro Sevo 0  ( targets 3 A B C )
+ ( behaviors 10 Start Stop  null  null Left-Turn Right-Turn  null  null  null  null )
+ ( features 1  ( feature Ball-X 0 0 ) )
+( domain 
+	( classes Start Stop Forward Backward Left-Turn Right-Turn Left-Step Right-Step Kick-Left Kick-Right ) 
+	( continuous Ball-X ) )
+ ( transitions
+ ( learned-transition 
+ ( tree 
+ ( leaf true 1 1 )
+ )
+
+ ( features 1  ( feature Ball-X 0 0 ) )
+)
+
+ ( learned-transition 
+ ( tree 
+ ( continuous 0 532.0 1
+ ( continuous 0 50.00000000000001 -1
+ ( leaf true 4 3 )
+ ( leaf true 1 5 )
+ )
+ ( leaf true 5 2 )
+ )
+ )
+
+ ( features 1  ( feature Ball-X 0 0 ) )
+)
+
+ null  null  ( learned-transition 
+ ( tree 
+ ( continuous 0 192.0 1
+ ( leaf true 4 4 )
+ ( continuous 0 420.5 0
+ ( leaf true 1 2 )
+ ( leaf true 5 1 )
+ )
+ )
+ )
+
+ ( features 1  ( feature Ball-X 0 0 ) )
+)
+
+ ( learned-transition 
+ ( tree 
+ ( continuous 0 368.00000000000006 -1
+ ( continuous 0 183.0 0
+ ( leaf true 4 1 )
+ ( leaf true 1 2 )
+ )
+ ( leaf true 5 3 )
+ )
+ )
+
+ ( features 1  ( feature Ball-X 0 0 ) )
+)
+
+ null  null  null  null )
+)
+
+%%% ----- 2 ------
+ ( behavior Stop 0 )
+
+%%% ----- 3 ------
+ ( behavior Forward 0 )
+
+%%% ----- 4 ------
+ ( behavior Backward 0 )
+
+%%% ----- 5 ------
+ ( behavior Left-Turn 0 )
+
+%%% ----- 6 ------
+ ( behavior Right-Turn 0 )
+
+%%% ----- 7 ------
+ ( behavior Left-Step 0 )
+
+%%% ----- 8 ------
+ ( behavior Right-Step 0 )
+
+%%% ----- 9 ------
+ ( behavior Kick-Left 0 )
+
+%%% ----- 10 ------
+ ( behavior Kick-Right 0 )
+

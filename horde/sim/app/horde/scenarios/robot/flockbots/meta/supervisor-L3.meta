@@ -1,0 +1,8 @@
+# Things that need to be defined elsewhere:
+#    - Basic agent pool size(s)
+#    - Number of top level controllers
+#    - Whether or not we're training the controller (This could be done by selecting an agent in SimHorde, maybe)
+#    - What is the top level agent meta?
+#
+# Top level agent name
+name=na

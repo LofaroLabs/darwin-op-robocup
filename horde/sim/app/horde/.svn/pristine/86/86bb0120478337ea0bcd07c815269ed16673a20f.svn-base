@@ -1,0 +1,171 @@
+package sim.app.horde.agent;
+
+import java.awt.*;
+import java.util.*;
+import java.awt.*;
+
+import sim.app.horde.*;
+import sim.app.horde.behaviors.*;
+import sim.portrayal.*;
+import sim.util.*;
+import sim.portrayal.simple.*;
+
+public class SimControllerAgent extends SimAgent implements Controller
+    {
+    static final long serialVersionUID = 1L;
+        
+    RobotIcon icon = new RobotIcon();
+    AbstractShapePortrayal2D myBottom = 
+        new RectanglePortrayal2D()  // it's roughly rectangular so we can use that to do hit testing
+            {
+            public void draw(Object object, Graphics2D graphics, DrawInfo2D info)
+                {
+                icon.setDimension(new Dimension((int)(info.draw.width * scale), (int)(info.draw.height * scale)));
+                icon.paintIcon(null, graphics, (int)(info.draw.x - info.draw.width * scale / 2.0),
+                    (int)(info.draw.y - info.draw.height * scale / 2.0));
+                }
+            };      
+                
+    // draw in bright pink, and twice as large as the other agents
+    public void draw(Object object, Graphics2D graphics, DrawInfo2D info)
+        {
+        setScale(1 + maxLeafDistance());
+        setPaint(Color.pink);
+        op2d.child = bottom = myBottom;  // reset it
+        super.draw(object, graphics, info);
+        }
+
+    public static final double JUMP = 0.95;
+    public void driftToPose(Double2D location, double orientation)  
+        {
+        Double2D loc = getLocation();
+        if (loc == null)
+            {
+            loc = location;
+            }
+        else 
+            {
+            loc = new Double2D(
+                loc.x * JUMP + location.x * (1-JUMP),
+                loc.y * JUMP + location.y * (1-JUMP));
+            }
+        setPose(loc, orientation);
+        }
+        
+        
+        
+
+    /// DIRECT COPY FROM CONTROLLERAGENT
+        
+    ArrayList<AgentGroup> subsidiaryAgents;
+    int maxLeafDistance = -1;  // indicates that the distance has not yet been set
+
+    public ArrayList<AgentGroup> getSubsidiaryAgents() { return subsidiaryAgents; }
+        
+    public Object clone()
+        {
+        ControllerAgent clone = (ControllerAgent)(super.clone());
+        clone.subsidiaryAgents = new ArrayList(subsidiaryAgents);
+                
+        // deep clone subsidiary agents.  Not sure if we need to do this
+        for(int i = 0; i < clone.subsidiaryAgents.size(); i++)
+            {
+            AgentGroup ag = (AgentGroup)(clone.subsidiaryAgents.get(i).clone());
+            ag.controller = this;
+            clone.subsidiaryAgents.set(i, ag);
+            }
+        return clone;
+        }
+        
+    /** Though this is public -- because interfaces (see Controller.java) must be public --
+        do NOT call this method.  Instead, call setup(AgentGroup, String, Horde) */
+    public void setup(ec.util.ParameterDatabase db)
+        {
+        // NOTE: we call super.setup() last, so we can get our subsidiary agents
+        // set up first here
+                
+        // at this point horde has been set (in Agent.setup(...), so we can use it
+                
+        // Load groups with a single agent in them.  We can use that to prototype clone
+        int numSubs = db.getInt(P_NUM_SUBS, null, 1);
+        if (numSubs < 1) throw new RuntimeException("Invalid number of subsidiaries in Agent " + this.name);
+        for(int i = 0; i < numSubs ; i++)
+            subsidiaryAgents.add(new AgentGroup(this, db, P_SUB.push("" + i), horde));
+        super.setup(db);
+        }               
+        
+    /** Called by Agent.setup(ParameterDatabase, Horde).  Note that this is in turn
+        called by ControllerAgent.setup(ParameterDatabase, Horde), so subsidiaryAgents has been
+        already set up. */
+    public Behavior[] provideJointBehaviors(ec.util.ParameterDatabase db)
+        {
+        if (db.exists(P_NUM_JOINTS))  // is it heterogeneous?
+            {
+            System.err.println("Heterogeneous Controller Agent.  Loading Joint Behaviors: " + this.name);
+            if (subsidiaryAgents.size() == 1)  // hmmmm
+                System.err.println("WARNING.  Joint behaviors provided for homogeneous agents.  Hope you know what you're doing: " + this.name);
+                                
+            int numJoints = db.getInt(P_NUM_JOINTS, null, 0);
+            if (numJoints < 1) throw new RuntimeException("Invalid number of joint behaviors in Agent " + this.name);
+                        
+            // Create joints
+            Behavior[] joints = new Behavior[numJoints];
+            for(int i = 0; i < numJoints ; i++)
+                joints[i] = new JointBehavior(this, db, P_JOINT.push("" + i));
+            return joints;
+            }
+        else if (subsidiaryAgents.size() == 1)  // is it homogeneous?
+            {
+            System.err.println("Homogeneous Controller Agent.  Creating Joint Behaviors: " + this.name);
+            boolean all = db.getBoolean(P_ALLOW_ALL_BEHAVIORS, null, false);  // all behaviors or just macros?
+            if (all) System.err.println("Allowing *all* joint behaviors.");
+            Agent sub = (Agent)(subsidiaryAgents.get(0).agents.get(0));
+                        
+            // count the joints to load
+            int count = 0;
+            for(int i = 0; i < sub.behavior.behaviors.length; i++)
+                {
+                Behavior behavior = sub.behavior.behaviors[i];
+                if (behavior instanceof TrainableMacro || all)
+                    count++;
+                }
+            Behavior[] joints = new Behavior[count];
+                        
+            // load the joints
+            int count2 = 0;
+            for(int i = 0; i < sub.behavior.behaviors.length; i++)
+                {
+                Behavior behavior = sub.behavior.behaviors[i];
+                if (behavior instanceof TrainableMacro || all)
+                    joints[count2++] = new JointBehavior(this, behavior);
+                }
+            return joints;
+            }
+        else
+            {
+            throw new RuntimeException("Heterogeneous Controller Agent with no joint behaviors defined: " + this.name);
+            }
+        }
+
+    public int maxLeafDistance()
+        {
+        if (maxLeafDistance != -1)
+            return maxLeafDistance;
+                        
+        int dist = 1;
+
+        for (AgentGroup group : subsidiaryAgents)
+            if (group.getAgent(0) instanceof Controller)
+                {
+                Controller sub = (Controller) group.getAgent(0);
+                int subDist = sub.maxLeafDistance();
+
+                if (dist < subDist + 1)
+                    dist = subDist + 1;
+                }
+                                
+        maxLeafDistance = dist;
+        return dist;
+        }
+
+    }

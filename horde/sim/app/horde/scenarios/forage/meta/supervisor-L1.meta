@@ -1,0 +1,8 @@
+# controller name className
+controller Supervisor-L1 sim.app.horde.scenarios.forage.Supervisor
+# subordinate name className max min pref
+subordinate Forager sim.app.horde.scenarios.forage.Forager 5 1 5
+
+# Define allowable joint behaviors for heterogeneous
+#jointbehavior alias a1:b1 a2:b2 ... one per subordinate
+#jointbehavior Scout Forager:Wander Seeker:Seek

@@ -1,0 +1,26 @@
+package sim.app.horde.scenarios.forage.targets;
+
+import sim.app.horde.Horde;
+import sim.app.horde.Targetable;
+import sim.app.horde.agent.Agent;
+import sim.app.horde.behaviors.Macro;
+import sim.app.horde.scenarios.forage.Supervisor;
+import sim.app.horde.targets.Target;
+
+public class ClosestBiggestAttachedAgent extends Target
+    {
+    private static final long serialVersionUID = 1L;
+
+    public Targetable getTargetable(Agent agent, Macro parent, Horde horde)
+        {
+        if (agent.getController() != null)
+        	return ((Supervisor)agent.getController()).attachedAgent();
+        
+        return ((Supervisor)agent).attachedToBiggestBox();
+        }
+        
+    public String toString()
+        {
+        return "Biggest Attached Agent in Swarm";
+        }
+    }

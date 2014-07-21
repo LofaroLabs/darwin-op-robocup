@@ -87,7 +87,7 @@ end
 function update()
 	ballx = wcm.get_ball_x();
 	bally = wcm.get_ball_y();
-	scaleFactor = 14*(math.abs(ballx)+math.abs(bally));
+	scaleFactor = 13*(math.abs(ballx)+math.abs(bally));
 	rotateVel = 0;
 	--util.poseRelative(
 	angleToBall = math.atan2(bally,ballx);

@@ -1,0 +1,128 @@
+package sim.app.horde.agent;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import sim.app.horde.behaviors.Behavior;
+
+public class AgentGroup
+	{
+	// FUTURE: Target/max/min agent size
+	private List<Agent> agents = new ArrayList<Agent>();
+	private String type;
+	private Controller controller;
+
+	public AgentGroup(String agentType)
+		{
+		this.type = agentType;
+		}
+
+	public Agent getAgent(int index)
+		{
+		return agents.get(index);
+		}
+
+	public List<Agent> getAgents()
+		{
+		return agents;
+		}
+
+	public String getAgentType()
+		{
+		return type;
+		}
+
+	public Controller getController()
+		{
+		return controller;
+		}
+
+	public void setController(Controller controller)
+		{
+		this.controller = controller;
+		}
+
+	public int getSize()
+		{
+		return agents.size();
+		}
+
+	// TODO: This probably needs to go in a SimAgentGroup class
+	public void setSize(int size)
+		{
+		if (size > agents.size())
+			{
+
+			}
+		else
+			{
+			while (agents.size() > size)
+				{
+				SimAgent agent = (SimAgent) (agents.remove(agents.size() - 1));
+				agent.stoppable.stop();
+				agents.remove(agent);
+				}
+			}
+		}
+
+	public void addAgent(Agent agent)
+		{
+		if (agents.size() == 0
+				|| (agents.get(0).getName().equals(agent.agentName) && !agents.contains(agent)))
+			agents.add(agent);
+
+		agent.setGroup(this);
+		}
+
+	public int numControllers()
+		{
+		int count = 0;
+
+		if (agents.size() > 0 && agents.get(0) instanceof Controller)
+			for (int i = 0; i < agents.size(); i++)
+				{
+				count += ((Controller) agents.get(i)).numControllers();
+				}
+
+		return count;
+		}
+
+	public boolean agentManipulated()
+		{
+
+		if (agents.size() > 0 && agents.get(0) instanceof Controller)
+			{
+			for (int i = 0; i < agents.size(); i++)
+				if (((Controller) agents.get(i)).hasManipulated()) return true;
+			}
+		else
+			for (int i = 0; i < agents.size(); i++)
+				if (agents.get(i).getManipulated() != null) return true;
+
+		return false;
+		}
+
+	public int totalAgents()
+		{
+		int count = 0;
+
+		if (agents.size() > 0 && agents.get(0) instanceof Controller)
+			for (int i = 0; i < agents.size(); i++)
+				{
+				count += ((Controller) agents.get(i)).totalAgents();
+				}
+		else
+			count = agents.size();
+
+		return count;
+		}
+
+	public void setBehavior(Behavior b)
+		{
+		for (int i = 0; i < agents.size(); i++)
+			agents.get(i).setBehavior(b);
+		}
+	// GET TRAINING AGENT?
+	// DISTRIBUTE AND RESTART?? (RESET??)
+	// KEEP TRACK OF TRAINING AGENT??
+	}

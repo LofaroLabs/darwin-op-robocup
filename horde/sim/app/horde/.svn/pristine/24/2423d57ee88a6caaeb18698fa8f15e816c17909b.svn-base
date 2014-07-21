@@ -1,0 +1,34 @@
+ ( targets 3 A B C )
+ ( features 1  ( feature Ball-X 0 0 )  )
+( behavior-names 10 0  Start Stop Forward Backward Left-Turn Right-Turn Left-Step Right-Step Kick-Left Kick-Right )
+
+%%% ----- 0 ------
+ ( behavior Start 0 )
+
+%%% ----- 1 ------
+ ( behavior Stop 0 )
+
+%%% ----- 2 ------
+ ( behavior Forward 0 )
+
+%%% ----- 3 ------
+ ( behavior Backward 0 )
+
+%%% ----- 4 ------
+ ( behavior Left-Turn 0 )
+
+%%% ----- 5 ------
+ ( behavior Right-Turn 0 )
+
+%%% ----- 6 ------
+ ( behavior Left-Step 0 )
+
+%%% ----- 7 ------
+ ( behavior Right-Step 0 )
+
+%%% ----- 8 ------
+ ( behavior Kick-Left 0 )
+
+%%% ----- 9 ------
+ ( behavior Kick-Right 0 )
+

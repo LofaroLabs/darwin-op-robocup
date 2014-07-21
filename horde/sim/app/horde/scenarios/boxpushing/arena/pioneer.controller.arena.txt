@@ -1,0 +1,9 @@
+size 200 200
+basicpool PioneerAgent sim.app.horde.scenarios.boxpushing.PioneerAgent 1 Magenta
+basicpool FlockbotLeft sim.app.horde.scenarios.robot.flockbots.FlockbotAgent 1 Magenta
+basicpool FlockbotRight sim.app.horde.scenarios.robot.flockbots.FlockbotAgent 1 Magenta
+
+
+# controller name count
+controller Commander 1
+

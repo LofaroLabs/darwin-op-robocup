@@ -1,0 +1,49 @@
+package sim.app.horde.agent;
+
+import java.util.List;
+
+import sim.app.horde.behaviors.*;
+
+public interface Controller
+{
+
+	/**
+	 * Get the number of subsidiary agents below this controller
+	 * 
+	 * @return Total subsidiary agents
+	 */
+	public abstract int getNumSubsidiaryAgents();
+
+	/**
+	 * Get the number of subsidiary agents below this controller of the specified agent type
+	 * 
+	 * @return Total subsidiary agents
+	 */
+	public abstract int getNumSubsidiaryAgents(String agentType);
+	
+	public abstract AgentGroup addAgentGroup(String agentType);
+
+	public abstract void addSubsidiaryAgent(Agent a);
+	
+	public abstract List<Agent> getSubsidiaryAgents(String agentName);
+
+	public abstract int[] getBasicAgentAlloc();
+
+	public abstract void setBasicAgentAlloc(int[] basicAgentAlloc);
+	
+	public abstract void distribute(Agent[][] basic, int[] agentIndex);
+
+	public abstract int numControllers();
+	
+	public abstract GroupBehavior [] groupBehaviors();
+	
+	public abstract int totalAgents();
+	
+	public abstract int maxLeafDistance();
+	
+	public abstract boolean hasManipulated();
+	
+	public abstract boolean hasSomeoneFinished();
+	
+	public abstract boolean isTraining();
+}

@@ -146,7 +146,7 @@ function sendFeatures (client)
        
         
 	--	print(" difference is : " .. tostring(Body.get_time() - sendFeaturesTimer));
-		if(Body.get_time() - sendFeaturesTimer < .025) then 
+		if(false or  Body.get_time() - sendFeaturesTimer < .025) then 
 	--		print("is not sending")	
 			return;
 		end
@@ -227,6 +227,10 @@ function sendFeatures (client)
 	--print("sending some features, yo\n");-- wcm.set_horde_doneFrontApproach("true");
        -- print(json.encode(features) .. "\n");
 		features["ackNumber"] = ackNumber;
+		
+setDebugTrue();
+		print("yeah i'm sending");
+		--Speak.talk("sending");
 		client:settimeout(.01);
 		client:send(json.encode(features) .. "\n");
         -- Send the features to horde via the client
@@ -314,7 +318,8 @@ function connectToHorde(port)
 		local socket = require("socket")
                 local server = assert(socket.bind("*", port))
                 local client = server:accept()
-              	return client;
+              	unix.usleep(.5 * 1E6);
+		return client;
 end
 lastReceivedState = nil;
 lastStateForTime = 0
@@ -370,7 +375,7 @@ connectionThread = function ()
 	--		print("sending request");
 			local line, err = nil,nil
 			clientReceiveTimer = Body.get_time();
-			if(Body.get_time() - lastTimeReceived > .025) then	
+			if( true or Body.get_time() - lastTimeReceived > .025) then	
 				line,err = client:receive() -- read in horde commands
 				lastTimeReceived = Body.get_time();
 			end
@@ -559,10 +564,12 @@ connectionThread = function ()
 						setDebugFalse();
 						updateAction(line, client);
 						i = 0
-						while i<100 do
-							updateAll();		
-							unix.usleep(.005 * 1E6);
-							i=i+1;
+						if string.find(line,"kick") then
+							while i<100 do
+								updateAll();		
+								unix.usleep(.005 * 1E6);
+								i=i+1;
+							end
 						end	
 						lastReceivedState = action;
 					end

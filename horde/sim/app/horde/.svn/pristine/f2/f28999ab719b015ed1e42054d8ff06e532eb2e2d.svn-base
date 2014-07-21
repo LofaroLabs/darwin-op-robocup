@@ -1,0 +1,563 @@
+package sim.app.horde.agent;
+
+import java.io.File;
+import java.io.FilenameFilter;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Scanner;
+
+import sim.app.horde.Horde;
+import sim.app.horde.SimHorde;
+import sim.app.horde.behaviors.JointBehavior;
+
+/**
+ * The AgentMeta instances collectively describe controller agent hierarchy.
+ * Each agent type has an agent name and className. Each controller has a list
+ * of subordinate agent groups whose size is loosely defined in the agent
+ * metadata. Each group has an associated agent name and className (agents
+ * within a group are of the same type). Subordinate controller agents are
+ * represented by additional AgentMeta instances.
+ * 
+ * It is uncertain yet whether there is benefit to having agent metadata for
+ * basic agents (which could eliminate the need for the controller property).
+ * 
+ * @author mrbill
+ * 
+ */
+
+public class AgentMeta
+	{
+	private static final String AGENT_META_EXTENSION = "meta";
+	private static Map<String, AgentMeta> allMeta;
+	private String name; // Unique agent name
+	private String className; // Agent class name
+	private Map<String, JointBehavior> jointBehaviors = new LinkedHashMap<String, JointBehavior>();
+
+	// Use a map so that each subordinate has a unique name
+	private Map<String, Subordinate> subordinates = new LinkedHashMap<String, Subordinate>();
+	private boolean controller = true;
+
+	// Initially load all available agent metadata when the class is loaded
+	static
+		{
+		loadMeta();
+		}
+
+	private AgentMeta(String name, String className)
+		{
+		this.name = name;
+		this.className = className;
+		}
+
+	/**
+	 * Load all available agent metadata
+	 */
+	private static void loadMeta()
+		{
+		allMeta = new HashMap<String, AgentMeta>();
+
+		try
+			{
+			FilenameFilter pbmonly = new FilenameFilter()
+				{
+					public boolean accept(File dir, String name)
+						{
+						return name.endsWith(AGENT_META_EXTENSION);
+						}
+				};
+
+			// Find and load all agent metadata property files
+			String[] list = new File(Horde.getPathInDirectory(Horde.AGENT_META_DIRECTORY)).list(pbmonly);
+			if (list != null && list.length > 0)
+				{
+				for (int i = 0; i < list.length; i++)
+					{
+					try
+						{
+						System.out.println("Loading " + Horde.AGENT_META_DIRECTORY + list[i]);
+						AgentMeta m = load(Horde.AGENT_META_DIRECTORY + list[i]);
+						if (m != null) allMeta.put(m.name, m);
+						} catch (Exception e)
+						{
+						e.printStackTrace();
+						}
+					}
+				}
+			else
+				{
+				System.out.println("No controller metadata was found.");
+				}
+			} catch (Exception e)
+			{
+			e.printStackTrace();
+			}
+		}
+
+	public static AgentMeta getMeta(String name)
+		{
+		return allMeta.get(name);
+		}
+
+	/**
+	 * Create a controller agent hierarchy using the agent metadata. The
+	 * resulting controller hierarchy is later populated with the basic agent
+	 * pool.
+	 * 
+	 * @param parentControllers This is used to determine if the agent hierarchy
+	 *            includes a controller loop
+	 * @param basicAgentTypes The name of the basic agent types that will be
+	 *            distributed in the agent hierarchy below this agent
+	 * @param poolSize The pool sizes allocated to the subtree of this agent
+	 * 
+	 * @return The agent and it's subAgent hierarchy
+	 */
+	public Agent createAgent(List<String> parentControllers, Horde horde, int[] poolSize)
+		{
+		/*
+		 * BUILDTREE(Nodetype N, Number of leaf nodes q) t = new node of type N
+		 * if t is a leaf node if q != 0 throw error // something went wrong
+		 * else return t else G = child type for N counts = DIVVY(N, q) children
+		 * = Node[size of counts] for i from 0 to size of counts - 1 children[i]
+		 * = BUILDTREE(G, counts[i]) return children[i]
+		 */
+		// TODO: Allow for some control over whether groups are auto-populated
+		// or populated from an existing pool of basic agents.
+		String[] basicAgentTypes = horde.basicAgentNames();
+
+		Agent a = null;
+		try
+			{
+			Class agentClass = Class.forName(className);
+
+			// Continue building the skeleton if this is a controller
+			if (controller)
+				{
+
+				Constructor constructor = agentClass.getConstructor(new Class[]
+					{ Horde.class });
+				a = (Agent) constructor.newInstance(horde);
+				a.agentName = name;
+
+				if (parentControllers.contains(a.agentName))
+					{
+					throw new RuntimeException("Detected a cycle in the controller agent hierarchy");
+					}
+
+				Controller ctl = (Controller) a;
+				ctl.setBasicAgentAlloc(poolSize);
+				parentControllers.add(a.agentName);
+				ctl.setJointBehaviors(jointBehaviors.values()); 
+
+				// Allocate leaves to the sub-groups
+				// first dimension is group, second is leaf type
+				int[][] leafAlloc = new int[subordinates.size()][poolSize.length];
+
+				for (int i = 0; i < basicAgentTypes.length; i++)
+					{
+					int[] alloc = leafAllocMax(basicAgentTypes[i], poolSize[i]);
+
+					System.err.println(basicAgentTypes[i] + " -> ");
+					for (int j = 0; j < alloc.length; j++)
+					{
+						leafAlloc[j][i] = alloc[j];
+						System.err.print(alloc[j] + " "); 
+					}
+					System.err.println(); 
+					}
+
+				// Iterate through the sub-groups of the controller just created
+				int subIndex = 0;
+				for (Subordinate sub : subordinates.values())
+					{
+					AgentMeta sam = allMeta.get(sub.agentName);
+
+					// Create the subcontrollers
+					if (sam != null && sam.controller)
+						{
+						int[][] allocs = heteroDivvy(basicAgentTypes, leafAlloc[subIndex], sub.max);
+
+						for (int i = 0; i < allocs[0].length; i++) // TODO:
+																	// Check on
+																	// the index
+																	// 0 thing
+							{
+							int[] alloc = new int[basicAgentTypes.length];
+
+							for (int j = 0; j < alloc.length; j++)
+								alloc[j] = allocs[j][i];
+
+							Agent subController = sam.createAgent(parentControllers, horde, alloc);
+							// Behavior b = new
+							// TrainableMacro(sam.name).reset(horde,
+							// subController);
+							// subController.setBehavior(b);
+							subController.setAgentName(sam.getAgentName());
+							ctl.addSubsidiaryAgent(subController);
+
+							// Don't want controller in separate branch flagging
+							// a cycle
+							parentControllers.remove(parentControllers.size() - 1);
+							}
+						}
+					// This agent type is not a controller, so it must be a
+					// group of basic agents
+					else
+						{
+						ctl.addAgentGroup(sub.agentName);
+						}
+					subIndex++;
+					}
+				}
+			} catch (ClassNotFoundException e)
+			{
+			System.out.println("Agent class " + className + " not found");
+			e.printStackTrace();
+			} catch (InstantiationException e)
+			{
+			System.out.println("Unable to instantiate agent class " + className);
+			e.printStackTrace();
+			} catch (IllegalAccessException e)
+			{
+			System.out.println("Unable to instantiate agent class " + className);
+			e.printStackTrace();
+			} catch (SecurityException e)
+			{
+			System.out.println("Unable to instantiate agent class " + className);
+			e.printStackTrace();
+			} catch (NoSuchMethodException e)
+			{
+			System.out.println("Constructor not found to instantiate agent class " + className);
+			e.printStackTrace();
+			} catch (IllegalArgumentException e)
+			{
+			System.out.println("Unable to invoke constructor to instantiate agent class "
+					+ className);
+			e.printStackTrace();
+			} catch (InvocationTargetException e)
+			{
+			System.out.println("Unable to invoke constructor to instantiate agent class "
+					+ className);
+			e.printStackTrace();
+			}
+
+		return a;
+		}
+
+	public String getAgentName()
+		{
+		return name;
+		}
+
+	public String getAgentClassName()
+		{
+		return className;
+		}
+
+	/**
+	 * Load agent meta data from a properties file
+	 * 
+	 * @param fileName Properties filename
+	 * 
+	 * @return meta data
+	 */
+	public static AgentMeta load(String resource)
+		{
+		Scanner scan = null;
+		AgentMeta meta = new AgentMeta("Controller", "sim.app.horde.agent.ControllerAgent");
+		
+		try
+			{
+			scan = new Scanner(new InputStreamReader(SimHorde.class.getResourceAsStream(resource),
+					"UTF-8"));
+			} catch (UnsupportedEncodingException e)
+			{
+			System.err.println("For some reason, UTF-8 isn't supported.");
+			e.printStackTrace();
+			return null;
+			}
+		while (scan.hasNext())
+			{
+			String tok = scan.next().trim();
+			if (tok.startsWith("#")) // comment
+				{
+				scan.nextLine();
+				continue;
+				}
+			// Basic Agent Pool: The basic agent name, class name,
+			// (initial) number of agents in the pool, and the color name of the
+			// agents
+			else if (tok.equals("subordinate"))
+				{
+				String val = scan.nextLine().trim();
+				Scanner vscan = new Scanner(val);
+				String agentName = vscan.next();
+				String agentClassName = vscan.next();
+				int max = vscan.nextInt();
+				int min = vscan.nextInt();
+				int pref = vscan.nextInt();
+
+				meta.addSubordinate(new Subordinate(agentName, agentClassName, max, min, pref));
+				}
+			else if (tok.equals("controller"))
+				{
+				String val = scan.nextLine().trim();
+				Scanner vscan = new Scanner(val);
+				meta.name = vscan.next();
+				meta.className = vscan.next();
+				}
+			else if (tok.equals("jointbehavior"))
+				{
+				String val = scan.nextLine().trim();
+				Scanner vscan = new Scanner(val);
+				String alias = vscan.next();
+				JointBehavior jb = new JointBehavior(alias, null);
+				
+				while (vscan.hasNext())
+				{
+					Scanner bscan = new Scanner(vscan.next());
+					bscan.useDelimiter(":"); 
+					String agentName = bscan.next();
+					String behaviorName = bscan.next();
+					
+					if (behaviorName != null)
+						{
+						jb.setAgentBehavior(agentName, behaviorName);
+						}
+					bscan.close();
+				}
+				meta.jointBehaviors.put(alias, jb);
+				vscan.close(); 
+				}
+			
+				
+			}
+		scan.close();
+
+		return meta;
+		}
+
+	private void addSubordinate(Subordinate subordinate)
+		{
+		subordinates.put(subordinate.agentName, subordinate);
+		controller = true;
+		}
+
+	/**
+	 * The maximum number of sub-agents of a named type. If the controller has
+	 * no agents of the named type, return 0
+	 * 
+	 * @param agentName Sub-agent name
+	 * 
+	 * @return Maximum sub-agents for this controller of the named type
+	 */
+	public int max(String agentName)
+		{
+		Subordinate sub = subordinates.get(agentName);
+
+		if (sub != null)
+			return sub.max;
+		else
+			return 0;
+		}
+
+	/**
+	 * The minimum number of sub-agents of a named type. If the controller has
+	 * no agents of the named type, return 0
+	 * 
+	 * @param agentName Sub-agent name
+	 * 
+	 * @return Minimum sub-agents for this controller of the named type
+	 */
+	public int min(String agentName)
+		{
+		Subordinate sub = subordinates.get(agentName);
+
+		if (sub != null)
+			return sub.min;
+		else
+			return 0;
+		}
+
+	/**
+	 * Get the maximum number of leaves of the specified type for the subtree
+	 * associated with this controller
+	 * 
+	 * @param leafType The agent name associated for this leaf type
+	 * 
+	 * @return Maximum number of leaf of type leafType for this subtree
+	 */
+	public int maxLeaves(String leafType)
+		{
+		int leaves = 0;
+
+		for (Subordinate sub : subordinates.values())
+			{
+			AgentMeta subController = allMeta.get(sub.agentName);
+
+			if (subController != null)
+				leaves += sub.max * subController.maxLeaves(leafType);
+			else if (leafType.equals(sub.agentName)) leaves += sub.max;
+			}
+		return leaves;
+		}
+
+	/**
+	 * Get the minimum number of leaves of the specified leaf type for the
+	 * subtrees associated with this controller
+	 * 
+	 * @param leafType The agent name associated for this leaf type
+	 * 
+	 * @return Minimum number of leaf of type leafType for this subtree
+	 */
+	public int minLeaves(String leafType)
+		{
+		int leaves = 0;
+
+		for (Subordinate sub : subordinates.values())
+			{
+			AgentMeta subController = allMeta.get(sub.agentName);
+
+			if (subController != null)
+				leaves += sub.min * subController.minLeaves(leafType);
+			else if (leafType.equals(sub.agentName)) leaves += sub.min;
+			}
+		return leaves;
+		}
+
+	/**
+	 * For a given leaf type and leaf allocation, determine the number of
+	 * children in the group for THIS controller and the number of leaves for
+	 * each child
+	 * 
+	 * @param leafType The agent name associated for this leaf type
+	 * @param leavesAvailable The number of leaves allocated to this controller
+	 * @param maxN The maximum number of instances of this controller as defined
+	 *            by the parent controller
+	 * 
+	 * @return Array of leaf allocations. The length of the array defines the
+	 *         number of subcontrollers (or leaves)
+	 */
+	public int[] divvy(String leafType, int leavesAvailable, int maxN)
+		{
+		int min = minLeaves(leafType);
+		
+		if (min > leavesAvailable)
+			throw new RuntimeException("Not enough leaves of type " + leafType + " for controller "
+					+ name);
+
+		int size = (int) Math.max(Math.floor(leavesAvailable) / maxLeaves(leafType),
+				Math.min(Math.floor(leavesAvailable / min), maxN));
+
+		return distributeLeaves(leavesAvailable, size);
+		}
+
+	private int[] distributeLeaves(int leavesAvailable, int size)
+		{
+
+		int[] alloc = new int[size];
+
+		for (int i = 0; i < size; i++)
+			{
+			alloc[i] = (int) Math.floor(leavesAvailable / (size - i));
+			leavesAvailable -= alloc[i];
+			}
+
+		return alloc;
+		}
+
+	/**
+	 * Determine the number of leaves to allocate to each subgroup below this
+	 * controller
+	 * 
+	 * @param leafType The agent name associated for this leaf type
+	 * @param poolSize The number of leaves allocated to this controller
+	 * 
+	 * @return List of integers, one per subgroup indicating allocation of
+	 *         leaves allocated to each subgroup
+	 */
+	public int[] leafAllocMax(String leafType, int poolSize)
+		{
+		int[] alloc = new int[subordinates.size()];
+		int totalMax = 0;
+		int subIndex = 0;
+
+		for (Subordinate sub : subordinates.values())
+			{
+			AgentMeta child = allMeta.get(sub.agentName);
+
+			if (child != null)
+				alloc[subIndex] = sub.max * child.maxLeaves(leafType);
+			else if (sub.agentName.equals(leafType))
+				alloc[subIndex] = sub.max;
+
+			totalMax += alloc[subIndex];
+			subIndex++;
+			}
+
+		int leftOver = poolSize - totalMax;
+
+		if (leftOver > 0) 
+		{
+			for (int i = 0; i < alloc.length; i++)
+				{
+				alloc[i] = (int) Math.floor(poolSize * alloc[i] / totalMax);
+				leftOver -= alloc[i];
+				}
+
+			// Assign the leftovers left to right (should be in order of highest
+			// leftover fraction, but do that later)
+			int i = 0;
+	
+			while (leftOver > 0)
+				{
+				alloc[i]++;
+				leftOver--;
+				}
+		}
+
+		return alloc;
+		}
+
+	/**
+	 * Given an array of leaf pool types and another array of leaf pool sizes
+	 * for those leaf types determine the number of children in the group for
+	 * THIS controller
+	 * 
+	 * @return The leaf allocations for each leaf type. First dimension is leaf
+	 *         type and second dimension is number of nodes (or leaves) in the
+	 *         group.
+	 */
+	public int[][] heteroDivvy(String[] leafType, int[] poolSize, int maxN)
+		{
+		int[][] hAlloc = new int[leafType.length][0];
+		int minSize = Integer.MAX_VALUE;
+
+		for (int i = 0; i < leafType.length; i++)
+			{			
+			hAlloc[i] = divvy(leafType[i], poolSize[i], maxN);
+
+			if (hAlloc[i].length < minSize)
+				{
+				minSize = hAlloc[i].length;
+				}
+			}
+
+		// Now shrink the number of nodes and redistribute the leaves
+		for (int i = 0; i < leafType.length; i++)
+			{
+
+			if (hAlloc[i].length > minSize)
+				{
+				hAlloc[i] = distributeLeaves(poolSize[i], minSize);
+				}
+			}
+
+		return hAlloc;
+		}
+	}

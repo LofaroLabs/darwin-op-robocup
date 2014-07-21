@@ -1,0 +1,37 @@
+CLASSES {
+
+Start
+gotoBall
+ApproachBall
+WalkForward
+Stop
+kickBall
+gotoPose
+ApproachTarget
+LocateBall
+GotoWhileFacing
+GotoPoseWhileLookingBackwards
+GotoWhileFacingGoalie
+Declare Kiddie
+Declare Support
+Declare Safety
+Undeclare
+Defer
+WaitOrAgain
+WaitInitial
+Done
+Failed
+KiddieSoccer
+NoDefaultKiddieSoccer
+ } 
+CONTINUOUS {
+DistanceToBall
+ } 
+CATEGORICAL {
+BallLostTimeout Detected NotDetected
+
+ } 
+CATEGORICAL {
+SomeoneYelledReady NotReady Ready
+
+ } 

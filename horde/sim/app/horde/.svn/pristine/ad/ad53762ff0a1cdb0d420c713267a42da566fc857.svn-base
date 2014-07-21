@@ -1,0 +1,64 @@
+digraph G {
+rankdir=BT
+
+Horde
+Agent
+
+Body
+Obstacle
+Marker
+
+Targeting
+Targetable
+
+Target
+Wrapper
+Parameter
+Me
+
+Feature
+CategoricalFeature
+ToroidalFeature
+Done
+
+Behavior
+DoneBehavior
+Macro
+TrainableMacro
+
+Transition
+LearnedTransition
+
+Horde->Agent [label="has"]
+Horde->Obstacle [label="has some"]
+Agent->Targetable [label="is"]
+Body->Targetable [label="is"]
+Marker->Targetable [label="is"]
+Obstacle->Body [label="is"]
+Behavior->Targeting [label="is"]
+Feature->Targeting [label="is"]
+
+Target->Targetable [label="gets data from"]
+Targeting->Target [label="has some"]
+
+Wrapper->Target [label="is"]
+Wrapper->Target [label="has"]
+Parameter->Target [label="is"]
+Horde->Parameter [label="has some"]
+Me->Target [label="is default"]
+
+CategoricalFeature->Feature [label="is"]
+ToroidalFeature->Feature [label="is"]
+Done->CategoricalFeature [label="is"]
+
+Macro->Behavior [label="is"]
+Macro->Behavior [label="has some"]
+Macro->Transition [label="has some"]
+TrainableMacro->Macro [label="is"]
+TrainableMacro->LearnedTransition [label="has some"]
+DoneBehavior->Behavior [label="is"]
+DoneBehavior->Macro [label="signals Done"]
+Done->Macro [label="detects Done"]
+
+LearnedTransition->Transition [label="is"]
+}

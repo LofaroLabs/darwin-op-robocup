@@ -1,0 +1,7 @@
+# controller name className
+controller FlockbotController sim.app.horde.scenarios.boxpushing.FlockbotController
+
+# subordinate name className max min pref
+subordinate Flockbots sim.app.horde.scenarios.robot.flockbot.FlockbotAgent 2 2 2 
+
+

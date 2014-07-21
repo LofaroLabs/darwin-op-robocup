@@ -1,0 +1,34 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
+package sim.app.horde.scenarios.robot.darwin.behaviors;
+
+import sim.app.horde.Horde;
+import sim.app.horde.agent.Agent;
+import sim.app.horde.behaviors.Behavior;
+import sim.app.horde.behaviors.Macro;
+import sim.app.horde.scenarios.robot.darwin.agent.DarwinAgent;
+
+/**
+ *
+ * @author drew
+ */
+public class GotoPose extends Behavior {
+    private static final long serialVersionUID = 1L;
+
+    public GotoPose() {
+        name = "gotoPose";
+    }
+    
+    public static String getType() { return sim.app.horde.agent.SimAgent.TYPE_SIMAGENT; }
+    
+    @Override
+    public void start(Agent agent, Macro parent, Horde horde) {
+        super.start(agent, parent, horde);
+        System.err.println("I'm going to go to (0,0,0)");
+        ((DarwinAgent) agent).sendMotion(Motions.GOTO_POSE);
+    }
+}

@@ -1,0 +1,10 @@
+sim.app.horde.scenarios.robot.darwin.features.DetectBall
+sim.app.horde.scenarios.robot.darwin.features.DistanceToBall
+sim.app.horde.scenarios.robot.darwin.features.PoseX
+sim.app.horde.scenarios.robot.darwin.features.PoseY
+sim.app.horde.scenarios.robot.darwin.features.PoseAngle
+sim.app.horde.scenarios.robot.darwin.features.BallX
+sim.app.horde.scenarios.robot.darwin.features.BallY
+sim.app.horde.scenarios.robot.darwin.features.BallLostTimeout
+sim.app.horde.scenarios.robot.darwin.features.DoneFrontApproach
+sim.app.horde.scenarios.robot.darwin.features.DistanceLastSeen

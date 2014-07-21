@@ -1,0 +1,265 @@
+package sim.app.horde.agent;
+
+import java.awt.Color;
+import java.awt.Graphics2D;
+import java.util.Collection;
+import java.util.List;
+import java.awt.*;
+
+import sim.app.horde.Horde;
+import sim.app.horde.behaviors.*;
+import sim.portrayal.DrawInfo2D;
+import sim.util.Double2D;
+import sim.portrayal.simple.*;
+
+public class SimControllerAgent extends SimAgent implements Controller
+	{
+	private static final long serialVersionUID = 1L;
+	private ControllerAgent controller;
+	
+	RobotIcon icon = new RobotIcon();
+	AbstractShapePortrayal2D myBottom = 
+		new RectanglePortrayal2D()  // it's roughly rectangular so we can use that to do hit testing
+		{
+		public void draw(Object object, Graphics2D graphics, DrawInfo2D info)
+			{
+			icon.setDimension(new Dimension((int)(info.draw.width * scale), (int)(info.draw.height * scale)));
+			icon.paintIcon(null, graphics, (int)(info.draw.x - info.draw.width * scale / 2.0),
+											(int)(info.draw.y - info.draw.height * scale / 2.0));
+			}
+		};	
+
+
+	public SimControllerAgent(Horde horde)
+	{
+	super(horde);
+	controller = new ControllerAgent(horde);
+	setScale(1 + maxLeafDistance());	
+	}
+
+	// draw in bright pink, and twice as large as the other agents
+	public void draw(Object object, Graphics2D graphics, DrawInfo2D info)
+		{
+		setScale(1 + maxLeafDistance());
+		setPaint(Color.pink);
+		op2d.child = bottom = myBottom;  // reset it
+		super.draw(object, graphics, info);
+		}
+
+	public int getNumSubsidiaryAgents()
+		{
+		return controller.getNumSubsidiaryAgents();
+		}
+
+	public int getNumSubsidiaryAgents(String agentType)
+		{
+		return controller.getNumSubsidiaryAgents(agentType);
+		}
+
+	public void addSubsidiaryAgent(Agent a)
+		{
+		AgentGroup group = addAgentGroup(a.getName());
+		group.addAgent(a);
+		}
+
+	public int[] getBasicAgentAlloc()
+		{
+		return controller.getBasicAgentAlloc();
+		}
+
+	public void setBasicAgentAlloc(int[] basicAgentAlloc)
+		{
+		controller.setBasicAgentAlloc(basicAgentAlloc);
+		}
+
+	public AgentGroup addAgentGroup(String agentType)
+		{
+		AgentGroup grp = controller.addAgentGroup(agentType);
+		grp.setController(this);
+		
+		return grp;
+		}
+
+	public void distribute(Agent[][] basic, int[] agentIndex)
+		{
+		controller.distribute(basic, agentIndex);
+		}
+
+	public List<AgentGroup> getSubsidiaryAgents()
+		{
+		return controller.getSubsidiaryAgents();
+		}
+
+	public int numControllers()
+		{
+		return controller.numControllers();
+		}
+
+	public int totalAgents()
+		{
+		return controller.totalAgents();
+		}
+
+	public List<Agent> getSubsidiaryAgents(String agentName)
+		{
+		return controller.getSubsidiaryAgents(agentName);
+		}
+	
+	
+	public static final double JUMP = 0.95;
+	public void driftToPose(Double2D location, double orientation)	
+		{
+		Double2D loc = getLocation();
+		if (loc == null)
+			{
+			loc = location;
+			}
+		//else if (location.distanceSq(loc) <= 1.0)  // really cloxe
+//			loc = location;
+		else 
+			{
+			loc = new Double2D(
+				loc.x * JUMP + location.x * (1-JUMP),
+				loc.y * JUMP + location.y * (1-JUMP));
+			}
+		setPose(loc, orientation);
+		}
+	
+	public Double2D meanAgentLoc()  // it's mean, not median.  Or centroid, you pick.  -- Sean
+		{
+		int numAgents = 0;
+		double x = 0.0;
+		double y = 0.0;
+		
+		for (AgentGroup group : getSubsidiaryAgents())
+			{
+			for (Agent underling : group.getAgents())
+				{
+				x = x + ((SimAgent)underling).getLocation().x;
+				y = y + ((SimAgent)underling).getLocation().y;
+				numAgents++;
+				}
+			}
+		return new Double2D(x/numAgents, y/numAgents);
+		}
+
+	public GroupBehavior[] groupBehaviors()
+		{
+		return controller.groupBehaviors();
+		}
+	
+	public void setAgentName(String agentName)
+		{
+		super.setAgentName(agentName);
+		controller.setAgentName(agentName);
+		}
+
+	public int schedule()
+		{
+		int level = 0;
+		
+		for (AgentGroup group : getSubsidiaryAgents())
+			if (group.getSize() > 0 && group.getAgent(0) instanceof SimControllerAgent)
+				{
+				for (Agent underling : group.getAgents())
+					{
+					SimControllerAgent sca = (SimControllerAgent) underling;
+					int newLevel = 1 + sca.schedule();
+					
+					if (level < newLevel) level = newLevel;
+					}
+				}
+			else
+				{
+				level = 1;  // Controls basic agents
+				}
+		
+			this.stoppable = horde.schedule.scheduleRepeating(this, -(1 + level), 1);
+		
+		return level;
+		}
+
+	public void distributeAndRestart(Agent trainingAgent)
+		{
+		// Update behavior of this controller
+		if (trainingAgent != null && agentName.equals(trainingAgent.getName()))
+			{
+			// if I'm not the training agent, steal from him
+			if (this != trainingAgent && trainingAgent.getBehavior() != null)
+				{
+				this.setBehavior((TrainableMacro) (trainingAgent.getBehavior().clone()));
+				}
+
+			// now restart
+			restart(horde);
+			}
+		
+		// Now see if any sub-controllers need to be updated
+		for (AgentGroup group : getSubsidiaryAgents())
+			if (group.getSize() > 0 && group.getAgent(0) instanceof SimControllerAgent)
+				{
+				for (Agent underling : group.getAgents())
+					{
+					((SimControllerAgent) underling).distributeAndRestart(trainingAgent);
+					}
+				}
+		}
+
+	public boolean hasManipulated()
+		{
+		return controller.hasManipulated();
+		}
+
+	public int maxLeafDistance()
+		{
+		return controller.maxLeafDistance();
+		}
+
+	public boolean hasSomeoneFinished()
+		{
+		return controller.hasSomeoneFinished();
+		}
+
+	public Behavior initBehavior(Horde horde, Behavior b)
+		{
+		
+		// Initialize sub-controller behavior
+		for (AgentGroup group : getSubsidiaryAgents())
+			if (group.getSize() > 0 && group.getAgent(0) instanceof SimControllerAgent)
+				{
+				SimControllerAgent ctl = (SimControllerAgent)group.getAgent(0);
+				Behavior sb = ctl.initBehavior(horde, null);
+				
+				if (group.getSize() > 1)
+					for (int i = 1; i < group.getSize(); i++)
+						{
+						ctl = (SimControllerAgent)group.getAgent(i);
+						ctl.initBehavior(horde, sb);
+						}
+				}
+		
+		if (b != null)
+			{
+			this.setBehavior((Behavior)b.clone());
+			
+			return b;
+			}
+		else
+			{
+			TrainableMacro tm = new TrainableMacro(agentName).reset(horde, this);
+			this.setBehavior(tm);
+			
+			return tm;
+			}
+		}
+
+	public void setJointBehaviors(Collection<JointBehavior> jbc)
+		{
+		controller.setJointBehaviors(jbc);
+		}
+	
+	public JointBehavior[] jointBehaviors()
+		{
+		return controller.jointBehaviors();
+		}
+	}

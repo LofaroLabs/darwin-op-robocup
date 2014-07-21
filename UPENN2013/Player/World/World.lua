@@ -106,6 +106,9 @@ function init_particles()
  --print(goalDefend[1] 
  -- print("goalDefend[1] is " .. goalDefend[1]);
  -- print("goal defend sign is " .. goalDefendSign)
+ 
+ PoseFilter.initializeUniform(vector.new({math.abs(goalDefend[1]/2)*goalDefendSign,  goalDefendSign * Config.world.yMax,  -1* math.pi/2 *goalDefendSign}), vector.new({.15*xMax, .15*yMax, math.pi/6}))
+ --[[
   if gcm.get_team_player_id() % 2 == 0 then
   	-- want a low spread so set the second arg manually
     PoseFilter.initializeUniform(vector.new({math.abs(goalDefend[1]/2)*goalDefendSign,  goalDefendSign * Config.world.yMax,  -1* math.pi/2 *goalDefendSign}), vector.new({.15*xMax, .15*yMax, math.pi/6}))
@@ -113,13 +116,32 @@ function init_particles()
   	-- want a low spread so set the second arg manually
   	PoseFilter.initializeUniform(vector.new({math.abs(goalDefend[1]/2)*goalDefendSign,  -1 * goalDefendSign * Config.world.yMax,  math.pi/2 * goalDefendSign}), vector.new({.15*xMax, .15*yMax, math.pi/6}))
   end
-   
+   --]]
   --if (useSoundLocalization > 0) then
   --  SoundFilter.reset();
   --end
   setDebugFalse();
   update_shm();
 end
+
+function init_startGoalLine()
+
+	goalDefend=get_goal_defend();
+  	local goalDefendSign = getGoalSign();
+	if gcm.get_team_player_id() == 4 then -- I am the goalie
+		PoseFilter.initializeUniform(vector.new({goalDefend[1],  0,  -1* math.pi/2 *goalDefendSign}), vector.new({.15*xMax, .15*yMax, math.pi/6}))
+	else
+		if gcm.get_team_player_id() % 2 == 0 then
+			-- want a low spread so set the second arg manually
+			PoseFilter.initializeUniform(vector.new({goalDefend[1],  goalDefendSign * .5,  -1* math.pi/2 *goalDefendSign}), vector.new({.15*xMax, .15*yMax, math.pi/6}))
+		else
+			-- want a low spread so set the second arg manually
+			PoseFilter.initializeUniform(vector.new({goalDefend[1],  -1 * goalDefendSign * .5,  math.pi/2 * goalDefendSign}), vector.new({.15*xMax, .15*yMax, math.pi/6}))
+		end
+	end
+	
+end
+
 
 function init_penalty_particles()
 
@@ -248,6 +270,16 @@ function update_vision()
      return;
   end
   
+  if (state == 1 or state == 2) then -- if we are in ready or set
+  	if wcm.get_horde_startGoalLine() == 1 then -- if we have set it so we will start on goal line
+  		-- we set the particles on the goal line
+  		init_startGoalLine()
+  		update_pos();
+		update_shm();
+		return;
+  	end
+  end
+  
   local amPenalized = gcm.in_penalty()
   --DREW added so that the bot will know where it is at when it is penalized.
   if amPenalized == true then
@@ -277,7 +309,9 @@ setDebugTrue()
    if wcm.get_horde_goalieCertainBallOnMySide() == 1 and wcm.get_ballGlobal_x() / math.abs(wcm.get_ballGlobal_x()) ~= wcm.get_horde_goalSign() and math.abs(wcm.get_ballGlobal_x()) > 1 and vcm.get_ball_detect() == 1 and gcm.in_penalty() == false and gcm.get_game_state() == 3 then
   	print("HEY SOMETHING IS WRONG, FLIPPIN THOSE PARTICLES");
 	PoseFilter.flip_particles(); -- then flip em
-  --[[ -- we don't want upenn's flip seems to interfere with our flip
+	 wcm.set_horde_safetySaysFlip(0)
+ 
+--[[ -- we don't want upenn's flip seems to interfere with our flip
   elseif wcm.get_robot_flipped() == 1 then
     print("HEY FLIPPING PARTICLES CAUSE UPENN SAID SO");
     PoseFilter.flip_particles();

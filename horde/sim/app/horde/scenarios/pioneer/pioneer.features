@@ -1,0 +1,8 @@
+sim.app.horde.scenarios.pioneer.features.BlobSize
+sim.app.horde.scenarios.pioneer.features.BlobXCoord
+sim.app.horde.scenarios.pioneer.features.ClosestFrontSonar
+sim.app.horde.scenarios.pioneer.features.ClosestFrontSonarAngle
+sim.app.horde.scenarios.pioneer.features.ClosestObstacleAngle
+sim.app.horde.scenarios.pioneer.features.ClosestObstacleDistance
+sim.app.horde.scenarios.pioneer.features.ClosestRearSonar
+sim.app.horde.features.Done

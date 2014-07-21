@@ -1,0 +1,15 @@
+sim.app.horde.scenarios.robocup2012.features.BallVisible
+sim.app.horde.scenarios.robocup2012.features.BallXDistance
+sim.app.horde.scenarios.robocup2012.features.BallZDistance
+sim.app.horde.scenarios.robocup2012.features.BallBearing
+sim.app.horde.scenarios.robocup2012.features.BlueGoalVisible
+sim.app.horde.scenarios.robocup2012.features.BlueGoalXDistance
+sim.app.horde.scenarios.robocup2012.features.BlueGoalZDistance
+sim.app.horde.scenarios.robocup2012.features.YellowGoalVisible
+sim.app.horde.scenarios.robocup2012.features.YellowGoalXDistance
+sim.app.horde.scenarios.robocup2012.features.YellowGoalZDistance
+sim.app.horde.scenarios.robocup2012.features.GoalBearing
+sim.app.horde.scenarios.robocup2012.features.AttackGoalVisible
+sim.app.horde.features.Done
+sim.app.horde.features.Counter
+sim.app.horde.features.Failed

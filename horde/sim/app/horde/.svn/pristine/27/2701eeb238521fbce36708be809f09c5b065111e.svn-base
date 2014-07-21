@@ -1,0 +1,8 @@
+size 200 200
+basicpool PioneerAgent sim.app.horde.scenarios.boxpushing.PioneerAgent 1 Magenta
+basicpool Flockbots sim.app.horde.scenarios.robot.flockbots.FlockbotAgent 2 Magenta
+
+
+# controller name count
+controller Supervisor-Hetero 1
+

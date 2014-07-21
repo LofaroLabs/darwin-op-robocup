@@ -1,0 +1,39 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
+package sim.app.horde.scenarios.robot.darwin.behaviors;
+
+import com.google.gson.Gson;
+import sim.app.horde.scenarios.robot.behaviors.ICommandMotions;
+
+/**
+ *
+ * @author drew
+ */
+public enum Motions implements ICommandMotions {
+    
+    ;
+
+    static Gson gson = new Gson();
+    DarwinBehavior args;
+    class DoMotion {
+        String action = "doHordeMotion";
+        DarwinBehavior args;// the motion name and any args s
+    }
+    
+    public Motions setDarwinBehavior(DarwinBehavior beh) {
+        args = beh;
+        return this;
+    }
+    
+    @Override
+    public byte[] command(byte speed) {
+        DoMotion motion = new DoMotion();
+        motion.args = args;
+        return gson.toJson(motion).getBytes();
+    }
+    
+}

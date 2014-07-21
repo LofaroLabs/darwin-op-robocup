@@ -1,0 +1,13 @@
+### AGENT CLASS
+
+class = sim.app.horde.agent.SimAgent
+
+color = blue
+shape = hexagon
+scale = 2
+
+num-types = 3
+type.0 = global
+type.1 = sim
+type.2 = physical
+

@@ -1,0 +1,40 @@
+CLASSES {
+
+Start
+gotoBall
+ApproachBall
+WalkForward
+Stop
+kickBall
+gotoPose
+ApproachTarget
+LocateBall
+GotoWhileFacing
+GotoPoseWhileLookingBackwards
+GotoWhileFacingGoalie
+Declare Kiddie
+Declare Support
+Declare Safety
+Undeclare
+Defer
+WaitOrAgain
+WaitInitial
+Done
+Failed
+AttackerReady
+DefenderReady
+DoReady
+KiddieSoccer
+NoDefaultKiddieSoccer
+OffenseDefenseSoccer
+PrimaryApproach
+SoccerWithKiddie
+SupportReady
+ } 
+CONTINUOUS {
+DistanceBetween[X->Ball Target,Y->Goal Target: (4.5, 0) in meters]
+ } 
+CATEGORICAL {
+DoneApproach NotDoneApproach DoneApproach
+
+ } 

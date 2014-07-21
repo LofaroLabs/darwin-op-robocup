@@ -1,0 +1,118 @@
+package sim.app.horde.agent;
+
+import java.util.*;
+import ec.util.*;
+import java.io.*;
+import sim.app.horde.*;
+import sim.app.horde.behaviors.*;
+
+/** An AGENT GROUP has a collection of AGENTS. */
+
+public class AgentGroup
+    {
+    static final long serialVersionUID = 1L;
+
+    public static final String P_NAME = "name";  // yes, I know this isn't a Parameter, it's a string
+
+    // FUTURE: Target/max/min agent size
+    ArrayList<Agent> agents = new ArrayList<Agent>();
+    Controller controller;
+
+    public AgentGroup(Controller controller, ec.util.ParameterDatabase db, Parameter base, Horde horde)
+        {
+        this.controller = controller;
+        // Initially an AgentGroup contains a single prototypical agent at position 0
+        Agent proto = (Agent)(db.getInstanceForParameterEq(base, null, Agent.class));
+        String name = db.getString(base.push(P_NAME), null);
+                
+        // Find his database
+        try
+            {
+            ec.util.ParameterDatabase db2 = new ec.util.ParameterDatabase("agents/" + name + ".agent", getClass(), new String[] {} );
+            }
+        catch (IOException e) { throw new RuntimeException("Could not open file " + "agents/" + name + ".agent"); }
+        proto.setup(this, name, horde);
+        agents.add(proto);
+        }
+                
+    public Object clone()
+        {
+        try
+            {
+            AgentGroup clone = (AgentGroup)(super.clone());
+            // just clone the agents, not the controller.  It'll get set by my Controller when it clones
+            clone.agents = new ArrayList(agents);
+                
+            // deep clone the agents
+            for(int i = 0; i < clone.agents.size(); i++)
+                {
+                Agent a = (Agent)(clone.agents.get(i).clone());
+                a.group = this;
+                clone.agents.set(i, a);
+                }
+            return clone;
+            }
+        catch (CloneNotSupportedException e) { return null; } // never happens
+        }
+                
+    public void fireBehaviors(int behaviorIndex)
+        {
+        /// NOTE THAT CONTROLLERS OUGHT TO BE SCHEDULED BEFORE THEIR SUBSIDIARIES
+        /// IN ORDER TO MAXIMIZE SPEED, ELSE IT MAY TAKE SEVERAL TICKS TO DISTRIBUTE
+        /// COMMANDS!  -- Sean
+                
+        for(int i = 0; i < agents.size(); i++)
+            agents.get(i).behavior.setNewBehaviorRequestedByUser(behaviorIndex);
+        }
+                
+    public Agent getAgent(int index)
+        {
+        return agents.get(index);
+        }
+
+    public List<Agent> getAgents()
+        {
+        return agents;
+        }
+
+    public String getAgentsName()
+        {
+        return agents.get(0).getName();
+        }
+
+    public Controller getController()
+        {
+        return controller;
+        }
+
+    public void setController(Controller controller)
+        {
+        this.controller = controller;
+        }
+
+    public int getSize()
+        {
+        return agents.size();
+        }
+
+    public void addAgent(Agent agent)
+        {
+        // this sets up a silent failure
+        //if (agents.size() == 0 || (agents.get(0).getName().equals(agent.getName()) && !agents.contains(agent)))
+        agents.add(agent);
+
+        agent.setGroup(this);
+        }
+
+    /*
+      public void setBehavior(Behavior b)
+      {
+      for (int i = 0; i < agents.size(); i++)
+      agents.get(i).setBehavior(b);
+      }
+    */
+        
+    // GET TRAINING AGENT?
+    // DISTRIBUTE AND RESTART?? (RESET??)
+    // KEEP TRACK OF TRAINING AGENT??
+    }

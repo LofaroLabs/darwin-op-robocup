@@ -1,0 +1,57 @@
+CLASSES {
+
+Start
+gotoBall
+ApproachBall
+WalkForward
+Stop
+kickBall
+gotoPose
+ApproachTarget
+LocateBall
+GotoWhileFacing
+GotoPoseWhileLookingBackwards
+GotoWhileFacingGoalie
+Declare Kiddie
+Declare Support
+Declare Safety
+Undeclare
+Defer
+WaitOrAgain
+WaitInitial
+Done
+Failed
+AttackerReady
+DecideDefensePositions
+DecideOffensePositions
+DefenderReady
+Defense
+DefenseSafety
+DefenseSupport
+DoReady
+KiddieOrPass
+KiddieSoccer
+NoDefaultKiddieSoccer
+Offense
+OffenseDefenseSoccer
+OffensePrimary
+OffenseSafety
+OffenseSupport
+PrimaryApproach
+ReadySet
+ReadySetPlay
+SoccerWithKiddie
+SupportReady
+UndeclareThenDefense
+UndeclareThenOffense
+ } 
+CATEGORICAL {
+Done NotDone Done
+
+ } 
+CONTINUOUS {
+Status
+ } 
+CONTINUOUS {
+Kiddie Declared
+ } 

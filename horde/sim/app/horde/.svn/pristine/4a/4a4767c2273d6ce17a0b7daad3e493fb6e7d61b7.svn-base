@@ -1,0 +1,23 @@
+# Default Arena
+
+# size width height
+size 200 200
+
+# circle x y targetableIndex diameter field
+#25 sim.app.horde.scenarios.forage.Box 5 0
+#5 sim.app.horde.scenarios.forage.Box 25 0
+#1 sim.app.horde.scenarios.forage.Box 125 0
+
+# rect x y targetableIndex width height field
+
+# squarecircle x y targetableIndex field
+
+# text x y targetableIndex field fontsize string
+
+# marker x y targetableIndex name
+#marker 75 75 0 Home Base
+
+# agent x y orientation
+
+# basicpool name className count color
+basicpool Flockbot sim.app.horde.scenarios.robot.flockbots.FlockbotAgent 2 Magenta

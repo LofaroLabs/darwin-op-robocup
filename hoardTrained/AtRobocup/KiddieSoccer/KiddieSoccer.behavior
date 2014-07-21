@@ -1,0 +1,67 @@
+ ( targets 11 A B C D E F G H Where Facing Receiver )
+ ( features 3  ( feature DistanceToBall sim 0 )   ( feature BallLostTimeout sim 0 )   ( feature DoneApproach sim 0 )  )
+( behavior-names 21 0  Start gotoBall ApproachBall WalkForward Stop kickBall gotoPose ApproachTarget LocateBall GotoWhileFacing GotoPoseWhileLookingBackwards GotoWhileFacingGoalie Declare Kiddie Declare Support Declare Safety Undeclare Defer WaitOrAgain WaitInitial Done Failed )
+
+%%% ----- 0 ------
+ ( behavior Start global )
+
+%%% ----- 1 ------
+ ( behavior gotoBall sim )
+
+%%% ----- 2 ------
+ ( behavior ApproachBall sim )
+
+%%% ----- 3 ------
+ ( behavior WalkForward sim )
+
+%%% ----- 4 ------
+ ( behavior Stop sim )
+
+%%% ----- 5 ------
+ ( behavior kickBall sim )
+
+%%% ----- 6 ------
+ ( behavior gotoPose sim )
+
+%%% ----- 7 ------
+ ( behavior ApproachTarget sim )
+
+%%% ----- 8 ------
+ ( behavior LocateBall sim )
+
+%%% ----- 9 ------
+ ( behavior GotoWhileFacing sim )
+
+%%% ----- 10 ------
+ ( behavior GotoPoseWhileLookingBackwards sim )
+
+%%% ----- 11 ------
+ ( behavior GotoWhileFacingGoalie sim )
+
+%%% ----- 12 ------
+ ( behavior Declare Kiddie sim )
+
+%%% ----- 13 ------
+ ( behavior Declare Support sim )
+
+%%% ----- 14 ------
+ ( behavior Declare Safety sim )
+
+%%% ----- 15 ------
+ ( behavior Undeclare sim )
+
+%%% ----- 16 ------
+ ( behavior Defer sim )
+
+%%% ----- 17 ------
+ ( behavior WaitOrAgain sim )
+
+%%% ----- 18 ------
+ ( behavior WaitInitial sim )
+
+%%% ----- 19 ------
+ ( behavior Done global )
+
+%%% ----- 20 ------
+ ( behavior Failed global )
+

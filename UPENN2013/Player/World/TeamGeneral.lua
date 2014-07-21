@@ -412,17 +412,18 @@ function update()
 					
 					if myRole == 3 and playerID ~= id and  -- if the role is safety and its not me
 					state.ballDetect == 1 and states[id].ballDetect == 1 and -- we can see the ball
-						gcm.in_penalty() == false and gcm.get_game_state() == 3 then -- and we can actually do something
+						gcm.in_penalty() == false and gcm.get_game_state() == 3 and 
+						state.role ~= 0 then -- and we can actually do something
 					
 						-- check if based off of the safety's global ball position I should flip
 						if  states[id].ballGlobal[1] * state.ballGlobal[1] <= 0 and math.abs(states[id].ballGlobal[1] - state.ballGlobal[1]) > 0.75 and
-						 	states[id].ballGlobal[1] * goalieBallGlobalX >= 0 then -- now check the goalie if the goalie thinks the ball is not on the same side as the safety then can't flip
+						 	states[id].ballGlobal[1] * goalieBallGlobalX >= 0  and math.abs(goalieBallGlobalX) > .75 and math.abs(states[id].ballGlobal[1]) > .75 and not goalieDead then -- now check the goalie if the goalie thinks the ball is not on the same side as the safety then can't flip
 							-- we disagree about the side of the field
 							-- so set 
 							state.safetyBasedFlip = 1
-							wcm.get_set_horde_safetySaysFlip(1)
+							wcm.set_horde_safetySaysFlip(1)
 						else
-							wcm.get_set_horde_safetySaysFlip(0)
+							wcm.set_horde_safetySaysFlip(0)
 						end
 					end
 					
@@ -470,7 +471,7 @@ function update()
 		end
 	end
 
-	
+	goalieDead = false;	
 	-- zero is the default so originally everyon will be zero so 
 	print("Done checking declared -------------------------");
  	setDebugFalse();
@@ -484,6 +485,7 @@ function update()
 					wcm.set_horde_goalieCertainBallOnMySide(states[index].goalieCertainBallOnMySide);
 					wcm.set_horde_goalieCloseEnough(states[index].goalieCloseEnough);
 					lastTimeReceivedFromGoalie = Body.get_time();
+					
 					break;
 				end
 
@@ -491,6 +493,7 @@ function update()
 		
 			if Body.get_time() - lastTimeReceivedFromGoalie > GOALIE_DEAD_THRESHOLD then
 				wcm.set_horde_goalieCertainBallOnMySide(0); -- make sure this is reset so that I don't end up flipping continuously.	
+				goalieDead = true;
 			end
 		
 		end
@@ -634,6 +637,11 @@ function update_status()
 	local ballDist = state.ballRelative; -- the position of the ball relative to me based off the global pos
 	local myDist = get_distanceBetween(ballDist, {0, 0});
 	local distIDPairs = {}
+	
+	if(wcm.get_horde_yelledKick() == 1) then
+		lastTimeKicked = Body.get_time();
+	end
+	
 	--setDebugTrue();
 	for id = 1,5 do	
 	
@@ -655,7 +663,11 @@ function update_status()
 			data.id = states[id].id
 			
 			if states[id].ballLost == 0 then
-				data.dist = get_distanceBetween(states[id].ballRelative, {0, 0});
+				if(Body.get_time() - lastTimeKicked < 2) then 
+					data.dist = wcm.get_horde_distN() + 0.27;
+				else
+					data.dist = get_distanceBetween(states[id].ballRelative, {0, 0});
+				end
 				--print("DNW index = " .. tostring(id) .. " SEE BALL so dist is " .. data.dist);
 			else
 				data.dist = math.huge;
@@ -743,9 +755,7 @@ function update_status()
 	
 	
 	local secondClosestWithin = 0
-	if(somebodyYelledKick()) then
-		lastTimeKicked = Body.get_time();
-	end
+
 	--setDebugTrue();
 	print("DNW number of distIDPairs is " .. tostring(#distIDPairs))
 	countI  = 1
@@ -753,11 +763,11 @@ function update_status()
 		print(" i " .. i .. " count  " .. countI .. " distIDPairs.dead ~= nil = " .. tostring(distIDPairs[i].dead ~= nil) .. " distIDPairs[i].dead = " .. tostring(distIDPairs[i].dead));
 		if distIDPairs[i].dead and distIDPairs[i].dead == 0 then
 			print("DNW i = " .. tostring(i) .. " ID = " .. tostring(distIDPairs[i].id) .. " dist = " .. tostring(distIDPairs[i].dist) .. " distN = " .. tostring(wcm.get_horde_distN()));
-			if(somebodyYelledKick() == 1 or Body.get_time() - lastTimeKicked < 2) then 
-				distIDPairs[i].status = 2;	
-			else
+	--		if(somebodyYelledKick() == 1 or Body.get_time() - lastTimeKicked < 2) then 
+	--			distIDPairs[i].status = 2;	
+	--		else
 				distIDPairs[i].status = (countI-1)*2
-			end
+	--		end
 			if (distIDPairs[i].dist <= wcm.get_horde_distN() and i~=1) then
 				distIDPairs[i].status = distIDPairs[i].status-1;
 				print("DNW i = " .. tostring(i) .. " dist was less than N status = " ..  tostring(distIDPairs[i].status));
@@ -803,7 +813,7 @@ function update_goalieCloseEnough()
 		if wcm.get_horde_fallTime() > lastTimeReceivedFromGoalie and wcm.get_team_connected() == 1 then
 			-- only if it has been a while since i received a message from the goalie and I'm still connected
 			-- while I start to kick out of bounds.  
-			wcm.set_horde_kickOutOfBounds(1);
+			wcm.set_horde_kickOutOfBounds(0);
 		else
 			-- otherwise I won't because I still want to at least play kiddie soccer when wifi dies
 			wcm.set_horde_kickOutOfBounds(0);

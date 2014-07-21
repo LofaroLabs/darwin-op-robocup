@@ -1,0 +1,980 @@
+package sim.app.horde.behaviors;
+
+import java.util.logging.*;
+
+import sim.app.horde.transitions.*;
+import sim.app.horde.*;
+import sim.app.horde.agent.Agent;
+import sim.app.horde.agent.Controller;
+import sim.app.horde.classifiers.Domain;
+import sim.app.horde.classifiers.Example;
+import sim.app.horde.features.*;
+import sim.app.horde.targets.*;
+
+import java.util.*;
+import java.io.*;
+import java.util.zip.*;
+
+/** 
+    TRAINABLE MACRO
+ 
+    <p>Trainable Macros are Macros which have LEARNABLE TRANSITIONS as their transition
+    functions. These transitions are essentially wrappers for classifiers (for now decision
+    trees). Trainable Macros gather exemplars as the user directs them to transition from
+    behavior to behavior, then when learn() is called they build LearnableTransitions from
+    these exemplars.
+   
+    <p>TrainableMacros can then be saved to disk via serialization, at which point they can
+    be reloaded and used with their LearnableTransitions as the fixed transitions.
+   
+    <p>When TrainableMacros are saved, they're saved to a particular directory "learned"
+    in the "behaviors" directory. They're saved out with ".trained" extensions.
+   
+    <p>TrainableMacros are in two modes: training or not training. When in training, they
+    gather examples and only transition when the user requests it. When in not training
+    (that is, after they've learned), they follow their learned transition functions.
+ */
+
+public class TrainableMacro extends Macro implements Serializable
+	{
+	private static final long serialVersionUID = 1;
+	static final String TRAINABLE_MACRO_EXTENSION = ".trained";
+
+	int previousBehavior = UNKNOWN_BEHAVIOR;
+
+	public TrainableMacro(String agentName)
+		{
+		super();
+		this.agentName = agentName;
+		finished = false;
+		}
+
+	private String agentName;
+	public String getAgentName() { return agentName; }
+	
+	boolean iAmSlave = false; // am I a slave of a parent controller agent?
+	public void setIAmSlave(boolean val) { iAmSlave = val; }
+	public boolean getIAmSlave(boolean val) { return iAmSlave; }
+
+	boolean training = true; // matches button: true if the macro is presently in training mode (gathering exemplars).
+	public boolean isTraining() { return training; }
+
+	// this junk is for specifying whether or not a training macro is designed to be
+	// one-shot or continuous, that is, using default examples when uses in a higher-level FSA.
+	boolean shouldAddDefaultExample = true;
+	public boolean getShouldAddDefaultExample() { return shouldAddDefaultExample; }
+	public void setShouldAddDefaultExample(boolean val) { shouldAddDefaultExample = val; }
+
+	/** Sets the training mode as requested, and learns the examples. */
+	public void userChangedTraining(Horde horde, boolean training)
+		{
+		this.training = training;
+		userAskedForNewBehavior = false;
+
+		if (!training)
+			{
+			learnAll(horde);
+			currentBehavior = 0;
+			previousBehavior = 0;
+			}
+		}
+
+	boolean userAskedForNewBehavior = false;
+	public void setUserAskedForNewBehavior(boolean f) { System.out.println("setUser"); userAskedForNewBehavior = f; }
+	public boolean getUserAskedForNewBehavior() { return userAskedForNewBehavior; }
+
+	int newBehaviorRequestedByUser = UNKNOWN_BEHAVIOR;
+	public void setNewBehaviorRequestedByUser(int b) { if (b >= 0) newBehaviorRequestedByUser = b; }
+	public int getNewBehaviorRequestedByUser() { return newBehaviorRequestedByUser; }
+
+	// the domain of the TrainableMacro during training
+	protected Domain domain;
+    public Domain getDomain() { return domain; }
+
+	// all features of the Horde environment in which the TrainableMacro is learning examples
+	public Feature[] features;
+
+	/** Deep-clones the TrainableMacro, except for the Domain and Features, which are at present shared. */
+	public Object clone()
+		{
+		TrainableMacro f = (TrainableMacro) (super.clone());
+
+		// clone features, if any were used 
+		if (features != null)
+			{
+			f.features = new Feature[features.length];
+			for (int i = 0; i < f.features.length; i++)
+				f.features[i] = features[i];
+			}
+
+		// don't bother cloning the domain
+		f.domain = domain;
+
+		return f;
+		}
+
+	/** Called when the user wishes to change the behavior of the TrainableMacro to a new behavior. 
+	    Next time go() is called, it'll transition to this behavior. */
+	public void userChangedBehavior(Horde horde, int newBehavior)
+		{
+		System.err.println("Changed Behavior");
+		userAskedForNewBehavior = true;
+		newBehaviorRequestedByUser = newBehavior;
+
+		if (currentBehavior != UNKNOWN_BEHAVIOR && 
+			behaviors[currentBehavior].shouldAddExamples())
+			{
+			System.err.println("Adding Example");
+			addExample(horde, newBehavior);
+
+			if (behaviors[newBehavior].getShouldAddDefaultExample() && currentBehavior != newBehavior)
+				{
+				System.err.println("Adding Default Example");
+				// add an example that says "keep going like this new situation"
+				int temp = currentBehavior;
+				currentBehavior = newBehavior;
+				addExample(horde, newBehavior);
+				currentBehavior = temp;
+				}
+			}
+		}
+
+	/** Sets the name of the Macro, guaranteeing that it's valid name for saving out to the disk. Legal
+	    names must be just letters or digits. */
+	public void setName(String n)
+		{
+		// only allow legal names
+		for (int i = 0; i < n.length(); i++)
+			if (!Character.isLetterOrDigit(n.charAt(i))) 
+				throw new RuntimeException("Bad name"); // failed
+		name = n; // succeeded
+		}
+
+	String[] behaviorNames = null;
+	Target[][] behaviorTargets = null;
+
+	static final boolean TRIM_BEFORE_SAVING = true;
+
+	/** Saves out the Trainable Macro. If TRIM_BEFORE_SAVING is true, then
+	    unused behaviors, features, and targets are first replaced with null,
+	    and domain examples are deleted. Behaviors aren't actually serialized out,
+	    but rather their names.
+	 */
+	public void save()
+		{
+        // first, let's identify which sub-behaviors we never wind up using. This can help us reduce our parameters in the next step
+        // as a quick hack we go through all the exemplars and search for states they transition to. We also add the initial state.
+        // A smarter, possibly more sensitive approach would be to identify which states are referenced in the decision trees themselves;
+        // this would only be different from the quick hack when the leaf nodes are non-deterministic and have been trimmed so they're
+        // no longer 100% classifying the training data. For now we're not doing that so the quick hack is as sensitive as possible anyway.
+		boolean[] usedBehaviors = new boolean[behaviors.length];
+		usedBehaviors[0] = true; // for now we have no way of specifying which behavior is the initial one except that it's behavior 0
+
+		for (int i = 0; i < transitions.length; i++)
+			if (transitions[i] != null)
+				{
+				LearnedTransition lt = (LearnedTransition) transitions[i];
+				if (lt.examples == null)
+					System.err.println("Examples were null in saving out");
+				else
+					{
+					int s = lt.examples.size();
+					for (int j = 0; j < s; j++)
+						usedBehaviors[((Example)(lt.examples.get(j))).classification] = true;         // IMPROVE: only include states that the DECISION TREE has as leaf nodes, not the examples
+					}
+				}
+
+		// let's temporarily remove all the examples so we don't save them out. we'll put them back in a second
+		ArrayList[] tempExamples = new ArrayList[transitions.length];
+		for (int i = 0; i < transitions.length; i++)
+			if (transitions[i] != null)
+				{
+				LearnedTransition lt = (LearnedTransition) transitions[i];
+				tempExamples[i] = lt.examples;
+				if (TRIM_BEFORE_SAVING) lt.examples = null;
+				}
+
+		// before saving, let's reduce our parameters. We'll do this by marking some of them as null temporarily, saving, then setting back
+		Target[] backup = new Target[targets.length];
+		System.arraycopy(targets, 0, backup, 0, targets.length);
+
+		// set all my parameters to null
+		if (TRIM_BEFORE_SAVING)
+			{
+			// trim out
+			for (int i = 0; i < targets.length; i++)
+				targets[i] = null;
+
+			// now set some of them back if we discover we use them
+			for (int i = 0; i < behaviors.length; i++)
+				if (usedBehaviors[i])  // we're using this behavior so should extract the targets from it
+					for (int j = 0; j < behaviors[i].getTargets().length; j++)
+						if (behaviors[i].getTarget(j) instanceof Wrapper)
+							{
+							Wrapper wrapper = (Wrapper)(behaviors[i].getTarget(j));
+							targets[wrapper.getIndex()] = backup[wrapper.getIndex()]; // restore; we're using it
+							}
+
+			// likewise search features 
+			// IMPROVE: only include features which the DECISION TREE has leaf nodes for
+			for (int i = 0; i < features.length; i++)
+				for (int j = 0; j < features[i].getNumTargets(); j++)
+					if (features[i].getTarget(j) instanceof Wrapper)
+						{
+						Wrapper wrapper = (Wrapper)(features[i].getTarget(j));
+						targets[wrapper.getIndex()] = backup[wrapper.getIndex()]; // restore; we're using it
+						}
+			}
+
+		// null out the unused behaviors and transitions
+		Behavior[] tempBehaviors = new Behavior[behaviors.length];
+		Transition[] tempTransitions = new Transition[behaviors.length];
+		for (int i = 0; i < behaviors.length; i++)
+			{
+			tempBehaviors[i] = behaviors[i];
+			tempTransitions[i] = transitions[i];
+			if (!usedBehaviors[i] && TRIM_BEFORE_SAVING)
+				{
+				behaviors[i] = null;
+				transitions[i] = null;
+				}
+			}
+
+		// build the behavior names and targets and null out the remaining behaviors
+		behaviorNames = new String[behaviors.length];
+		behaviorTargets = new Target[behaviors.length][];
+		for (int i = 0; i < behaviors.length; i++)
+			{
+			if (behaviors[i] != null)
+				{
+				behaviorNames[i] = behaviors[i].getUniqueName();
+				behaviorTargets[i] = behaviors[i].getTargets();  // we'll just take 'em -- no need to clone, since we're deleting the behavior anyway, it won't them any more
+				behaviors[i] = null;
+				}
+			}
+
+		// now save the macro
+		try
+			{
+			ObjectOutputStream s = 
+					new ObjectOutputStream(
+							new GZIPOutputStream(
+									new BufferedOutputStream(
+											new FileOutputStream(Horde.TRAINABLE_MACRO_DIRECTORY + agentName + "_" + getName() + TRAINABLE_MACRO_EXTENSION))));
+			s.writeObject(this);
+			s.close();
+			System.err.println("Wrote out trainable macro " + getName());
+			} 
+		catch (IOException e)
+			{
+			throw new RuntimeException("Couldn't write trainable macro " + getName(), e);
+			} 
+		finally
+			{
+			// restore the behaviors and transitions
+			System.arraycopy(tempBehaviors, 0, behaviors, 0, behaviors.length);
+			System.arraycopy(tempTransitions, 0, transitions, 0, transitions.length);
+
+			// now restore the parameters
+			System.arraycopy(backup, 0, targets, 0, backup.length);
+
+			// and restore the examples
+			// let's temporarily remove all the examples so we don't save them out. we'll put them back in a second
+			for (int i = 0; i < transitions.length; i++)
+				if (transitions[i] != null)
+					{
+					LearnedTransition lt = (LearnedTransition) transitions[i];
+					lt.examples = tempExamples[i];
+					}
+
+			// null out the behavior names and targets to save space
+			behaviorNames = null;
+			behaviorTargets = null;
+			}
+		}
+
+	/** Loads a trainable macro and sets its training to be false. Assumes the extension is already attached to the filename. */
+	public static TrainableMacro load(String filename, String agentName)
+		{		
+		if (!filename.endsWith(TRAINABLE_MACRO_EXTENSION))  // we need to check this because we're gonna strip it off below
+			{
+			throw new RuntimeException("Spurious file " + filename +
+					" in trainable macro directory, does not end with " +
+					TRAINABLE_MACRO_EXTENSION);
+			}
+
+		try
+			{
+			ObjectInputStream s = 
+					new ObjectInputStream(
+							new GZIPInputStream(
+									new BufferedInputStream(
+											new FileInputStream(Horde.TRAINABLE_MACRO_DIRECTORY + filename))));
+
+			TrainableMacro tm = (TrainableMacro) s.readObject();
+			// System.err.println("Read trainable macro " + tm.getName() + "\t" + tm.level);
+			s.close();
+
+			// TM extension
+			String fname = filename.substring(agentName.length() + 1, filename.length() - TRAINABLE_MACRO_EXTENSION.length());
+			if (!fname.equals(tm.getName())) // uh oh
+				{
+				System.err.println("WARNING: Trainable Macro " + tm.getName() + " was located in a file named " + filename +
+						".  Renaming the Trainable Macro to " + fname);
+				tm.setName(fname);
+				}
+
+			// restart from the checkpoint
+			tm.currentBehavior = UNKNOWN_BEHAVIOR;
+			tm.training = false;
+			tm.finished = false;
+
+			return tm;
+			} 
+		catch (Exception e)
+			{
+			throw new RuntimeException("Couldn't read trainable macro " + filename, e);
+			}
+		}
+	
+	public TrainableMacro reset(Horde horde, Agent agent)
+		{
+		return reset(horde, horde.buildNewParameters(), horde.initialParameterObjectName, Behavior.provideAllBehaviors(agent), horde.currentFeatures());
+		}
+
+	/** Resets the TrainableMacro to the current Horde environment, including parameters and names, behaviors, and current features. */
+	public TrainableMacro reset(Horde horde, Target[] parameters, String[] parameterNames, Behavior[] behaviors, Feature[] features)
+		{
+		this.targets = parameters;
+		this.targetNames = parameterNames;
+		this.features = features;
+		this.behaviors = behaviors;
+		this.transitions = new Transition[behaviors.length];           // all transitions are initially null. We'll add some as the user presses buttons
+		domain = Feature.buildDomain(getName(), features, behaviors);
+		training = true;
+
+		finished = false;
+
+		// as a hack we are not setting currentBehavior to UNKNOWN_BEHAVIOR.
+		// This is because it's possible reset() is called and we're NOT STOPPED. In which
+		// case the current behavior would be UNKNOWN_BEHAVIOR when the next go() is called which
+		// would be BAD. Instead what we do is reset to INITIAL_BEHAVIOR if it's not
+		// presently UNKNOWN_BEHAVIOR.
+		if (currentBehavior != UNKNOWN_BEHAVIOR)
+			{
+			int oldBehavior = currentBehavior;
+			currentBehavior = INITIAL_BEHAVIOR;
+			horde.observer.transitioned(this, oldBehavior, currentBehavior);
+			}
+
+		resetFlags();
+		// horde.signalResetFlags(this); // so the agent changes color or whatever, although it'll never happen because we reset before setting the new behavior...
+
+		// Rebind parameters to new wrappers for behaviors
+		for (int i = 0; i < behaviors.length; i++)
+			{
+			for (int j = 0; j < behaviors[i].getNumTargets(); j++)
+				{
+				if (behaviors[i].getTarget(j) != null &&              // because it was unused when saved. See save()
+						behaviors[i].getTarget(j) instanceof Parameter)  // needs to be rebound. Assume that the index of horde is the same as the index for this macro
+					{
+					Parameter p = ((Parameter)(behaviors[i].getTarget(j)));
+					behaviors[i].setTarget(j, new Wrapper(p.getName(), p.getIndex()));  // we'll use p.getIndex() as the default but it might not be a good choice
+					}
+				}
+			}
+
+		// Rebind parameters to new wrappers for features. Assume that the index of horde is the same as the index for this macro. These will not be rebound.
+		for (int i = 0; i < features.length; i++)
+			{
+			for (int j = 0; j < features[i].getNumTargets(); j++)
+				{
+				if (features[i].getTarget(j) instanceof Parameter) // needs to be rebound.
+					{
+					Parameter p = ((Parameter)(features[i].getTarget(j)));
+					features[i].setTarget(j, new Wrapper(p.getName(), p.getIndex()));  // we'll use p.getIndex() as the default but it might not be a good choice
+					}
+				}
+			}
+
+		return this;
+		}
+
+	/** More or less the same as Macro.go() if the agent is not in training mode.  If the agent is
+	    in training mode, then we transition only when the user requests a transition, then log
+	    some examples. At present the examples are as follows:
+	   
+	    1. [previous behavior, current features, new behavior]
+	    2. [new behavior, current features, new behavior] (to provide a default)
+	 */
+
+	public int startBehavior = 0;
+	public void go(Agent agent, Macro parent, Horde horde)
+		{
+		super.goBypass(agent, parent, horde); // call super.super.go(...)
+
+		if (currentBehavior == UNKNOWN_BEHAVIOR) // should never happen
+			throw new RuntimeException("go() called on UNKNOWN_BEHAVIOR. This should not be able to happen.  Agent=" + 
+					agentName + "  Name=" + name );
+
+		boolean iAmTheTrainingMacro = (agent == horde.getTrainingAgent() && agent.getBehavior() == this);
+
+		int newBehavior = currentBehavior;
+
+		if (//iAmTheTrainingMacro &&
+		    userAskedForNewBehavior)  // we've pressed a button while training, or our parent told us to change. Make it permanent.
+			{
+			// System.err.println("User changed behavior: "+ this);
+			newBehavior = newBehaviorRequestedByUser;
+			userAskedForNewBehavior = false;
+			if (newBehavior == UNKNOWN_BEHAVIOR)
+				throw new RuntimeException("2. go() called on UNKNOWN_BEHAVIOR. This should not be able to happen.");
+			}
+		else if (iAmTheTrainingMacro && training)
+			{
+			// System.err.println("I am training: " + this);
+			// do nothing -- the user didn't ask us to change, so we won't, even
+			// if we think we're smart by now...
+			}
+		else if (iAmSlave)
+			{
+			// System.err.println("I am slave: " + this);
+			// do nothing
+			}
+		else if (startBehavior != 0 && currentBehavior == 0)
+			newBehavior = startBehavior;
+		else
+			{
+			// System.err.println("Transitioning: " + this);
+			Transition transition = transitions[currentBehavior];
+			if (transition != null)
+				{
+				newBehavior = transition.change(agent, this, horde);
+				if (newBehavior == UNKNOWN_BEHAVIOR)
+					throw new RuntimeException("3. go() called on UNKNOWN_BEHAVIOR. This should not be able to happen.");
+				}
+			}
+
+		if (behaviors[newBehavior] instanceof Flag || finished) // like "done"
+			{
+			if (finished)
+				fireFlag(Macro.FLAG_DONE, agent, parent, horde); // BILL: I DON'T LIKE THIS
+			else
+				fireFlag(((Flag)(behaviors[newBehavior])).getFlag(), agent, parent, horde);
+			newBehavior = INITIAL_BEHAVIOR; // immediately transition
+			finished = false;
+
+			}
+
+		if (newBehavior != currentBehavior)
+			{
+			// System.err.println("Transition " + this + " " + behaviors[currentBehavior] + " -> " + behaviors[newBehavior]);
+			behaviors[currentBehavior].stop(agent, this, horde);
+			Transition transition = transitions[currentBehavior];
+			if (transition != null) transition.stop(agent, this, horde);
+
+			behaviors[newBehavior].start(agent, this, horde);
+			Transition newTransition = transitions[newBehavior];
+			if (newTransition != null) newTransition.start(agent, this, horde);
+			if (iAmTheTrainingMacro && horde.observer != null)
+				horde.observer.transitioned(this, currentBehavior, newBehavior);
+			resetFlags();
+			// don't signal done here in the horde (no signalFlag(...))
+
+			previousBehavior = currentBehavior;
+
+			}
+
+		currentBehavior = newBehavior;
+
+		behaviors[currentBehavior].go(agent, this, horde);
+		}
+
+	/**
+	 * Removes the last example from the example database ie. "undo"s the last
+	 * addExample.
+	 */
+
+	public void removeLastExample()
+		{
+		if (previousBehavior == UNKNOWN_BEHAVIOR) return;
+		if (transitions[previousBehavior] == null) return;
+
+		LearnedTransition lt = ((LearnedTransition) transitions[previousBehavior]);
+
+		// reset the behavior
+		userAskedForNewBehavior = true;
+		newBehaviorRequestedByUser = previousBehavior;
+
+		if (lt.examples.isEmpty()) return;
+
+		// delete the most recent example
+		int idx = lt.examples.size();
+		Example e = (Example) (lt.examples.remove(idx - 1));
+
+		// check for a default example, and remove that too
+		lt = ((LearnedTransition) transitions[currentBehavior]);
+
+		for (int i = 0; i < lt.examples.size(); i++)
+			{
+			Example e1 = (Example) (lt.examples.get(i));
+			if (e1.classification == e.classification && e1.continuation != e.continuation)
+				{
+				boolean equalValues = true;
+				for (int j = 0; j < e1.values.length; j++)
+					{
+					if (e1.values[j] != e.values[j])
+						{
+						equalValues = false;
+						break;
+						}
+					}
+
+				if (equalValues) 
+					lt.examples.remove(e1);
+
+				break;
+				}
+			}
+		}
+
+	/**
+	   Adds an example based on the current scenario and the desired new behavior.
+	 */
+	protected void addExample(Horde horde, int newBehavior)
+		{
+		if (currentBehavior == UNKNOWN_BEHAVIOR || newBehavior == UNKNOWN_BEHAVIOR) return;
+		if (behaviors[currentBehavior] instanceof Flag) return;
+		if (behaviors[newBehavior] instanceof Start) return;
+
+		if (transitions[currentBehavior] == null)
+			transitions[currentBehavior] = new LearnedTransition(features, domain);
+
+		LearnedTransition lt = ((LearnedTransition) transitions[currentBehavior]);
+		Example e = lt.getExample(horde.getTrainingAgent(), this, horde);
+
+		if (newBehavior == currentBehavior) // strip out non-default features
+			{
+			Feature[] f = lt.getFeatures();
+			for (int i = 0; i < f.length; i++)
+				if (f[i] instanceof NonDefaultFeature) 
+					e.values[i] = 0.0;
+			}
+
+		e.classification = newBehavior;
+		e.continuation = (newBehavior == currentBehavior);
+		lt.examples.add(e);
+
+		if (horde.getSingleState())
+			{
+			for (int i = 0; i < transitions.length; i++)
+				transitions[i] = lt;
+			}
+
+		}
+
+	/**
+	   Generates printed classifiers and displays them..
+	 */
+	public void showClassifiers(Horde horde)
+		{
+		for (int i = 0; i < transitions.length; i++)
+			{
+			try
+				{
+				Transition t = transitions[i];
+				if (t == null) 
+					continue;
+				LearnedTransition lt = (LearnedTransition) t;
+				lt.showTransition(i, behaviors[i].toString());
+				if (horde.getSingleState()) 
+					return;
+				} 
+			catch (IOException ex)
+				{
+				Logger.getLogger(TrainableMacro.class.getName()).log(Level.SEVERE, null, ex);
+				} 
+			catch (InterruptedException ex)
+				{
+				Logger.getLogger(TrainableMacro.class.getName()).log(Level.SEVERE, null, ex);
+				}
+			}
+
+		}
+
+	/** Dumps out all the exemplars to be examined for debugging purposes. */
+	public void logExemplars(String path, String name, Horde horde)
+		{
+		try
+			{
+			File behaviorFile = new File(path, name + ".behavior");
+			PrintWriter writer = new PrintWriter(new FileWriter(behaviorFile));
+			writeTopLevel(writer);
+			writer.close();
+			} 
+		catch (Exception e) { e.printStackTrace(); }
+
+		LearnedTransition lt = null;
+		for (int i = 0; i < transitions.length; i++)
+			{
+			Transition t = transitions[i];
+			if (t == null) 
+				continue;
+			lt = (LearnedTransition) t;
+			String behaviorName = behaviors[i].getName();
+			lt.logExemplars(path, horde, behaviorName);
+			}
+		LearnedTransition.logDomain(domain, path, name);
+		}
+
+	/**
+	   Learns the classifiers from the current examples stored so far.
+	 */
+	protected void learnAll(Horde horde)
+		{
+		for (int i = 0; i < transitions.length; i++)
+			{
+			Transition t = transitions[i];
+			if (t == null) 
+				continue;
+			LearnedTransition lt = (LearnedTransition) t;
+			lt.learn(horde);
+			}
+		}
+
+	protected String getUniqueName() { return "T_" + agentName + "_" + getName(); }
+
+	/** Loads all trainable macros from the "trained" directory and creates instances of them. */
+	public static TrainableMacro[] provideAllTrainableMacros(final Agent agent)
+		{
+		List<TrainableMacro> a = new ArrayList<TrainableMacro>();
+		
+		if (!loadedTMs.contains(agent.getName()))
+			{
+			HashMap<String, Behavior> map = new HashMap<String, Behavior>();
+			Behavior[] basic = Behavior.provideAllBasicBehaviors(agent);
+			
+			for (int i = 0; i < basic.length; i++) map.put(basic[i].getUniqueName(), basic[i]);
+			
+			// also create macros for direct subordinate agents
+			if (agent instanceof Controller)
+				{
+				Controller ctl = (Controller)agent;
+				Behavior [] group = ctl.groupBehaviors();
+				for (int i = 0; i < group.length; i++) map.put(group[i].getUniqueName(), group[i]);
+				}
+			
+			try
+				{
+				// reload
+				FilenameFilter pbmonly = new FilenameFilter()
+					{
+						public boolean accept(File dir, String name) { return name.startsWith(agent.getName()) && name.endsWith(TRAINABLE_MACRO_EXTENSION); }
+					};
+	
+				// Find and load all macros with the agent name as a prefix
+				String[] list = new File(Horde.TRAINABLE_MACRO_DIRECTORY).list(pbmonly);
+				if (list != null)
+					{
+					for (int i = 0; i < list.length; i++)
+						{
+						try
+							{
+							TrainableMacro m = load(list[i], agent.getName());
+							if (m != null) 
+								{ 
+								if (allBehaviors.get(m.getUniqueName()) != null || map.get(m.getUniqueName()) != null) 
+									System.err.println("WARNING: Multiple behaviors called " + m.toString());
+								else
+									a.add(m); 
+									map.put(m.getUniqueName(), (TrainableMacro)m.clone()); 
+								}
+							} 
+						catch (Exception e) { e.printStackTrace(); }
+						}
+	
+					HashSet loaded = new HashSet();
+					HashSet failed = new HashSet();
+	
+					// Perform substitutions and verify cycles
+					for (int i = 0; i < a.size(); i++)
+						{
+						// System.err.println("Substituting " + a.get(i));
+						TrainableMacro m = a.get(i);
+						if (!m.performSubstitution(map, loaded, failed, new HashSet())) // failed
+							{
+							a.remove(i); // TODO: should this also be removed from the map?
+							i--; // try again
+							}
+						else
+							{
+							System.err.println("Adding " + m.getUniqueName());
+							allBehaviors.put(m.getUniqueName(), (TrainableMacro)m.clone());
+							}
+						}
+					}
+				} 
+			catch (Exception e) { e.printStackTrace(); }
+			
+			loadedTMs.add(agent.getName());
+			}
+
+		// Trainable macros have been loaded for this agent, extract from map
+		a.clear();
+		String agentPref = "T_" + agent.getName() + "_";
+		for (String bName : allBehaviors.keySet())
+			{
+			if (bName.startsWith(agentPref))
+				{
+				TrainableMacro tm = (TrainableMacro)allBehaviors.get(bName);
+				a.add((TrainableMacro)tm.clone());
+				}
+			}
+		
+		TrainableMacro[] tm = new TrainableMacro[a.size()];
+		System.arraycopy(a.toArray(), 0, tm, 0, a.size());
+		return tm;
+		}
+
+	/**
+	 * Go through all behaviors utilized by the macro. Make sure that those
+	 * behaviors are still available to the agent, that all sub-macros are
+	 * loaded, that the correct number of behavior targets are available for
+	 * each sub-macro. Add wrappers for any targets that are parameters
+	 * 
+	 * @param map All behaviors available to the agent
+	 * @param loaded
+	 * @param failed
+	 * @param cycles
+	 * @return
+	 */
+	boolean performSubstitution(HashMap map, HashSet loaded, HashSet failed, HashSet cycles)
+		{
+		System.err.println("Performing Substitution for " + this);
+
+		if (cycles.contains(this)) // uh oh, cycles
+			{
+			System.err.println("WARNING: Cycles in loading TrainableMacro " + this);
+			failed.add(this);
+			return false;
+			}
+
+		cycles.add(this);
+		for (int j = 0; j < behaviorNames.length; j++)
+			{
+			if (behaviorNames[j] != null)
+				{
+				Behavior b = (Behavior)(map.get(behaviorNames[j]));
+				if (b == null)
+					{
+					System.err.println("WARNING: Cannot load TrainableMacro " + this + " because it expected an unknown behavior called " + behaviorNames[j]);
+					failed.add(this);
+					cycles.remove(this);
+					return false;
+					}
+				else
+					{
+					if (b instanceof TrainableMacro)
+						{
+						if (failed.contains(b) ||
+							(!loaded.contains(b) && !((TrainableMacro) b).performSubstitution(map, loaded, failed, cycles))) // recurse
+							{
+							System.err.println("WARNING: Cannot load TrainableMacro " + this + " because it expected a TrainableMacro called " + behaviorNames[j] + " which failed to load.");
+							failed.add(this);
+							cycles.remove(this);
+							return false;
+							}
+						// else fall thru below
+						}
+
+					// FALL THRU
+					behaviors[j] = (Behavior)(b.clone()); // clone the behavior
+
+					// copy over the targets
+					if (behaviorTargets[j] == null) // uh oh
+						{
+						System.err.println("WARNING: Cannot load TrainableMacro " + this + "because it expected a behavior called " + behaviorNames[j] + " but is missing targets for it.");
+						failed.add(this);
+						cycles.remove(this);
+						return false;
+						}
+					else if (behaviors[j].getNumTargets() != behaviorTargets[j].length) // uh oh
+						{
+						System.err.println("WARNING: Cannot load TrainableMacro " + this + "because it expected a behavior called " + behaviorNames[j] + " with " + behaviorTargets[j].length + " targets, but it got " + behaviors[j].getNumTargets() + " instead.");
+						failed.add(this);
+						cycles.remove(this);
+						return false;
+						}
+					else
+						{
+						behaviors[j].setTargets(behaviorTargets[j]);
+						}
+
+					// now convert any parameters to wrappers
+					for (int k = 0; k < behaviors[j].getNumTargets(); k++)
+						{
+						Target t = ((Target)(behaviors[j].getTarget(k)));
+						if (t != null &&                 // because it was unused when saved. See save()
+								t instanceof Parameter)  // needs to be rebound. Assume that the index of horde is the same as the index for this macro
+							{
+							Parameter p = (Parameter) t;
+							//System.err.println("     Substituting Wrapper for behavior parameter " + behaviors[j] + " : " + k + " " + p);
+							behaviors[j].setTarget(k, new Wrapper(p.getName(), p.getIndex()));  // we'll use p.getIndex() as the default but it might not be a good choice
+							}
+						// else if (t != null)
+						// System.err.println("     Non-substituted behavior target " + behaviors[j] + " : " + k + " " + t);
+						}
+					}
+				}
+			}
+		// get rid of behaviorNames and behaviorTargets
+		behaviorNames = null;
+		behaviorTargets = null;
+
+		loaded.add(this);
+		cycles.remove(this);
+		return true;
+		}
+
+	public void writeAllTargets(PrintWriter writer)
+		{
+		HashSet t = new HashSet();
+		writer.print(" ( targets ");
+		String s = writeAllTargetsHelp(t);
+		writer.print(t.size() + " " + s);
+		writer.print(")\n");
+		}
+
+	public String writeAllTargetsHelp(HashSet targetsSoFar)
+		{
+		String s = super.writeAllTargetsHelp(targetsSoFar);
+		for (int i = 0; i < features.length; i++)
+			if (features[i] != null) 
+				s += features[i].writeAllTargetsHelp(targetsSoFar);
+		for (int i = 0; i < behaviors.length; i++)
+			if (behaviors[i] != null) 
+				s += behaviors[i].writeAllTargetsHelp(targetsSoFar);
+		return s;
+		}
+
+	public void writeAllFeatures(PrintWriter writer)
+		{
+		HashSet t = new HashSet();
+		writer.print(" ( features ");
+		String s = writeAllFeaturesHelp(t);
+		writer.print(t.size() + " " + s);
+		writer.print(")\n");
+		}
+
+	public String writeAllFeaturesHelp(HashSet featuresSoFar)
+		{
+		String str = "";
+		for (int i = 0; i < behaviors.length; i++)
+			if (behaviors[i] != null && behaviors[i] instanceof TrainableMacro)
+				str += ((TrainableMacro) (behaviors[i])).writeAllFeaturesHelp(featuresSoFar);
+		for (int i = 0; i < features.length; i++)
+			{
+			String s = features[i].writeToString();
+			if (!featuresSoFar.contains(s))
+				{
+				str += (s + " ");
+				featuresSoFar.add(s);
+				}
+			}
+		return str;
+		}
+
+	public void writeTopLevel(PrintWriter writer)
+		{
+		// write out all targets
+		writeAllTargets(writer);
+
+		// write out all features
+		writeAllFeatures(writer);
+
+		// write out the number of behaviors
+		writer.print("( behavior-names " + behaviors.length + " ");
+		int fsacount = 0;
+		for (int i = 0; i < behaviors.length; i++)
+			if (behaviors[i] instanceof TrainableMacro) 
+				fsacount++;
+		writer.print("" + fsacount + " ");
+		for (int i = 0; i < behaviors.length; i++)
+			writer.print(" " + behaviors[i].getName());
+		writer.print(" )\n\n");
+
+		// write out all behaviors
+		HashSet behaviorsSoFar = new HashSet();
+		for (int i = 0; i < behaviors.length; i++)
+			if (behaviors[i] != null)
+				{
+				writer.print("%%% ----- " + i + " ------\n");
+				behaviors[i].write(writer, behaviorsSoFar);
+				}
+
+		// we don't write out the top-level behavior
+
+		/*
+		// write out the global classifier with behavior map, feature map, and learned transitions 
+		writer.print(" ( behaviors " + behaviors.length + " "); 
+		for(int i = 0 ; i < behaviors.length; i++)
+		if (behaviors[i] != null) 
+		writer.print(behaviors[i].name + " "); 
+		else writer.print(" null "); 
+		writer.print(")\n");
+		 
+		writer.print(" ( features " + features.length + " "); 
+		for(int i = 0 ; i < features.length; i++) 
+		features[i].write(writer);
+		writer.print(")\n");
+		 
+		writer.print(" ( transitions\n"); 
+		for(int i = 0 ; i < behaviors.length; i++) 
+		if (transitions[i] != null)
+		transitions[i].write(writer, false); 
+		else writer.print(" null ");
+		writer.print(")\n");
+		 */
+
+		}
+
+	public void write(PrintWriter writer, HashSet behaviorsSoFar)
+		{
+		// write out the subsidiary behaviors FIRST
+		// for(int i = 0 ; i < behaviors.length; i++)
+		// if (behaviors[i] != null)
+		// behaviors[i].write(writer, behaviorsSoFar);
+
+		// Now write me
+		writer.print(" ( trainable-macro " + name + " ");
+
+		writer.print(" ( targets " + targets.length + " ");
+		for (int i = 0; i < targets.length; i++)
+			writer.print(targetNames[i] + " ");
+		writer.print(")\n");
+
+		writer.print(" ( behaviors " + behaviors.length + " ");
+		for (int i = 0; i < behaviors.length; i++)
+			if (behaviors[i] != null)
+				writer.print(behaviors[i].name + " ");
+			else writer.print(" null ");
+		writer.print(")\n");
+
+		writer.print(" ( features " + features.length + " ");
+		for (int i = 0; i < features.length; i++)
+			features[i].write(writer);
+		writer.print(")\n");
+
+		domain.write(writer);
+
+		writer.print(" ( transitions\n");
+		for (int i = 0; i < behaviors.length; i++)
+			if (transitions[i] != null)
+				transitions[i].write(writer, false);
+			else writer.print(" null ");
+		writer.print(")\n");
+
+		writer.print(")\n\n");
+		}
+
+	}

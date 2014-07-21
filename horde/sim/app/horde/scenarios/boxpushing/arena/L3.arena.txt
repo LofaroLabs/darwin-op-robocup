@@ -1,0 +1,4 @@
+size 200 200
+basicpool FlockbotLeft sim.app.horde.scenarios.robot.flockbots.FlockbotAgent 1 Magenta
+
+

@@ -1,0 +1,64 @@
+package sim.app.horde.agent;
+import java.util.*;
+import sim.app.horde.*;
+import sim.app.horde.behaviors.*;
+
+
+public interface Controller
+    {
+
+    public static final ec.util.Parameter P_NUM_SUBS = new ec.util.Parameter("num-subs");
+    public static final ec.util.Parameter P_SUB = new ec.util.Parameter("sub");
+    public static final ec.util.Parameter P_NUM_JOINTS = new ec.util.Parameter("num-joints");
+    public static final ec.util.Parameter P_JOINT = new ec.util.Parameter("joint");
+    public static final ec.util.Parameter P_ALLOW_ALL_BEHAVIORS = new ec.util.Parameter("all-behaviors");
+
+
+    public ArrayList<AgentGroup> getSubsidiaryAgents();
+    public Object clone();
+    /** Though this is public -- because interfaces must be public --
+        do NOT call this method.  Instead, call setup(AgentGroup, String, Horde) */
+    public void setup(ec.util.ParameterDatabase db, Horde horde);
+    public Behavior[] provideJointBehaviors(ec.util.ParameterDatabase db);
+        
+    /** The distance from this agent to the nearest leaf */
+    public int maxLeafDistance();
+    /** Whether or not this Controller is the training agent. */
+    public boolean isTraining();
+        
+    }
+
+
+/*
+
+  public  int getNumSubsidiaryAgents();
+
+  public  int getNumSubsidiaryAgents(String agentType);
+        
+  public  AgentGroup addAgentGroup(String agentType);
+
+  public  void addSubsidiaryAgent(Agent a);
+        
+  public  List<Agent> getSubsidiaryAgents(String agentName);
+
+  public  int[] getBasicAgentAlloc();
+
+  public  void setBasicAgentAlloc(int[] basicAgentAlloc);
+        
+  public  void distribute(Agent[][] basic, int[] agentIndex);
+
+  public  int numControllers();
+        
+  public  GroupBehavior [] groupBehaviors();
+        
+  public  int totalAgents();
+        
+  public  boolean hasManipulated();
+        
+  public  boolean hasSomeoneFinished();
+        
+        
+  public  void setJointBehaviors(Collection<JointBehavior> jbc);
+        
+  public  JointBehavior[] jointBehaviors();
+*/

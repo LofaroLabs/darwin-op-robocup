@@ -1,0 +1,34 @@
+# Default Arena
+
+# size width height
+size 100 100
+
+# circle x y targetableIndex diameter field
+circle 0 0 -1 10 0
+
+# rect x y targetableIndex width height field
+rect 10 20 -1 10 10 0
+rect 10 20 -1 30 30 1
+
+# squarecircle x y targetableIndex field
+# This is basically a hack
+squarecircle 30 30 -1 0
+
+# text x y targetableIndex field fontsize string
+text 20 40 -1 0 12 国先
+
+# marker x y targetableIndex name
+marker 50 50 0 Home Base
+marker 25 25 1 Elsewhere
+marker 75 75 2 Third Place
+
+# <root/basic/coroot> <dir of paramDatabase db> <number of these agents> x y orientation
+root darwinagent 1 30 30 40 40
+
+#root sim1 10 30 30 40 40
+
+#coroot sim2 Forward[0.1] 10 30 30 40 40
+
+# food filename
+# ground filename terrain0Name terrain1Name ...
+# ground test.png

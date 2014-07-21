@@ -1,0 +1,277 @@
+package sim.app.horde.agent;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import sim.app.horde.Horde;
+import sim.app.horde.behaviors.*;
+
+public class ControllerAgent extends Agent implements Controller
+	{
+	private static final long serialVersionUID = 1L;
+
+	private int[] basicAgentAlloc;
+	private ArrayList<AgentGroup> subsidiaryAgents;
+
+	public int[] getBasicAgentAlloc()
+		{
+		return basicAgentAlloc;
+		}
+
+	public void setBasicAgentAlloc(int[] basicAgentAlloc)
+		{
+		this.basicAgentAlloc = basicAgentAlloc;
+		}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see sim.app.horde.agent.Controller#getNumSubsidiaryAgents()
+	 */
+	public int getNumSubsidiaryAgents()
+		{
+		int cnt = 0;
+
+		for (AgentGroup group : subsidiaryAgents)
+			{
+			cnt += group.getSize();
+			
+			if (group.getSize() > 0 && group.getAgent(0) instanceof Controller)
+				for (int i = 0; i < group.getSize(); i++)
+					{
+					cnt += ((Controller) group.getAgent(i)).getNumSubsidiaryAgents();
+					}
+			}
+		return cnt;
+		}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * sim.app.horde.agent.Controller#getNumSubsidiaryAgents(java.lang.String)
+	 */
+	public int getNumSubsidiaryAgents(String agentType)
+		{
+		int cnt = 0;
+
+		for (AgentGroup group : subsidiaryAgents)
+			{
+			if (group.getAgentType().equals(agentType)) cnt += group.getSize();
+			
+			if (group.getSize() > 0 && group.getAgent(0) instanceof Controller)
+				for (int i = 0; i < group.getSize(); i++)
+					{
+					cnt += ((Controller) group.getAgent(i)).getNumSubsidiaryAgents(agentType);
+					}
+			}
+		return cnt;
+		}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * sim.app.horde.agent.Controller#addSubsidiaryAgent(sim.app.horde.agent
+	 * .Agent)
+	 */
+	public void addSubsidiaryAgent(Agent a)
+		{
+
+		AgentGroup group = addAgentGroup(a.getName());
+		group.addAgent(a);
+		}
+
+	public ControllerAgent(Horde horde)
+		{
+		super(horde);
+		subsidiaryAgents = new ArrayList<AgentGroup>();
+		addType("CONTROLLER");
+		}
+
+	/**
+	 * Distribute basic agents into this subtree
+	 * 
+	 * @param basic The basic agent pool
+	 * @param agentIndex The index of the first unassigned agent in each array
+	 */
+	public void distribute(Agent[][] basic, int[] agentIndex)
+		{
+
+		// Get the agent names associated with the first dimension of the agent pool
+		String[] basicAgentNames = horde.basicAgentNames();
+
+		for (int i = 0; i < subsidiaryAgents.size(); i++)
+			{
+			AgentGroup group = subsidiaryAgents.get(i);
+			boolean basicGroup = false;
+
+			for (int j = 0; j < basicAgentNames.length; j++)
+				{
+				// If the subsidiary agent group is a basic agent, populate it based
+				// on the allocation determined when the agent hierarchy was generated
+				if (group.getAgentType().equalsIgnoreCase(basicAgentNames[j]))
+					{
+					basicGroup = true;
+
+					for (int k = 0; k < basicAgentAlloc[j]; k++)
+						{
+
+						if (agentIndex[j] >= basic[j].length)
+							{
+							throw new RuntimeException("Not enough agents in pool for allocation");
+							}
+
+						if (basic[j][agentIndex[j]].getGroup() != null)
+							{
+							throw new RuntimeException("The indexed basic agent has already been allocated");
+							}
+
+						group.addAgent(basic[j][agentIndex[j]]);
+						agentIndex[j]++;
+						}
+					}
+				}
+
+			if (!basicGroup)
+				{
+				for (int k = 0; k < group.getSize(); k++)
+					{
+					Agent sub = group.getAgent(k);
+
+					if (sub instanceof Controller)
+						{
+						Controller subCtl = (Controller) sub;
+						subCtl.distribute(basic, agentIndex);
+
+						// This also makes the subcontroller appear in the agents field
+						((SimControllerAgent) subCtl).setPose(
+								((SimControllerAgent) subCtl).medianAgentLoc(),
+								horde.random.nextDouble() * Math.PI * 2 - Math.PI);
+						}
+					else
+						{
+						throw new RuntimeException("The sub-agent " + sub.getName() + 
+								" is a basic agent, but the not identified in the basic agent pool");
+						}
+					}
+				}
+			}
+		}
+
+	public AgentGroup addAgentGroup(String agentType)
+		{
+		for (AgentGroup group : subsidiaryAgents)
+			if (group.getAgentType().equals(agentType))
+				{
+				return group;
+				}
+
+		AgentGroup group = new AgentGroup(agentType);
+		group.setController(this);
+		subsidiaryAgents.add(group);
+
+		return group;
+		}
+
+	public List<AgentGroup> getSubsidiaryAgents()
+		{
+		return subsidiaryAgents;
+		}
+
+	public int numControllers()
+		{
+		int count = 1; // I am a controller
+		for (AgentGroup group : subsidiaryAgents)
+			count += group.numControllers();
+
+		return count;
+		}
+
+	public int totalAgents()
+		{
+		int count = 1;
+		for (AgentGroup group : subsidiaryAgents)
+			count += group.totalAgents();
+
+		return count;
+		}
+
+	public List<Agent> getSubsidiaryAgents(String agentName)
+		{
+		for (AgentGroup group : subsidiaryAgents)
+			if (group.getAgentType().equals(agentName))
+				{
+				return group.getAgents();
+				}
+
+		return null;
+		}
+
+	public GroupBehavior[] groupBehaviors()
+		{
+		List<GroupBehavior> macros = new ArrayList<GroupBehavior>();
+
+		for (AgentGroup group : subsidiaryAgents)
+			if (group.getSize() > 0)
+				{
+				GroupBehavior[] sub = GroupBehavior.provideAllGroupBehaviors(group.getAgent(0));
+
+				for (int i = 0; i < sub.length; i++)
+					macros.add(sub[i]);
+				}
+
+		GroupBehavior [] gb = new GroupBehavior[macros.size()];
+		System.arraycopy(macros.toArray(), 0, gb, 0, macros.size());
+
+		return gb;
+		}
+
+	public boolean hasManipulated()
+		{
+		for (AgentGroup group : subsidiaryAgents)
+			if (group.agentManipulated()) return true;
+
+		return false;
+		}
+
+	public int maxLeafDistance()
+		{
+		int dist = 1;
+
+		for (AgentGroup group : subsidiaryAgents)
+			if (group.getSize() > 0)
+				{
+				if (group.getAgent(0) instanceof Controller)
+					{
+					Controller sub = (Controller) group.getAgent(0);
+					int subDist = sub.maxLeafDistance();
+
+					dist = (subDist + 1 > dist) ? subDist + 1 : dist;
+					}
+				}
+
+		return dist;
+		}
+
+	public boolean hasSomeoneFinished()
+		{
+		for (AgentGroup group : subsidiaryAgents)
+			if (group.getSize() > 0)
+				{
+				for (Agent agent : group.getAgents())
+					{
+
+					if (agent instanceof Controller)
+						{
+						Controller sub = (Controller) agent;
+						boolean finished = sub.hasSomeoneFinished();
+
+						if (finished) return true;
+						}
+					}
+				}
+
+		return false;
+		}
+	}

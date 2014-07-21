@@ -1,0 +1,17 @@
+CLASSES {
+
+Start
+Sevo
+Stop
+Forward
+Backward
+Left-Turn
+Right-Turn
+Left-Step
+Right-Step
+Kick-Left
+Kick-Right
+ } 
+CONTINUOUS {
+Ball-X
+ } 

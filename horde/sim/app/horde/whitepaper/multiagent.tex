@@ -1,0 +1,65 @@
+\documentclass[11pt]{article}
+\usepackage{fullpage}
+\usepackage{mathpazo}
+\usepackage[noend]{algpseudocode}
+\usepackage{amsmath}
+\usepackage{latexsym}
+\usepackage{graphicx}
+\usepackage{wrapfig}
+\usepackage{bibentry}
+\usepackage{bm}
+\usepackage{qtree}
+\usepackage{array}
+\usepackage{eurosym}
+\usepackage{textcomp}
+\usepackage{tocloft}
+\usepackage{makeidx}
+\usepackage{rotating}
+\usepackage{multirow}
+\usepackage{multicol}
+\usepackage{microtype}
+\usepackage[font=footnotesize,labelsep=quad,labelfont=it]{caption}
+\newcommand\subcaptionsize\footnotesize  % make this the same as the font size in the caption package
+\newcommand\ignore[1]{}
+
+\renewcommand\textfraction{0.0}
+\renewcommand\topfraction{1.0}
+\renewcommand\bottomfraction{1.0}
+
+\newcommand\tightbox[1]{{\setlength\fboxsep{0pt}\framebox{#1}}}
+
+\sloppy
+\raggedbottom
+
+\begin{document}
+
+
+\section*{Multiagent Horde \\ {\large White Paper} }
+
+\subsection*{Keith Sullivan and Sean Luke} 
+
+As stated in the AAMAS paper, one direction to take Horde is to add a multiagent capability.   We see two ways to do this: 
+\begin{enumerate} 
+\item Train a single agent, and copy the resulting HFA to all other agents 
+\item Create a hierarchy of agents with a \textit{virtual agent} controlling groups of agents. 
+\end{enumerate}  
+
+The training methodology in the first idea is used later.  Due to its simplicity, we won't discuss idea one any further.   As for the second idea, we view the group of $N$ agents as consisting of an arbitrary number of subgroups such that $\forall i, |G_i| \ge 0, \text{ and }|G_1| + |G_2| + \ldots + |G_m| = N$.    
+
+With virtual agents acting as managers, we see two possible scenarios: 
+\begin{enumerate} 
+\item \textit{Homogeneous:}  all agents run the same HFA, but all agents are not necessarily in the same state.  
+\item \textit{Heterogeneous:} each agent runs its own HFA, with the possibility of subgroups of agents running the same HFA.  
+\end{enumerate}
+
+
+\section*{Virtual Agents} 
+A virtual agent manages groups of agents by augmenting the individual agent's transition function since the virtual agent is aware of global information (either through global communication or a version of RoboMail).   As the virtual agent become aware of global information (such as the percentage of agents in a certain state), it can force agents to perform a state transition even though local information does not warrant such as transition.  To do this,  the virtual agent runs its own HFA that determines a distribution of its agents into subgroups.  The learned transitions are conditions (possibly based on information unavailable to the real agents) when the distribution of agents should change.  In the case of running Horde on robots, one robot will need to host the virtual agent in addition to its own HFA.    
+
+In the homogeneous case, the virtual agent has $M$ subgroups where $M$ is the number of states in the HFA that all the agents are running.  In the heterogeneous case, the virtual agent has $K$ subgroups, where $K$ is the total number of states of \textit{all} HFAs the agents could be running.  In both cases, the size of a subgroup can be zero.  
+
+If a real agent transitions from state $s$ to $s'$, this can alter the distribution the virtual agent is trying to achieve.  If a state transition occurs in a real agent, the virtual agent should be somewhat tolerant of this, and only do its own state transition when the the actual distribution of agents significantly differs from the virtual agent's desired distribution.   The level of tolerance can be either hard coded, or learned during training.   Also, the tolerance level can be state specific.     
+
+Virtual agents introduce an additional level into the global HFA.  This makes them ideal for inclusion in large, complex HFAs in both the homogeneous and heterogeneous cases.  A virtual agent high in the hierarchy distributes some number of agents to a subsidiary virtual agent, which then distributes those agents among subgroups, each running an HFA.  The virtual agent is not concerned about the details of the subgroup, which allows the subgroup to be another virtual agent.     
+
+\end{document}

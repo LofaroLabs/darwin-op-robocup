@@ -12,7 +12,7 @@
 # By default this script does nothing.
 amixer set Master 0%
 mplayer /home/darwin/Audio/bite_my_shiny_metal_ass.mp3
-amixer set Master 85%
+amixer set Master 100%
 /bin/su darwin -c "/home/darwin/dev/merc/darwin/UPENN2013/Player/buttons.sh"
 
 exit 0

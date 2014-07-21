@@ -183,7 +183,7 @@ function process_keyinput()
     if(byte==string.byte("b")) then
 	ballDistToggle = (ballDistToggle +1) % 5;
     end
-    if(byte==string.byte(",")) then
+    --[[if(byte==string.byte(",")) then
 	ballDistToGoalToggle = (ballDistToGoalToggle + 1) % 3;
         ballGlobal = {}
    	if(ballDistToGoalToggle == 0) then
@@ -199,12 +199,12 @@ function process_keyinput()
    	wcm.set_team_closestToBallLoc(ballGlobal);
  
 
-    end
+    end]]--
     if(byte == string.byte("r")) then
 	role = (role+1)%5
    	wcm.set_horde_role(role); 	
     end
-    if(byte == string.byte('o')) then
+   if(byte == string.byte('o')) then
 	goalDist = (goalDist +1) %3;
      end
 	if(byte == string.byte('z')) then
@@ -228,9 +228,22 @@ end
 wcm.set_horde_dummyTraining(0);
   while (true) do
     -- update motion process
- --  unix.usleep(.5 * 1E6);
+   unix.usleep(.1 * 1E6);
     update();
-   if(wcm.get_horde_dummyTraining() == 1) then
+	if(wcm.get_horde_dummyTraining() == 1) then
+   declared = vector.zeros(3);
+   --print("\n\n declared one is " .. declare
+   if(declaredOne==0) then
+        declared[1] = 1;
+   elseif(declaredOne == 1) then
+        declared[2] = 1;
+   elseif(declaredOne == 2) then
+        --print("HEY THIS HAPPENED")
+        declared[3] = 1;
+   end
+	wcm.set_horde_doDeclare(declared);
+	end
+   if(wcm.get_horde_dummyTraining() == 1 and false) then
    if(ballDistToggle == 0) then
 	ballDist = .582259821
    elseif(ballDistToggle==1) then
@@ -268,7 +281,7 @@ wcm.set_horde_dummyTraining(0);
    
    
    
-   if(goalDist ==0) then
+   if(goalDist ==0 or true) then
    --let localization handle
 	--vcm.set_vision_enable(1)
    elseif(goalDist ==1) then
@@ -295,7 +308,10 @@ wcm.set_horde_pose(myNewPose);
 	wcm.set_horde_goalieCloseEnough(force);
    end
    io.stdout:flush();
-   if(somethingPressed) then
+   if(wcm.get_horde_dummyTraining() == 0 ) then
+	vcm.set_vision_enable(1);
+   end
+	if(somethingPressed) then
 	os.execute('clear')
 	print("vision enable: " .. vcm.get_vision_enable());
 	print("Yellfailed :".. wcm.get_horde_yelledFail() ..  "\ndetect ball: " .. vcm.get_ball_detect() ..  " ball dist:" .. wcm.get_ball_x().. " frontApproach: " .. tostring(wcm.get_horde_doneApproach()))

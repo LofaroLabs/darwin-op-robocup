@@ -1,0 +1,77 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
+package sim.app.horde.scenarios.robot.darwin;
+
+import sim.app.horde.SimHorde;
+import sim.app.horde.scenarios.robot.darwin.agent.DarwinAgent;
+import sim.app.horde.scenarios.robot.darwin.comm.DarwinParser;
+import sim.engine.SimState;
+import sim.engine.Steppable;
+import sim.util.Bag;
+import sim.util.Double2D;
+
+/**
+ *
+ * @author drew
+ */
+public class DarwinHorde extends SimHorde{
+    private static final long serialVersionUID = 1;
+
+    static {
+        locationRelativeClass = DarwinHorde.class;
+    }
+
+    public DarwinHorde(long seed) {
+        super(seed);
+    }
+    
+    Object ball = null;
+    
+    public void start()
+    {
+        super.start();
+        
+        // at this point, the object representing the ball is in the objects
+        // field and is located at [29.5, 19.5]
+        
+        Bag bag = regions.getObjectsAtLocation(new Double2D(29.5, 19.5));
+        ball = bag.get(bag.size()-1);  // get top object
+        
+        schedule.scheduleRepeating(new Steppable()
+        {
+            public void step(SimState state)
+            {
+            if (getTrainingAgent() != null)
+            {
+            DarwinParser dp = ((DarwinAgent) getTrainingAgent()).getCurrentData();
+            if (dp != null)
+            {
+            // get current ball location
+                double x = dp.getBallX() + dp.getPoseX();
+            double y = dp.getBallY() + dp.getPoseY();
+            
+            // adjust and set that sucker
+            x += 30;
+            y += 20;
+            // further adjust so center of ball is in middle
+            x -= 1;
+            y -= 1;
+            Double2D loc = new Double2D(x,y);
+            System.err.println("Ball location? " + loc);
+            regions.setObjectLocation(ball, loc);
+                }
+            }
+            }
+        }, 2);
+        
+
+    }
+
+    
+    
+    
+}

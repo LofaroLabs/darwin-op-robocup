@@ -1,0 +1,12 @@
+# controller name className
+controller FlockbotController sim.app.horde.scenarios.boxpushing.FlockbotController
+
+# subordinate name className max min pref
+subordinate FlockbotLeft sim.app.horde.scenarios.robot.flockbot.FlockbotAgent 1 1 1 
+subordinate FlockbotRight sim.app.horde.scenarios.robot.flockbot.FlockbotAgent 1 1 1 
+
+jointbehavior FBStop FlockbotLeft:LeftStop FlockbotRight:RightStop
+jointbehavior FBInit FlockbotLeft:LeftInit FlockbotRight:RightInit
+jointbehavior FBForward FlockbotLeft:LeftForward100 FlockbotRight:RightForward100
+jointbehavior FBCorrectRight FlockbotLeft:LeftForward100 FlockbotRight:RightForward25
+jointbehavior FBCorrectLeft FlockbotLeft:LeftForward25 FlockbotRight:RightForward100 
