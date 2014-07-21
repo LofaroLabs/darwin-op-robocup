@@ -4,7 +4,7 @@ require('vcm')
 require('wcm')
 require('Body')
 while 1 do
-
+	print(tostring(gcm.get_game_state()) .. " game state is " )
     if gcm.get_team_color() == 1 then
 
             -- red attacks cyan goali
