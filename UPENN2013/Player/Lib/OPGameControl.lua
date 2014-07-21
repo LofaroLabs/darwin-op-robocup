@@ -177,6 +177,8 @@ function update()
         teamPenalty[p] = gamePacket.teams[teamIndex].player[p].penalty;
       end
     end
+  else
+	gameState = gcm.get_game_state();
   end
 
   gcm.set_game_our_score(our_score);
@@ -210,7 +212,7 @@ function update()
           else --Short press and release 
              -- advance state when button is released
             if (gameState < 3) then
-              gameState = gameState + 1;
+              --gameState = gameState + 1;
             elseif (gameState == 3) then
               -- playing - toggle penalty state
               teamPenalty[playerID] = 1 - teamPenalty[playerID]; 
@@ -226,8 +228,8 @@ function update()
        buttonPressed = 1;
        --Long state press, directly go to set
        if t-t_button_pressed > 2.0 then 
-         gameState = 2; --Set state
-         teamPenalty[playerID] = 0;
+         --gameState = 2; --Set state
+         --teamPenalty[playerID] = 0;
        end
       end
     end

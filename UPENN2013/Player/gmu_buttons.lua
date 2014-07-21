@@ -14,6 +14,7 @@ require('os')
 require('unix')
 require('init')
 require('gcm')
+require('wcm')
 setDebugFalse();
 scriptNumber = 0;
 function mainMenuUpdate() 
@@ -168,8 +169,9 @@ function soccerMenuExecute()
 	elseif scriptNumber == 3 then 
 		Speak.talk('imma goalie');
 		os.execute("sh noKillRunBasic.sh");
-		os.execute("lua goalieHFA.lua")
+		os.execute("lua goalieHFA.lua > /dev/null &")
 		setDebugTrue();
+		
 		print("playing will be true " );
 		setDebugFalse();
 		PLAYING = 1			-- Used to say we want the game state menu at top
@@ -194,7 +196,7 @@ function gameStateMenuUpdate()
                 gcm.set_game_state(1);
         elseif scriptNumber == 3 then
                 Speak.talk('set')
-                wcm.set_horde_startGoalLine(0); -- don't want it for the next match per se.
+                --wcm.set_horde_startGoalLine(0); -- don't want it for the next match per se.
                 gcm.set_game_state(2);
         elseif scriptNumber == 4 then
                 Speak.talk('play')

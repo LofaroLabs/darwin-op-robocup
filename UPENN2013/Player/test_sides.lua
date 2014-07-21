@@ -4,9 +4,8 @@ require('vcm')
 require('wcm')
 require('Body')
 while 1 do
-
-    print(" game stat is " .. tostring(gcm.get_game_state()))
---[[    if gcm.get_team_color() == 1 then
+	print(tostring(gcm.get_game_state()) .. " that was gamestate")
+    if gcm.get_team_color() == 1 then
 
             -- red attacks cyan goali
         print(" yellow ")
@@ -21,11 +20,11 @@ while 1 do
 	print("SendStatus DNW = " .. tostring(wcm.get_team_connected()));
 	print("my x, y, a is : " .. wcm.get_pose().x .. ", " .. wcm.get_pose().y ..  ", " .. wcm.get_pose().a);
 	print("ball x, y, a is : " .. wcm.get_ball().x .. ", " .. wcm.get_ball().y .. ", " .. tostring(wcm.get_ball().a)); 
-	print("using different call, ball x, y, a is " .. wcm.get_ball_x() .. ", " .. wcm.get_ball_y())
+--[[	print("using different call, ball x, y, a is " .. wcm.get_ball_x() .. ", " .. wcm.get_ball_y())
 	print("Can See ball " .. vcm.get_ball_detect());
 	print("am i closest to goal post " .. tostring(wcm.get_team_isClosestToGoalDefend()))
 	print("player ID " .. tostring(Config.game.playerID))
 	print("team yelled kick " .. wcm.get_team_yelledKick()[3]);
 --]]
-	--print("goalie close? " .. tostring(wcm.get_horde_goalieCloseEnough()))
+	print("goalie close? " .. tostring(wcm.get_horde_goalieCloseEnough()))
 end
