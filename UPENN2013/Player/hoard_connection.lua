@@ -445,7 +445,8 @@ connectionThread = function ()
 				
 				print("JUST DOING UPENN STUFF")
 				if(in_penalty()) then
-					wasJustInPenalty = true;
+					wasJustInPenalty = true
+					doneReadyBefore = false;
 				end
 				setDebugTrue();
 				if(string.find(tostring(line),"gotoPose")) then
