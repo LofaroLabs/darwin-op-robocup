@@ -422,6 +422,15 @@ connectionThread = function ()
 				wasJustInPenalty = false;
 				walk.start()
 				walk.set_velocity(0,0,0);
+			
+		
+				BodyFSM.sm:set_state('bodyReady') -- ready
+				BodyFSM.update();
+				BodyFSM.update();
+				BodyFSM.update();
+				BodyFSM.sm:set_state('bodyReadyMove') -- ready
+				HeadFSM.sm:set_state('headLookGoalGMU')
+			
 			end
 			--print("are we in penalty?")
 			--print("vector of penalites: ", gcm.get_game_penalty())	
@@ -451,7 +460,7 @@ connectionThread = function ()
 				--print("not calling horde function");
 				local state = gcm.get_game_state();
 				
-		        	if state ~= 3 then
+		        	if state ~= 3 or in_penalty() then
   					if (state == 0 and lastState ~= 0) then
     						doneReadyBefore = false;
 						BodyFSM.sm:set_state('bodyIdle')-- 'initial';
@@ -469,12 +478,12 @@ connectionThread = function ()
 						BodyFSM.update();
 						BodyFSM.sm:set_state('bodyReadyMove') -- ready
 						HeadFSM.sm:set_state('headLookGoalGMU')
-					elseif (state == 2 and lastState ~=2 ) then
+					elseif (state == 2 and lastState ~=2 and not in_penalty() ) then
     						BodyFSM.sm:set_state('bodyStop') --'set';
   						HeadFSM.sm:set_state('headTrack');
 				--	elseif (state == 3) then
     				--		return 'playing';
-  					elseif (state == 4 and lastState ~=4) then
+  					elseif ((state == 4 and lastState ~=4) or in_penalty()) then
     						BodyFSM.sm:set_state('bodyIdle')	-- 'finished';
   						--HeadFSM.sm:set_state('headIdle');
 						 doneReadyBefore = false;
