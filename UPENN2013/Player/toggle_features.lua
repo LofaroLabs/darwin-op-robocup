@@ -230,7 +230,20 @@ wcm.set_horde_dummyTraining(0);
     -- update motion process
    unix.usleep(.1 * 1E6);
     update();
-   if(wcm.get_horde_dummyTraining() == 1) then
+	if(wcm.get_horde_dummyTraining() == 1) then
+   declared = vector.zeros(3);
+   --print("\n\n declared one is " .. declare
+   if(declaredOne==0) then
+        declared[1] = 1;
+   elseif(declaredOne == 1) then
+        declared[2] = 1;
+   elseif(declaredOne == 2) then
+        --print("HEY THIS HAPPENED")
+        declared[3] = 1;
+   end
+	wcm.set_horde_doDeclare(declared);
+	end
+   if(wcm.get_horde_dummyTraining() == 1 and false) then
    if(ballDistToggle == 0) then
 	ballDist = .582259821
    elseif(ballDistToggle==1) then

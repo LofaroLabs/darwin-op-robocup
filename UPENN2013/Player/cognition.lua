@@ -160,7 +160,7 @@ function updateGoalieFlip()
 			--Speak.talk("ball x, " .. wcm.get_ballGlobal_x());
 			wcm.set_horde_goalieCertainBallOnMySide(1);
 			setDebugFalse();
-		elseif( latTimeNotOnGoalieSide - lastTimeFoundOnGoalieSide >= .27) then
+		elseif( lastTimeNotOnGoalieSide - lastTimeFoundOnGoalieSide >= .27) then
 			wcm.set_horde_goalieCertainBallOnMySide(0);
 		end
 		

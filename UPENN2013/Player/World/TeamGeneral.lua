@@ -813,7 +813,7 @@ function update_goalieCloseEnough()
 		if wcm.get_horde_fallTime() > lastTimeReceivedFromGoalie and wcm.get_team_connected() == 1 then
 			-- only if it has been a while since i received a message from the goalie and I'm still connected
 			-- while I start to kick out of bounds.  
-			wcm.set_horde_kickOutOfBounds(1);
+			wcm.set_horde_kickOutOfBounds(0);
 		else
 			-- otherwise I won't because I still want to at least play kiddie soccer when wifi dies
 			wcm.set_horde_kickOutOfBounds(0);
