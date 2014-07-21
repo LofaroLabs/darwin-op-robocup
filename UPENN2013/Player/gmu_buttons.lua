@@ -162,7 +162,7 @@ function soccerMenuExecute()
 		unix.usleep(2*1E6);
 		os.execute("sh noKillRunBasic.sh")
 		os.execute("sh runhorde.sh");
-
+		os.execute("echo 111111 | sudo -S ifdown eth0")
 		PLAYING = 1       -- Used to say we want the game state menu at top 
 		scriptNumber = 0  -- to take us to the beginning of the menu
 	elseif scriptNumber == 3 then 
