@@ -18,7 +18,7 @@ public class Darwins {
      public static Darwins FIFTY = new Darwins("10.0.0.50", 4009, (byte)1);
     public static Darwins FIFTYONE = new Darwins("10.0.0.51", 4009, (byte)1);
     public static Darwins FIFTYTWO = new Darwins("10.0.0.52", 4009, (byte)1);
-    public static Darwins FIFTYTHREE = new Darwins("10.0.0.63", 4009, (byte)1);
+    public static Darwins FIFTYTHREE = new Darwins("192.168.117.53", 4009, (byte)1);
     public static Darwins FIFTYFOUR = new Darwins("10.0.0.64", 4009, (byte)1);
     public static Darwins FIFTYFIVE = new Darwins("10.0.0.55", 4009, (byte)1);
     public static Darwins FIFTYSIX = new Darwins("10.0.0.66", 4009, (byte)1);

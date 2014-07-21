@@ -43,10 +43,10 @@ circle 29.5 19.5 -1 1 1 orange
 #root attackerZero 30 25 0  ## 50
 #root attackerOne 30 20 0   ## 51
 #root attackerTwo 30 25 0   ## 52
-#root attackerThree 30 30 0 ## 53
+root attackerThree 30 30 0 ## 53
 #root attackerFour 30 30 0 ## 54
 #root attackerFive 30 30 0 ## 55
-root attackerSix 30 30 0 ## 56
+#root attackerSix 30 30 0 ## 56
 #root attackerSeven 30 30 0 ## 57
 # Markers
 

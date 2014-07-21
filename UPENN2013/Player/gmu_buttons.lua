@@ -218,7 +218,7 @@ function in_penalty()
 end
 
 function gameStateMenuExecute()
-	if gcm.get_game_state() == 1 then -- I am in ready so when I press the center I want the particles to go to
+	if gcm.get_game_state() == 1 or gcm.get_game_state() == 2 then -- I am in ready so when I press the center I want the particles to go to
 		wcm.set_horde_startGoalLine(1);
 	else
 		Speak.talk("penalty");
