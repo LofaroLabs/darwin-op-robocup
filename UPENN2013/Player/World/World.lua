@@ -267,7 +267,7 @@ function update_vision()
      return;
   end
   
-  if (state == 1) then -- if we are in ready
+  if (state == 1 or state == 2) then -- if we are in ready or set
   	if wcm.get_horde_startGoalLine() == 1 then -- if we have set it so we will start on goal line
   		-- we set the particles on the goal line
   		init_startGoalLine()
