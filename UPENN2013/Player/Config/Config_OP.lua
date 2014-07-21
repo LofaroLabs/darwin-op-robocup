@@ -39,7 +39,7 @@ speak.enable = false;
 
 -- Game Parameters
 game = {};
-game.teamNumber = 19;   --17 at RC12  --16 for GMU robots
+game.teamNumber = 17;   --17 at RC12  --16 for GMU robots
 
 --Default role: 0 for goalie, 1 for attacker, 2 for defender
 ball_shift={0,0};
