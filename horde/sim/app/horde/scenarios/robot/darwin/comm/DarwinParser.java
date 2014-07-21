@@ -229,15 +229,15 @@ public class DarwinParser extends DefaultParser {
             //System.err.println(" id " + getSupportDeclared() + " yelled ready = " + ((getSupportDeclared() != 0) ? feature.allYelledReady[getSupportDeclared() - 1] : 0));
             
             // THIS IS CORRECT UNCOMMENT after train.
-            //return (getSupportDeclared() != 0) ? feature.allYelledReady[getSupportDeclared() - 1] : 0;
+            return (getSupportDeclared() != 0) ? feature.allYelledReady[getSupportDeclared() - 1] : 0;
             
-            
+            /*
             for (int i =0 ; i < feature.allYelledReady.length; i++) {
                 if (feature.allYelledReady[i] == 1) {
                     return 1;
                 }
             }
-            return 0;
+            return 0;*/
             
         }
     }
