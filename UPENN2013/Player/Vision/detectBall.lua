@@ -26,7 +26,6 @@ th_height_max=Config.vision.ball.th_height_max;
 th_ground_boundingbox=Config.vision.ball.th_ground_boundingbox;
 th_min_green1=Config.vision.ball.th_min_green1;
 th_min_green2=Config.vision.ball.th_min_green2;
-th_max_green2 = Config.vision.ball.th_max_green2;
 
 check_for_ground = Config.vision.ball.check_for_ground;
 check_for_field = Config.vision.ball.check_for_field or 0;
@@ -148,7 +147,7 @@ function detect(color)
       	    -- it may be because its on a white line
             whiteBBoxStats = ImageProc.color_stats(Vision.labelA.data,
  	      Vision.labelA.m, Vision.labelA.n, colorWhite, fieldBBox);
-            if (whiteBBoxStats.area < th_min_green2 or whiteBBoxStats.area > th_max_green2) then
+            if (whiteBBoxStats.area < th_min_green2) then
               vcm.add_debug_message("Green check fail\n");
               check_passed = false;
             end
