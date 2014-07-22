@@ -129,14 +129,14 @@ function init_startGoalLine()
 	goalDefend=get_goal_defend();
   	local goalDefendSign = getGoalSign();
 	if gcm.get_team_player_id() == 4 then -- I am the goalie
-		PoseFilter.initializeUniform(vector.new({goalDefend[1],  0,  -1* math.pi/2 *goalDefendSign}), vector.new({.15*xMax, .15*yMax, math.pi/6}))
+		PoseFilter.initializeUniform(vector.new({goalDefend[1],  0,  -1* math.pi *goalDefendSign}), vector.new({.15*xMax, .15*yMax, math.pi/6}))
 	else
 		if gcm.get_team_player_id() % 2 == 0 then
 			-- want a low spread so set the second arg manually
-			PoseFilter.initializeUniform(vector.new({goalDefend[1],  goalDefendSign * .5,  -1* math.pi/2 *goalDefendSign}), vector.new({.15*xMax, .15*yMax, math.pi/6}))
+			PoseFilter.initializeUniform(vector.new({goalDefend[1],  goalDefendSign * .5,  -1* math.pi *goalDefendSign}), vector.new({.15*xMax, .15*yMax, math.pi/6}))
 		else
 			-- want a low spread so set the second arg manually
-			PoseFilter.initializeUniform(vector.new({goalDefend[1],  -1 * goalDefendSign * .5,  math.pi/2 * goalDefendSign}), vector.new({.15*xMax, .15*yMax, math.pi/6}))
+			PoseFilter.initializeUniform(vector.new({goalDefend[1],  -1 * goalDefendSign * .5,  math.pi * goalDefendSign}), vector.new({.15*xMax, .15*yMax, math.pi/6}))
 		end
 	end
 	
