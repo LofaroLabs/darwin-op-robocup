@@ -64,7 +64,7 @@ vision.subsampling2 = 1; --1/4 sized image
 --Vision parameter values
 
 vision.ball={};
-vision.ball.diameter = 0.065;
+vision.ball.diameter = 0.1;
 vision.ball.th_min_color = 6;
 vision.ball.th_min_color2 = 6;
 vision.ball.th_min_fill_rate = 0.35--0.35;
@@ -160,3 +160,4 @@ vision.goal.distanceFactorYellow = 1.22;
 -- NEWNEWNEWNEWNEW
 vision.ball.th_headAngle = -20*math.pi/180;
 vision.ball.th_min_green2 = 50;
+vision.ball.th_max_green2 = 400;
