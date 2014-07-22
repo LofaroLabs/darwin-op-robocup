@@ -34,12 +34,11 @@ public class AttackingGoalTarget extends Target implements Real{
     Double2D realNegativeGoalTarget = new Double2D(-3.06, 0);
     */
     
-    Double2D positiveGoalTarget = new Double2D(50.0, 0);
-    Double2D negativeGoalTarget = new Double2D(-50.0, 0);
+    Double2D positiveGoalTarget = new Double2D(48.0, 0);
+    Double2D negativeGoalTarget = new Double2D(-48.0, 0);
     
-    // added .5 rather .3
-    Double2D realPositiveGoalTarget = new Double2D(5.0, 0);
-    Double2D realNegativeGoalTarget = new Double2D(-5.0, 0);
+    Double2D realPositiveGoalTarget = new Double2D(4.8, 0);
+    Double2D realNegativeGoalTarget = new Double2D(-4.8, 0);
     
     
     boolean isPositive = false;

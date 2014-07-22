@@ -146,11 +146,10 @@ end
 function init_penalty_particles()
 
 	local penaltyYLoc = wcm.get_teamdata_penaltyLocation()
-	local goalDefendSign = getGoalSign();
 	if penaltyYLoc < 0 then
-		PoseFilter.initializeUniform(vector.new({goalDefendSign * 0.5, penaltyYLoc, math.pi/2}), {.15*xMax, .15*yMax, math.pi/6});
+		PoseFilter.initializeUniform(vector.new({0, penaltyYLoc, math.pi/2}), {.15*xMax, .15*yMax, math.pi/6});
 	else
-		PoseFilter.initializeUniform(vector.new({goalDefendSign * 0.5, penaltyYLoc, -math.pi/2}), {.15*xMax, .15*yMax, math.pi/6});
+		PoseFilter.initializeUniform(vector.new({0, penaltyYLoc, -math.pi/2}), {.15*xMax, .15*yMax, math.pi/6});
 	end
 
 
