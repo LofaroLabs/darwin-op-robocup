@@ -216,6 +216,8 @@ function add_debug_message(message)
     --something is wrong, just reset it 
     debug_message='';
   end
+  --setDebugTrue();
   print(message)
+  --setDebugFalse();
   --debug_message=debug_message..message;
 end
