@@ -107,7 +107,7 @@ function update()
   gamePacket = receive();
   count = count + 1;
 
-  if (gamePacket and unix.time() - gamePacket.time < 10) then
+  if (false and gamePacket and unix.time() - gamePacket.time < 10) then
     -- if the game control state has not been set check for the teamIndex 
     teamIndex = 0;
     OtherTeamIndex = 0;

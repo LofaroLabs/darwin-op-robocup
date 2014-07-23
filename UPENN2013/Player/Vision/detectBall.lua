@@ -76,7 +76,7 @@ function detect(color)
   if (#ballPropsB == 0) then return ball; end
 
 -- Check max 5 largest blobs 
-  for i=1,math.min(5,#ballPropsB) do
+  for i=1,math.min(20,#ballPropsB) do
     vcm.add_debug_message(string.format(
 	"Ball: checking blob %d/%d\n",i,#ballPropsB));
 
