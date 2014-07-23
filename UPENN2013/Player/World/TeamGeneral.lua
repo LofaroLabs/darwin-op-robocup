@@ -318,7 +318,7 @@ function update()
    if teamLatency > CONNECTED_TIMEOUT then
   	wcm.set_team_connected(0);
   else
-  	wcm.set_team_connected(1);
+  	wcm.set_team_connected(0);
   end
  end
 
