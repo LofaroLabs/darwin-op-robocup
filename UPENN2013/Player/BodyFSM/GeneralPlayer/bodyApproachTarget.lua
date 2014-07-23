@@ -262,19 +262,19 @@ print("this might be killin me?");
     print("got to pose to goal calculation");
     pose = wcm.get_pose();
     print("grabbed pose from wcm");
-    
+   --[[ 
     if wcm.get_horde_kickOutOfBounds() == 1 then
     	
     	receiveRelative = util.pose_relative({pose.x, pose.y/math.abs(pose.y) * Config.world.yMax, 0} , {pose.x, pose.y, pose.a});
 		setDebugTrue()
 		print("kick to " .. vector.tostring(vector.new({pose.x, pose.y/math.abs(pose.y) * Config.world.yMax, 0})));
 		setDebugFalse();
-    else
+    else--]]
 		receiveRelative = util.pose_relative(wcm.get_horde_kickToPose(), {pose.x, pose.y, pose.a});
 		setDebugTrue()
 		print("kick to " .. vector.tostring(wcm.get_horde_kickToPose()));
 		setDebugFalse();
-    end
+    --end
     
 	setDebugTrue();
     receiveRelative[3] = math.atan2(receiveRelative[2], receiveRelative[1]);
