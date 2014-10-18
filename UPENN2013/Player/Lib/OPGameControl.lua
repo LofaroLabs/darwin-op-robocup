@@ -244,7 +244,8 @@ end
 
 function update_shm()
   -- update the shm values  
-  gcm.set_game_state(gameState);
+  --gcm.set_game_state(gameState);
+  gcm.set_game_state(3);
   gcm.set_game_nplayers(nPlayers);
   gcm.set_game_kickoff(kickoff);
   gcm.set_game_half(half);

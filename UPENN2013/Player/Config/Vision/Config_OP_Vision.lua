@@ -66,11 +66,11 @@ vision.subsampling2 = 1; --1/4 sized image
 vision.ball={};
 vision.ball.diameter = 0.1;
 vision.ball.th_min_color = 6;
-vision.ball.th_min_color2 = 6;
-vision.ball.th_min_fill_rate = 0.35--0.35;
-vision.ball.th_height_max  = 0.20;
+vision.ball.th_min_color2 = 4;
+vision.ball.th_min_fill_rate = 0.25--0.35;
+vision.ball.th_height_max  = 0.40;
 vision.ball.th_ground_boundingbox = {-30,30,0,20};
-vision.ball.th_min_green1 = 400;
+vision.ball.th_min_green1 = 350;
 vision.ball.th_min_green2 = 150; --- down further this overwriten to be 50.
 
 vision.ball.check_for_ground = 1;

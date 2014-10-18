@@ -6,7 +6,7 @@ cwd = '.';
 local platform = os.getenv('PLATFORM') or '';
 if (string.find(platform,'webots')) then cwd = cwd .. '/Player';
 end
-setDebugFalse()
+--setDebugFalse()
 -- Get Computer for Lib suffix
 local computer = os.getenv('COMPUTER') or '';
 if (string.find(computer, 'Darwin')) then
@@ -42,7 +42,7 @@ require('getch')
 require('Body')
 require('Motion')
 require('World')
-setDebugFalse();
+--setDebugFalse();
 local hoard_functions = require "hoard_functions"
 json = require("json")
 unix.usleep(2*1E6);
@@ -135,7 +135,7 @@ sendFeaturesTimer2 = Body.get_time();
 updateAllTimer2 = Body.get_time();
 receiveClientTimer = Body.get_time();
 --/sendFeatures
-
+periodicSend = Body.get_time();
 function sendFeatures (client)
         sendFeaturesTimer2 = Body.get_time();
 	if(wcm.get_horde_sendStatus()~="StartSending") then
@@ -161,7 +161,7 @@ function sendFeatures (client)
 		if (wcm.get_horde_dummyTraining() == 0) then
 		--setDebugTrue();
 		--print("SENDING config role");
-		setDebugFalse();
+		--setDebugFalse();
 		features["role"] = Config.game.role;
         else
 			--setDebugTrue();
@@ -232,7 +232,10 @@ setDebugTrue();
 		print("yeah i'm sending");
 		--Speak.talk("sending");
 		client:settimeout(.01);
-		client:send(json.encode(features) .. "\n");
+		if(Body.get_time() - periodicSend > .1) then 
+			client:send(json.encode(features) .. "\n");
+			periodicSend = Body.get_time();
+		end
         -- Send the features to horde via the client
         -- args may contain the amount of time to wait between sending
 	sendFeaturesTimer2 = Body.get_time() - sendFeaturesTimer2;
@@ -357,7 +360,7 @@ connectionThread = function ()
 				wcm.set_horde_timeOut(0);
 			end
 			lastStateForTime = state;
-			setDebugFalse();
+			--setDebugFalse();
 
 			            --print("update all")
 			updateAllTimer = Body.get_time();
@@ -416,7 +419,7 @@ connectionThread = function ()
 			print("oh yeah, and is it on my side? " .. wcm.get_horde_goalieCertainBallOnMySide() .. " and ball " .. wcm.get_horde_ballLost());
 
 			
-			setDebugFalse()
+			--setDebugFalse()
 			if(not in_penalty() and wasJustInPenalty) then 
 				hoard_functions.initPenalized = false;
 				wasJustInPenalty = false;

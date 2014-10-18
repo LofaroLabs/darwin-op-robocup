@@ -33,7 +33,7 @@ require('bodyApproachTarget')
 require('bodyYellFail')
 require('bodyYellReady')
 require('bodyYellKick')
-
+require('bodyDoVelocity')
 require('bodyPositionGoalie')
 require('bodyAnticipate')
 require('bodyChase')
@@ -51,6 +51,7 @@ require('bodyReadyMove')
 
 
 sm = fsm.new(bodyIdle);
+sm:add_state(bodyDoVelocity);
 sm:add_state(bodyMoveThetaLookGoal);
 sm:add_state(bodyLookBackwards);
 sm:add_state(bodyGotoWhileFacingGoalie);

@@ -47,6 +47,7 @@ shared.ball.t_locked_on = vector.zeros(1);
 
 --connection 
 shared.horde = {};
+shared.horde.walkVelocity = vector.zeros(3);
 shared.horde.startGoalLine = vector.zeros(1); -- 1 (my particles on ready should start on goal line) 0 - start on the side as usual
 shared.horde.safetySaysFlip = vector.zeros(1);
 shared.horde.kickOutOfBounds = vector.zeros(1);
