@@ -101,10 +101,10 @@ function update()
 
   local ball = wcm.get_ball();
   if (t - ball.t < 0.1) then
-    return "ball";
+--    return "ball";
   end
   if (t - t0 > timeout) then
-    return "timeout";
+ --   return "timeout";
   end
 end
 

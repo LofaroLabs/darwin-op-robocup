@@ -78,15 +78,15 @@ function update()
 
   eta = wcm.get_team_my_eta();
   if eta<min_eta_look and eta>0 then
-    return 'timeout';
+    --return 'timeout';
   end
 
   if (t - t0 > tScan) then
     tGoal = wcm.get_goal_t();
     if (tGoal - t0 > 0) then
-      return 'timeout';
+      --return 'timeout';
     else
-      return 'lost';
+      --return 'lost';
     end
   end
 end

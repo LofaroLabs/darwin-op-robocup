@@ -54,6 +54,9 @@ smindex = 0;
 initToggle = true;
 
 lastBehavior = "DESTROY ALL HUMANS";
+lastBehaviorHead = "LOOK AT DEAD HUMANS";
+
+
 function setBodyState(behaviorState)
 	--if(BodyFSM.sm.get_current_state(BodyFSM.sm)._NAME ~= behaviorState) then
 		if(behaviorState==nil) then return end
@@ -61,6 +64,14 @@ function setBodyState(behaviorState)
 		lastBehavior = behaviorState;
 	--end
 end
+function setHeadState(behaviorState)
+	--if(BodyFSM.sm.get_current_state(BodyFSM.sm)._NAME ~= behaviorState) then
+		if(behaviorState==nil) then return end
+		HeadFSM.sm:set_state(behaviorState)
+		lastBehaviorHead = behaviorState;
+	--end
+end
+
 function maintainState()
 	print("don't swear")
 	if(BodyFSM.sm.get_current_state(BodyFSM.sm)._NAME ~= lastBehavior) then
@@ -68,7 +79,13 @@ function maintainState()
 		if(behaviorState==nil) then return end;
 		BodyFSM.sm:set_state(behaviorState)
             --    lastBehavior = behaviorState;
-	end	
+	end
+	if(HeadFSM.sm.get_current_state(HeadFSM.sm)._NAME ~= lastBehaviorHead) then
+		print("WHAT THE kajsdfhkajshdfkjsahdfiaihfisuhdfiusdhfidsuhfisudhfisudhfisuhdfisudhfisudhfisudhfisuhdfisuhdfisudhfisudhfisudhfisudhfisudhfisudhfisudhfisudhfisudhfisudhfsiudhfisudhfisudfh");
+		if(behaviorState==nil) then return end;
+		HeadFSM.sm:set_state(behaviorState)
+            --    lastBehavior = behaviorState;
+	end		
 end
 -- main loop
 myFunctions = {}
@@ -398,7 +415,17 @@ hordeFunctions["lookBackwards"] = function(args, client)
 -- call the state
 	setBodyState('bodyLookBackwards');
 end
-
+hordeFunctions["scan"] = function(args, client)
+	-- set the wcm values to the x,y,a from the args
+-- call the state
+	setHeadState('headScan');
+end
+hordeFunctions["track"] = function(args,client)
+	setHeadState('headTrack');
+end
+hordeFunctions["lookGoal"] = function(args,client)
+	setHeadState('headLookGoal');
+end
 
 
 package.path = cwd..'/HeadFSM/'..Config.fsm.head[smindex+1]..'/?.lua;'..package.path;

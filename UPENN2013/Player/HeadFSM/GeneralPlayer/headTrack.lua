@@ -34,7 +34,7 @@ function update()
   --Force attacker for demo code
   if Config.fsm.playMode==1 then role=1; end
   if role==0 and goalie_type>2 then --Escape if diving goalie
-    return "goalie";
+    --return "goalie";
   end
 
   local t = Body.get_time();
@@ -76,17 +76,17 @@ function update()
 
   if (t - ball.t > tLost) then
     print('Ball lost!');
-    return "lost";
+    --return "lost";
   end
 
   eta = wcm.get_team_my_eta();
   if eta<min_eta_look and eta>0 then
-    return;
+   -- return;
   end
 
   if (t - t0 > timeout) then
      if role==0 then
-       return "sweep"; --Goalie, sweep to localize
+     --  return "sweep"; --Goalie, sweep to localize
      else
        --return "timeout";  --Player, look up to see goalpost
      end
