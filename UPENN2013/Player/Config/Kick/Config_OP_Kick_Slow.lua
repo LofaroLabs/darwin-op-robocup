@@ -20,6 +20,8 @@ kick.armImuParamY={0.3,10*gyroFactor, 20*math.pi/180, 45*math.pi/180};
 --Kick arm pose
 kick.qLArm=math.pi/180*vector.new({95,22,-135});
 kick.qRArm=math.pi/180*vector.new({95,-22,-135});
+--og kick movement below
+-- kick.qRArm=math.pi/180*vector.new({95,-22,-135});
 
 kick.hardnessArm={1, 0.3 ,0.3};
 kick.hardnessLeg=1;

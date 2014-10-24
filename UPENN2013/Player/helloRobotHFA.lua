@@ -10,6 +10,7 @@ walkForwardStart = function(hfa)
 end	
 
 walkForwardGo = function(hfa) -- dont change what we're doing until we go to another state
+print("hello");
 end
 walkForwardStop = function (hfa)
 end

@@ -156,7 +156,10 @@ end
 function setVelocity(x,y,a)
 	action = {}
 	action.args = {}
-	
+	if(x == nil)
+	then	x =0; end
+	if(y== nil) then y=0; end
+	if(a == nil) then a=0;	 end
 	if(x>.2) then x = .2; end
 	if(y>.2) then y=.2; end
 	if(x<-.2) then x = -.2 end
@@ -165,9 +168,12 @@ function setVelocity(x,y,a)
 	action.args.x = x;
 	action.args.y = y;
 	action.args.a = a;
+	print("velocity is " .. x .. ", " .. y .. ", " .. a);
+	wcm.set_horde_walkVelocity(vector.new({x,y,a}));
+	vel = wcm.get_horde_walkVelocity();
+	--print("velocity is " .. vel[1]
 	action.action = "setVelocity";     	
 	doAction(action);
-
 end
 function stop()
 	action  = {}

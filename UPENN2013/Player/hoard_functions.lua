@@ -239,7 +239,7 @@ end
 
 hordeFunctions["setVelocity"] = function(args,client)
 	setBodyState('bodyDoVelocity');
-	wcm.set_horde_walkVelocity(vector.new({args.x,args.y,args.a}));
+	--wcm.set_horde_walkVelocity(vector.new({args.x,args.y,args.a}));
 end
 
 hordeFunctions["moveY"] = function(args,client)
