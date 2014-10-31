@@ -2,7 +2,8 @@ darwin = require('hfaDriver')
 
 walkForwardStart = function(hfa)                   
 	print("walk forward");
-	print("ball lost value is :" ..wcm.get_horde_ballLost());
+	print("ball lost value is" .. darwin.isBallLost());
+--	print("ball lost value is :" ..wcm.get_horde_ballLost());
         --Let's walk forward
 	darwin.setVelocity(.1, 0,0);
 	--since the ball is lost, let's do a head scan			
@@ -10,7 +11,7 @@ walkForwardStart = function(hfa)
 end	
 
 walkForwardGo = function(hfa) -- dont change what we're doing until we go to another state
-print("hello");
+--print("hello");
 end
 walkForwardStop = function (hfa)
 end
