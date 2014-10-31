@@ -19,7 +19,7 @@ end
 stopStart = function(hfa)
 	print("stoping");
 	print("ball lost value is :" .. wcm.get_horde_ballLost());	
-	print("i stopped at location " .. wcm.get_pose().x .. ", " .. wcm.get_pose().y .. ", " .. wcm.get_pose().x);
+	print("i stopped at location " .. wcm.get_pose().x .. ", " .. wcm.get_pose().y .. ", " .. wcm.get_pose().a);
 	print(" the ball is at location " .. wcm.get_ball_x() .. ", " .. wcm.get_ball_y());
 	darwin.stop();	
 	-- since we've found the ball, let's stare at it
