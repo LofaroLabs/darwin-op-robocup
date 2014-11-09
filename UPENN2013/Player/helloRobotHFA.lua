@@ -5,7 +5,7 @@ walkForwardStart = function(hfa)
 	print("ball lost value is" .. darwin.isBallLost());
 --	print("ball lost value is :" ..wcm.get_horde_ballLost());
         --Let's walk forward
-	darwin.setVelocity(.1, 0,0);
+	darwin.setVelocity(0, 0,-0.05);
 	--since the ball is lost, let's do a head scan			
 	darwin.scan();
 end	
