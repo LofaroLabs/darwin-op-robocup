@@ -6,6 +6,7 @@ module(..., package.seeall);
 
 require('Body')
 require('wcm')
+require('GMUcm')
 require('mcm')
 require('HeadTransform');
 
@@ -29,7 +30,7 @@ function update()
   pitchBias =  mcm.get_headPitchBias();--robot specific head bias
 
   local t = Body.get_time();
-  local ball = wcm.get_ball();
+  local ball = get_data("ball");
 
 --SJ: I lessened pitch fixture 
   local yaw, pitch;

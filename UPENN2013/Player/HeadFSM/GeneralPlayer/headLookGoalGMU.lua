@@ -6,6 +6,7 @@ require('Body')
 require('Config')
 require('vcm')
 require('wcm')
+require('GMUcm')
 
 t00 = 0;
 yawSweep = Config.fsm.headLookGoal.yawSweep;
@@ -77,7 +78,7 @@ function update()
 
 	local t = Body.get_time();
 
-	ball = wcm.get_ball();
+	ball = get_data("ball");
   	ballR = math.sqrt (ball.x^2 + ball.y^2);
 	if(somebodyYelledKick()) then
  		if(wcm.get_horde_ballLost()) then return "LostAndTime" end

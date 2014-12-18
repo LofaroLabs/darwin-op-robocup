@@ -8,6 +8,7 @@ require ('vcm')
 -- Dependency
 require('Detection');
 require('wcm')
+require('GMUcm')
 -- Define Color
 colorOrange = 1;
 colorYellow = 2;

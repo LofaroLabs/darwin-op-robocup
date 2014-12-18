@@ -11,6 +11,7 @@ require('kick');
 require('HeadFSM')
 require('Config')
 require('wcm')
+require('GMUcm')
 
 require('walk');
 

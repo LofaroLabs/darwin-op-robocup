@@ -5,6 +5,7 @@ require('walk')
 require('gcm')
 require('vcm')
 require('wcm')
+require('GMUcm')
 require('Speak')
 require('util')
 

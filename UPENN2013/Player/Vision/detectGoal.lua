@@ -6,6 +6,7 @@ require('HeadTransform');	-- For Projection
 require('Body')
 require('Vision');
 require('wcm')
+require('GMUcm')
 -- Dependency
 require('Detection');
 

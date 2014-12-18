@@ -6,6 +6,7 @@ require('Body');
 require('vector');
 require('util');
 require('wcm')
+require('GMUcm')
 require('vcm');
 require('gcm');
 require('mcm');
@@ -246,6 +247,7 @@ end
 
 
 function update_vision()
+ local ball = get_data("ball");
  --Added by david to flip angle if we find the goalie having the urge to travel more than 3 meters in the X direction
  -- if(wcm.get_horde_confused()==1) then
 --	PoseFilter.flip_particle_angle();
@@ -386,13 +388,13 @@ setDebugFalse()
 
     -- Update the velocity
     -- use centroid info only
-    ball_v_inf = wcm.get_ball_v_inf();
+    ball_v_inf = ball.v_inf; --wcm.get_ball_v_inf();
     ball.t = Body.get_time();
 
-    t_locked = wcm.get_ball_t_locked_on();
+    t_locked = ball.t_locked_on //wcm.get_ball_t_locked_on();
     th_locked = 1.5;
 
-    if (t_locked > th_locked ) and wcm.get_ball_locked_on() == 1 then
+    if (t_locked > th_locked ) and ball.locked_on == 1 then
       Velocity.update(ball_v_inf[1],ball_v_inf[2],ball.t);
       ball.vx, ball.vy, dodge  = Velocity.getVelocity();
     else

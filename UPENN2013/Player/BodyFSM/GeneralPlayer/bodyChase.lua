@@ -2,6 +2,7 @@ module(..., package.seeall);
 
 require('Body')
 require('wcm')
+require('GMUcm')
 require('walk')
 require('vector')
 require('behavior')
@@ -24,7 +25,7 @@ function update()
   local t = Body.get_time();
 
   -- get ball position
-  ball = wcm.get_ball();
+  ball = get_data("ball");
   pose = wcm.get_pose();
   ballR = math.sqrt(ball.x^2 + ball.y^2);
   goal_defend=wcm.get_goal_defend();

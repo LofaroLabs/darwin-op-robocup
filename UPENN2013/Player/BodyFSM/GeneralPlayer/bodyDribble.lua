@@ -2,6 +2,7 @@ module(..., package.seeall);
 
 require('Body')
 require('wcm')
+require('GMUcm')
 require('walk')
 require('vector')
 
@@ -18,7 +19,7 @@ xTarget = Config.fsm.bodyApproach.xTarget11;
 yTarget = Config.fsm.bodyApproach.yTarget11;
 
 function check_approach_type()
-  ball = wcm.get_ball();
+  ball = get_data("ball");
 
   y_inv=0;
   xTarget = Config.fsm.bodyApproach.xTarget11;
@@ -39,7 +40,7 @@ end
 function entry()
   print("Body FSM:".._NAME.." entry");
   t0 = Body.get_time();
-  ball = wcm.get_ball();
+  ball = get_data("ball");
   check_approach_type();
   kick_angle = 0;
 
@@ -48,7 +49,7 @@ end
 function update()
   local t = Body.get_time();
   -- get ball position 
-  ball = wcm.get_ball();
+  ball = get_data("ball");
   ballR = math.sqrt(ball.x^2 + ball.y^2);
 
 --[[

@@ -5,6 +5,7 @@ require('walk')
 require('vector')
 require('Config')
 require('wcm')
+require('GMUcm')
 require('gcm')
 --require('PoseFilter')
 t0 = 0;
@@ -30,6 +31,7 @@ function entry()
 end
 
 function update()
+  local ball = get_data("ball");
   pose = wcm.get_pose();
   endPosition = wcm.get_horde_gotoPose();-- goto an arbitrary pose
   endFacing = wcm.get_horde_facing(); 
@@ -59,7 +61,7 @@ function update()
   print("im trying to face " .. endFacing[1] .. ", " .. endFacing[2])
   print("also, trying to move to " .. endPosition[1] .. ", " .. endPosition[2]);
   print("relative to the ball, i am facing " .. endFacingRelative[3])
-  print("PURELY BALL RELATIVE " .. wcm.get_ball_x() .. ", " .. wcm.get_ball_y())
+  print("PURELY BALL RELATIVE " .. ball.x .. ", " .. ball.y)
   if(alreadyDone) then --checking if we've already gotten there to our best tolerance
      setDebugTrue()
    --    HeadFSM.sm:set_state("headTrackGMU");

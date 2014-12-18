@@ -5,6 +5,7 @@ require('walk')
 require('vector')
 require('Config')
 require('wcm')
+require('GMUcm')
 require('behavior')
 
 t0 = 0;
@@ -43,7 +44,7 @@ function update()
   --print('attackBearing: '..attackBearing);
   --print('daPost: '..daPost);
   --print('attackBearing', attackBearing)
-  ball = wcm.get_ball();
+  ball = get_data("ball");
 
   ballR = math.sqrt(ball.x^2 + ball.y^2);
   ballA = math.atan2(ball.y, ball.x+0.10);

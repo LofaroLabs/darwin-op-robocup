@@ -7,6 +7,7 @@ require('kick');
 require('HeadFSM')
 require('Config')
 require('wcm')
+require('GMUcm')
 require('walk');
 
 --initial wait 
@@ -88,7 +89,7 @@ function update()
 end
 
 function check_ball_pos()
-  ball = wcm.get_ball();
+  ball = get_data("ball");
 
   kick_dir=wcm.get_kick_dir();
   if kick_dir==1 then

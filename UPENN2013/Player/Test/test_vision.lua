@@ -9,6 +9,7 @@ require('vector')
 require('mcm')
 require('vcm')
 require('wcm')
+require('GMUcm')
 require('Speak')
 require('Body')
 require('Motion')
@@ -202,7 +203,7 @@ function process_keyinput()
     elseif byte==string.byte("2") then	
     -- Camera transform testing
       headsm_running = 0;
-      local ball = wcm.get_ball();
+      local ball = get_data("ball");
       local trackZ = Config.vision.ball.diameter/2; 
       -- TODO: Nao needs to add the camera select
       headangle = vector.zeros(2);
@@ -244,7 +245,7 @@ function process_keyinput()
       headangle[1]=0;
       headangle[2]= Config.fsm.headKick.pitch0;
 
-      local ball = wcm.get_ball();
+      local ball = get_data("ball");
       footX = Config.walk.footX or 0;
       print("foot center to ball pos: ",ball.x,ball.y);      
 

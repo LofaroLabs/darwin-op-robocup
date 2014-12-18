@@ -2,6 +2,7 @@ module(..., package.seeall);
 
 require('Body')
 require('wcm')
+require('GMUcm')
 require('walk')
 require('vector')
 require('walk')
@@ -31,7 +32,7 @@ last_ph = 0;
 function check_approach_type()
   is_evading = 0;
   check_angle=1;
-  ball = wcm.get_ball();
+  ball = get_data("ball");
   kick_dir=wcm.get_kick_dir();
   kick_type=wcm.get_kick_type();
   kick_angle=wcm.get_kick_angle();
@@ -142,7 +143,7 @@ function entry()
    sillyTempFoo = 0
   print("Body FSM:".._NAME.." entry");
   t0 = Body.get_time();
-  ball = wcm.get_ball();
+  ball = get_data("ball");
   check_approach_type(); --walkkick if available
 
   if t0-ball.t<0.2 then
@@ -173,7 +174,7 @@ function update()
   local t = Body.get_time();
  
   -- get ball position 
-  ball = wcm.get_ball();
+  ball = get_data("ball");
   ballR = math.sqrt(ball.x^2 + ball.y^2);
 
   if t-ball.t<0.2 and ball_tracking==false then

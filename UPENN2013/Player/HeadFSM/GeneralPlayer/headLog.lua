@@ -6,6 +6,7 @@ module(..., package.seeall);
 
 require('Body')
 require('wcm')
+require('GMUcm')
 require('mcm')
 
 if Config.fsm.headLog then
@@ -30,7 +31,7 @@ function entry()
 
   -- start scan in ball's last known direction
   t0 = Body.get_time();
-  ball = wcm.get_ball();
+  ball = get_data("ball");
   timeout = tScan * 2;
 
   yaw_0, pitch_0 = HeadTransform.ikineCam(ball.x, ball.y,0);

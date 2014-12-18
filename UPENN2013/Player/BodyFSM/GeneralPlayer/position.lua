@@ -5,6 +5,7 @@ require('walk')
 require('vector')
 require('Config')
 require('wcm')
+require('GMUcm')
 
 rTurn= Config.fsm.bodyPosition.rTurn;
 rTurn2= Config.fsm.bodyPosition.rTurn2;
@@ -38,7 +39,7 @@ supporter_pos = Config.team.supporter_pos or {1.5,1.25};
 
 
 function posCalc()
-  ball=wcm.get_ball();
+  ball=get_data("ball");
   pose=wcm.get_pose();
   ballR = math.sqrt(ball.x^2 + ball.y^2);
   ballxy=vector.new( {ball.x,ball.y,0} );

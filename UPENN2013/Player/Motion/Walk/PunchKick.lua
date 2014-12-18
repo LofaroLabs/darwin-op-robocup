@@ -8,6 +8,7 @@ require('Config')
 require('util')
 require('mcm')
 --require('wcm')
+require('GMUcm')
 local cwd = unix.getcwd();
 if string.find(cwd, "WebotsController") then
   cwd = cwd.."/Player";

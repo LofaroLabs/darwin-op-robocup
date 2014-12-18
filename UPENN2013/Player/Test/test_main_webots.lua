@@ -9,6 +9,7 @@ require('shm')
 require('vector')
 require('gcm')
 require('wcm')
+require('GMUcm')
 require('mcm')
 require('getch')
 

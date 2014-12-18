@@ -4,6 +4,7 @@ require('Body')
 require('HeadTransform')
 require('Config')
 require('wcm')
+require('GMUcm')
 
 t0 = 0;
 
@@ -40,7 +41,7 @@ function update()
   local t = Body.get_time();
 
   -- update head position based on ball location
-  ball = wcm.get_ball();
+  ball = get_data("ball");
   ballR = math.sqrt (ball.x^2 + ball.y^2);
 
   local yawTarget, pitchTarget =

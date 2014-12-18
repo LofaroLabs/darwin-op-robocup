@@ -6,6 +6,7 @@ require('Body')
 require('Config')
 require('vcm')
 require('wcm')
+require('GMUcm')
 
 t0 = 0;
 yawSweep = Config.fsm.headLookGoal.yawSweep;
@@ -71,7 +72,7 @@ function update()
 	dist*math.cos(yaw1),dist*math.sin(yaw1), height);
   Body.set_head_command({yaw, pitch});
 
-  ball = wcm.get_ball();
+  ball = get_data("ball");
   ballR = math.sqrt (ball.x^2 + ball.y^2);
 
   --If the player is attacker and about to reach the ball

@@ -11,7 +11,7 @@ setDebugFalse();
 cognition.entry();
 vcm.set_vision_enable(vector.ones(1));
 while (true) do
-  
+debug();  
   --print("!!@@ hi");
   
   tstart = unix.time();

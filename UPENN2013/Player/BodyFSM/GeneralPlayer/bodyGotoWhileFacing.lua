@@ -5,6 +5,7 @@ require('walk')
 require('vector')
 require('Config')
 require('wcm')
+require('GMUcm')
 require('gcm')
 
 t0 = 0;

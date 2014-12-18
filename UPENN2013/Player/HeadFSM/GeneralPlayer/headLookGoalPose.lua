@@ -6,6 +6,7 @@ require('Body')
 require('Config')
 require('vcm')
 require('wcm')
+require('GMUcm')
 
 t0 = 0;
 yawSweep = Config.fsm.headLookGoal.yawSweep;

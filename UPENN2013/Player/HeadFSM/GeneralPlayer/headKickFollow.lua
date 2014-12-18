@@ -6,6 +6,7 @@ module(..., package.seeall);
 
 require('Body')
 require('wcm')
+require('GMUcm')
 require('mcm')
 
 t0 = 0;
@@ -43,7 +44,7 @@ function update()
   end
   Body.set_head_command({yaw, pitch-pitchBias});
 
-  local ball = wcm.get_ball();
+  local ball = get_data("ball");
   if (t - ball.t < 0.1) then
     print("BallFound")
     return "ball";

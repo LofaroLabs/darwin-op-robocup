@@ -6,6 +6,7 @@ module(..., package.seeall);
 
 require('Body')
 require('wcm')
+require('GMUcm')
 require('mcm')
 
 pitch0=Config.fsm.headScan.pitch0;
@@ -38,7 +39,7 @@ function entry()
 
   -- start scan in ball's last known direction
   t0 = Body.get_time();
-  ball = wcm.get_ball();
+  ball = get_data("ball");
   timeout = tScan * 2;
 
   yaw_0, pitch_0 = HeadTransform.ikineCam(ball.x, ball.y,0);
@@ -99,7 +100,7 @@ function update()
 
   Body.set_head_command({yaw, pitch-pitchBias});
 
-  local ball = wcm.get_ball();
+  local ball = get_data("ball");
   if (t - ball.t < 0.1) then
 --    return "ball";
   end

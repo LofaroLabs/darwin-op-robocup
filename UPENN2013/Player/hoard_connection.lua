@@ -36,6 +36,7 @@ require('vector')
 require('vcm')
 require('gcm')
 require('wcm')
+require('GMUcm')
 require('mcm')
 require('Speak')
 require('getch')
@@ -137,6 +138,7 @@ receiveClientTimer = Body.get_time();
 --/sendFeatures
 periodicSend = Body.get_time();
 function sendFeatures (client)
+	wcmBall = get_data("ball");
         sendFeaturesTimer2 = Body.get_time();
 	if(wcm.get_horde_sendStatus()~="StartSending") then
         	--print("Start sending was false");
@@ -195,8 +197,8 @@ function sendFeatures (client)
 	features["allYelledKick"] = wcm.get_team_yelledKick();
 	features["closestToBallLoc"] = wcm.get_team_closestToBallLoc();	
         features["ballDetect"] = vcm.get_ball_detect();
-        features["ballX"] = wcm.get_ball_x();
-        features["ballY"] = wcm.get_ball_y();
+        features["ballX"] = wcmBall.x;
+        features["ballY"] = wcmBall.y;
         features["doneApproach"] = wcm.get_horde_doneApproach();
         --features["particleX"] = wcm.get_particle_x();
         --features["particleY"] = wcm.get_particle_y();

@@ -5,6 +5,7 @@ require('World')
 require('walk')
 require('vector')
 require('wcm')
+require('GMUcm')
 require('Config')
 require('Team')
 require('util')
@@ -45,7 +46,7 @@ function entry()
   t0 = Body.get_time();
   max_speed=0;
   count=0;
-  ball=wcm.get_ball();
+  ball=get_data("ball");
   ballR = math.sqrt(ball.x^2 + ball.y^2);
   maxStep=maxStep1;
   behavior.update();
@@ -59,7 +60,7 @@ function update()
   count=count+1;
 
   local t = Body.get_time();
-  ball=wcm.get_ball();
+  ball=get_data("ball");
   pose=wcm.get_pose();
   ballR = math.sqrt(ball.x^2 + ball.y^2);
 

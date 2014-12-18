@@ -11,6 +11,7 @@ require('kick');
 require('HeadFSM')
 require('Config')
 require('wcm')
+require('GMUcm')
 require('unix');
 require('walk');
 
@@ -32,7 +33,7 @@ print("KICK DIR:",kick_dir)
 
   if kick_dir==1 then --straight walkkick
     -- set kick depending on ball position
-    ball = wcm.get_ball();
+    ball = get_data("ball");
 print("WalkKick: Ball pos:",ball.x,ball.y);
     if (ball.y > 0) then
       if (ball.x>walkkick_th) or Config.fsm.enable_walkkick<2 then
