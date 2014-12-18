@@ -50,7 +50,7 @@ function sendFeatures (args, client)
 	features["poseY"] = wcm.get_pose().y;
 	features["poseA"] = wcm.get_pose().a;
 	features["ballDetect"] = vcm.get_ball_detect();
-	features["ballX"] = wcmBall.x;
+	features["ballX"] = wcmBall.x;--wcm.get_ball_x();
 	features["ballY"] = wcmBall.y;
         features["doneFrontApproach"] = wcm.get_horde_doneFrontApproach();	
 	print("sending some features, yo\n");-- wcm.set_horde_doneFrontApproach("true");

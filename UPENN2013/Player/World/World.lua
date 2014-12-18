@@ -520,19 +520,21 @@ function update_led()
 end
 
 function update_shm()
+  local wcmBall = get_data("ball");
   -- update shm values
    --print("@@@updating shared memory")
   --print(string.format( 
   wcm.set_robot_pose({pose.x, pose.y, pose.a});
   wcm.set_robot_time(Body.get_time());
 
-  wcm.set_ball_x(ball.x);
-  wcm.set_ball_y(ball.y);
+  wcmBall.x = ball.x--wcm.set_ball_x(ball.x);
+  wcmBall.y = ball.y --wcm.set_ball_y(ball.y);
   if vcm.get_ball_detect()==1 then
   	ball_global = util.pose_global({ball.x,ball.y,0},{pose.x,pose.y,pose.a})
     
 	if(ball_global~=nil) then
-		wcm.set_ballGlobal_x(ball_global[1])
+		
+	wcm.set_ballGlobal_x(ball_global[1])
     	wcm.set_ballGlobal_y(ball_global[2])
     
 	end
@@ -541,11 +543,11 @@ function update_shm()
 		wcm.set_ballGlobal_y(0);
 	end
   end
-  wcm.set_ball_t(ball.t);
-  wcm.set_ball_velx(ball.vx);
-  wcm.set_ball_vely(ball.vy);
-  wcm.set_ball_p(ball.p);
-
+  wcmBall.t = ball.t;--wcm.set_ball_t(ball.t);
+  wcmBall.velx = ball.vx;--wcm.set_ball_velx(ball.vx);
+  wcmBall.vely = ball.vy;--wcm.set_ball_vely(ball.vy);
+  wcmBall.p = ball.p--wcm.set_ball_p(ball.p);
+  set_data("ball",wcmBall);
   wcm.set_goal_t(pose.tGoal);
   wcm.set_goal_attack(get_goal_attack());
   wcm.set_goal_defend(get_goal_defend());

@@ -88,7 +88,7 @@ function unpickle(s)
   return tables[1]
 end
 
-function send_data(label,table)
+function set_data(label,table)
 	mailbox = 0; --code = someHash(label);-- this will be the mailbox
 	table_str = pickle(table) .. '`';
 	packet = "3," .. mailbox  .. "," .. tostring(string.len(table_str)) .. "," .. table_str;
@@ -109,5 +109,4 @@ end
 ---------------------
 tcp = socket.tcp()
 tcp:connect("127.0.0.1", 2247)
-
 
