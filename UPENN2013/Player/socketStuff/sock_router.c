@@ -384,7 +384,9 @@ void *listener_function(void *args)
     else  
     {
       int i;
-      int action, code, length;
+      int action, length; 
+      //changed code from int to char*
+      char *code;
       char *data;
       char *packet;
       DATA_LIST *retrieved_data = NULL;
@@ -439,8 +441,10 @@ void *listener_function(void *args)
               read(fd_list[i].fd, (char *)&buffer[index], 1);
             } while(buffer[index++] != ',');
             buffer[index - 1] = '\0';
-            code = atoi(buffer);
-            PRINTN("[N] Read Code == %d\n", code);
+            code = calloc(strlen(buffer)+1,sizeof(char));
+            strcpy(code, buffer);
+            //code = atoi(buffer);
+            PRINTN("[N] Read Code == %s\n", code);
             if(action == ACTION_PUSH || action == ACTION_PUT)
             {
               /* Step 3: Read and parse the code */
@@ -456,12 +460,12 @@ void *listener_function(void *args)
               data = buffer;
   
               PRINTN("[N] Received Packet from %d\n", fd_list[i].fd);
-              PRINTN("... Action: %2d\n... Code: %2d\n... Length: %2d\n... Data:%s\n", action, code, length, data);
+              PRINTN("... Action: %2d\n... Code: %s\n... Length: %2d\n... Data:%s\n", action, code, length, data);
             }
             else
             {
               PRINTN("[N] Received Packet from %d\n", fd_list[i].fd);
-              PRINTN("... Action: %2d\n... Code: %2d\n", action, code);
+              PRINTN("... Action: %2d\n... Code: %s\n", action, code);
             }
 
             /* Decide what to do based on the action of the received message */
@@ -482,9 +486,10 @@ void *listener_function(void *args)
                 if(retrieved_data == NULL)
                 {
                   PRINTA(" (No Data Found)\n");
-                  packet = calloc(1, sizeof(char));
+                  packet = calloc(2, sizeof(char));
                   packet[0] = 0;
-                  length = 1;
+                  packet[1] = '`';
+                  length = 2;
                 }
                 else
                 {
@@ -512,7 +517,7 @@ void *listener_function(void *args)
 }
 
 
-DATA_LIST *store_data(char *data, int length, int code, int action)
+DATA_LIST *store_data(char *data, int length, char *code, int action)
 {
   PACKET_LIST *walker;
   /* Everyone always asks why I check 'x != NULL' instead of 'x'.  It's because
@@ -521,10 +526,13 @@ DATA_LIST *store_data(char *data, int length, int code, int action)
    * And yep, there is a semicolon at the end of this for statement.  It's so cool, it doesn't
    *  need a code block.
    */
-  for(walker = mailbox_head; walker != NULL && walker->code != code && walker->next != NULL; walker = walker->next);
+
+   // strcmp(code, walker->code) != 0
+   //was walker->code != code
+  for(walker = mailbox_head; walker != NULL && strcmp(code, walker->code) != 0 && walker->next != NULL; walker = walker->next);
   
   /* Code hasn't been seen before and is not in the mailbox */
-  if(mailbox_head == NULL || walker->code != code)
+  if(mailbox_head == NULL || strcmp(code, walker->code) != 0)
   {
     /* Add a new code to the mailbox */
     PACKET_LIST *new_packet = calloc(1, sizeof(PACKET_LIST));
@@ -567,14 +575,14 @@ DATA_LIST *store_data(char *data, int length, int code, int action)
 }
 
 /* This returns a structure.  Remember to free it after a call */
-DATA_LIST *retrieve_data(int code, int action) 
+DATA_LIST *retrieve_data(char *code, int action) 
 {
   PACKET_LIST *walker;
   DATA_LIST *found_data;
-  for(walker = mailbox_head; walker != NULL && walker->code != code; walker = walker->next);
+  for(walker = mailbox_head; walker != NULL && strcmp(code, walker->code) != 0; walker = walker->next);
 
   /* We got a request for data from code, but no data is pending */
-  if(walker == NULL || walker->code != code || walker->data_list == NULL)
+  if(walker == NULL || strcmp(code, walker->code) != 0 || walker->data_list == NULL)
   {
     return NULL;
   }
