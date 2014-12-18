@@ -51,7 +51,7 @@ typedef struct data_list
 
 typedef struct packet_list 
 {
-  int code;
+  char *code;
   DATA_LIST *data_list;
   struct packet_list *next;
 } PACKET_LIST;
@@ -60,8 +60,8 @@ typedef struct packet_list
 void open_socket();
 void close_socket();
 void *listener_function(void *args);
-DATA_LIST *store_data(char *data, int length, int code, int action);
-DATA_LIST *retrieve_data(int code, int action);
+DATA_LIST *store_data(char *data, int length, char *code, int action);
+DATA_LIST *retrieve_data(char *code, int action);
 void print_stored_data();
 
 #endif //SOCK_ROUTER_H

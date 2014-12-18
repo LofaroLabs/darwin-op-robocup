@@ -109,8 +109,8 @@ str_data = pickle(data)
 print("Current data:");
 for i,v in pairs(data) do print(i,v) end
 print("Enter a code to put this into.")
-code_num = io.read()
-code = tostring(code_num)
+code = io.read()
+--code = tostring(code_num)
 -- ACTION,CODE,LEN,DATA
 -- Action 0 == push
 -- Action 1 == pop
