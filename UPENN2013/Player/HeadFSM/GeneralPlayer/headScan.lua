@@ -26,8 +26,10 @@ direction = 1;
 
 function entry()
   print("Head SM:".._NAME.." entry");
-  wcm.set_ball_t_locked_on(0);
-
+  wcmBall = get_data("ball");
+	--wcm.set_ball_t_locked_on(0);
+	wcmBall.t_locked_on = 0;
+	set_data("ball",wcmBall);
   --Goalie need wider scan
   role = gcm.get_team_role();
   if role==0 then

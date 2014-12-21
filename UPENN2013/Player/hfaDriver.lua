@@ -144,7 +144,15 @@ function doAction(action)
 	client:send(json.encode(action) .. "\n");
 end	
 function isBallLost()
-	--print("got into ball lost")
+	print("got into ball lost")
+	print("vcm detect is " .. vcm.get_ball_detect());
+	local ball = get_data("ball");
+						setDebugTrue();
+						print("holy crackers");
+						print("\n\n\n\n****ball location " .. ball.x .. " " .. ball.y);
+  					setDebugFalse();
+
+
 	if vcm.get_ball_detect() ~= 0 then
 		wcm.set_horde_ballLost(0);
 		lastTimeFound = Body.get_time();

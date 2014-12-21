@@ -8,6 +8,7 @@ require('Body');
 require('shm');
 require('vcm');
 require('mcm');
+require('GMUcm');
 require('Detection');
 require('Debug');
 
@@ -34,7 +35,7 @@ field_margin = Config.vision.ball.field_margin or 0;
 th_headAngle = Config.vision.ball.th_headAngle or -10*math.pi/180;
 
 function detect(color)
-
+	wcmBall = get_data("ball");
 --  enable_obs_challenge = Config.obs_challenge or 0;
 --  if enable_obs_challenge == 1 then
 --    colorCount = Vision.colorCount_obs;
@@ -206,8 +207,8 @@ function detect(color)
   --Ball position ignoring ball size (for distant ball observation)
   v_inf=HeadTransform.projectGround(v_inf,diameter/2);
   v_inf[1]=v_inf[1]-mcm.get_footX()
-  wcm.set_ball_v_inf({v_inf[1],v_inf[2]});  
-
+  wcmBall.v_inf = {v_inf[1],v_inf[2]}--wcm.set_ball_v_inf({v_inf[1],v_inf[2]});  
+	set_data("ball",wcmBall);
   ball.v = v;
   ball.detect = 1;
   ball.r = math.sqrt(ball.v[1]^2 + ball.v[2]^2);

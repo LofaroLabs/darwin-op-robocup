@@ -1,5 +1,6 @@
-killall -q java naoqi-bin naoqi hal espeak lua luajit luajit2 screen CalibrationServer
-
+killall -q java naoqi-bin naoqi hal espeak lua luajit luajit2 screen CalibrationServer sock_router
+screen -dm -s /usr/bin/bash -S soc  ./socketStuff/sock_router
+sleep 1
 screen -dm -s /usr/bin/bash -S dcm  lua run_dcm.lua
 sleep 1
 screen -dm -s /usr/bin/bash -S cog lua run_cognition.lua

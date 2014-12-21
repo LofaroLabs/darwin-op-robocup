@@ -4,7 +4,7 @@ require('shm');
 require('util');
 require('vector');
 require('Config');
-
+require('GMUcm');
 -- shared properties
 shared = {};
 shsize = {};
@@ -28,23 +28,27 @@ shared.robot.flipped = vector.zeros(1);
 shared.robot.is_confused = vector.zeros(1);
 shared.robot.t_confused = vector.zeros(1);
 
-shared.ball = {};
-shared.ball.x = vector.zeros(1);
-shared.ball.y = vector.zeros(1);
-shared.ball.t = vector.zeros(1);
-shared.ball.velx = vector.zeros(1);
-shared.ball.vely = vector.zeros(1);
-shared.ball.dodge = vector.zeros(1);
-shared.ball.locked_on = vector.zeros(1);
-shared.ball.p = vector.zeros(1);
-
+wcmBall = {};
+wcmBall.x = 0;
+wcmBall.y = 0;
+wcmBall.t = vector.zeros(1);
+wcmBall.velx = vector.zeros(1);
+wcmBall.vely = vector.zeros(1);
+wcmBall.dodge = vector.zeros(1);
+wcmBall.locked_on = vector.zeros(1);
+wcmBall.p = vector.zeros(1);
 shared.ballGlobal = {};
 shared.ballGlobal.x = vector.zeros(1);
 shared.ballGlobal.y = vector.zeros(1);
 
-shared.ball.v_inf = vector.zeros(2);
-shared.ball.t_locked_on = vector.zeros(1);
+--shared.ball.v_inf = vector.zeros(2);
+--shared.ball.t_locked_on = vector.zeros(1);
+wcmBall.v_inf = vector.zeros(2);
+wcmBall.t_locked_on = 0;
+wcmBall.t_locked = vector.zeros(1);
 
+set_data("ball",wcmBall);
+print("this is definitely run first \n\n");
 --connection 
 shared.horde = {};
 shared.horde.walkVelocity = vector.zeros(3);

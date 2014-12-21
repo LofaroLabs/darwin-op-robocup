@@ -486,10 +486,10 @@ void *listener_function(void *args)
                 if(retrieved_data == NULL)
                 {
                   PRINTA(" (No Data Found)\n");
-                  packet = calloc(2, sizeof(char));
-                  packet[0] = 0;
-                  packet[1] = '`';
-                  length = 2;
+                  packet = calloc(1, sizeof(char));
+                  packet[0] = "`";
+             
+                  length = 1;
                 }
                 else
                 {

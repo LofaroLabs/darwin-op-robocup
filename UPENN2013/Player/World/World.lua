@@ -247,7 +247,7 @@ end
 
 
 function update_vision()
- local ball = get_data("ball");
+ ball = get_data("ball");
  --Added by david to flip angle if we find the goalie having the urge to travel more than 3 meters in the X direction
  -- if(wcm.get_horde_confused()==1) then
 --	PoseFilter.flip_particle_angle();
@@ -391,7 +391,7 @@ setDebugFalse()
     ball_v_inf = ball.v_inf; --wcm.get_ball_v_inf();
     ball.t = Body.get_time();
 
-    t_locked = ball.t_locked_on //wcm.get_ball_t_locked_on();
+    t_locked = ball.t_locked_on --wcm.get_ball_t_locked_on();
     th_locked = 1.5;
 
     if (t_locked > th_locked ) and ball.locked_on == 1 then
@@ -465,7 +465,10 @@ setDebugFalse()
   end
 
   ball.x, ball.y = ballFilter:get_xy();
-  pose.x,pose.y,pose.a = PoseFilter.get_pose();
+  setDebugTrue();
+	print("@@@ball x and y here are " .. ball.x .. ", " .. ball.y);
+	
+	pose.x,pose.y,pose.a = PoseFilter.get_pose();
 
 --Use team vision information when we cannot find the ball ourselves
 
@@ -526,7 +529,9 @@ function update_shm()
   --print(string.format( 
   wcm.set_robot_pose({pose.x, pose.y, pose.a});
   wcm.set_robot_time(Body.get_time());
-
+	 setDebugTrue();
+	print("@@@ball x and y here are " .. ball.x .. ", " .. ball.y);
+	
   wcmBall.x = ball.x--wcm.set_ball_x(ball.x);
   wcmBall.y = ball.y --wcm.set_ball_y(ball.y);
   if vcm.get_ball_detect()==1 then

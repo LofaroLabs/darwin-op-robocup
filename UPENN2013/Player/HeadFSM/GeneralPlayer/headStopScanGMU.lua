@@ -25,10 +25,12 @@ direction = 1;
 
 
 function entry()
-  setDebugTrue();
+  wcmBall = get_data("ball");
+	setDebugTrue();
   print("Head SM:".._NAME.." entry");
   setDebugFalse();
-  wcm.set_ball_t_locked_on(0);
+	wcmBall.t_locked_on = 0;
+  set_data("ball",wcmBall);--wcm.set_ball_t_locked_on(0);
 
   --Goalie need wider scan
   role = gcm.get_team_role();
