@@ -151,7 +151,7 @@ end
 
 function update_shm()
 
-  print(ball.detect .. "******************************** ball detect was set");
+  --print(ball.detect .. "******************************** ball detect was set");
   vcm.set_ball_detect(ball.detect);
   if (ball.detect == 1) then
     vcm.set_ball_centroid(ball.propsA.centroid);

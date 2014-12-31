@@ -1,20 +1,25 @@
+
 module(... or "", package.seeall)
 
 require('cognition')
-require('GMUcm')
+require('Body')
 
 maxFPS = Config.vision.maxFPS;
 tperiod = 1.0/maxFPS;
 --print = function()end
-function print() 
-end
-setDebugFalse();
+setDebugTrue();
 cognition.entry();
 vcm.set_vision_enable(vector.ones(1));
+local basetime = Body.get_time();
+local deltatime;
 while (true) do
---debug();  
-  --print("!!@@ hi");
-	tstart = unix.time();
+  deltatime = basetime - Body.get_time();
+  setDebugTrue();
+  print("time: " .. deltatime);
+  setDebugFalse();
+  basetime = Body.get_time();
+
+  tstart = unix.time();
 
   cognition.update();
 
@@ -27,3 +32,4 @@ end
 
 cognition.exit();
 
+ 

@@ -474,7 +474,8 @@ void *listener_function(void *args)
               /* We're storing, so don't need any data sent back. */
               case ACTION_PUSH:
               case ACTION_PUT:
-                PRINTN("[N] Request to Store data in code %d\n", code);
+		PRINTF("Storing %d bytes in %s\n", length, code);
+                PRINTN("[N] Request to Store data in code %s\n", code);
                 store_data(data, length, code, action);
                 break;                
               /* In either case, the same post-processing is done. */
@@ -487,7 +488,7 @@ void *listener_function(void *args)
                 {
                   PRINTA(" (No Data Found)\n");
                   packet = calloc(1, sizeof(char));
-                  packet[0] = "`";
+                  packet[0] = '`';
              
                   length = 1;
                 }
@@ -498,6 +499,7 @@ void *listener_function(void *args)
                   length = retrieved_data->length;
                   PRINTN("Sending %s\n", packet);
                 }
+		PRINTF("Returning %d bytes from %s\n", length, code);
                 if(write(fd_list[i].fd, (char *)packet, length) != length)
                 {
                   PRINTE("Attempted to write %d bytes to %d, but failed. Continuing.\n", length, fd_list[i].fd);
@@ -615,7 +617,7 @@ void print_stored_data()
   printf("Printing all Mailbox Codes\n\n");
   for(pwalker = mailbox_head; pwalker != NULL; pwalker = pwalker->next)
   {
-    printf("Mailbox for Code %d\n", pwalker->code);
+    printf("Mailbox for Code %s\n", pwalker->code);
     for(dwalker = pwalker->data_list; dwalker != NULL; dwalker = dwalker->next)
     {
       printf("...[%d] %s\n", dwalker->length, dwalker->data);

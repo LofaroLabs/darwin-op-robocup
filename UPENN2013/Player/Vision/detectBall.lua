@@ -47,8 +47,8 @@ function detect(color)
   --print("headPitch:",headAngle[2]*180/math.pi);
   local ball = {};
   ball.detect = 0;
-  vcm.add_debug_message(string.format("\nBall: pixel count: %d\n",
-	colorCount[color]));
+  --vcm.add_debug_message(string.format("\nBall: pixel count: %d\n",
+	--colorCount[color]));
   
 --  print(string.format("\nBall: pixel count: %d\n",
 --	      colorCount[color]));
@@ -56,7 +56,7 @@ function detect(color)
 
   -- threshold check on the total number of ball pixels in the image
   if (colorCount[color] < th_min_color) then  	
-    vcm.add_debug_message("pixel count fail");
+    --vcm.add_debug_message("pixel count fail");
     return ball;  	
   end
 

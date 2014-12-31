@@ -465,8 +465,8 @@ setDebugFalse()
   end
 
   ball.x, ball.y = ballFilter:get_xy();
-  setDebugTrue();
-	print("@@@ball x and y here are " .. ball.x .. ", " .. ball.y);
+  --setDebugTrue();
+--	print("@@@ball x and y here are " .. ball.x .. ", " .. ball.y);
 	
 	pose.x,pose.y,pose.a = PoseFilter.get_pose();
 
@@ -529,8 +529,8 @@ function update_shm()
   --print(string.format( 
   wcm.set_robot_pose({pose.x, pose.y, pose.a});
   wcm.set_robot_time(Body.get_time());
-	 setDebugTrue();
-	print("@@@ball x and y here are " .. ball.x .. ", " .. ball.y);
+	 --setDebugTrue();
+	--print("@@@ball x and y here are " .. ball.x .. ", " .. ball.y);
 	
   wcmBall.x = ball.x--wcm.set_ball_x(ball.x);
   wcmBall.y = ball.y --wcm.set_ball_y(ball.y);
