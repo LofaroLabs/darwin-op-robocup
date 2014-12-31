@@ -51,6 +51,7 @@ set_data("ball",wcmBall);
 print("this is definitely run first \n\n");
 --connection 
 shared.horde = {};
+shared.horde.numTimesCalled = vector.zeros(1);
 shared.horde.walkVelocity = vector.zeros(3);
 shared.horde.startGoalLine = vector.zeros(1); -- 1 (my particles on ready should start on goal line) 0 - start on the side as usual
 shared.horde.safetySaysFlip = vector.zeros(1);

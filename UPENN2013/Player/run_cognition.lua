@@ -3,7 +3,7 @@ module(... or "", package.seeall)
 
 require('cognition')
 require('Body')
-
+require('wcm')
 maxFPS = Config.vision.maxFPS;
 tperiod = 1.0/maxFPS;
 --print = function()end
@@ -15,7 +15,9 @@ local deltatime;
 while (true) do
   deltatime = basetime - Body.get_time();
   setDebugTrue();
-  print("time: " .. deltatime);
+  print("num times called ".. wcm.get_horde_numTimesCalled());
+	wcm.set_horde_numTimesCalled(0);
+	print("time: " .. deltatime);
   setDebugFalse();
   basetime = Body.get_time();
 

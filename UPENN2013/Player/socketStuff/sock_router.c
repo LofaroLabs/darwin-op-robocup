@@ -1,4 +1,5 @@
 #include "sock_router.h"
+#include "time.h"
 
 /* This is a socket mailbox.  It's all example code, but it's designed
  *  to be run like a daemon, always on in the background.
@@ -51,9 +52,14 @@
 
 /* Function Definitions */
 
+//time variables
+clock_t time_start = 0;
+clock_t time_end = 0;
+clock_t switch_time_start = 0;
+clock_t switch_time_end = 0;
 int main() 
 {
-  open_socket();
+	open_socket();
   
   /* This next line starts up a new thread.  To start a new thread, 
    *  you minimally need the name of the thread to start and the 
@@ -469,26 +475,32 @@ void *listener_function(void *args)
             }
 
             /* Decide what to do based on the action of the received message */
-            switch(action)
+            switch_time_start = clock();
+						switch(action)
             {
               /* We're storing, so don't need any data sent back. */
               case ACTION_PUSH:
               case ACTION_PUT:
-		PRINTF("Storing %d bytes in %s\n", length, code);
-                PRINTN("[N] Request to Store data in code %s\n", code);
-                store_data(data, length, code, action);
+                PRINTN("[N] Request to Store data in code %d\n", code);
+                PRINTE("storing data\n");
+								//record time here
+								time_start = clock();
+								store_data(data, length, code, action);
+								time_end = clock;
+								printf("%.3f store cpu sec\n", ((double)time_end - (double)time_start)* 1.0e-9);
                 break;                
               /* In either case, the same post-processing is done. */
               case ACTION_POP:
                 /* Intentional Fallthrough */
               case ACTION_PEEK:
+							  PRINTE("reading data\n");
                 retrieved_data = retrieve_data(code, action);
                 /* Data was not found, prep 0,0 for sendback */
                 if(retrieved_data == NULL)
                 {
                   PRINTA(" (No Data Found)\n");
                   packet = calloc(1, sizeof(char));
-                  packet[0] = '`';
+                  packet[0] = "`";
              
                   length = 1;
                 }
@@ -499,7 +511,6 @@ void *listener_function(void *args)
                   length = retrieved_data->length;
                   PRINTN("Sending %s\n", packet);
                 }
-		PRINTF("Returning %d bytes from %s\n", length, code);
                 if(write(fd_list[i].fd, (char *)packet, length) != length)
                 {
                   PRINTE("Attempted to write %d bytes to %d, but failed. Continuing.\n", length, fd_list[i].fd);
@@ -509,6 +520,9 @@ void *listener_function(void *args)
                   PRINTN("[O] Just Wrote %d bytes to socket %d\n", length, fd_list[i].fd); 
                 break;
             }
+						//PRING TIME HERE
+						switch_time_end = clock();
+						printf("%.3f switch cpu sec\n", ((double)switch_time_end - (double)switch_time_start));
           } /* End of received data */
         } /* End of socket has activity on it */
       } /* End of for loop iterating over each FD */
@@ -617,7 +631,7 @@ void print_stored_data()
   printf("Printing all Mailbox Codes\n\n");
   for(pwalker = mailbox_head; pwalker != NULL; pwalker = pwalker->next)
   {
-    printf("Mailbox for Code %s\n", pwalker->code);
+    printf("Mailbox for Code %d\n", pwalker->code);
     for(dwalker = pwalker->data_list; dwalker != NULL; dwalker = dwalker->next)
     {
       printf("...[%d] %s\n", dwalker->length, dwalker->data);

@@ -5,11 +5,9 @@ walkForwardStart = function(hfa)
 	print("ball lost value is" .. darwin.isBallLost());
 --	print("ball lost value is :" ..wcm.get_horde_ballLost());
         --Let's walk forward
-	darwin.setVelocity(0, 0,-0.05);
-	print("kk iset vel");
+	darwin.setVelocity(.05, 0.0,0.0);
 	--since the ball is lost, let's do a head scan			
 	darwin.scan();
-	print("kk done with scan");
 end	
 
 walkForwardGo = function(hfa) -- dont change what we're doing until we go to another state
@@ -19,12 +17,10 @@ walkForwardStop = function (hfa)
 end
 
 stopStart = function(hfa)
-	wcmBall = get_data("ball");
 	print("stoping");
-	
 	print("ball lost value is :" .. wcm.get_horde_ballLost());	
 	print("i stopped at location " .. wcm.get_pose().x .. ", " .. wcm.get_pose().y .. ", " .. wcm.get_pose().a);
-	print(" the ball is at location " .. wcmBall.x .. ", " .. wcmBall.y);
+	print(" the ball is at location " .. wcm.get_ball_x() .. ", " .. wcm.get_ball_y());
 	darwin.stop();	
 	-- since we've found the ball, let's stare at it
 	darwin.track(); -- stares at the last location we saw the ball
@@ -42,15 +38,8 @@ stop = makeBehavior("stop", stopStart, stopStop, stopGo);
 myMachine = makeHFA("myMachine", makeTransition({
 	[start] = walkForward, --first thing we do: walk forward
 	[walkForward] = function()-- if we're in the walk forward state.... 
-					  local ball = get_data("ball");
-						setDebugTrue();
-						print("holy crackers");
-						print("\n\n\n\n****ball location " .. ball.x .. " " .. ball.y);
-  					setDebugFalse();
-
-
 				if wcm.get_horde_ballLost()==0 then -- and if the ball is found, we should stop
-											return stop 
+					return stop 
 				else 
 					return walkForward -- else keep walking forward
 				end 

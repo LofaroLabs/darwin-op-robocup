@@ -3,6 +3,7 @@
 -- sudo apt-get install lua51-socket-dev
 -- sudo apt-get install lua51-socket2
 require "socket"
+require "Body"
 
 ----------------------------------------------
 -- Pickle.lua
@@ -92,40 +93,100 @@ function unpickle(s)
 end
 
 function set_data(label,table)
+	--keep track of number of times called
+	if(wcm.get_horde_numTimesCalled ~=nil) then
+		local timesCalled = wcm.get_horde_numTimesCalled();
+		timesCalled = timesCalled +1;
+		wcm.set_horde_numTimesCalled(timesCalled);
+  end
+	--get the base time
+	local time_start = Body.get_time();
 	setDebugTrue();
-  --print("label is " .. label);
+  --print("start of set");
+	--print("label is " .. label);
 	--print("table is " .. table);
 	if(label == "" or label == nil) then
 		error("set data label is " .. label .. " which is bad");
 	end
 	mailbox = label; --code = someHash(label);-- this will be the mailbox
-	table_str = pickle(table) .. '`';
+	--make a 4 character string
+	--local table_len_string = "";
+	-- this will represent a number. if it's <1000 then you need to pad zeros to the begining
+	--old one looks like this
+  --table_str = pickle(table) .. '`';
+	local table_str = pickle(table);
+	local table_length = string.len(table_str);
+	--new one will look like this
+	--table_str = fourCharstr .. pickledDataVariable;
+	if table_length == 0 then
+		table_str = '0000' .. table_length .. table_str;
+	elseif table_length > 0 and table_length < 10 then
+		--single digit
+		table_str = '000' .. table_length .. table_str;
+	elseif table_length > 9 and table_length < 100 then
+		--double digit
+		table_str = '00' .. table_length .. table_str;
+	elseif table_length > 99 and table_length < 1000 then
+		--triple digit
+		table_str = '0' .. table_length .. table_str;
+	elseif table_length > 999 and table_length < 10000 then
+		--quad digit
+		table_str = table_length .. table_str;
+	end	
+	
+	--print("Length of table_str: " .. table_length);
 	packet = "3," .. mailbox  .. "," .. tostring(string.len(table_str)) .. "," .. table_str;
 	tcp:send(packet);
+--print total time
+	local time_end = Body.get_time();
+	local delta_time = time_end - time_start;
+	--print("set_data time in sec: " .. delta_time);
 end
-function get_data(label)
-	setDebugTrue();
-	mailbox = label;--code = someHash(label);
-	--print("mailbox value is " .. mailbox);
-	packet = "2," .. mailbox .. ","
-	--tcp:settimeout(.01);
 
+function get_data(label)
+	--keep track of number of times called
+	local timesCalled = wcm.get_horde_numTimesCalled();
+	timesCalled = timesCalled +1;
+	wcm.set_horde_numTimesCalled(timesCalled);
+	-- get base time
+	local time_start = Body.get_time();
+	local recieve_time_start = 0;
+	local send_time_start = 0;
+	local delta_time = 0;
+
+	--setDebugTrue();
+	print("start of Get");
+	mailbox = label;
+	packet = "2," .. mailbox .. ","
+  delta_time = Body.get_time() - time_start;
+  print("BEGINNING OF GET TIME IN SEC: " .. delta_time);
+
+
+	send_time_start = Body.get_time();
 	tcp:send(packet);
-	builder_str = "";
-	new_str_data,t,p = tcp:receive(1)
-	while(new_str_data~= nil and new_str_data ~= "`") do  
-		--if(new_str_data!=nil) then
-			builder_str = builder_str .. new_str_data;
-		--end
-		new_str_data,t,p = tcp:receive(1)
-	 -- print("new_str is " .. new_str_data);
-	end
-	--print("builder str is \"" .. builder_str .. " end");
-	--print("builder str len is " .. string.len(builder_str) .. " omg");
-	if(string.len(builder_str)==1) then
+	local delta_time1 = Body.get_time() - send_time_start;
+	print("SEND TIME in SEC: " .. delta_time1);
+
+	local first_four_char,t,p = tcp:receive(4);
+	local table_length = tonumber(first_four_char);
+  
+	recieve_time_start = Body.get_time();
+	new_str_data,t,p = tcp:receive(table_length);
+	local delta_time2 = Body.get_time() - recieve_time_start;
+  print("RECIEVE TIME IN SEC: " .. delta_time2);
+
+	-- print out total time taken
+	delta_time = Body.get_time() - time_start;
+  local time_minus_send_recieve = delta_time - delta_time1 - delta_time2;
+
+	print("TIME WITHOUT SEND AND RECIEVE: " .. time_minus_send_recieve);
+
+	print("GET_DATA TIME IN SEC: " .. delta_time);
+
+	if(new_str_data)==1 then
 		return 0;
 	end
-	return unpickle(builder_str)	
+	return unpickle(new_str_data)	
 end
 ---------------------
 tcp = socket.tcp()
