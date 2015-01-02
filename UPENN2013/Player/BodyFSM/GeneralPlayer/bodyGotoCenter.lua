@@ -5,7 +5,6 @@ require('walk')
 require('vector')
 require('Config')
 require('wcm')
-require('GMUcm')
 require('gcm')
 
 t0 = 0;
@@ -24,7 +23,7 @@ end
 function update()
   local t = Body.get_time();
 
-  ball = get_data("ball");
+  ball = wcm.get_ball();
   pose = wcm.get_pose();
   ballGlobal = util.pose_global({ball.x, ball.y, 0}, {pose.x, pose.y, pose.a});
   tBall = Body.get_time() - ball.t;

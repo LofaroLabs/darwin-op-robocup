@@ -8,7 +8,6 @@ require('Body');
 require('shm');
 require('vcm');
 require('mcm');
-require('GMUcm');
 require('Detection');
 require('Debug');
 
@@ -35,7 +34,7 @@ field_margin = Config.vision.ball.field_margin or 0;
 th_headAngle = Config.vision.ball.th_headAngle or -10*math.pi/180;
 
 function detect(color)
-	wcmBall = get_data("ball");
+
 --  enable_obs_challenge = Config.obs_challenge or 0;
 --  if enable_obs_challenge == 1 then
 --    colorCount = Vision.colorCount_obs;
@@ -47,8 +46,8 @@ function detect(color)
   --print("headPitch:",headAngle[2]*180/math.pi);
   local ball = {};
   ball.detect = 0;
-  --vcm.add_debug_message(string.format("\nBall: pixel count: %d\n",
-	--colorCount[color]));
+  vcm.add_debug_message(string.format("\nBall: pixel count: %d\n",
+	colorCount[color]));
   
 --  print(string.format("\nBall: pixel count: %d\n",
 --	      colorCount[color]));
@@ -56,7 +55,7 @@ function detect(color)
 
   -- threshold check on the total number of ball pixels in the image
   if (colorCount[color] < th_min_color) then  	
-    --vcm.add_debug_message("pixel count fail");
+    vcm.add_debug_message("pixel count fail");
     return ball;  	
   end
 
@@ -207,8 +206,8 @@ function detect(color)
   --Ball position ignoring ball size (for distant ball observation)
   v_inf=HeadTransform.projectGround(v_inf,diameter/2);
   v_inf[1]=v_inf[1]-mcm.get_footX()
-  wcmBall.v_inf = {v_inf[1],v_inf[2]}--wcm.set_ball_v_inf({v_inf[1],v_inf[2]});  
-	set_data("ball",wcmBall);
+  wcm.set_ball_v_inf({v_inf[1],v_inf[2]});  
+
   ball.v = v;
   ball.detect = 1;
   ball.r = math.sqrt(ball.v[1]^2 + ball.v[2]^2);

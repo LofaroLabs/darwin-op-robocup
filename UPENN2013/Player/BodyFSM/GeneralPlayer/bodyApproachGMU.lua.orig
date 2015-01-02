@@ -29,7 +29,7 @@ last_ph = 0;
 function check_approach_type()
   is_evading = 0;
   check_angle=1;
-  ball = get_data("ball")();
+  ball = wcm.get_ball();
   kick_dir=wcm.get_kick_dir();
   kick_type=wcm.get_kick_type();
   kick_angle=wcm.get_kick_angle();
@@ -82,15 +82,14 @@ function check_approach_type()
     end
     check_angle = 0; --Don't check angle if we're doing evade kick
   end
-
   print(string.format("Approach: kick dir:%d type:%d angle:%d",
 	kick_dir,kick_type,kick_angle*180/math.pi ))
   print(string.format("Initial ball pos: %.2f %.2f",ball.x,ball.y));
 
 
   y_inv=0;
-  kick_type=2;
-  kick_dir=1;  
+  kick_dir=1; --forcing always front kick, this is GMU addition
+  kick_type=1; -- force stationation, gmu
   if kick_type==1 then --Stationary 
     if kick_dir==1 then --Front kick
       xTarget = Config.fsm.bodyApproach.xTarget11;
@@ -137,10 +136,10 @@ end
 
 
 function entry()
-  print("Body FSM:".._NAME.." entry");
   wcm.set_horde_doneFrontApproach(0);
+  print("Body FSM:".._NAME.." entry");
   t0 = Body.get_time();
-  ball = get_data("ball")();
+  ball = wcm.get_ball();
   check_approach_type(); --walkkick if available
 
   if t0-ball.t<0.2 then
@@ -164,7 +163,7 @@ end
 function update()
   local t = Body.get_time();
   -- get ball position 
-  ball = get_data("ball")();
+  ball = wcm.get_ball();
   ballR = math.sqrt(ball.x^2 + ball.y^2);
 
   if t-ball.t<0.2 and ball_tracking==false then
@@ -214,7 +213,7 @@ function update()
     targetangle = 0;
     angleErrL = 0;
     angleErrR = 0;
-
+    print("CONFUSED MODE");
   else
     --Player FSM, turn towards the goal
 --    attackBearing, daPost = wcm.get_attack_bearing();
@@ -239,7 +238,8 @@ function update()
 
     angleErrL = util.mod_angle(pose.a - (attackAngle + daPost1 * 0.5));
     angleErrR = util.mod_angle((attackAngle - daPost1 * 0.5)-pose.a);
-
+    print("angle error L: " .. angleErrL .. " angle error R: " .. angleErrR);
+    print("daPost dapostdapostdapost1: " .. daPost1 .. " daPost_" .. daPost);
     --If we have room for turn, turn to the ball
     angleTurnMargin = -10*math.pi/180;
     ballA = math.atan2(ball.y - math.max(math.min(ball.y, 0.05), -0.05),
@@ -269,7 +269,6 @@ function update()
 
   if math.abs(wAngle) > 45*math.pi/180 then
     vStep[1]=vStep[1] - 0.03;
-
     if ball.y<ballYMin and ball.y>0 then
      vStep[2] = -0.03;
     elseif ball.y<0 and ball.y>-ballYMin then
@@ -302,7 +301,7 @@ function update()
     print("ballLost")
     return "ballLost";
   end
- --[[ if (t - t0 > timeout) then
+  --[[if (t - t0 > timeout) then
     HeadFSM.sm:set_state('headTrack');
     print("timeout")
     return "timeout";
@@ -322,34 +321,22 @@ function update()
   end
 
   --For front kick, check for other side too
+  --print("checking kick_dir " .. kick_dir);
   if kick_dir==1 then --Front kick
     yTargetMin = math.min(math.abs(yTarget[1]),math.abs(yTarget[3]));
     yTargetMax = math.max(math.abs(yTarget[1]),math.abs(yTarget[3]));
+    --print("ballx < targetX" .. tostring(ball.x < xTarget[3]) .. " lastseenGoodENough "..tostring((t-ball.t < 0.5)) ..   " bally>yTargetMin " .. tostring((math.abs(ball.y) > yTargetMin)) .. " bally<ytargetmax " .. tostring((math.abs(ball.y) < yTargetMax)) .. " angle check " .. tostring((angle_check_done==true)));
 
     if (ball.x < xTarget[3]) and (t-ball.t < 0.5) and
        (math.abs(ball.y) > yTargetMin) and 
 	(math.abs(ball.y) < yTargetMax) and
 	angle_check_done then
-      print("KICK DIR,TYPE: " .. kick_dir .. "," ..kick_type);
+      print("SHOULD BE DONE FRONT KICK SETUP");
       print(string.format("Approach done, ball position: %.2f %.2f\n",ball.x,ball.y))
       print(string.format("Ball target: %.2f %.2f\n",xTarget[2],yTarget[2]))
-      if kick_type==1 then 
-	
-	print("1OMFGOMFGOMFOMGOMFOMFOMGOMGOMGOMG KICK");
-	print("1OMFGOMFGOMFOMGOMFOMFOMGOMGOMGOMG KICK");
-	print("1OMFGOMFGOMFOMGOMFOMFOMGOMGOMGOMG KICK");
-	print("1OMFGOMFGOMFOMGOMFOMFOMGOMGOMGOMG KICK");
-	print("1OMFGOMFGOMFOMGOMFOMFOMGOMGOMGOMG KICK");
-	wcm.set_horde_doneFrontApproach(1);
-	return "kick";
-      else 
-	print("2OMFGOMFGOMFOMGOMFOMFOMGOMGOMGOMG KICK");
-	print("2OMFGOMFGOMFOMGOMFOMFOMGOMGOMGOMG KICK");
-print("2OMFGOMFGOMFOMGOMFOMFOMGOMGOMGOMG KICK");
-	print("2OMFGOMFGOMFOMGOMFOMFOMGOMGOMGOMG KICK");
-	print("2OMFGOMFGOMFOMGOMFOMFOMGOMGOMGOMG KICK");
-	wcm.set_horde_doneFrontApproach(1);
-	return "walkkick";
+      wcm.set_horde_doneFrontApproach(1);
+	if kick_type==1 then return "kick";
+      else return "walkkick";
       end
     end
   else
@@ -357,33 +344,18 @@ print("2OMFGOMFGOMFOMGOMFOMFOMGOMGOMGOMG KICK");
     if (ball.x < xTarget[3]) and (t-ball.t < 0.5) and
        (ball.y > yTarget[1]) and (ball.y < yTarget[3]) and
        angle_check_done then
-print("KICK DIR,TYPE: " .. kick_dir .. "," ..kick_type);
+
       print(string.format("Approach done, ball position: %.2f %.2f\n",ball.x,ball.y))
       print(string.format("Ball target: %.2f %.2f\n",xTarget[2],yTarget[2]))
-      if kick_type==1 then 
-	print("1OMFGOMFGOMFOMGOMFOMFOMGOMGOMGOMG KICK");
-	print("1OMFGOMFGOMFOMGOMFOMFOMGOMGOMGOMG KICK");
-print("1OMFGOMFG1OMFOMGOMFOMFOMGOMGOMGOMG KICK");
-	print("1OMFGOMFGOMFOMGOMFOMFOMGOMGOMGOMG KICK");
-	print("1OMFGOMFGOMFOMGOMFOMFOMGOMGOMGOMG KICK");
-	wcm.set_horde_doneFrontApproach(1);
-	return "kick";
-      else 
-	print("2OMFGOMFGOMFOMGOMFOMFOMGOMGOMGOMG KICK");
-	print("2OMFGOMFGOMFOMGOMFOMFOMGOMGOMGOMG KICK");
-	print("2OMFGOMFGOMFOMGOMFOMFOMGOMGOMGOMG KICK");
-	print("2OMFGOMFGOMFOMGOMFOMFOMGOMGOMGOMG KICK");
-	print("2OMFGOMFGOMFOMGOMFOMFOMGOMGOMGOMG KICK");
-	wcm.set_horde_doneFrontApproach(1);
-	return "walkkick";
+      if kick_type==1 then return "kick";
+      else return "walkkick";
       end
     end
   end
 end
 
 function exit()
-     wcm.set_horde_doneFrontApproach(0);
-     HeadFSM.sm:set_state('headTrack');
+  HeadFSM.sm:set_state('headTrack');
 end
 
 function sign(x)

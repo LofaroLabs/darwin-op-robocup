@@ -45,7 +45,6 @@ enable_obs_challenge = Config.obs_challenge or 0;
 --@return Table containing whether a ball was detected
 --If a ball is detected, also contains additional stats about the ball
 function detect(color)
-  wcmBall = get_data("ball");
   colorCount = Vision.colorCount;
   headAngle = Body.get_head_position();
   --print("headPitch:",headAngle[2]*180/math.pi);
@@ -296,8 +295,7 @@ function detect(color)
   --Ball position ignoring ball size (for distant ball observation)
   v_inf=HeadTransform.projectGround(v_inf,diameter/2);
   v_inf[1]=v_inf[1]-mcm.get_footX()
-  wcmBall.v_inf = {v_inf[1],v_inf[2]};
-  set_data("ball",wcmBall);  
+  wcm.set_ball_v_inf({v_inf[1],v_inf[2]});  
 
   ball.v = v;
   ball.detect = 1;

@@ -8,8 +8,7 @@ require('vector');
 require('util')
 require('serialization');
 
-require('wcm')
-require('GMUcm');
+require('wcm');
 require('gcm');
 
 Comm.init(Config.dev.ip_wireless,Config.dev.ip_wireless_port);
@@ -228,7 +227,7 @@ function update()
   state.teamNumber = gcm.get_team_number();
   state.teamColor = gcm.get_team_color();
   state.pose = wcm.get_pose();
-  state.ball = get_data("ball");
+  state.ball = wcm.get_ball();
   state.role = role;
   state.attackBearing = wcm.get_attack_bearing();
   state.battery_level = wcm.get_robot_battery_level();
@@ -1096,7 +1095,7 @@ function check_flip2()
   if is_confused==0 then return; end
   print("cofused is true, now i gotta wait some time");
   local pose = wcm.get_pose();
-  local ball = get_data("ball");
+  local ball = wcm.get_ball();
   local ball_global = util.pose_global({ball.x,ball.y,0},{pose.x,pose.y,pose.a});
   local t = Body.get_time();
   local t_confused = wcm.get_robot_t_confused();

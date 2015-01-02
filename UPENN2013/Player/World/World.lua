@@ -6,7 +6,6 @@ require('Body');
 require('vector');
 require('util');
 require('wcm')
-require('GMUcm')
 require('vcm');
 require('gcm');
 require('mcm');
@@ -247,7 +246,6 @@ end
 
 
 function update_vision()
- ball = get_data("ball");
  --Added by david to flip angle if we find the goalie having the urge to travel more than 3 meters in the X direction
  -- if(wcm.get_horde_confused()==1) then
 --	PoseFilter.flip_particle_angle();
@@ -388,13 +386,13 @@ setDebugFalse()
 
     -- Update the velocity
     -- use centroid info only
-    ball_v_inf = ball.v_inf; --wcm.get_ball_v_inf();
+    ball_v_inf = wcm.get_ball_v_inf();
     ball.t = Body.get_time();
 
-    t_locked = ball.t_locked_on --wcm.get_ball_t_locked_on();
+    t_locked = wcm.get_ball_t_locked_on();
     th_locked = 1.5;
 
-    if (t_locked > th_locked ) and ball.locked_on == 1 then
+    if (t_locked > th_locked ) and wcm.get_ball_locked_on() == 1 then
       Velocity.update(ball_v_inf[1],ball_v_inf[2],ball.t);
       ball.vx, ball.vy, dodge  = Velocity.getVelocity();
     else
@@ -465,10 +463,7 @@ setDebugFalse()
   end
 
   ball.x, ball.y = ballFilter:get_xy();
-  --setDebugTrue();
---	print("@@@ball x and y here are " .. ball.x .. ", " .. ball.y);
-	
-	pose.x,pose.y,pose.a = PoseFilter.get_pose();
+  pose.x,pose.y,pose.a = PoseFilter.get_pose();
 
 --Use team vision information when we cannot find the ball ourselves
 
@@ -523,23 +518,19 @@ function update_led()
 end
 
 function update_shm()
-  local wcmBall = get_data("ball");
   -- update shm values
    --print("@@@updating shared memory")
   --print(string.format( 
   wcm.set_robot_pose({pose.x, pose.y, pose.a});
   wcm.set_robot_time(Body.get_time());
-	 --setDebugTrue();
-	--print("@@@ball x and y here are " .. ball.x .. ", " .. ball.y);
-	
-  wcmBall.x = ball.x--wcm.set_ball_x(ball.x);
-  wcmBall.y = ball.y --wcm.set_ball_y(ball.y);
+
+  wcm.set_ball_x(ball.x);
+  wcm.set_ball_y(ball.y);
   if vcm.get_ball_detect()==1 then
   	ball_global = util.pose_global({ball.x,ball.y,0},{pose.x,pose.y,pose.a})
     
 	if(ball_global~=nil) then
-		
-	wcm.set_ballGlobal_x(ball_global[1])
+		wcm.set_ballGlobal_x(ball_global[1])
     	wcm.set_ballGlobal_y(ball_global[2])
     
 	end
@@ -548,11 +539,11 @@ function update_shm()
 		wcm.set_ballGlobal_y(0);
 	end
   end
-  wcmBall.t = ball.t;--wcm.set_ball_t(ball.t);
-  wcmBall.velx = ball.vx;--wcm.set_ball_velx(ball.vx);
-  wcmBall.vely = ball.vy;--wcm.set_ball_vely(ball.vy);
-  wcmBall.p = ball.p--wcm.set_ball_p(ball.p);
-  set_data("ball",wcmBall);
+  wcm.set_ball_t(ball.t);
+  wcm.set_ball_velx(ball.vx);
+  wcm.set_ball_vely(ball.vy);
+  wcm.set_ball_p(ball.p);
+
   wcm.set_goal_t(pose.tGoal);
   wcm.set_goal_attack(get_goal_attack());
   wcm.set_goal_defend(get_goal_defend());

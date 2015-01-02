@@ -6,7 +6,6 @@ module(..., package.seeall);
 
 require('Body')
 require('wcm')
-require('GMUcm')
 require('mcm')
 
 pitch0=Config.fsm.headScan.pitch0;
@@ -25,12 +24,10 @@ direction = 1;
 
 
 function entry()
-  wcmBall = get_data("ball");
-	setDebugTrue();
+  setDebugTrue();
   print("Head SM:".._NAME.." entry");
   setDebugFalse();
-	wcmBall.t_locked_on = 0;
-  set_data("ball",wcmBall);--wcm.set_ball_t_locked_on(0);
+  wcm.set_ball_t_locked_on(0);
 
   --Goalie need wider scan
   role = gcm.get_team_role();
@@ -43,7 +40,7 @@ function entry()
 
   -- start scan in ball's last known direction
   t0 = Body.get_time();
-  ball = get_data("ball");
+  ball = wcm.get_ball();
   timeout = tScan * 2;
 
   yaw_0, pitch_0 = HeadTransform.ikineCam(ball.x, ball.y,0);
@@ -110,7 +107,7 @@ print("HEAD SCAN UPDATE");
   print("i can doing head command" .. yaw .. ". " .. (pitch-pitchBias));
   Body.set_head_command({yaw, pitch-pitchBias});
   setDebugFalse();
-  local ball = get_data("ball");
+  local ball = wcm.get_ball();
   if (t - ball.t < 0.1) then
       --return "timeout"
 	return "ballFound";

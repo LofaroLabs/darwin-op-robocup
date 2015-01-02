@@ -4,7 +4,6 @@ require('init')
 require('mcm')
 require('vcm')
 require('wcm')
-require('GMUcm')
 require('Config')
 function toCSV(t)
         local s = ""
@@ -26,9 +25,8 @@ while 1 do
         local my_send_data = "pose," .. toCSV(wcm.get_pose()) .. "\n";
         client:send(my_send_data);
         if (vcm.get_ball_detect() == 1) then
-                local ball  = get_data("ball");
-		local ballx = ball.x;
-                local bally = ball.y;
+                local ballx = wcm.get_ball_x();
+                local bally = wcm.get_ball_y();
                 local ball_position = "ball," ..  ballx .. "," .. bally .. "\n";
                 print(ball_position);
                 client:send(ball_position);

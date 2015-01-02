@@ -4,7 +4,6 @@ require('Body')
 require('HeadTransform')
 require('Config')
 require('wcm')
-require('GMUcm')
 
 t0 = 0;
 
@@ -26,16 +25,13 @@ goalie_type = Config.fsm.goalie_type;
 locked_t0 = 0;
 
 function entry()
-  local wcmBall = get_data("ball");
   print("Head SM:".._NAME.." entry");
   t0 = Body.get_time();
   locked_on=false;
-  wcmBall.locked_on = 0;--wcm.set_ball_locked_on(0);
-  set_data("ball", wcmBall);
+  wcm.set_ball_locked_on(0);
 end
 
 function update()
-  local wcmBall = get_data("ball");
 
   if goalie_type<3 then --Non-diving goalie, escape to headTrack
     return "player"
@@ -44,7 +40,8 @@ function update()
   local t = Body.get_time();
 
   -- update head position based on ball location
-   ballR = math.sqrt (ball.x^2 + ball.y^2);
+  ball = wcm.get_ball();
+  ballR = math.sqrt (ball.x^2 + ball.y^2);
 
   local yawTarget, pitchTarget =
 	HeadTransform.ikineCam(ball.x,ball.y, trackZ, bottom);
@@ -63,27 +60,26 @@ function update()
 
   if not locked_on then
     Body.set_head_command({yawTarget, pitchTarget});
-    wcmBall.t_locked_on = (0);--wcm.set_ball_t_locked_on(0);
+    wcm.set_ball_t_locked_on(0);
   end
 
   if locked_on then
     if angle_error>th_unlock then
       locked_on=false;
-     wcmBall.locked_on = 0;-- wcm.set_ball_locked_on(0);
-      wcmBall.t_locked_on = 0;--wcm.set_ball_t_locked_on(0);
+      wcm.set_ball_locked_on(0);
+      wcm.set_ball_t_locked_on(0);
     else
-      wcmBall.t_locked_on = t-locked_t0;--wcm.set_ball_t_locked_on(t-locked_t0);
+      wcm.set_ball_t_locked_on(t-locked_t0);
     end
   else
     if angle_error<th_lock then
       locked_on=true;
 --    Speak.talk("Target Locked On");
-      wcmBall.locked_on = 1;--wcm.set_ball_locked_on(1);
+      wcm.set_ball_locked_on(1);
       locked_t0 = t;
     end
   end
 
-  set_data("ball", wcmBall);
   if (t - ball.t > tLost) then
     print('Ball lost!');
     return "lost";
@@ -92,8 +88,7 @@ function update()
 end
 
 function exit()
-  local wcmBall = get_data("ball");
-  wcmBall.locked_on = 0; --wcm.set_ball_locked_on(0);
-  wcmBall.t_locked_on = 0;--wcm.set_ball_t_locked_on(0);
-  set_data("ball", wcmBall);
+  wcm.set_ball_locked_on(0);
+  wcm.set_ball_t_locked_on(0);
+
 end

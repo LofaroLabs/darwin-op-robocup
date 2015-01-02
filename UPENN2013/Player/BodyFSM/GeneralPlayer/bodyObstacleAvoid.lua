@@ -6,7 +6,6 @@ require('vector')
 require('UltraSound')
 
 require('wcm')
-require('GMUcm')
 require('gcm')
 
 t0 = 0;

@@ -25,7 +25,6 @@ require('World')
 require('Team')
 require('util')
 require('wcm')
-require('GMUcm')
 require('gcm')
 
 darwin = false;
@@ -152,7 +151,7 @@ function process_keyinput()
     elseif byte==string.byte("2") then
       headsm_running = 0; -- Turn off the head state machine
       -- HeadTransform
-      local ball = get_data("ball");
+      local ball = wcm.get_ball();
       local trackZ = Config.vision.ball_diameter; -- Look a little above the ground
       -- TODO: Nao needs to add the camera select
       headangle = vector.zeros(2);

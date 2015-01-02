@@ -11,7 +11,6 @@ require('kick');
 require('HeadFSM')
 require('Config')
 require('wcm')
-require('GMUcm')
 require('unix');
 require('walk');
 
@@ -32,7 +31,7 @@ function entry()
 
 
   print("KICK DIR:",kick_dir)
-  ball = get_data("ball");
+  ball = wcm.get_ball();
  
   HeadFSM.sm:set_state('headTrackGMU');
 --  file = io.open("kickOutput.txt", "w")

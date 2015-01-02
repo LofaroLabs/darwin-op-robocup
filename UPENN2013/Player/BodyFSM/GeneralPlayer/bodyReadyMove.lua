@@ -6,7 +6,6 @@ require('util')
 require('vector')
 require('Config')
 require('wcm')
-require('GMUcm')
 require('gcm')
 require('Team')
 

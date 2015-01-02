@@ -6,7 +6,6 @@ require('HeadTransform');	-- For Projection
 require('Body')
 require('Vision');
 require('wcm')
-require('GMUcm')
 -- Dependency
 require('Detection');
 
@@ -60,7 +59,7 @@ th_goal_separation = Config.vision.goal.th_goal_separation;
 th_min_area_unknown_post = Config.vision.goal.th_min_area_unknown_post;
 
 function detect(color)
- -- vcm.add_debug_message("\nGoal: Yellow post check\n")
+  vcm.add_debug_message("\nGoal: Yellow post check\n")
   local goal = {};
   goal.detect = 0;
 

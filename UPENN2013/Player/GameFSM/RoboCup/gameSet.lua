@@ -6,7 +6,6 @@ require('Speak')
 require('vector')
 require('gcm')
 require('wcm')
-require('GMUcm')
 require('BodyFSM')
 require('HeadFSM')
 

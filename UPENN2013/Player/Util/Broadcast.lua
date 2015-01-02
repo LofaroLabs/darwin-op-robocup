@@ -10,7 +10,6 @@ CommWired=require('Comm');
 require('vcm')
 require('gcm')
 require('wcm')
-require('GMUcm')
 require('mcm')
 require('matcm')
 require('serialization');

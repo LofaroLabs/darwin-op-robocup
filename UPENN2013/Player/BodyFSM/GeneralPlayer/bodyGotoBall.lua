@@ -2,7 +2,6 @@ module(..., package.seeall);
 
 require('Body')
 require('wcm')
-require('GMUcm')
 require('walk')
 require('vector')
 require('walk')
@@ -30,7 +29,7 @@ last_ph = 0;
 function check_approach_type()
   is_evading = 0;
   check_angle=1;
-  ball = get_data("ball");
+  ball = wcm.get_ball();
   kick_dir=wcm.get_kick_dir();
   kick_type=wcm.get_kick_type();
   kick_angle=wcm.get_kick_angle();
@@ -81,14 +80,13 @@ end
 function entry()
   print("Body FSM:".._NAME.." entry");
   t0 = Body.get_time();
-  ball = get_data("ball");
+  ball = wcm.get_ball();
   HeadFSM.sm:set_state('headTrackGMU');
 end
 
 function update()
-	ball = get_data("ball");
-	ballx = ball.x;
-	bally = ball.y;
+	ballx = wcm.get_ball_x();
+	bally = wcm.get_ball_y();
 	scaleFactor = 13*(math.abs(ballx)+math.abs(bally));
 	rotateVel = 0;
 	--util.poseRelative(

@@ -5,7 +5,6 @@ require('walk')
 require('vector')
 require('Config')
 require('wcm')
-require('GMUcm')
 require('mcm')
 
 t0 = 0;
@@ -19,7 +18,7 @@ function entry()
   t0 = Body.get_time();
 
   -- set turn direction to last known ball position
-  ball = get_data("ball");
+  ball = wcm.get_ball();
   if (ball.y > 0) then
     direction = 1;
     mcm.set_walk_isSearching(1);
@@ -41,7 +40,7 @@ end
 
 function update()
   local t = Body.get_time();
-  ball = get_data("ball");
+  ball = wcm.get_ball();
 
 
   -- search/spin until the ball is found

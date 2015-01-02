@@ -6,7 +6,6 @@ require('unix')
 require('Config');
 require('walk');
 require('wcm')
-require('GMUcm')
 require('vcm')
 
 local cwd = unix.getcwd();

@@ -5,7 +5,6 @@ require('walk')
 require('vector')
 require('Config')
 require('wcm')
-require('GMUcm')
 require('gcm')
 require('position')
 
@@ -86,7 +85,7 @@ function update()
     thSideKick2 = Config.fsm.thSideKick2 or 135*math.pi/180;  
     thDistSideKick = Config.fsm.thDistSideKick or 3.0;
 
-    ball = get_data("ball");
+    ball = wcm.get_ball();
 
 
     rBall = math.sqrt(ball.x^2+ball.y^2);

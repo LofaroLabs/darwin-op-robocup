@@ -2,7 +2,6 @@ module(... or "", package.seeall)
 
 require('init')
 require('wcm')
-require('GMUcm')
 require('vcm')
 require('send')
 require('Config')
@@ -27,9 +26,8 @@ while true do
 	end
 	
 	if (vcm.get_ball_detect() == 1) then 	
-		local ball = get_data("ball");
-		local ballx = ball.x;
-		local bally = ball.y;
+		local ballx = wcm.get_ball_x();
+		local bally = wcm.get_ball_y();
 		local ball_position = "ball coordinates" .. "," ..  ballx .. "," .. bally .. "," .. bot_id .. "\n";
 		print(send_local_data(ball_position));
 		send_local_data(ball_position);

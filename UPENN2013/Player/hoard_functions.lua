@@ -35,7 +35,6 @@ require('vector')
 require('vcm')
 require('gcm')
 require('wcm')
-require('GMUcm')
 require('mcm')
 --require('hcm')
 require('Speak')
@@ -121,11 +120,11 @@ co = coroutine.create(function (args, client)
 	if(args~=nil) then 
 		unix.usleep(args *1E6);
 	end
-	local ball = get_data("ball");	
+	
 	features[1] = wcm.get_pose();
 	features[2] = vcm.get_ball_detect();
-	features[3] = ball.x;
-	features[4] = ball.y;
+	features[3] = wcm.get_ball_x();
+	features[4] = wcm.get_ball_y();
 	client:send(json.encode(features).. "\n");
 	-- Send the features to horde via the client
 	-- args may contain the amount of time to wait between sending

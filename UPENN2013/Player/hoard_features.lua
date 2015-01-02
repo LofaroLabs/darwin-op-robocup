@@ -35,7 +35,6 @@ require('vector')
 require('vcm')
 require('gcm')
 require('wcm')
-require('GMUcm')
 require('mcm')
 require('Speak')
 require('getch')
@@ -44,14 +43,13 @@ require('Motion')
 json = require("json")
 --client = "nil"
 function sendFeatures (args, client)	
-	wcmBall = get_data("ball");
 	features = {};
 	features["poseX"] = wcm.get_pose().x;
 	features["poseY"] = wcm.get_pose().y;
 	features["poseA"] = wcm.get_pose().a;
 	features["ballDetect"] = vcm.get_ball_detect();
-	features["ballX"] = wcmBall.x;--wcm.get_ball_x();
-	features["ballY"] = wcmBall.y;
+	features["ballX"] = wcm.get_ball_x();
+	features["ballY"] = wcm.get_ball_y();
         features["doneFrontApproach"] = wcm.get_horde_doneFrontApproach();	
 	print("sending some features, yo\n");-- wcm.set_horde_doneFrontApproach("true");
 	print(json.encode(features) .. "\n");

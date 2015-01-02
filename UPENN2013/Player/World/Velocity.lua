@@ -98,14 +98,13 @@ function entry()
 end
 
 function update(newx,newy)
-  ball = get_data("ball");
   t=Body.get_time();
   ball_count = ball_count + 1;
   ballR = math.sqrt(newx^2+newy^2);
   ballA = math.atan2(newy,newx);
 
   --Lower gamma if head not locked on at the ball
-  locked_on = ball.locked_on;--wcm.get_ball_locked_on();
+  locked_on = wcm.get_ball_locked_on();
   if locked_on==0 then
 --    vx,vy=0,0;
   end

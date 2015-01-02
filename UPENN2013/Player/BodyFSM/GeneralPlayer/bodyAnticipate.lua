@@ -7,7 +7,6 @@ require('kick');
 require('HeadFSM')
 require('Config')
 require('wcm')
-require('GMUcm')
 
 require('walk');
 require('dive')
@@ -59,7 +58,6 @@ print(_NAME.." entry");
 end
 
 function update()
-  local wcmBall = get_data("ball");
   if(vcm.get_ball_detect() == 1) then
 	lastSawBall = Body.get_time();
   end
@@ -78,9 +76,9 @@ function update()
   end
 
   local t = Body.get_time();
-  ball = get_data("ball");
+  ball = wcm.get_ball();
  
-  ball_v_inf = wcmBall.v_inf;
+  ball_v_inf = wcm.get_ball_v_inf();
   ball.x=ball_v_inf[1];
   ball.y=ball_v_inf[2];
 

@@ -687,8 +687,3 @@ cal["darwin55"].kickXComp=0.000;
 cal["darwin55"].servoBias={25,-30,40,0,-10,-17,-58,-6,-7,0,0,15,};
 cal["darwin55"].footXComp=0.000;
 cal["darwin55"].kickXComp=0.000;
-
--- Updated date: Wed Nov 12 13:22:09 2014
-cal["darwin50"].servoBias={59,0,59,0,0,0,0,0,-43,0,0,0,};
-cal["darwin50"].footXComp=0.000;
-cal["darwin50"].kickXComp=0.000;

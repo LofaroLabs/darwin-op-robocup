@@ -36,7 +36,6 @@ require('vector')
 require('vcm')
 require('gcm')
 require('wcm')
-require('GMUcm')
 require('mcm')
 require('Speak')
 require('getch')
@@ -144,15 +143,7 @@ function doAction(action)
 	client:send(json.encode(action) .. "\n");
 end	
 function isBallLost()
-	print("got into ball lost")
-	print("vcm detect is " .. vcm.get_ball_detect());
-	local ball = get_data("ball");
-						setDebugTrue();
-						print("holy crackers");
-						print("\n\n\n\n****ball location " .. ball.x .. " " .. ball.y);
-  					setDebugFalse();
-
-
+	--print("got into ball lost")
 	if vcm.get_ball_detect() ~= 0 then
 		wcm.set_horde_ballLost(0);
 		lastTimeFound = Body.get_time();
