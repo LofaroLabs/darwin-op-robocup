@@ -15,6 +15,7 @@ local basetime = Body.get_time();
 local deltatime;
 do_times = 100;
 did_done = 0;
+print("ll");
 profiler.start("prof_iteration_"..did_done..".out")
 while (did_done < do_times) do
   did_done = did_done + 1;
