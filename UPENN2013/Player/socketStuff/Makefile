@@ -22,8 +22,8 @@ all: sock_router
 # Valid Values:
 #       [NVAF] 
 #   0 - (0000) No Debug Information (Default)
-#		1 - (0001) Information  (PRINTF) Only
-#		2 - (0010) Annotations  (PRINTA) Only
+#   1 - (0001) Information  (PRINTF) Only
+#   2 - (0010) Annotations  (PRINTA) Only
 #   4 - (0100) Verbose      (PRINTV) Only
 #   8 - (1000) Network Data (PRINTN) Only
 #  15 - (1111) All PRINTs are active.
@@ -35,12 +35,12 @@ DEBUG ?= 0
 
 #########
 # C Compiler Options
-# 	-g  	Adds debugging information (for gdb)
+#   -g  	Adds debugging information (for gdb)
 #   -pg 	Adds the gprof profiling tool
 #   -pthread  Adds the pthread library
 #		-Wall	Enables most compiler warnings
 CC = gcc
-CFLAGS = -g -DDEBUG=$(DEBUG) -pthread
+CFLAGS = -DDEBUG=$(DEBUG) -pthread 
 
 #########
 # C++ Compile Options

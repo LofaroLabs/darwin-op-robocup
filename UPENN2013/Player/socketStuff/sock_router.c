@@ -53,10 +53,12 @@
 /* Function Definitions */
 
 //time variables
+/*
 clock_t time_start = 0;
 clock_t time_end = 0;
 clock_t switch_time_start = 0;
 clock_t switch_time_end = 0;
+*/
 int main() 
 {
 	open_socket();
@@ -475,32 +477,30 @@ void *listener_function(void *args)
             }
 
             /* Decide what to do based on the action of the received message */
-            switch_time_start = clock();
-						switch(action)
+            //switch_time_start = clock();
+	switch(action)
             {
               /* We're storing, so don't need any data sent back. */
               case ACTION_PUSH:
               case ACTION_PUT:
                 PRINTN("[N] Request to Store data in code %d\n", code);
-                PRINTE("storing data\n");
 								//record time here
-								time_start = clock();
+								//time_start = clock();
 								store_data(data, length, code, action);
-								time_end = clock;
-								printf("%.3f store cpu sec\n", ((double)time_end - (double)time_start)* 1.0e-9);
+								//time_end = clock;
+								//printf("%.3f store cpu sec\n", ((double)time_end - (double)time_start)* 1.0e-9);
                 break;                
               /* In either case, the same post-processing is done. */
               case ACTION_POP:
                 /* Intentional Fallthrough */
               case ACTION_PEEK:
-							  PRINTE("reading data\n");
                 retrieved_data = retrieve_data(code, action);
                 /* Data was not found, prep 0,0 for sendback */
                 if(retrieved_data == NULL)
                 {
                   PRINTA(" (No Data Found)\n");
                   packet = calloc(1, sizeof(char));
-                  packet[0] = "`";
+                  packet[0] = '`';
              
                   length = 1;
                 }
@@ -521,8 +521,8 @@ void *listener_function(void *args)
                 break;
             }
 						//PRING TIME HERE
-						switch_time_end = clock();
-						printf("%.3f switch cpu sec\n", ((double)switch_time_end - (double)switch_time_start));
+						//switch_time_end = clock();
+						//printf("%.3f switch cpu sec\n", ((double)switch_time_end - (double)switch_time_start));
           } /* End of received data */
         } /* End of socket has activity on it */
       } /* End of for loop iterating over each FD */
@@ -631,7 +631,7 @@ void print_stored_data()
   printf("Printing all Mailbox Codes\n\n");
   for(pwalker = mailbox_head; pwalker != NULL; pwalker = pwalker->next)
   {
-    printf("Mailbox for Code %d\n", pwalker->code);
+    printf("Mailbox for Code %s\n", pwalker->code);
     for(dwalker = pwalker->data_list; dwalker != NULL; dwalker = dwalker->next)
     {
       printf("...[%d] %s\n", dwalker->length, dwalker->data);
