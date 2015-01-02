@@ -21,9 +21,6 @@ Pickle = {
 }
 
 function Pickle:pickle_(root)
-  if type(root) ~= "table" then 
-    error("can only pickle tables, not ".. type(root).."s")
-  end
   self._tableToRef = {}
   self._refToTable = {}
   local savecount = 0
@@ -69,9 +66,6 @@ end
 ----------------------------------------------
 
 function unpickle(s)
-  if type(s) ~= "string" then
-    error("can't unpickle a "..type(s)..", only strings")
-  end
 	setDebugTrue();
 	--print("s is " .. s);
   local gentables = loadstring("return "..s)
