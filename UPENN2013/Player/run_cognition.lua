@@ -13,7 +13,7 @@ vcm.set_vision_enable(vector.ones(1));
 local basetime = Body.get_time();
 local deltatime;
 while (true) do
-  deltatime = basetime - Body.get_time();
+  deltatime = Body.get_time() - basetime;
   setDebugTrue();
   print("num times called ".. wcm.get_horde_numTimesCalled());
 	wcm.set_horde_numTimesCalled(0);

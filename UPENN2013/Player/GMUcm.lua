@@ -4,6 +4,7 @@
 -- sudo apt-get install lua51-socket2
 require "socket"
 require "Body"
+local marshal = require "marshal"
 
 ----------------------------------------------
 -- Pickle.lua
@@ -99,10 +100,7 @@ function set_data(label,table)
 		timesCalled = timesCalled +1;
 		wcm.set_horde_numTimesCalled(timesCalled);
   end
-	--get the base time
-	local time_start = Body.get_time();
 	setDebugTrue();
-  --print("start of set");
 	--print("label is " .. label);
 	--print("table is " .. table);
 	if(label == "" or label == nil) then
@@ -114,7 +112,12 @@ function set_data(label,table)
 	-- this will represent a number. if it's <1000 then you need to pad zeros to the begining
 	--old one looks like this
   --table_str = pickle(table) .. '`';
-	local table_str = pickle(table);
+	
+	--old pickle command to serialize
+	--local table_str = pickle(table);
+
+	--NEW SERIALIZATION
+	local table_str = assert(marshal.encode(table));
 	local table_length = string.len(table_str);
 	--new one will look like this
 	--table_str = fourCharstr .. pickledDataVariable;
@@ -137,10 +140,6 @@ function set_data(label,table)
 	--print("Length of table_str: " .. table_length);
 	packet = "3," .. mailbox  .. "," .. tostring(string.len(table_str)) .. "," .. table_str;
 	tcp:send(packet);
---print total time
-	local time_end = Body.get_time();
-	local delta_time = time_end - time_start;
-	--print("set_data time in sec: " .. delta_time);
 end
 
 function get_data(label)
@@ -148,45 +147,23 @@ function get_data(label)
 	local timesCalled = wcm.get_horde_numTimesCalled();
 	timesCalled = timesCalled +1;
 	wcm.set_horde_numTimesCalled(timesCalled);
-	-- get base time
-	local time_start = Body.get_time();
-	local recieve_time_start = 0;
-	local send_time_start = 0;
-	local delta_time = 0;
 
-	--setDebugTrue();
-	print("start of Get");
 	mailbox = label;
 	packet = "2," .. mailbox .. ","
-  delta_time = Body.get_time() - time_start;
-  print("BEGINNING OF GET TIME IN SEC: " .. delta_time);
 
 
-	send_time_start = Body.get_time();
 	tcp:send(packet);
-	local delta_time1 = Body.get_time() - send_time_start;
-	print("SEND TIME in SEC: " .. delta_time1);
 
 	local first_four_char,t,p = tcp:receive(4);
 	local table_length = tonumber(first_four_char);
   
-	recieve_time_start = Body.get_time();
 	new_str_data,t,p = tcp:receive(table_length);
-	local delta_time2 = Body.get_time() - recieve_time_start;
-  print("RECIEVE TIME IN SEC: " .. delta_time2);
-
-	-- print out total time taken
-	delta_time = Body.get_time() - time_start;
-  local time_minus_send_recieve = delta_time - delta_time1 - delta_time2;
-
-	print("TIME WITHOUT SEND AND RECIEVE: " .. time_minus_send_recieve);
-
-	print("GET_DATA TIME IN SEC: " .. delta_time);
 
 	if(new_str_data)==1 then
 		return 0;
 	end
-	return unpickle(new_str_data)	
+	--return unpickle(new_str_data)	
+	return marshal.decode(new_str_data)
 end
 ---------------------
 tcp = socket.tcp()
