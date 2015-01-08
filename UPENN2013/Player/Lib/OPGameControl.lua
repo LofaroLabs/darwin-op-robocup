@@ -107,7 +107,7 @@ function update()
   gamePacket = receive();
   count = count + 1;
 
-  if ((Config.game.playerID == 0 or false) and gamePacket and unix.time() - gamePacket.time < 10) then
+  if (gamePacket and unix.time() - gamePacket.time < 10) then
     -- if the game control state has not been set check for the teamIndex 
     teamIndex = 0;
     OtherTeamIndex = 0;
@@ -139,11 +139,8 @@ function update()
       set_team_color(gamePacket.teams[teamIndex].teamColour); 
 --]]
 
---[[
       -- update goal color
       set_team_color(gamePacket.teams[teamIndex].goalColour); 
---]]
-      
       our_score = gamePacket.teams[teamIndex].score;
 
       -- update kickoff team
@@ -177,8 +174,6 @@ function update()
         teamPenalty[p] = gamePacket.teams[teamIndex].player[p].penalty;
       end
     end
-  else
-	gameState = gcm.get_game_state();
   end
 
   gcm.set_game_our_score(our_score);
@@ -212,7 +207,7 @@ function update()
           else --Short press and release 
              -- advance state when button is released
             if (gameState < 3) then
-              --gameState = gameState + 1;
+              gameState = gameState + 1;
             elseif (gameState == 3) then
               -- playing - toggle penalty state
               teamPenalty[playerID] = 1 - teamPenalty[playerID]; 
@@ -228,8 +223,8 @@ function update()
        buttonPressed = 1;
        --Long state press, directly go to set
        if t-t_button_pressed > 2.0 then 
-         --gameState = 2; --Set state
-         --teamPenalty[playerID] = 0;
+         gameState = 2; --Set state
+         teamPenalty[playerID] = 0;
        end
       end
     end
@@ -244,8 +239,7 @@ end
 
 function update_shm()
   -- update the shm values  
-  --gcm.set_game_state(gameState);
-  gcm.set_game_state(3);
+  gcm.set_game_state(gameState);
   gcm.set_game_nplayers(nPlayers);
   gcm.set_game_kickoff(kickoff);
   gcm.set_game_half(half);
@@ -254,7 +248,7 @@ function update_shm()
   gcm.set_game_last_update(lastUpdate);
 
   gcm.set_team_number(teamNumber);
-  gcm.set_team_color(Config.game.teamColor);
+  gcm.set_team_color(teamColor);
 end
 
 function exit()

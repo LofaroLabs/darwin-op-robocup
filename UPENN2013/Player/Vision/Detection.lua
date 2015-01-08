@@ -83,7 +83,8 @@ end
 
 function update()
 
-
+print("top of function update in detection")
+print("stoping");
   
   if( Config.gametype == "stretcher" ) then
     ball = detectEyes.detect(colorOrange);
@@ -145,8 +146,9 @@ function update()
     corner.detect = 0;
   end
 
-
+  setDebugTrue();
   update_shm();
+  setDebugFalse();
 end
 
 function update_shm()

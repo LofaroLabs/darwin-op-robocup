@@ -72,9 +72,15 @@ function detect(color)
 -- ballPropsB = ImageProc.connected_regions(labelB.data, labelB.m, 
 --	labelB.n, HeadTransform.get_horizonB(),color);
 
+setDebugTrue();
+print("Before ballPropsB");
+setDebugFalse();
+
 
   if (#ballPropsB == 0) then return ball; end
-
+  setDebugTrue();
+  print("After ballPropsB");
+  setDebugFalse();
 -- Check max 5 largest blobs 
   for i=1,math.min(20,#ballPropsB) do
     vcm.add_debug_message(string.format(
@@ -113,9 +119,11 @@ function detect(color)
 
       if v[3] > th_height_max then
         --Ball height check
+	setDebugTrue();
+        print("Height check failed")
         vcm.add_debug_message("Height check fail\n");
         check_passed = false;
-
+	setDebugFalse();
       elseif check_for_ground>0 and
         headAngle[2] < th_headAngle then
         -- ground check
@@ -148,8 +156,11 @@ function detect(color)
             whiteBBoxStats = ImageProc.color_stats(Vision.labelA.data,
  	      Vision.labelA.m, Vision.labelA.n, colorWhite, fieldBBox);
             if (whiteBBoxStats.area < th_min_green2) then
-              vcm.add_debug_message("Green check fail\n");
+              setDebugTrue();
+	      print("Green check failed");
+	      vcm.add_debug_message("Green check fail\n");
               check_passed = false;
+	      setDebugFalse();
             end
           end --end white line check
         end --end bottom margin check
@@ -167,9 +178,11 @@ function detect(color)
    	  Config.world.xLineBoundary + field_margin or
           math.abs(ballGlobal[2]) > 
 	  Config.world.yLineBoundary + field_margin then
-
+	  setDebugTrue();
+          print("Field check failed");
           vcm.add_debug_message("Field check fail\n");
           check_passed = false;
+          setDebugFalse();
         end
       end
     end

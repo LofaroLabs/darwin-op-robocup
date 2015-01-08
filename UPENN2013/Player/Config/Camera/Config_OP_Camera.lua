@@ -7,8 +7,9 @@ require('vector')
 camera = {};
 camera.ncamera = 1;
 camera.switchFreq = 0; --unused for OP
-camera.width = 640;--switch back to 640!!!
-camera.height = 480; -- switch back to 480!!
+camera.width = 1280;--switch back to 640!!! ...NO 1280
+camera.height = 720; -- switch back to 480!! ...NO 720
+--doestn look like these are used in OP code
 camera.x_center = 328;
 camera.y_center = 248;
 
@@ -45,12 +46,12 @@ camera.auto_param[5] = {key="exposure, auto priority",val={0}};
 
 
 camera.param = {};
-camera.param[1] = {key='brightness',    val={128}};
-camera.param[2] = {key='contrast',      val={32}};
-camera.param[3] = {key='saturation',    val={42}};
+camera.param[1] = {key='brightness',    val={148}};
+camera.param[2] = {key='contrast',      val={152}};
+camera.param[3] = {key='saturation',    val={165}};
 camera.param[4] = {key='gain',          val={67}};
 -- 3000-9000 produce light spectrums which shift to contain more orange and blue wavelengths,respectively
-camera.param[5] = {key='white balance temperature', val={70}};
+camera.param[5] = {key='white balance temperature', val={2000}};
 camera.param[6] = {key='sharpness',     val={191}};
 camera.param[7] = {key='exposure (absolute)',      val={538}};
 

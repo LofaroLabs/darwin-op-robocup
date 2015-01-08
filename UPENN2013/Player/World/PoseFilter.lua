@@ -156,7 +156,6 @@ end
 function reset_heading()
   if true then --wcm.get_team_connected() == 0 or dont_reset_orientation == 0 or Config.game.role == 0 then
     setDebugTrue();
-	print("!!!!!IM RESETITING HEADING");
     setDebugFalse();
     ap = 2*math.pi*vector.new(util.randu(n));
     wp = vector.zeros(n);

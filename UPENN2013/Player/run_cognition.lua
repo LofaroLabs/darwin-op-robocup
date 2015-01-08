@@ -3,6 +3,7 @@ module(... or "", package.seeall)
 require('cognition')
 
 maxFPS = Config.vision.maxFPS;
+maxFPS = 9; -- was 18
 tperiod = 1.0/maxFPS;
 --print = function()end
 function print() 

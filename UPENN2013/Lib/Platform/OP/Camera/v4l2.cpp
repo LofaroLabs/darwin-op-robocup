@@ -40,7 +40,7 @@ int video_fd = -1;
 int nbuffer = 2;
 //int width = 320;
 //int height = 240;
-char invert = 1;
+char invert = 0; // changed form invert = 1 to chnage the control flow in the void * v4l2_get_buffer function
 int width = 640;
 int height = 480;
 
@@ -249,11 +249,11 @@ int v4l2_uninit_mmap() {
 int v4l2_init(int resolution) {
 
   if( resolution == 1 ){
-    width = 640;
-    height = 480;
+    width = 1280; //640;
+    height = 720; //480;
   } else {
-    width = 320;
-    height = 240;
+    width = 1280; //320;
+    height = 720; //240;
   }
 
   struct v4l2_capability video_cap;
@@ -264,6 +264,7 @@ int v4l2_init(int resolution) {
   if (!(video_cap.capabilities & V4L2_CAP_STREAMING))
     return v4l2_error("No capture streaming");
 
+  
   struct v4l2_format video_fmt;
   video_fmt.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
 
@@ -278,15 +279,45 @@ int v4l2_init(int resolution) {
   fprintf(stdout, "pixel format: %u\n", video_fmt.fmt.pix.pixelformat);
   fprintf(stdout, "pixel field: %u\n", video_fmt.fmt.pix.field);
 
-
   video_fmt.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
   video_fmt.fmt.pix.width       = width;
   video_fmt.fmt.pix.height      = height;
   video_fmt.fmt.pix.pixelformat = V4L2_PIX_FMT_YUYV;
   //video_fmt.fmt.pix.pixelformat = V4L2_PIX_FMT_UYVY; // iSight
   video_fmt.fmt.pix.field       = V4L2_FIELD_ANY;
-  if (xioctl(video_fd, VIDIOC_S_FMT, &video_fmt) == -1)
+  if (xioctl(video_fd, VIDIOC_S_FMT, &video_fmt) == -1){
+    fprintf(stderr, "setter error: %d\n", errno);
+    fprintf(stderr, "setter error but with human readable errno %s\n", strerror(errno));
     v4l2_error("VIDIOC_S_FMT");
+}
+ 
+  struct v4l2_streamparm strparm;
+  strparm.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+
+  if (xioctl(video_fd, VIDIOC_G_PARM, &strparm) == -1){
+    fprintf(stdout, "v4l2_streamparm get error\n");	
+    v4l2_error("VIDIOC_G_PARM"); 
+  }
+  fprintf(stdout, "Current Frame Format\n");
+  fprintf(stdout, "+************+\n");
+  fprintf(stdout, "numerator: %d\n", strparm.parm.capture.timeperframe.numerator);
+  fprintf(stdout, "denominator: %d\n", strparm.parm.capture.timeperframe.denominator); 
+
+  struct v4l2_fmtdesc v4l2_format;
+  v4l2_format.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+
+  if (xioctl(video_fd, VIDIOC_ENUM_FMT, &v4l2_format) == -1){
+    fprintf(stderr, "VIDIOC_ENUM_FMT errno: %s\n", strerror(errno));
+    v4l2_error("VIDIOC_G_FMT");
+  }
+
+  fprintf(stdout, "Video Capture Current Format\n");
+  fprintf(stdout, "+------------+\n");
+  fprintf(stdout, "index: %d\n", v4l2_format.index);
+  fprintf(stdout, "type: %s\n", v4l2_format.type );
+  fprintf(stdout, "flags: %s\n", v4l2_format.flags );
+  fprintf(stdout, "description: %s\n", v4l2_format.description );
+
 
   // Query V4L2 controls:
   int addr_end = 22;
@@ -312,30 +343,6 @@ int v4l2_init(int resolution) {
   //hack
   v4l2_query_ctrl(V4L2_CID_BASE,
       V4L2_CID_BASE+500);
-
-  /*
-  // Flip the video
-  // This control is not supported
-  struct v4l2_queryctrl queryctrl;
-  memset( &queryctrl, 0, sizeof(queryctrl) );
-  queryctrl.id = V4L2_CID_VFLIP;
-  printf("Video FD: %d.  CID: %x\n", video_fd, queryctrl.id);
-  if (0 == ioctl (video_fd, VIDIOC_QUERYCTRL, &queryctrl)) {
-  if (queryctrl.flags & V4L2_CTRL_FLAG_DISABLED)
-  printf("Disabled the VFLIP control...\n");
-  printf ("Control %s\n", queryctrl.name);
-  } else {
-  if (errno == EINVAL)
-  printf("Error in the Input Value...\n");
-  perror ("VIDIOC_QUERYCTRL");
-  exit (EXIT_FAILURE);
-  }
-  struct v4l2_control ctrl;
-  ctrl.id = V4L2_CID_VFLIP;
-  ctrl.value = 1;
-  int ret = xioctl(video_fd, VIDIOC_S_CTRL, &ctrl);
-  printf("Return value on VFLIP: %d\n", ret);
-   */
 
 
   // Initialize memory map
@@ -387,15 +394,17 @@ int v4l2_read_frame() {
     switch (errno) {
       case EAGAIN:
         // Debug line
+	fprintf(stderr, "no frame available errno: %s\n", strerror(errno));
         fprintf(stdout, "no frame available\n");
         return -1;
       case EIO:
         // Could ignore EIO
         // fall through
       default:
-        return v4l2_error("VIDIOC_DQBUF");
+	return v4l2_error("VIDIOC_DQBUF");
     }
   }
+  fprintf(stdout, "frame found\n");
   assert(buf.index < buffers.size());
 
   // process image
@@ -428,11 +437,11 @@ int v4l2_get_height(){
   return height;
 }
 
-void row_swap( uint32_t* row1addr, uint32_t* row2addr, int width ){
+void row_swap( uint8_t* row1addr, uint8_t* row2addr, int width ){
 
   // Swap into a temporary space
-  int copy_amt = (width/2)*sizeof(uint32_t);
-  uint32_t buffer_row[width/2];
+  int copy_amt = (width/2)*sizeof(uint8_t);
+  uint8_t buffer_row[width/2];
 
   memcpy( buffer_row, row1addr, copy_amt ); // Copy 1 into tmp
   memcpy( row1addr, row2addr, copy_amt ); //Copy 2 into 1
@@ -460,14 +469,11 @@ void yuyv_px_swap( uint8_t* ptr1, uint8_t* ptr2 ){
   memcpy( ptr2, tmp_px, 4*sizeof(uint8_t) );
 }
 
+
 uint8_t* yuyv_rotate(uint8_t* frame, int width, int height) {
   int i;
-  //SJ: I maintain a second buffer here
-  //So that we do not directly rewrite on camera buffer address
-
+  
   static uint8_t frame2[640*480*4];
-
-  //printf("WIDTH HEIGHT:%d %d\n",width,height);
 
   int siz = width*height/2;
   for (int i=0;i<siz/2;i++){
@@ -487,28 +493,7 @@ uint8_t* yuyv_rotate(uint8_t* frame, int width, int height) {
   }
   return frame2;
 
-
-/*
-  uint32_t* frame32 = (uint32_t*)frame;
-
-  // Swap top and bottom
-  for(i=0;i<height/2;i++){
-
-    uint32_t* row1addr = frame32+i*width/2;
-    uint32_t* row2addr = frame32+(height-1-i)*width/2;
-    row_swap( row1addr, row2addr, width );
-  
-    // Swap the yuyv byte order for the swapped rows
-    int j;
-    for(j=0;j<width/4;j++){// width/4 since frame32 is width/2 long
-      yuyv_px_swap( (uint8_t*)(row1addr+j), (uint8_t*)(row1addr+width/2-1-j) );
-    }
-    for(j=0;j<width/4;j++){// width/4 since frame32 is width/2 long
-      yuyv_px_swap( (uint8_t*)(row2addr+j), (uint8_t*)(row2addr+width/2-1-j) );
-    }
-
-  }
-*/
-
 }
+
+
 

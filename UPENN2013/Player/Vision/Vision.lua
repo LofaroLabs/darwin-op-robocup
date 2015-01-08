@@ -22,7 +22,10 @@ if use_gps_only==0 then
   require('ColorLUT'); --This will turn on camera and slow things down!
   require('Camera');
   require('Detection');
-  
+ 
+
+  --macthces the resolution set by the v4l2.ccp init function /dev/merc/darwin/UPENN2013/Lib/Platform/OP/Camera/v4l2.cpp 
+  --with the resolution hardcoded in the Player/Config/Camera/Config_OP_Camera.lua file  
   if (Config.camera.width ~= Camera.get_width()
       or Config.camera.height ~= Camera.get_height()) then
     print('Camera width/height mismatch');
