@@ -284,7 +284,7 @@ int v4l2_init(int resolution) {
   video_fmt.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
   video_fmt.fmt.pix.width       = width;
   video_fmt.fmt.pix.height      = height;
-  video_fmt.fmt.pix.pixelformat = V4L2_PIX_FMT_H264;
+  video_fmt.fmt.pix.pixelformat = V4L2_PIX_FMT_H264; //H264 from YUYV
   //video_fmt.fmt.pix.pixelformat = V4L2_PIX_FMT_UYVY; // iSight
   video_fmt.fmt.pix.field       = V4L2_FIELD_ANY;
   if (xioctl(video_fd, VIDIOC_S_FMT, &video_fmt) == -1){
