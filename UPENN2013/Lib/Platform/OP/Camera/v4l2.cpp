@@ -249,8 +249,8 @@ int v4l2_uninit_mmap() {
 int v4l2_init(int resolution) {
 
   if( resolution == 1 ){
-    width = 1280; //640;
-    height = 720; //480;
+    width = 1920; //640;
+    height = 1080; //480;
   } else {
     width = 1280; //320;
     height = 720; //240;
@@ -273,16 +273,18 @@ int v4l2_init(int resolution) {
     return v4l2_error("VIDIOC_G_FMT");
 
   fprintf(stdout, "Current Format\n");
-  fprintf(stdout, "+------------+\n");
-  fprintf(stdout, "width: %u\n", video_fmt.fmt.pix.width);
-  fprintf(stdout, "height: %u\n", video_fmt.fmt.pix.height);
-  fprintf(stdout, "pixel format: %u\n", video_fmt.fmt.pix.pixelformat);
-  fprintf(stdout, "pixel field: %u\n", video_fmt.fmt.pix.field);
+  fprintf(stdout, "   width              : %u\n", video_fmt.fmt.pix.width);
+  fprintf(stdout, "   height             : %u\n", video_fmt.fmt.pix.height);
+  fprintf(stdout, "   pixel format       : %u\n", video_fmt.fmt.pix.pixelformat);
+  fprintf(stdout, "   pixel format       : %c%c%c%c\n",
+                video_fmt.fmt.pix.pixelformat & 0xFF, (video_fmt.fmt.pix.pixelformat >> 8) & 0xFF,
+                (video_fmt.fmt.pix.pixelformat >> 16) & 0xFF, (video_fmt.fmt.pix.pixelformat >> 24) & 0xFF);
+  fprintf(stdout, "   pixel field        : %u\n", video_fmt.fmt.pix.field);
 
   video_fmt.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
   video_fmt.fmt.pix.width       = width;
   video_fmt.fmt.pix.height      = height;
-  video_fmt.fmt.pix.pixelformat = V4L2_PIX_FMT_YUYV;
+  video_fmt.fmt.pix.pixelformat = V4L2_PIX_FMT_H264;
   //video_fmt.fmt.pix.pixelformat = V4L2_PIX_FMT_UYVY; // iSight
   video_fmt.fmt.pix.field       = V4L2_FIELD_ANY;
   if (xioctl(video_fd, VIDIOC_S_FMT, &video_fmt) == -1){
@@ -290,7 +292,19 @@ int v4l2_init(int resolution) {
     fprintf(stderr, "setter error but with human readable errno %s\n", strerror(errno));
     v4l2_error("VIDIOC_S_FMT");
 }
- 
+
+
+
+  fprintf(stdout, "Current Format after setting\n");
+  fprintf(stdout, "   width              : %u\n", video_fmt.fmt.pix.width);
+  fprintf(stdout, "   height             : %u\n", video_fmt.fmt.pix.height);
+  fprintf(stdout, "   pixel format       : %u\n", video_fmt.fmt.pix.pixelformat);
+  fprintf(stdout, "   pixel format       : %c%c%c%c\n",
+                video_fmt.fmt.pix.pixelformat & 0xFF, (video_fmt.fmt.pix.pixelformat >> 8) & 0xFF,
+                (video_fmt.fmt.pix.pixelformat >> 16) & 0xFF, (video_fmt.fmt.pix.pixelformat >> 24) & 0xFF);
+  fprintf(stdout, "   pixel field        : %u\n", video_fmt.fmt.pix.field);
+
+
   struct v4l2_streamparm strparm;
   strparm.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
 
@@ -298,25 +312,37 @@ int v4l2_init(int resolution) {
     fprintf(stdout, "v4l2_streamparm get error\n");	
     v4l2_error("VIDIOC_G_PARM"); 
   }
-  fprintf(stdout, "Current Frame Format\n");
-  fprintf(stdout, "+************+\n");
-  fprintf(stdout, "numerator: %d\n", strparm.parm.capture.timeperframe.numerator);
-  fprintf(stdout, "denominator: %d\n", strparm.parm.capture.timeperframe.denominator); 
+  fprintf(stdout, "Frame Interval in Seconds\n");
+  fprintf(stdout, "   numerator          : %d\n", strparm.parm.capture.timeperframe.numerator);
+  fprintf(stdout, "   denominator        : %d\n", strparm.parm.capture.timeperframe.denominator); 
+  fprintf(stdout, "   fps                : %d\n", strparm.parm.capture.timeperframe.denominator/strparm.parm.capture.timeperframe.numerator);  
 
-  struct v4l2_fmtdesc v4l2_format;
-  v4l2_format.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+  fprintf(stdout, "VIDEO CAPTURE\n");
 
-  if (xioctl(video_fd, VIDIOC_ENUM_FMT, &v4l2_format) == -1){
-    fprintf(stderr, "VIDIOC_ENUM_FMT errno: %s\n", strerror(errno));
-    v4l2_error("VIDIOC_G_FMT");
-  }
+    struct v4l2_fmtdesc vid_fmtdesc;    // Enumerated video formats supported by the device	
+    memset(&vid_fmtdesc, 0, sizeof(vid_fmtdesc));
+    char *buf_types[] = {"VIDEO_CAPTURE","VIDEO_OUTPUT", "VIDEO_OVERLAY"};
+    char *flags[] = {"uncompressed", "compressed"};
+    for (int i = 0;; i++) {
+        memset(&vid_fmtdesc, 0, sizeof(vid_fmtdesc));
+        vid_fmtdesc.index = i;
+	vid_fmtdesc.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+        /* Send the VIDIOC_ENUM_FM ioctl and print the results */
+        if (ioctl(video_fd, VIDIOC_ENUM_FMT, &vid_fmtdesc ) == -1)
+            break;
+        /* We got a video format/codec back */
+ 	fprintf(stdout, " VIDIOC_ENUM_FMT(%d, %s)\n", vid_fmtdesc.index, buf_types[vid_fmtdesc.type-1]);
+        fprintf(stdout, "   type               : %s\n", buf_types[vid_fmtdesc.type-1]);
+        fprintf(stdout, "   flags              : %s\n", flags[vid_fmtdesc.flags]);
+        fprintf(stdout, "   description        : %s\n", vid_fmtdesc.description);
+        /* Convert the pixelformat attributes from FourCC into 'human readable' format*/
+        fprintf(stdout, "   pixelformat        : %c%c%c%c\n",
+                     vid_fmtdesc.pixelformat & 0xFF, (vid_fmtdesc.pixelformat >> 8) & 0xFF,
+                    (vid_fmtdesc.pixelformat >> 16) & 0xFF, (vid_fmtdesc.pixelformat >> 24) & 0xFF);
+    }/* End of get_supported_video_formats() */
 
-  fprintf(stdout, "Video Capture Current Format\n");
-  fprintf(stdout, "+------------+\n");
-  fprintf(stdout, "index: %d\n", v4l2_format.index);
-  fprintf(stdout, "type: %s\n", v4l2_format.type );
-  fprintf(stdout, "flags: %s\n", v4l2_format.flags );
-  fprintf(stdout, "description: %s\n", v4l2_format.description );
+		
+		
 
 
   // Query V4L2 controls:

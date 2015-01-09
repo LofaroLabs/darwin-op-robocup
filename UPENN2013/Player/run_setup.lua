@@ -248,7 +248,7 @@ function process_keyinput_test_walk(byte)
     print(string.format("footXComp Orig: %.3f Now: %.3f\n",
       footXComp0, footXComp));
     mcm.set_walk_footXComp(footXComp);
-
+	
   -- kickXComp calibration
   elseif byte==string.byte("[") then
     kickXComp = kickXComp - 0.005; 
@@ -260,6 +260,8 @@ function process_keyinput_test_walk(byte)
     print(string.format("kickXComp Orig: %.3f Now: %.3f\n",
       kickXComp0, kickXComp));
     mcm.set_walk_kickXComp(kickXComp);
+  elseif byte==string.byte('z') then
+    print("ball location " .. wcm.get_ball_x() .. " " .. wcm.get_ball_y());
   end
 end
 
