@@ -150,6 +150,7 @@ function isBallLost()
 	elseif(Body.get_time() - lastTimeFound > 5) then
 		wcm.set_horde_ballLost(1);
 	end
+	return wcm.get_horde_ballLost();
 	--print("got out of ball lost");
 end
 
@@ -168,7 +169,7 @@ function setVelocity(x,y,a)
 	action.args.x = x;
 	action.args.y = y;
 	action.args.a = a;
-	print("velocity is " .. x .. ", " .. y .. ", " .. a);
+--	print("velocity is " .. x .. ", " .. y .. ", " .. a);
 	wcm.set_horde_walkVelocity(vector.new({x,y,a}));
 	vel = wcm.get_horde_walkVelocity();
 	--print("velocity is " .. vel[1]

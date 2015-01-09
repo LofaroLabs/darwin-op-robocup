@@ -678,7 +678,12 @@ cal["darwin56"].servoBias={20,-10,32,0,-10,-15,-9,4,-44,0,35,0,};
 cal["darwin56"].footXComp=0.000;
 cal["darwin56"].kickXComp=0.000;
 
--- Updated date: Wed Jul 23 06:20:45 2014
-cal["darwin56"].servoBias={20,-10,45,0,-10,-15,-9,4,-44,0,15,0,};
-cal["darwin56"].footXComp=0.000;
-cal["darwin56"].kickXComp=0.000;
+-- Updated date: Wed Jul 23 06:34:01 2014
+cal["darwin55"].servoBias={-2,-31,40,0,0,-4,-63,-30,-20,0,0,5,};
+cal["darwin55"].footXComp=0.000;
+cal["darwin55"].kickXComp=0.000;
+
+-- Updated date: Wed Jul 23 07:17:39 2014
+cal["darwin55"].servoBias={25,-30,40,0,-10,-17,-58,-6,-7,0,0,15,};
+cal["darwin55"].footXComp=0.000;
+cal["darwin55"].kickXComp=0.000;
