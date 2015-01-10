@@ -4,13 +4,13 @@
   Author: Daniel D. Lee <ddlee@seas.upenn.edu>, 05/10
   	: Stephen McGill 10/10
 */
-
+//#include "H264_Decoder.h"
 #include <string.h>
 #include "timeScalar.h"
 #include "v4l2.h"
 #include <lua.hpp>
 #include <unistd.h>
-
+#include <errno.h>
 typedef struct {
   int count;
   int select;
@@ -47,14 +47,17 @@ static int lua_get_width(lua_State *L){
 static int lua_get_image(lua_State *L) {
   static int count = 0;
   int buf_num = v4l2_read_frame();
+  printf("DELETE THIS PRINT\n");
   if( buf_num < 0 ){
-    //printf("RAGE!!!");
+    fprintf(stderr, "RAGE!!! %s \n", strerror(errno));
     lua_pushnumber(L,buf_num);
     return 1;
   }
   //printf("!@#$ YOU\n");
-  uint32* image = (uint32*)v4l2_get_buffer(buf_num, NULL);
-
+  int size; 
+  uint32* image = (uint32*)v4l2_get_buffer(buf_num,NULL);
+  //int result = decodeFrame(image, size);  
+  
   // Increment the count
   count++;
 
@@ -62,16 +65,6 @@ static int lua_get_image(lua_State *L) {
   cameraStatus->count = count;
   cameraStatus->time = time_scalar();
   cameraStatus->select = 0;
-/*
-  std::pair<double *, std::size_t> ret;
-  ret = sensorShm->find<double>("position");
-  double *p = ret.first;
-  if (p != NULL) {
-    for (int ji = 0; ji < 20; ji++) {
-      cameraStatus->joint[ji] = p[ji];
-    }
-  }
-*/
   // Zeros for now
   for (int ji = 0; ji < 20; ji++) {
     cameraStatus->joint[ji] = 0;
@@ -91,78 +84,37 @@ static void turn_on_camera(){
 			// Allocate our camera status
       cameraStatus = (CAMERA_STATUS *)malloc(sizeof(CAMERA_STATUS));
       /// TODO: free this
+    }else{
+	fprintf(stderr, " Failed to turn on camera %s\n", strerror(errno));
     }
+    
   }
 }
 static void lua_take_save_images(uint32* pic) {
-   	int imageSize = v4l2_get_width()*v4l2_get_height()*4;
-	printf("Image width: %d height: %d\n",v4l2_get_width(), v4l2_get_height());
+   	//int imageSize = v4l2_get_width()*v4l2_get_height()*4;
+	fprintf(stdout, "Image width: %d height: %d\n",v4l2_get_width(), v4l2_get_height());
 	static int count = 0;
 	int numPics = 10;
-	//uint32 * pics[numPics];
+	size_t imageSize = 0;	
     	bool done = false;
 	while(!done) {
-		int buf_num = v4l2_read_frame();
+		int buf_num = v4l2_read_frame(); //read_frame returns v4l2_buffer.index, which is the buffer number
+		fprintf(stdout, "buf_num = %d\n", buf_num);  //remove
 		if( buf_num < 0 ){
-            	    printf("RAGE!!!");
+            	    fprintf(stdout, "Currently reading frame\n");
 		    done = false;            
        		}else{
 		    done = true;
-              	    printf("\n was success\n");
-                    uint32* image =(uint32*)v4l2_get_buffer(buf_num, NULL);
-		    memcpy(pic,image,imageSize);
-	//       	    for(int i = 0; i<imageSize; i++){
-//			printf("my pixel is: %d\n", image[i]); 	
-//		    }
-		    printf("\n copy success\n");
+              	    fprintf(stdout, "Successfully read the frame\n");
+		    uint32* image =(uint32*)v4l2_get_buffer(buf_num, &imageSize);
+		    fprintf(stdout, "imageSize = %d\n", imageSize);
+		    pic = (uint32*)malloc(imageSize);
+		    memcpy(pic, image, imageSize);
+		    fprintf(stderr, "memcpy err\n");
+		    //memcpy(pic,image,imageSize);
+		    fprintf(stdout, "copy success\n");
         	}
 	}
-         //sleep(1);
-	/*for (count = 0; count < numPics; count++) {
-		printf("taking image #%d\n",count);
-        int buf_num = v4l2_read_frame();
-  		if( buf_num < 0 ){
-    		printf("RAGE!!!");
-    		count--;
-			//ilua_pushnumber(L,buf_num);
-    		//r;
-  		}else{
-			printf("\n was success\n");
-			pics[count] = (uint32*)v4l2_get_buffer(buf_num, NULL);
-		}
-		sleep(1);
-	}*/
-//	return pics;
-/*	int i = 0;
-	printf("saving images\n");
-	int width=v4l2_get_width();
-	int height=v4l2_get_height();
-	for (i = 0; i < numPics; i++){
-		printf("on image %d\n", i);
-        	FILE *ptr_myfile;
-		char path[100];
-		sprintf(path, "/home/darwin/%dtest.ppm", i);
-		const char* cpath = path;
-        	ptr_myfile=fopen(cpath, "wb");
-		printf("Opened image file %dtest.ppm\n", i);
-	//	fprintf(ptr_myfile, "P6\n%d %d\n255\n", width, height);
-		int j,k;
- 		for (j = 0; j < height; ++j){
- 	        	for (k = 0; k < width; ++k){
-  				static unsigned char color[3];
-				uint32 pixel=pics[i][j*width+k];
-  				color[0] = (unsigned char)(pixel&0xFF00>>8);  /*  Y */
-  /*				color[1] = (unsigned char)(pixel&0xFF0000>>16);  /*  U */
-  				//color[2] = (unsigned char)(pixel&0xFF);  /* V */
-/*		 		fwrite(color, 1, 3, ptr_myfile);
-  			}
-  		}//fwrite(pics[i], 4, imageSize, ptr_myfile);
-		printf("Wrote file");
-		fclose(ptr_myfile);
-		printf("closed file");
-        }
-
-*/
         // Once our get_image returns, set the camera status
         cameraStatus->count = count;
         cameraStatus->time = time_scalar();
@@ -173,7 +125,6 @@ static void lua_take_save_images(uint32* pic) {
                 cameraStatus->joint[ji] = 0;
         }
 	return;
-        //return pics;
 }
 
 static int lua_save_image(lua_State *L) {

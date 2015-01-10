@@ -284,7 +284,7 @@ int v4l2_init(int resolution) {
   video_fmt.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
   video_fmt.fmt.pix.width       = width;
   video_fmt.fmt.pix.height      = height;
-  video_fmt.fmt.pix.pixelformat = V4L2_PIX_FMT_H264; //H264 from YUYV
+  video_fmt.fmt.pix.pixelformat = V4L2_PIX_FMT_YUYV; //H264 from YUYV
   //video_fmt.fmt.pix.pixelformat = V4L2_PIX_FMT_UYVY; // iSight
   video_fmt.fmt.pix.field       = V4L2_FIELD_ANY;
   if (xioctl(video_fd, VIDIOC_S_FMT, &video_fmt) == -1){
@@ -373,6 +373,7 @@ int v4l2_init(int resolution) {
 
   // Initialize memory map
   v4l2_init_mmap();
+  fprintf(stdout, "memory map completed\n");  
 
   return 0;
 }
@@ -403,12 +404,13 @@ int v4l2_stream_off() {
 }
 
 void * v4l2_get_buffer(int index, size_t *length) {
-  if (length != NULL)
-    *length = buffers[index].length;
+  if (length != NULL) //hardcoded to be null
+     *length = buffers[index].length;
   if( invert==1 ) {
     return (void *) 
 	yuyv_rotate( (uint8_t*)buffers[index].start, width, height );
   }
+  fprintf(stdout, "buffers[%d].length = %d \n", index, buffers[index].length);
   return buffers[index].start;
 }
 
@@ -444,7 +446,6 @@ int v4l2_read_frame() {
     // Sleep a little and try again?
     return v4l2_error("VIDIOC_QBUF");
   }
-
   return buf.index;
 }
 

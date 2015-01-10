@@ -161,7 +161,7 @@ end
 
 
 function update()
-
+  print("skjhfkjshdfkjhdsfkjshdfiuwheuhfuhfiuhfsiuhsdfiushfdkjhsdfkjhsdfkjhsdkfjhskdfjhsdfkjhsdkfjh");
   --If we are only using gps info, skip whole vision update 	
   if use_gps_only>0 then
     update_gps_only();
@@ -182,9 +182,9 @@ function update()
 
   local status = Camera.get_camera_status();
   if status.count ~= lastImageCount[status.select+1] then
-    lastImageCount[status.select+1] = status.count;
+    	lastImageCount[status.select+1] = status.count;
   else
-    return false; 
+        return false; 
   end
 
 --SJ: Camera image keeps changing

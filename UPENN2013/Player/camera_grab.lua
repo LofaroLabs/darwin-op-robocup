@@ -127,8 +127,8 @@ function update()
   --If we are only using gps info, skip whole vision update 	
   -- reload color lut
   -- get image from camera
+  print("ya LOL we're using this");
   camera.image = Camera.get_image();
-
   local status = Camera.get_camera_status();
   if status.count ~= lastImageCount[status.select+1] then
     lastImageCount[status.select+1] = status.count;
