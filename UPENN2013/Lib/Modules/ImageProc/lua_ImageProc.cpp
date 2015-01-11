@@ -384,7 +384,7 @@ static int lua_tilted_block_bitor(lua_State *L) {
   return 1;
 }
 
-static void lua_circularHough(lua_State *L){
+static int lua_circularHough(lua_State *L){
   void* image = (void *) lua_touserdata(L, 1); //uint8_t
   int width =  luaL_checkint(L, 2);
   int height = luaL_checkint(L, 3);
