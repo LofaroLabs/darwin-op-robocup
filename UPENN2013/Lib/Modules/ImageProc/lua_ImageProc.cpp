@@ -384,6 +384,13 @@ static int lua_tilted_block_bitor(lua_State *L) {
   return 1;
 }
 
+static void lua_circularHough(lua_State *L){
+  void* image = (void *) lua_touserdata(L, 1); //uint8_t
+  int width =  luaL_checkint(L, 2);
+  int height = luaL_checkint(L, 3);
+
+}
+
 static const struct luaL_Reg imageProc_lib [] = {
   {"label_to_mask", lua_label_to_mask},
   {"yuyv_mask_to_lut", lua_yuyv_mask_to_lut},
@@ -408,6 +415,7 @@ static const struct luaL_Reg imageProc_lib [] = {
   {"robots", lua_robots},
   {"subsample_yuyv2yuv", lua_subsample_yuyv2yuv},
   {"subsample_yuyv2yuyv", lua_subsample_yuyv2yuyv},
+  {"circularHough", lua_circularHough},
   {NULL, NULL}
 };
 

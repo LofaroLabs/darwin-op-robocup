@@ -47,13 +47,10 @@ static int lua_get_width(lua_State *L){
 static int lua_get_image(lua_State *L) {
   static int count = 0;
   int buf_num = v4l2_read_frame();
-  printf("DELETE THIS PRINT\n");
   if( buf_num < 0 ){
-    fprintf(stderr, "RAGE!!! %s \n", strerror(errno));
     lua_pushnumber(L,buf_num);
     return 1;
   }
-  //printf("!@#$ YOU\n");
   int size; 
   uint32* image = (uint32*)v4l2_get_buffer(buf_num,NULL);
   //int result = decodeFrame(image, size);  
@@ -90,28 +87,39 @@ static void turn_on_camera(){
     
   }
 }
-static void lua_take_save_images(uint32* pic) {
+
+void save_image(uint32* L, int imageSize) {
+  //start copy
+  FILE *ptr_myfile;
+  ptr_myfile=fopen("/home/darwin/dev/merc/darwin/UPENN2013/Player/Images/debugimage.png","wb");
+  const char* my_image = (char *)L;
+  if((fwrite(&my_image, sizeof(char), imageSize, ptr_myfile)) < 0)
+       fprintf(stderr, "fwrite failure: %s\n", strerror(errno));
+  fclose(ptr_myfile); 
+}
+
+static int lua_take_save_images(uint32* pic) {
    	//int imageSize = v4l2_get_width()*v4l2_get_height()*4;
-	fprintf(stdout, "Image width: %d height: %d\n",v4l2_get_width(), v4l2_get_height());
 	static int count = 0;
 	int numPics = 10;
 	size_t imageSize = 0;	
     	bool done = false;
+	int counter = 0;
 	while(!done) {
-		int buf_num = v4l2_read_frame(); //read_frame returns v4l2_buffer.index, which is the buffer number
-		fprintf(stdout, "buf_num = %d\n", buf_num);  //remove
+		int buf_num = v4l2_read_frame(); 
 		if( buf_num < 0 ){
             	    fprintf(stdout, "Currently reading frame\n");
-		    done = false;            
+		    done = false;
        		}else{
 		    done = true;
               	    fprintf(stdout, "Successfully read the frame\n");
 		    uint32* image =(uint32*)v4l2_get_buffer(buf_num, &imageSize);
-		    fprintf(stdout, "imageSize = %d\n", imageSize);
-		    pic = (uint32*)malloc(imageSize);
+		    if(counter == 0){			    
+			save_image(image, imageSize);
+                	fprintf(stdout, "Saved the image to a file\n");
+		        counter++;
+		    }
 		    memcpy(pic, image, imageSize);
-		    fprintf(stderr, "memcpy err\n");
-		    //memcpy(pic,image,imageSize);
 		    fprintf(stdout, "copy success\n");
         	}
 	}
@@ -124,8 +132,9 @@ static void lua_take_save_images(uint32* pic) {
         for (int ji = 0; ji < 20; ji++) {
                 cameraStatus->joint[ji] = 0;
         }
-	return;
+	return 1;
 }
+
 
 static int lua_save_image(lua_State *L) {
   static int count = 0;

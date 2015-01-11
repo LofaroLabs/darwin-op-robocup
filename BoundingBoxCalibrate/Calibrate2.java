@@ -179,7 +179,6 @@ public class Calibrate2 extends JFrame
     
     final static int[] lookupValuesIn = new int[]
     { OTHER, ORANGE, YELLOW, -1, MAGENTA, -1, -1, -1, GREEN, -1, -1, -1, -1, -1, -1, -1, WHITE, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, CYAN};
-
     public void loadData(InputStream in) throws IOException
         {
         for(int x = 0; x < data.length; x++)

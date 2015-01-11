@@ -4,8 +4,8 @@
 #include <fcntl.h>
 #include "lua_OPCam.cpp"
 
-#define WIDTH (640)
-#define HEIGHT (480)
+#define WIDTH (1920)
+#define HEIGHT (1080)
 
 #define COMMAND_PICTURE (0)
 #define COMMAND_LOOKUP (1)
@@ -15,7 +15,7 @@
 
 int main()
 	{
-	uint32 bufferout[WIDTH * HEIGHT];
+	char* bufferout = (char*)malloc(2*WIDTH * HEIGHT);
 	char bufferin[LOOKUP_TABLE_SIZE];
 	
 	server_type = SERVER_TYPE_SERIAL;
@@ -36,8 +36,6 @@ int main()
 		readn(fd, bufferin, 1);
 		if (bufferin[0] == COMMAND_PICTURE)
 			{	
-			lua_take_save_images(bufferout);	
-		    	lua_take_save_images(bufferout);	
 			lua_take_save_images(bufferout);	
 			writen(fd, (char*)bufferout, WIDTH * HEIGHT*2); // had to half to make faster
 			}

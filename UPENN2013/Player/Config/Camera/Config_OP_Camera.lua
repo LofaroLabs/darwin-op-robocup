@@ -7,8 +7,8 @@ require('vector')
 camera = {};
 camera.ncamera = 1;
 camera.switchFreq = 0; --unused for OP
-camera.width = 1920;--switch back to 640!!! ...NO 1280
-camera.height = 1080; -- switch back to 480!! ...NO 720
+camera.width = 640;--switch back to 640!!! ...NO 1280
+camera.height = 480; -- switch back to 480!! ...NO 720
 --doestn look like these are used in OP code
 camera.x_center = 328;
 camera.y_center = 248;

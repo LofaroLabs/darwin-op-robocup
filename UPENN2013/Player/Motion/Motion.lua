@@ -27,7 +27,7 @@ if Config.largestep_enable then
 end
 
 sit_disable = Config.sit_disable or 0;
-
+sit_disable = 1;
 if sit_disable==0 then --For smaller robots
   fallAngle = Config.fallAngle or 30*math.pi/180;
 

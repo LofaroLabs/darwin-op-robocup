@@ -1,5 +1,6 @@
 module(... or "",package.seeall)
 cwd = os.getenv('PWD')
+
 require('init')
 require('Config');
 require('unix')
@@ -179,12 +180,13 @@ function update()
   end
   count = count + 1;
   tstart = unix.time();
-  
+
   if Config.game.role == 0 then
 	updateGoalieFlip()
   end
   
   -- update vision 
+  
   imageProcessed = Vision.update();
 
   World.update_odometry();

@@ -1,5 +1,5 @@
 module(..., package.seeall);
-
+local dbg = require('debugger')
 require('carray');
 require('vector');
 require('Config');
@@ -167,7 +167,7 @@ function update()
     update_gps_only();
     return true;
   end
-
+  
   -- reload color lut
   if (vcm.get_camera_reload_LUT() == 1) then
     print('reload color LUT')
@@ -193,10 +193,10 @@ function update()
 
   -- Add timer measurements
   count = count + 1;
-
+  
   headAngles = Body.get_head_position();
   HeadTransform.update(status.select, headAngles);
-
+ 
   if camera.image == -2 then
     print "Re-enqueuing of a buffer error...";
     exit()
@@ -209,21 +209,21 @@ function update()
                                         camera.height,
                                         Config.vision.scaleA);
 
+  -- for initial testing, call your c function to do circular hough transform here
+  --ImageProc.circularHough(labelA.data,camera.width,camera.height);
+  
   -- determine total number of pixels of each color/label
   colorCount = ImageProc.color_count(labelA.data, labelA.npixel);
 
   -- bit-or the segmented image
   labelB.data = ImageProc.block_bitor(labelA.data, labelA.m, labelA.n, scaleB, scaleB);
-
   update_shm(status, headAngles)
-
   vcm.refresh_debug_message();
-
   Detection.update();
   vcm.refresh_debug_message();
-
   -- switch camera
   local cmd = vcm.get_camera_command();
+  --dbg();
   if (cmd == -1) then
     if (count % camera.switchFreq == 0) then
        Camera.select_camera(1-Camera.get_select()); 

@@ -86,66 +86,8 @@ function update()
 print("top of function update in detection")
 print("stoping");
   
-  if( Config.gametype == "stretcher" ) then
-    ball = detectEyes.detect(colorOrange);
-    return;
-  end
-
-  -- ball detector
-  tstart = unix.time();
-  ball = detectBall.detect(colorOrange);
-  --print("Ball type is");
-  --print(type(ball));
-  Tball = unix.time() - tstart;
-  
-
-  -- goal detector
-  
-  if use_point_goal == 1 then
-    ballYellow = detectBall.detect(colorYellow);
-  else
-    --print("@@@manually setting yellow detect to false because use_point_goal is false")
-    goalYellow.detect=0;
-    tstart = unix.time();
-    goalYellow = detectGoal.detect(colorYellow);
-    TgoalYellow = unix.time() - tstart;
-
-  end
-
-  -- line detection
-  
-  if enableLine == 1 then
-    tstart = unix.time();
-    line = detectLine.detect();
-    Tline = unix.time() - tstart;
-    if enableCorner == 1 then
-      corner = detectCorner.detect(line);
-      Tcorner = unix.time() - Tline - tstart; 
-    end
-  end
-
-  -- spot detection
-  if enableSpot == 1 then
-     spot = detectSpot.detect();
-  end
-
-  -- Global robot detection
-  if enableRobot ==1 then
-    tstart = unix.time();
-    detectRobot.detect();
-    Trobot = unix.time() - tstart;
-  end
-
-
-  if false then --vcm.get_vision_enable() ==0 then
-    print("@@@Vision enable is false, so therefore you dont detect anything");
-    ball.detect = 0;
-    ballYellow.detect=0; 
-    goalYellow.detect = 0;
-    line.detect = 0;
-    corner.detect = 0;
-  end
-
+ 
+    
   setDebugTrue();
   update_shm();
   setDebugFalse();

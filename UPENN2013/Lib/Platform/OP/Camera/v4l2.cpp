@@ -80,7 +80,7 @@ int v4l2_error(const char *error_msg) {
   int x = errno;
   fprintf(stderr, "Err: %d\n", x);
   fprintf(stderr, "V4L2 error: %s\n", error_msg);
-  system("/home/darwin/dev/merc/darwin/UPENN2013/Player/CameraDied.sh");
+  //system("/home/darwin/dev/merc/darwin/UPENN2013/Player/CameraDied.sh");
   return -2;
 }
 
@@ -249,8 +249,8 @@ int v4l2_uninit_mmap() {
 int v4l2_init(int resolution) {
 
   if( resolution == 1 ){
-    width = 1920; //640;
-    height = 1080; //480;
+    width = 640;//1920; //640;
+    height = 480;//1080; //480;
   } else {
     width = 1280; //320;
     height = 720; //240;
@@ -321,8 +321,8 @@ int v4l2_init(int resolution) {
 
     struct v4l2_fmtdesc vid_fmtdesc;    // Enumerated video formats supported by the device	
     memset(&vid_fmtdesc, 0, sizeof(vid_fmtdesc));
-    char *buf_types[] = {"VIDEO_CAPTURE","VIDEO_OUTPUT", "VIDEO_OVERLAY"};
-    char *flags[] = {"uncompressed", "compressed"};
+    char const *buf_types[] = {"VIDEO_CAPTURE","VIDEO_OUTPUT", "VIDEO_OVERLAY"};
+    char const *flags[] = {"uncompressed", "compressed"};
     for (int i = 0;; i++) {
         memset(&vid_fmtdesc, 0, sizeof(vid_fmtdesc));
         vid_fmtdesc.index = i;
@@ -410,7 +410,6 @@ void * v4l2_get_buffer(int index, size_t *length) {
     return (void *) 
 	yuyv_rotate( (uint8_t*)buffers[index].start, width, height );
   }
-  fprintf(stdout, "buffers[%d].length = %d \n", index, buffers[index].length);
   return buffers[index].start;
 }
 
@@ -423,7 +422,6 @@ int v4l2_read_frame() {
       case EAGAIN:
         // Debug line
 	fprintf(stderr, "no frame available errno: %s\n", strerror(errno));
-        fprintf(stdout, "no frame available\n");
         return -1;
       case EIO:
         // Could ignore EIO
@@ -473,9 +471,7 @@ void row_swap( uint8_t* row1addr, uint8_t* row2addr, int width ){
   memcpy( buffer_row, row1addr, copy_amt ); // Copy 1 into tmp
   memcpy( row1addr, row2addr, copy_amt ); //Copy 2 into 1
   memcpy( row2addr, buffer_row, copy_amt ); // Copy tmp into 2
-    
 }
-
 
 void yuyv_px_swap( uint8_t* ptr1, uint8_t* ptr2 ){
   uint8_t tmp_px[4]; // two pixels here

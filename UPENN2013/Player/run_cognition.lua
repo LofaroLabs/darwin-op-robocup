@@ -1,9 +1,9 @@
 module(... or "", package.seeall)
-
+local dbg = require('debugger')
 require('cognition')
 
 maxFPS = Config.vision.maxFPS;
-maxFPS = 30; -- was 18
+maxFPS = 18; -- was 18
 tperiod = 1.0/maxFPS;
 --print = function()end
 function print() 
@@ -11,12 +11,16 @@ end
 --setDebugFalse();
 cognition.entry();
 vcm.set_vision_enable(vector.ones(1));
+number = 0;
 while (true) do
-  
-  --print("!!@@ hi");
+  number = number +1;
+  setDebugTrue(); 
+  print("number is " .. number);
+  setDebugFalse(); 
+--print("!!@@ hi");
   
   tstart = unix.time();
-
+  --dbg();
   cognition.update();
 
   tloop = unix.time() - tstart;
