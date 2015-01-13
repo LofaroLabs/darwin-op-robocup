@@ -210,7 +210,7 @@ function update()
                                         Config.vision.scaleA);
 
   -- for initial testing, call your c function to do circular hough transform here
-  --ImageProc.circularHough(labelA.data,camera.width,camera.height);
+  ImageProc.circularHough(labelA.data, camera.width, camera.height);
   
   -- determine total number of pixels of each color/label
   colorCount = ImageProc.color_count(labelA.data, labelA.npixel);
