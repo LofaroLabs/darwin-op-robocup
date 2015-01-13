@@ -29,9 +29,9 @@ import java.net.*;
 public class DisplayLabeledImage extends JFrame
     {
     /** Width of the BufferedImages being displayed. */
-    public static final int IMAGE_WIDTH = 640;
+    public static final int IMAGE_WIDTH = 1920;
     /** Height of the BufferedImages being displayed. */
-    public static final int IMAGE_HEIGHT = 480;
+    public static final int IMAGE_HEIGHT = 1080;
     /** The dimensionality for Y, Cb, and Cr respectively (thus a bit-depth of 6 each, totalling 18) */
     public static final int NUM_COLORS = 64;  // 2^COLOR_DEPTH
 
@@ -464,25 +464,27 @@ public class DisplayLabeledImage extends JFrame
                 }
         image = newImage;
         }
+    int totalGreen = 0;
     public Color labelToColor(int color){
 		switch(color)
                     {
-                    case OTHER:
-                        return new Color(0,0,0);
-                    case ORANGE:
-                	return C_ORANGE;       
-                    case YELLOW:
-                    	return C_YELLOW;    
-                    case GREEN:
-                        return C_GREEN;    
-                    case WHITE:
-			return C_WHITE;                        
-                    case MAGENTA:
-			return C_MAGENTA;
-                    case CYAN:
-			return C_CYAN;
+                    case 0:
+		        return Color.BLACK;
+                    case 1:
+                	return new Color(C_ORANGE);       
+                    case 2:
+                    	return new Color(C_YELLOW);    
+                    case 8:
+			totalGreen++;
+                        return new Color(C_GREEN);    
+                    case 32:
+			return new Color(C_CYAN);                        
+                    case 4:
+			return new Color(C_MAGENTA);
+                    case 16:
+			return Color.WHITE;
                     default:
-                	return new Color(0,0,0);    
+                	return Color.BLACK;    
 		}
 
 	
@@ -495,10 +497,13 @@ public class DisplayLabeledImage extends JFrame
     /** Reloads the zeroth image */
     public void reload()
         {
+	System.out.println("caling reload");
         Socket sock = null;
         try 
             {
-            sock = new Socket(ip, port);
+            	System.out.println("made socket");
+		sock = new Socket(ip, port);
+            
             }
         catch(UnknownHostException e) { System.err.println("Unknown Host " + ip); return; }
         catch(IOException e) { System.err.println("IOError on connecting to " + ip + " on port " + port + "\n\n" + e); return; }
@@ -507,52 +512,51 @@ public class DisplayLabeledImage extends JFrame
         OutputStream output = null;
         try
             {
+		System.out.println(" maing some input stream");
             input = new BufferedInputStream(sock.getInputStream());
-            output = sock.getOutputStream();
+            	System.out.println("getting output stream");
+		output = sock.getOutputStream();
+	   System.out.println("writing a command for a picture");
             output.write(COMMAND_PICTURE);
             output.flush();
-                        
-            for(int y = 0; y < IMAGE_HEIGHT; y++)         // we only grab half the stream
+             System.out.println("eas i'm tryig");           
+           
+	 for(int y = 0; y < IMAGE_HEIGHT ; y++)         // we only grab half the stream
                 for(int x = 0; x < IMAGE_WIDTH; x++)
                     {
-                	    int _alpha = (byte)(input.read());  // This is actually y2, but we're ignoring that
-               		    image.setRGB(x,y, labelToColor(_alpha));   
+                    int _alpha = (byte)(input.read());  // This is actually y2, but we're ignoring that
+
+                                //System.out.println("alpha: " + _alpha  + " y " + _y + " cb " + _cb + " cr " + _cr);
+                    image.setRGB(x,y,labelToColor(_alpha).getRGB());  
+
+/*if (y < IMAGE_HEIGHT / 2)
+                        {
+                        if (x < IMAGE_WIDTH / 2)
+                            {
+                            image.setRGB(x * 2 ,y * 2, labelToColor(_alpha).getRGB());
+                            image.setRGB(x * 2 + 1,y * 2, labelToColor(_alpha).getRGB());
+                            }
+                        else //  (x >= IMAGE_WIDTH)
+                            {
+                            image.setRGB((x - IMAGE_WIDTH / 2) * 2 , y * 2 + 1, labelToColor(_alpha).getRGB());
+                            image.setRGB((x - IMAGE_WIDTH / 2) * 2 + 1,y * 2 + 1,labelToColor(_alpha).getRGB() );
+                            }
+                        }
+                    else
+                        {
+                        // do nothing, hack to eliminate the weird part of the image
+                        }*/
                     }
-            }
+
+		System.out.println("total green is: " + totalGreen);
+		totalGreen = 0;	
+	}
         catch(IOException e) { System.err.println("Can't read image from socket."); }
                 
         try { if (input != null) input.close(); } catch (IOException e) { }
-        try { if (output != null) output.close(); } catch (IOException e) { 	
-
-	switch(data[ycbcr[0]/div][ycbcr[1]/div][ycbcr[2]/div])
-                    {
-                    case OTHER:
-                        break;
-                    case ORANGE:
-                        if (allColors || labels.getSelectedIndex() == ORANGE) overlay.setRGB(x,y,C_ORANGE);
-                        break;
-                    case YELLOW:
-                        if (allColors || labels.getSelectedIndex() == YELLOW) overlay.setRGB(x,y,C_YELLOW);
-                        break;
-                    case GREEN:
-                        if (allColors || labels.getSelectedIndex() == GREEN) overlay.setRGB(x,y,C_GREEN);
-                        break;
-                    case WHITE:
-                        if (allColors || labels.getSelectedIndex() == WHITE) overlay.setRGB(x,y,C_WHITE);
-                        break;
-                    case MAGENTA:
-                        if (allColors || labels.getSelectedIndex() == MAGENTA) overlay.setRGB(x,y,C_MAGENTA);
-                        break;
-                    case CYAN:
-                        if (allColors || labels.getSelectedIndex() == CYAN) overlay.setRGB(x,y,C_CYAN);
-                        break;
-                    default:
-                        System.err.println("Invalid color label: " + data[ycbcr[0]/div][ycbcr[1]/div][ycbcr[2]/div]);
-                        break;
-                    }
-}
+        try { if (output != null) output.close(); } catch (IOException e) { 	}
         try { sock.close(); } catch (IOException e) { }
-        stretchImage();
+        //stretchImage();
         updateOverlay();
         display.repaint();
         }
@@ -586,7 +590,7 @@ public class DisplayLabeledImage extends JFrame
     int port;
                 
     /** Builds the GUI, loads the images, and sets things up. */
-    public Calibrate2(String[] args) throws IOException
+    public DisplayLabeledImage(String[] args) throws IOException
         {
         super("Bleah");
                 
@@ -607,7 +611,7 @@ public class DisplayLabeledImage extends JFrame
         for(int x = 0; x < IMAGE_WIDTH; x++)
             for(int y = 0; y < IMAGE_HEIGHT; y++)
                 overlay.setRGB(x,y,C_OTHER);  // clear
-
+	System.out.println("image cleared");
         getContentPane().setLayout(new BorderLayout());
         Box box = new Box(BoxLayout.X_AXIS);
                 
@@ -836,7 +840,7 @@ public class DisplayLabeledImage extends JFrame
 
     public static void main(String[] args) throws IOException
         {
-        new Calibrate2(args);
+        new DisplayLabeledImage(args);
         }
         
     }
