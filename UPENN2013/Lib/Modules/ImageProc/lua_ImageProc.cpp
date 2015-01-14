@@ -26,7 +26,7 @@
 #include "lua_field_spots.h"
 #include "lua_field_occupancy.h"
 #include "lua_robots.h"
-
+#include "sendLabeledImage.cpp"
 // clip value between 0 and 255
 #define CLIP(value) (uint8_t)(((value)>0xFF)?0xff:(((value)<0)?0:(value)))
 
@@ -385,10 +385,37 @@ static int lua_tilted_block_bitor(lua_State *L) {
 }
 
 static int lua_circularHough(lua_State *L){
-  void* image = (void *) lua_touserdata(L, 1); //uint8_t
+  uint8_t *image = (uint8_t *) lua_touserdata(L, 1); 
   int width =  luaL_checkint(L, 2);
   int height = luaL_checkint(L, 3);
+  int index = 0;
+  uint8_t *image_orig = image;
+  uint8_t green = 8;
+  uint8_t black = 0;
+  uint8_t white = 16;
 
+  //sendLabeledImage((char *)image_orig);
+  for(int j=0; j<height; j++){
+    for(int i=0; i<width; i++){
+      if(!(image[index] & green)) //if(pixel is not green) set it to other
+        image[index] = black;
+      if(i>0){
+        if( (image[index-1] != image[index]) && (image[index-1] != white) ){ //extremely simple edge detection
+          image[index-1] = white;
+        }   
+      } 
+      if(j != 0){
+        if(image[index] != image[index-width]){
+          image[index-width] = white;
+        }
+        if(image[index-width-1] & green){
+	  image[index-width-1] = black; 
+	}
+      }
+      index++;
+      }   
+   }
+   sendLabeledImage((char *)image_orig);
 }
 
 static const struct luaL_Reg imageProc_lib [] = {
