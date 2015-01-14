@@ -174,7 +174,7 @@ public class DisplayLabeledImage extends JFrame
                     }
                 }
             }
-        System.out.println("total count: "+count);
+        //System.out.println("total count: "+count);
         }
     
     final static int[] lookupValuesIn = new int[]
@@ -548,7 +548,7 @@ public class DisplayLabeledImage extends JFrame
                         }*/
                     }
 
-		System.out.println("total green is: " + totalGreen);
+		//System.out.println("total green is: " + totalGreen);
 		totalGreen = 0;	
 	}
         catch(IOException e) { System.err.println("Can't read image from socket."); }
